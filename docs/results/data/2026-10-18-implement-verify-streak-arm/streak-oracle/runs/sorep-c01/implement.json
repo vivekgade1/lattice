@@ -1,0 +1,5661 @@
+{
+ "diff": {
+  "rules": {
+   "added": [],
+   "changed": [
+    {
+     "new": "R56",
+     "new_text": "A user has at most 30 active (non-archived, non-deleted) habits; creating one more answers 409 with code `habit_limit`.",
+     "old": "R56",
+     "old_text": "A user has at most 50 active (non-archived, non-deleted) habits; creating one more answers 409 with code `habit_limit`."
+    },
+    {
+     "new": "R69",
+     "new_text": "`archived: true` archives the habit and `archived: false` restores it; restoring when the user already has 30 active habits answers 409 `habit_limit`.",
+     "old": "R69",
+     "old_text": "`archived: true` archives the habit and `archived: false` restores it; restoring when the user already has 50 active habits answers 409 `habit_limit`."
+    }
+   ],
+   "removed": [],
+   "unchanged": 146
+  },
+  "targets": {
+   "added": [
+    "invariant:at_most_30_active_habits",
+    "scenario:the_30th_active_habit_is_accepted",
+    "scenario:the_31st_active_habit_is_refused"
+   ],
+   "modified": [
+    "scenario:list_pagination",
+    "scenario:restoring_past_the_limit_is_refused"
+   ],
+   "removed": [
+    "invariant:at_most_50_active_habits",
+    "scenario:the_50th_active_habit_is_accepted",
+    "scenario:the_51st_active_habit_is_refused"
+   ]
+  }
+ },
+ "input": {
+  "app": {
+   "configured": true,
+   "layers": "ACD"
+  },
+  "base": {
+   "requirements": "dcac6deb3ad3ec4ab7381af040cb86064aae00eb3ed38c05237657156fbad7b1",
+   "spec": "28dfc2e6c6a2aa27168079740d28a94de7f3efcb7cf8234d795d48b7960f5624",
+   "trace": "627a2b3f4c9cfafc3ad6cd5edb01f355fb76b53c248c629e7a77fd1bd8ee82ed"
+  },
+  "candidate": {
+   "requirements": "6a222df375cfc14b8f9a2171982b317a09ef633e4ea8c8c255794eae6be5b373",
+   "spec": "b9f15ccac3f3438b7d10e56382aef07eba09e6ea5dd8885f74e61359c8ca7eef",
+   "trace": "c7c530b39ad3287cfb904aa69ee38cd52d307bf8cd3a958c648da300f6623197"
+  },
+  "change": null,
+  "inventory": {
+   "extract_sha256": "d51ef75340d54682a8bd2c3f40220e50c2ef31ae0eab17ef3ca68c9a39f89adc",
+   "stale": false,
+   "workflows_sha256": "af1383dbf5d51f876c61a282f23a2fb60d79f536af7542dfe48387e6f1c573a0"
+  },
+  "kind": "candidate",
+  "notes": []
+ },
+ "schema": "lattice.impact/1",
+ "summary": {
+  "kinds": {
+   "check_failure": 6,
+   "closure": 38,
+   "direct": 17,
+   "table_peer": 22
+  },
+  "note": "Which workflows fail is mostly not decidable before the change exists: a flow records the answers the app gives today, so it passes today by construction. Before an implementation only a changed invariant (tier 1, observed) and an exact-prefix contradiction (tier 2, determined) decide a workflow; every other flow listed is tier 3 'may_fail' (static, with unknowns), settled by tier 4 (Spike E, observed after the change).",
+  "tiers": {
+   "1": {
+    "failing": 6,
+    "flows": 0,
+    "resolved": 0
+   },
+   "2": {
+    "decidable": 0,
+    "determined": 0,
+    "flows": 0,
+    "undecidable": 10
+   },
+   "3": {
+    "flows": 64,
+    "locations": 77,
+    "unread": 7
+   }
+  },
+  "workflows": {
+   "t1_fail": 0,
+   "t2_fail": 0,
+   "t3_may_fail": 64
+  }
+ },
+ "tier1": {
+  "baseline": {
+   "failing": [],
+   "run": true,
+   "source": "run"
+  },
+  "counts": {
+   "baseline_drift": 0,
+   "by_label": {
+    "not_built_yet": 6
+   },
+   "by_layer": {
+    "C": 3,
+    "D": 3
+   },
+   "failing": 6,
+   "flows_run": 59,
+   "resolved": 0,
+   "workflow_fails": 0
+  },
+  "failing": [
+   {
+    "also_fails_on_base": false,
+    "case": "restoring_past_the_limit_is_refused / step 1",
+    "code": null,
+    "endpoint": "PATCH /v1/habits/00000000-0000-4000-8000-000000000150",
+    "evidence": [
+     {
+      "at": "check:C:restoring_past_the_limit_is_refused / step 1",
+      "kind": "check",
+      "what": "[C silent] PATCH /v1/habits/00000000-0000-4000-8000-000000000150 as ann (restoring_past_the_limit_is_refused / step 1)"
+     },
+     {
+      "at": "spec:spec.py:870",
+      "kind": "spec",
+      "what": "restoring_past_the_limit_is_refused step 1"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t1-479fefbf07",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "C",
+    "line": 870,
+    "observation": "runtime",
+    "problems": [],
+    "rule": "A user has at most 30 non-archived, non-deleted habits.",
+    "rules": [
+     "R56"
+    ],
+    "summary": "[C silent] PATCH /v1/habits/00000000-0000-4000-8000-000000000150 as ann (restoring_past_the_limit_is_refused / step 1)",
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 1,
+    "verdict": "silent"
+   },
+   {
+    "also_fails_on_base": false,
+    "case": "the_30th_active_habit_is_accepted / step 2",
+    "code": null,
+    "endpoint": "POST /v1/habits",
+    "evidence": [
+     {
+      "at": "check:C:the_30th_active_habit_is_accepted / step 2",
+      "kind": "check",
+      "what": "[C silent] POST /v1/habits as ann (the_30th_active_habit_is_accepted / step 2)"
+     },
+     {
+      "at": "spec:spec.py:865",
+      "kind": "spec",
+      "what": "the_30th_active_habit_is_accepted step 2"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t1-b9ca29ffda",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "C",
+    "line": 865,
+    "observation": "runtime",
+    "problems": [],
+    "rule": "A user has at most 30 non-archived, non-deleted habits.",
+    "rules": [
+     "R56"
+    ],
+    "summary": "[C silent] POST /v1/habits as ann (the_30th_active_habit_is_accepted / step 2)",
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 1,
+    "verdict": "silent"
+   },
+   {
+    "also_fails_on_base": false,
+    "case": "the_31st_active_habit_is_refused / step 1",
+    "code": null,
+    "endpoint": "POST /v1/habits",
+    "evidence": [
+     {
+      "at": "check:C:the_31st_active_habit_is_refused / step 1",
+      "kind": "check",
+      "what": "[C silent] POST /v1/habits as ann (the_31st_active_habit_is_refused / step 1)"
+     },
+     {
+      "at": "spec:spec.py:853",
+      "kind": "spec",
+      "what": "the_31st_active_habit_is_refused step 1"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t1-07f81d7143",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "C",
+    "line": 853,
+    "observation": "runtime",
+    "problems": [],
+    "rule": "A user has at most 30 non-archived, non-deleted habits.",
+    "rules": [
+     "R56"
+    ],
+    "summary": "[C silent] POST /v1/habits as ann (the_31st_active_habit_is_refused / step 1)",
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 1,
+    "verdict": "silent"
+   },
+   {
+    "also_fails_on_base": false,
+    "case": "restoring_past_the_limit_is_refused / step 1",
+    "code": null,
+    "endpoint": "PATCH /v1/habits/00000000-0000-4000-8000-000000000150",
+    "evidence": [
+     {
+      "at": "check:D:restoring_past_the_limit_is_refused / step 1",
+      "kind": "check",
+      "what": "[D silent] PATCH /v1/habits/00000000-0000-4000-8000-000000000150 as ann (restoring_past_the_limit_is_refused / step 1)"
+     },
+     {
+      "at": "spec:spec.py:870",
+      "kind": "spec",
+      "what": "restoring_past_the_limit_is_refused step 1"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t1-00aefc88b7",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "D",
+    "line": 870,
+    "observation": "runtime",
+    "problems": [
+     "status: expected 409, got 200",
+     "body: expected {'error': {'code': 'habit_limit'}} within {'id': '00000000-0000-4000-8000-000000000150', 'name': 'old', 'description': None, 'target_count': 3, 'period': 'week', 'start_date': '2026-03-02', 'end_date': None, 'archived': False, 'version': 2, 'created_at': '2026-03-01T00:00:00Z', 'updated_at': '2026-03-04T12:00:00Z'}",
+     "db habits where {'id': '00000000-0000-4000-8000-000000000150'}: archived is 0, expected True"
+    ],
+    "rule": "scenario: restoring_past_the_limit_is_refused",
+    "rules": [
+     "R69"
+    ],
+    "summary": "[D silent] PATCH /v1/habits/00000000-0000-4000-8000-000000000150 as ann (restoring_past_the_limit_is_refused / step 1)",
+    "target": "scenario:restoring_past_the_limit_is_refused",
+    "tier": 1,
+    "verdict": "silent"
+   },
+   {
+    "also_fails_on_base": false,
+    "case": "the_30th_active_habit_is_accepted / step 2",
+    "code": null,
+    "endpoint": "POST /v1/habits",
+    "evidence": [
+     {
+      "at": "check:D:the_30th_active_habit_is_accepted / step 2",
+      "kind": "check",
+      "what": "[D silent] POST /v1/habits as ann (the_30th_active_habit_is_accepted / step 2)"
+     },
+     {
+      "at": "spec:spec.py:865",
+      "kind": "spec",
+      "what": "the_30th_active_habit_is_accepted step 2"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t1-553765692a",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "D",
+    "line": 865,
+    "observation": "runtime",
+    "problems": [
+     "status: expected 409, got 201",
+     "body: expected {'error': {'code': 'habit_limit'}} within {'id': '00000000-0000-4000-8000-000000000201', 'name': 'newer', 'description': None, 'target_count': 1, 'period': 'week', 'start_date': '2026-03-04', 'end_date': None, 'archived': False, 'version': 1, 'created_at': '2026-03-04T12:00:00Z', 'updated_at': '2026-03-04T12:00:00Z'}",
+     "db habits where {'name': 'newer'}: expected 0 rows, found 1"
+    ],
+    "rule": "scenario: the_30th_active_habit_is_accepted",
+    "rules": [
+     "R56"
+    ],
+    "summary": "[D silent] POST /v1/habits as ann (the_30th_active_habit_is_accepted / step 2)",
+    "target": "scenario:the_30th_active_habit_is_accepted",
+    "tier": 1,
+    "verdict": "silent"
+   },
+   {
+    "also_fails_on_base": false,
+    "case": "the_31st_active_habit_is_refused / step 1",
+    "code": null,
+    "endpoint": "POST /v1/habits",
+    "evidence": [
+     {
+      "at": "check:D:the_31st_active_habit_is_refused / step 1",
+      "kind": "check",
+      "what": "[D silent] POST /v1/habits as ann (the_31st_active_habit_is_refused / step 1)"
+     },
+     {
+      "at": "spec:spec.py:853",
+      "kind": "spec",
+      "what": "the_31st_active_habit_is_refused step 1"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t1-20bd6b3f8d",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "D",
+    "line": 853,
+    "observation": "runtime",
+    "problems": [
+     "status: expected 409, got 201",
+     "body: expected {'error': {'code': 'habit_limit'}} within {'id': '00000000-0000-4000-8000-000000000200', 'name': 'one more', 'description': None, 'target_count': 1, 'period': 'week', 'start_date': '2026-03-04', 'end_date': None, 'archived': False, 'version': 1, 'created_at': '2026-03-04T12:00:00Z', 'updated_at': '2026-03-04T12:00:00Z'}",
+     "db habits where {'user_id': 1, 'archived': False, 'deleted_at': None}: expected 30 rows, found 31"
+    ],
+    "rule": "scenario: the_31st_active_habit_is_refused",
+    "rules": [
+     "R56"
+    ],
+    "summary": "[D silent] POST /v1/habits as ann (the_31st_active_habit_is_refused / step 1)",
+    "target": "scenario:the_31st_active_habit_is_refused",
+    "tier": 1,
+    "verdict": "silent"
+   }
+  ],
+  "flows": [],
+  "flows_note": null,
+  "layers": "ACD",
+  "resolved": []
+ },
+ "tier2": {
+  "corpus": {
+   "baseline": "run",
+   "environment": null,
+   "flow_steps": 167,
+   "flows_note": null,
+   "scenario_steps": 462
+  },
+  "decidability": [
+   {
+    "kind": "target",
+    "reason": "invariant_or_machine",
+    "state": "undecidable",
+    "subject": "invariant:at_most_30_active_habits"
+   },
+   {
+    "kind": "target",
+    "reason": "removed_only",
+    "state": "undecidable",
+    "subject": "invariant:at_most_50_active_habits"
+   },
+   {
+    "kind": "target",
+    "reason": "new_request",
+    "state": "undecidable",
+    "subject": "scenario:list_pagination"
+   },
+   {
+    "kind": "target",
+    "reason": "new_request",
+    "state": "undecidable",
+    "subject": "scenario:restoring_past_the_limit_is_refused"
+   },
+   {
+    "kind": "target",
+    "reason": "new_request",
+    "state": "undecidable",
+    "subject": "scenario:the_30th_active_habit_is_accepted"
+   },
+   {
+    "kind": "target",
+    "reason": "new_request",
+    "state": "undecidable",
+    "subject": "scenario:the_31st_active_habit_is_refused"
+   },
+   {
+    "kind": "target",
+    "reason": "removed_only",
+    "state": "undecidable",
+    "subject": "scenario:the_50th_active_habit_is_accepted"
+   },
+   {
+    "kind": "target",
+    "reason": "removed_only",
+    "state": "undecidable",
+    "subject": "scenario:the_51st_active_habit_is_refused"
+   },
+   {
+    "kind": "changed",
+    "reason": "invariant_or_machine",
+    "state": "undecidable",
+    "subject": "rule:R56"
+   },
+   {
+    "kind": "changed",
+    "reason": "new_request",
+    "state": "undecidable",
+    "subject": "rule:R69"
+   }
+  ],
+  "determined": [],
+  "flows": [],
+  "runtime_replay": {
+   "status": "not_applicable: 0 programs"
+  }
+ },
+ "tier3": {
+  "counts": {
+   "by_kind": {
+    "closure": 38,
+    "direct": 17,
+    "insertion": 0,
+    "table_peer": 22
+   },
+   "files": 14,
+   "flows_may_fail": 64,
+   "locations": 77,
+   "seeds": {
+    "machines": 0,
+    "routes": 3,
+    "tables": 1
+   },
+   "unread": 7
+  },
+  "external": {
+   "count": 0
+  },
+  "files": [
+   "internal/account/routes.go",
+   "internal/completions/routes.go",
+   "internal/db/bodies.go",
+   "internal/db/changeseq.go",
+   "internal/db/models.go",
+   "internal/db/owned.go",
+   "internal/habits/routes.go",
+   "internal/home/routes.go",
+   "internal/httpapi/body.go",
+   "internal/httpapi/pagination.go",
+   "internal/httpapi/registry.go",
+   "internal/period/period.go",
+   "internal/progress/routes.go",
+   "internal/sync/routes.go"
+  ],
+  "flows": [
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-053146a70c",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-f3f68bb6ba",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-053146a70c",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-087fea1dbb",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-5a0bd3c56c",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-087fea1dbb",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-09db39abfe",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-f64b8e8a77",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-09db39abfe",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-0c6bdd7ab0",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-0a9870e6e3",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-0c6bdd7ab0",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-11a98b3683",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-fca17b980b",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-11a98b3683",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-12302559ed",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-73cfaab6cd",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-12302559ed",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-1e4314104c",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-e2ad22101d",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56",
+     "R69",
+     "R86",
+     "R87",
+     "R88"
+    ],
+    "target": "flow:wf-1e4314104c",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-21a2d02394",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-d8f7863075",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-21a2d02394",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2610c56483",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-e26b074236",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-2610c56483",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2d3eecc464",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-ef1a74934c",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "PATCH /v1/habits/{}",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "target": "flow:wf-2d3eecc464",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2da750f4e8",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-229adb0098",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-2da750f4e8",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2f54cb544b",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-7be9636e95",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-2f54cb544b",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3c5a04e0ae",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-1b2dfc905e",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56",
+     "R69",
+     "R86",
+     "R87",
+     "R88"
+    ],
+    "target": "flow:wf-3c5a04e0ae",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3d2436d2dd",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-4a4053a9a2",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "PATCH /v1/habits/{}",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "target": "flow:wf-3d2436d2dd",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3de8783507",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-1df069828f",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-3de8783507",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-45bfc39e84",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-7b5eec7d5d",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-45bfc39e84",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-4dfc4c5bed",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-4f0b813722",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-4dfc4c5bed",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-4e49f96210",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-298592fcbe",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-4e49f96210",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-52994a9544",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-64ba33ec5a",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-52994a9544",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-597f2899e4",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-a496c92a0f",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-597f2899e4",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5a6bab46c9",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-630281ab78",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-5a6bab46c9",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5cf3da443e",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-10d2666624",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-5cf3da443e",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5eebdfc88b",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-74e08d0704",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-5eebdfc88b",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-6a4cc7a302",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-6df1dec4ed",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-6a4cc7a302",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-6c2282fd50",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-2822b2db8a",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-6c2282fd50",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-717a23507f",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-4362227488",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-717a23507f",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-7f0f99bdcf",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-aee3dcf3fd",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-7f0f99bdcf",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-80123a60e5",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-1e41f3fd03",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits",
+     "PATCH /v1/habits/{}",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56",
+     "R69",
+     "R86",
+     "R87",
+     "R88"
+    ],
+    "target": "flow:wf-80123a60e5",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-8ae8af75df",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-62a5eb8ad1",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "PATCH /v1/habits/{}",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "target": "flow:wf-8ae8af75df",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-8b2744d526",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-7e85608691",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-8b2744d526",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-9523e7a835",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-88653e9742",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-9523e7a835",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-9ead6d0f00",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-5c1660cc5d",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "PATCH /v1/habits/{}",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "target": "flow:wf-9ead6d0f00",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-9f87f3f1d9",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-d520ef06fb",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-9f87f3f1d9",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a1793fed29",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-9cae87c975",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-a1793fed29",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a7ae5cb208",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-d5e488b27e",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-a7ae5cb208",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a9ac9b88a4",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-d3fc7541ef",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "PATCH /v1/habits/{}",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "target": "flow:wf-a9ac9b88a4",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b2acc9eac6",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-2ab3ad965a",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-b2acc9eac6",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b2ee5de88e",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-203a512460",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-b2ee5de88e",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b595a756b6",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-55175c8369",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "PATCH /v1/habits/{}",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "target": "flow:wf-b595a756b6",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b95fd71de1",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-4f84eed631",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-b95fd71de1",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-bd46b71ee2",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-97c797fb22",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-bd46b71ee2",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-c00e2afaf3",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-25b267bb66",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56",
+     "R69",
+     "R86",
+     "R87",
+     "R88"
+    ],
+    "target": "flow:wf-c00e2afaf3",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-c675dd6cb3",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-85b2e26d7f",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-c675dd6cb3",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-c71e6bbb49",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-28cff79f35",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-c71e6bbb49",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-cc7886ea28",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-d51726ddc6",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "PATCH /v1/habits/{}",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "target": "flow:wf-cc7886ea28",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ce853d194f",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-886174d11d",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-ce853d194f",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-cf27dadc73",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-49ebf3780e",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-cf27dadc73",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d06e3e8777",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-646efaf037",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-d06e3e8777",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d2b6d84725",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-feb5e3f13b",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-d2b6d84725",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d2fcd76bcd",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-3e4df777b2",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-d2fcd76bcd",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d650036584",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-478f0aa528",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56",
+     "R69",
+     "R86",
+     "R87",
+     "R88"
+    ],
+    "target": "flow:wf-d650036584",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d8340207d1",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-f07f1e0a66",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-d8340207d1",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-da24bc5b11",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-01c823c707",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-da24bc5b11",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-dbac494b10",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-97f5cc0550",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-dbac494b10",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-de433cd704",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-3c76969e95",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-de433cd704",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-e3249cec66",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-d4743b677a",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "PATCH /v1/habits/{}",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "target": "flow:wf-e3249cec66",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ebadb4a811",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-99cf9d0c40",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-ebadb4a811",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ee191140a0",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-a78ca67481",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "PATCH /v1/habits/{}",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "target": "flow:wf-ee191140a0",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f679309f8a",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-bbc663cfd1",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-f679309f8a",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f67bf44692",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-bcc4736fa0",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-f67bf44692",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f961306c88",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-718dd55732",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-f961306c88",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-fc7d0a0772",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-46bd17bf50",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-fc7d0a0772",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-fcf46753f5",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-ffa8cc5617",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-fcf46753f5",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ffaa047bf2",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-0b152dcd5c",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R56"
+    ],
+    "target": "flow:wf-ffaa047bf2",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   }
+  ],
+  "locations": [
+   {
+    "evidence": [
+     {
+      "at": "code:internal/account/routes.go:22",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/account/routes.go",
+    "id": "t3-b042d85cb5",
+    "kind": "table_peer",
+    "line": 22,
+    "rules": [
+     "R56"
+    ],
+    "symbol": null,
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "invariant:at_most_30_active_habits -> table:habits -> route:DELETE /v1/me -> code:internal/account/routes.go:22"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "end_line": 165,
+    "evidence": [
+     {
+      "at": "code:internal/account/routes.go:134",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/account/routes.go",
+    "id": "t3-3f5b9b0f59",
+    "kind": "table_peer",
+    "line": 134,
+    "rules": [
+     "R56"
+    ],
+    "symbol": "remove",
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "invariant:at_most_30_active_habits -> table:habits -> route:DELETE /v1/me -> handler:account.handler.remove -> code:internal/account/routes.go:134"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:25",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-d1118010b7",
+    "kind": "table_peer",
+    "line": 25,
+    "rules": [
+     "R56"
+    ],
+    "symbol": null,
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "invariant:at_most_30_active_habits -> table:habits -> route:POST /v1/habits/:id/completions -> code:internal/completions/routes.go:25"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:26",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-381dff2257",
+    "kind": "table_peer",
+    "line": 26,
+    "rules": [
+     "R56"
+    ],
+    "symbol": null,
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "invariant:at_most_30_active_habits -> table:habits -> route:GET /v1/habits/:id/completions -> code:internal/completions/routes.go:26"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:27",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-b1ce45858b",
+    "kind": "table_peer",
+    "line": 27,
+    "rules": [
+     "R56"
+    ],
+    "symbol": null,
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "invariant:at_most_30_active_habits -> table:habits -> route:DELETE /v1/habits/:id/completions/:cid -> code:internal/completions/routes.go:27"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:28",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-645fd2b145",
+    "kind": "table_peer",
+    "line": 28,
+    "rules": [
+     "R56"
+    ],
+    "symbol": null,
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "invariant:at_most_30_active_habits -> table:habits -> route:POST /v1/completions/batch -> code:internal/completions/routes.go:28"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "end_line": 127,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:57",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-3418954366",
+    "kind": "table_peer",
+    "line": 57,
+    "rules": [
+     "R56"
+    ],
+    "symbol": "batch",
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "invariant:at_most_30_active_habits -> table:habits -> route:POST /v1/completions/batch -> handler:completions.handler.batch -> code:internal/completions/routes.go:57"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "end_line": 260,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:217",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-f86782ccfb",
+    "kind": "table_peer",
+    "line": 217,
+    "rules": [
+     "R56"
+    ],
+    "symbol": "create",
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "invariant:at_most_30_active_habits -> table:habits -> route:POST /v1/habits/:id/completions -> handler:completions.handler.create -> code:internal/completions/routes.go:217"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "end_line": 309,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:263",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-1cf49697c8",
+    "kind": "table_peer",
+    "line": 263,
+    "rules": [
+     "R56"
+    ],
+    "symbol": "list",
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "invariant:at_most_30_active_habits -> table:habits -> route:GET /v1/habits/:id/completions -> handler:completions.handler.list -> code:internal/completions/routes.go:263"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "end_line": 355,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:312",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-91842ca26f",
+    "kind": "table_peer",
+    "line": 312,
+    "rules": [
+     "R56"
+    ],
+    "symbol": "remove",
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "invariant:at_most_30_active_habits -> table:habits -> route:DELETE /v1/habits/:id/completions/:cid -> handler:completions.handler.remove -> code:internal/completions/routes.go:312"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "end_line": 16,
+    "evidence": [
+     {
+      "at": "code:internal/db/bodies.go:16",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/bodies.go",
+    "id": "t3-3fe7032e90",
+    "kind": "closure",
+    "line": 16,
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "symbol": "Instant",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/db:Instant -> code:internal/db/bodies.go:16",
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/db:Instant -> code:internal/db/bodies.go:16",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> call:streak/internal/db:Instant -> code:internal/db/bodies.go:16",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> call:streak/internal/db:Instant -> code:internal/db/bodies.go:16",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/db:Instant -> code:internal/db/bodies.go:16"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 48,
+    "evidence": [
+     {
+      "at": "code:internal/db/bodies.go:43",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/bodies.go",
+    "id": "t3-b5e74edaa6",
+    "kind": "closure",
+    "line": 43,
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "symbol": "HabitBody",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/db:HabitBody -> code:internal/db/bodies.go:43",
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/db:HabitBody -> code:internal/db/bodies.go:43",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> call:streak/internal/db:HabitBody -> code:internal/db/bodies.go:43",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> call:streak/internal/db:HabitBody -> code:internal/db/bodies.go:43",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/db:HabitBody -> code:internal/db/bodies.go:43"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 20,
+    "evidence": [
+     {
+      "at": "code:internal/db/changeseq.go:13",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/changeseq.go",
+    "id": "t3-8473099624",
+    "kind": "closure",
+    "line": 13,
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "symbol": "LockUser",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/db:LockUser -> code:internal/db/changeseq.go:13",
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/db:LockUser -> code:internal/db/changeseq.go:13",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> call:streak/internal/db:LockUser -> code:internal/db/changeseq.go:13",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> call:streak/internal/db:LockUser -> code:internal/db/changeseq.go:13",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/db:LockUser -> code:internal/db/changeseq.go:13"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 32,
+    "evidence": [
+     {
+      "at": "code:internal/db/changeseq.go:24",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/changeseq.go",
+    "id": "t3-2da2453914",
+    "kind": "closure",
+    "line": 24,
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "symbol": "NextChangeSeq",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/db:NextChangeSeq -> code:internal/db/changeseq.go:24",
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/db:NextChangeSeq -> code:internal/db/changeseq.go:24",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> call:streak/internal/db:NextChangeSeq -> code:internal/db/changeseq.go:24",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> call:streak/internal/db:NextChangeSeq -> code:internal/db/changeseq.go:24",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/db:NextChangeSeq -> code:internal/db/changeseq.go:24"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 75,
+    "evidence": [
+     {
+      "at": "code:internal/db/models.go:58",
+      "kind": "code",
+      "what": "struct"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "struct"
+     }
+    ],
+    "file": "internal/db/models.go",
+    "id": "t3-3f6d3dd269",
+    "kind": "direct",
+    "line": 58,
+    "rules": [
+     "R56"
+    ],
+    "symbol": "Habit",
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "invariant:at_most_30_active_habits -> table:habits -> struct:Habit -> code:internal/db/models.go:58",
+     "invariant:at_most_50_active_habits -> table:habits -> struct:Habit -> code:internal/db/models.go:58",
+     "rule:R56 -> invariant:at_most_30_active_habits -> struct:Habit -> code:internal/db/models.go:58",
+     "rule:R56 -> invariant:at_most_50_active_habits -> struct:Habit -> code:internal/db/models.go:58"
+    ],
+    "what": "struct"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/db/models.go:60",
+      "kind": "code",
+      "what": "column user_id"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "column user_id"
+     }
+    ],
+    "file": "internal/db/models.go",
+    "id": "t3-cc4c6082fe",
+    "kind": "direct",
+    "line": 60,
+    "rules": [
+     "R56"
+    ],
+    "symbol": null,
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "invariant:at_most_30_active_habits -> table:habits -> column:user_id -> code:internal/db/models.go:60",
+     "invariant:at_most_50_active_habits -> table:habits -> column:user_id -> code:internal/db/models.go:60",
+     "rule:R56 -> invariant:at_most_30_active_habits -> column:user_id -> code:internal/db/models.go:60",
+     "rule:R56 -> invariant:at_most_50_active_habits -> column:user_id -> code:internal/db/models.go:60"
+    ],
+    "what": "column user_id"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/db/models.go:69",
+      "kind": "code",
+      "what": "column archived"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "column archived"
+     }
+    ],
+    "file": "internal/db/models.go",
+    "id": "t3-6604877b5e",
+    "kind": "direct",
+    "line": 69,
+    "rules": [
+     "R56"
+    ],
+    "symbol": null,
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "invariant:at_most_30_active_habits -> table:habits -> column:archived -> code:internal/db/models.go:69",
+     "invariant:at_most_50_active_habits -> table:habits -> column:archived -> code:internal/db/models.go:69",
+     "rule:R56 -> invariant:at_most_30_active_habits -> column:archived -> code:internal/db/models.go:69",
+     "rule:R56 -> invariant:at_most_50_active_habits -> column:archived -> code:internal/db/models.go:69"
+    ],
+    "what": "column archived"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/db/models.go:74",
+      "kind": "code",
+      "what": "column deleted_at"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "column deleted_at"
+     }
+    ],
+    "file": "internal/db/models.go",
+    "id": "t3-03abe811a5",
+    "kind": "direct",
+    "line": 74,
+    "rules": [
+     "R56"
+    ],
+    "symbol": null,
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "invariant:at_most_30_active_habits -> table:habits -> column:deleted_at -> code:internal/db/models.go:74",
+     "invariant:at_most_50_active_habits -> table:habits -> column:deleted_at -> code:internal/db/models.go:74",
+     "rule:R56 -> invariant:at_most_30_active_habits -> column:deleted_at -> code:internal/db/models.go:74",
+     "rule:R56 -> invariant:at_most_50_active_habits -> column:deleted_at -> code:internal/db/models.go:74"
+    ],
+    "what": "column deleted_at"
+   },
+   {
+    "end_line": 21,
+    "evidence": [
+     {
+      "at": "code:internal/db/owned.go:14",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/owned.go",
+    "id": "t3-3d424517c2",
+    "kind": "closure",
+    "line": 14,
+    "rules": [
+     "R69"
+    ],
+    "symbol": "OwnedHabit",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14",
+     "rule:R69 -> scenario:archive_and_restore / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14",
+     "rule:R69 -> scenario:archive_and_restore / step 3 -> route:PATCH /v1/habits/{} -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14",
+     "rule:R69 -> scenario:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:24",
+      "kind": "code",
+      "what": "route registration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-2a257c0914",
+    "kind": "direct",
+    "line": 24,
+    "rules": [
+     "R56"
+    ],
+    "symbol": null,
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> registered -> code:internal/habits/routes.go:24",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> registered -> code:internal/habits/routes.go:24",
+     "invariant:at_most_30_active_habits -> table:habits -> route:POST /v1/habits -> code:internal/habits/routes.go:24",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> registered -> code:internal/habits/routes.go:24",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> registered -> code:internal/habits/routes.go:24"
+    ],
+    "what": "route registration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:25",
+      "kind": "code",
+      "what": "route registration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-862e2b4f81",
+    "kind": "direct",
+    "line": 25,
+    "rules": [
+     "R56",
+     "R69",
+     "R86",
+     "R87",
+     "R88"
+    ],
+    "symbol": null,
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "invariant:at_most_30_active_habits -> table:habits -> route:GET /v1/habits -> code:internal/habits/routes.go:25",
+     "rule:R69 -> scenario:archive_and_restore / step 2 -> route:GET /v1/habits -> registered -> code:internal/habits/routes.go:25",
+     "scenario:list_pagination / step 7 -> route:GET /v1/habits -> registered -> code:internal/habits/routes.go:25"
+    ],
+    "what": "route registration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:26",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-e500416c98",
+    "kind": "table_peer",
+    "line": 26,
+    "rules": [
+     "R56"
+    ],
+    "symbol": null,
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "invariant:at_most_30_active_habits -> table:habits -> route:GET /v1/habits/:id -> code:internal/habits/routes.go:26"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:27",
+      "kind": "code",
+      "what": "route registration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-702411c00d",
+    "kind": "direct",
+    "line": 27,
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "symbol": null,
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> registered -> code:internal/habits/routes.go:27",
+     "invariant:at_most_30_active_habits -> table:habits -> route:PATCH /v1/habits/:id -> code:internal/habits/routes.go:27",
+     "rule:R69 -> scenario:archive_and_restore / step 1 -> route:PATCH /v1/habits/{} -> registered -> code:internal/habits/routes.go:27",
+     "rule:R69 -> scenario:archive_and_restore / step 3 -> route:PATCH /v1/habits/{} -> registered -> code:internal/habits/routes.go:27",
+     "rule:R69 -> scenario:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> registered -> code:internal/habits/routes.go:27"
+    ],
+    "what": "route registration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:28",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-2ae256ea40",
+    "kind": "table_peer",
+    "line": 28,
+    "rules": [
+     "R56"
+    ],
+    "symbol": null,
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "invariant:at_most_30_active_habits -> table:habits -> route:DELETE /v1/habits/:id -> code:internal/habits/routes.go:28"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "end_line": 40,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:33",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-5d6449d0e1",
+    "kind": "closure",
+    "line": 33,
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "symbol": "name",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/habits:name -> code:internal/habits/routes.go:33",
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:name -> code:internal/habits/routes.go:33",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:name -> code:internal/habits/routes.go:33",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:name -> code:internal/habits/routes.go:33",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:name -> code:internal/habits/routes.go:33"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:34",
+      "kind": "code",
+      "what": "param name"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param name"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-dea30c828b",
+    "kind": "direct",
+    "line": 34,
+    "rules": [
+     "R56"
+    ],
+    "symbol": null,
+    "target": "scenario:the_30th_active_habit_is_accepted",
+    "tier": 3,
+    "via": [
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> param:name -> code:internal/habits/routes.go:34",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> param:name -> code:internal/habits/routes.go:34",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> param:name -> code:internal/habits/routes.go:34",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> param:name -> code:internal/habits/routes.go:34",
+     "rule:R56 -> scenario:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> param:name -> code:internal/habits/routes.go:34"
+    ],
+    "what": "param name"
+   },
+   {
+    "end_line": 51,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:42",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-e62d37d307",
+    "kind": "closure",
+    "line": 42,
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "symbol": "description",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/habits:description -> code:internal/habits/routes.go:42",
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:description -> code:internal/habits/routes.go:42",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:description -> code:internal/habits/routes.go:42",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:description -> code:internal/habits/routes.go:42",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:description -> code:internal/habits/routes.go:42"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 60,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:53",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-3018776743",
+    "kind": "closure",
+    "line": 53,
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "symbol": "targetCount",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/habits:targetCount -> code:internal/habits/routes.go:53",
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:targetCount -> code:internal/habits/routes.go:53",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:targetCount -> code:internal/habits/routes.go:53",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:targetCount -> code:internal/habits/routes.go:53",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:targetCount -> code:internal/habits/routes.go:53"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:54",
+      "kind": "code",
+      "what": "param target_count"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param target_count"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-24a35f3508",
+    "kind": "direct",
+    "line": 54,
+    "rules": [
+     "R56"
+    ],
+    "symbol": null,
+    "target": "scenario:the_30th_active_habit_is_accepted",
+    "tier": 3,
+    "via": [
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> param:target_count -> code:internal/habits/routes.go:54",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> param:target_count -> code:internal/habits/routes.go:54",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> param:target_count -> code:internal/habits/routes.go:54",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> param:target_count -> code:internal/habits/routes.go:54",
+     "rule:R56 -> scenario:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> param:target_count -> code:internal/habits/routes.go:54"
+    ],
+    "what": "param target_count"
+   },
+   {
+    "end_line": 72,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:63",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-897844a50b",
+    "kind": "closure",
+    "line": 63,
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "symbol": "endDate",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/habits:endDate -> code:internal/habits/routes.go:63",
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:endDate -> code:internal/habits/routes.go:63",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:endDate -> code:internal/habits/routes.go:63",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:endDate -> code:internal/habits/routes.go:63",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:endDate -> code:internal/habits/routes.go:63"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 79,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:74",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-d1cdb5310d",
+    "kind": "closure",
+    "line": 74,
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "symbol": "sameDate",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/habits:sameDate -> code:internal/habits/routes.go:74",
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:sameDate -> code:internal/habits/routes.go:74",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:sameDate -> code:internal/habits/routes.go:74",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:sameDate -> code:internal/habits/routes.go:74",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:sameDate -> code:internal/habits/routes.go:74"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 86,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:81",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-44253e2cdc",
+    "kind": "closure",
+    "line": 81,
+    "rules": [
+     "R56"
+    ],
+    "symbol": "sameString",
+    "target": "scenario:the_30th_active_habit_is_accepted",
+    "tier": 3,
+    "via": [
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:sameString -> code:internal/habits/routes.go:81",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:sameString -> code:internal/habits/routes.go:81",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:sameString -> code:internal/habits/routes.go:81",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:sameString -> code:internal/habits/routes.go:81",
+     "rule:R56 -> scenario:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:sameString -> code:internal/habits/routes.go:81"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 102,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:88",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-437acdbff1",
+    "kind": "closure",
+    "line": 88,
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "symbol": "nameTaken",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/habits:nameTaken -> code:internal/habits/routes.go:88",
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:nameTaken -> code:internal/habits/routes.go:88",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:nameTaken -> code:internal/habits/routes.go:88",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:nameTaken -> code:internal/habits/routes.go:88",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:nameTaken -> code:internal/habits/routes.go:88"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 115,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:104",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-cca9f2352f",
+    "kind": "closure",
+    "line": 104,
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "symbol": "atLimit",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/habits:atLimit -> code:internal/habits/routes.go:104",
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:atLimit -> code:internal/habits/routes.go:104",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:atLimit -> code:internal/habits/routes.go:104",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> call:streak/internal/habits:atLimit -> code:internal/habits/routes.go:104",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/habits:atLimit -> code:internal/habits/routes.go:104"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 202,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:118",
+      "kind": "code",
+      "what": "handler declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-e6767e5f05",
+    "kind": "direct",
+    "line": 118,
+    "rules": [
+     "R56"
+    ],
+    "symbol": "create",
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> handler:habits.handler.create -> code:internal/habits/routes.go:118",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> handler:habits.handler.create -> code:internal/habits/routes.go:118",
+     "invariant:at_most_30_active_habits -> table:habits -> route:POST /v1/habits -> handler:habits.handler.create -> code:internal/habits/routes.go:118",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> handler:habits.handler.create -> code:internal/habits/routes.go:118",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> handler:habits.handler.create -> code:internal/habits/routes.go:118"
+    ],
+    "what": "handler declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:124",
+      "kind": "code",
+      "what": "param id"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param id"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-aca1853bfe",
+    "kind": "direct",
+    "line": 124,
+    "rules": [
+     "R56"
+    ],
+    "symbol": null,
+    "target": "scenario:the_30th_active_habit_is_accepted",
+    "tier": 3,
+    "via": [
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> param:id -> code:internal/habits/routes.go:124",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> param:id -> code:internal/habits/routes.go:124",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> param:id -> code:internal/habits/routes.go:124",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> param:id -> code:internal/habits/routes.go:124",
+     "rule:R56 -> scenario:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> param:id -> code:internal/habits/routes.go:124"
+    ],
+    "what": "param id"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:136",
+      "kind": "code",
+      "what": "param period"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param period"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-f1fc100072",
+    "kind": "direct",
+    "line": 136,
+    "rules": [
+     "R56"
+    ],
+    "symbol": null,
+    "target": "scenario:the_30th_active_habit_is_accepted",
+    "tier": 3,
+    "via": [
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> param:period -> code:internal/habits/routes.go:136",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> param:period -> code:internal/habits/routes.go:136",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> param:period -> code:internal/habits/routes.go:136",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> param:period -> code:internal/habits/routes.go:136",
+     "rule:R56 -> scenario:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> param:period -> code:internal/habits/routes.go:136"
+    ],
+    "what": "param period"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:177",
+      "kind": "code",
+      "what": "raise 409 id_conflict"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 409 id_conflict"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-2e0fd747e1",
+    "kind": "direct",
+    "line": 177,
+    "rules": [
+     "R56"
+    ],
+    "symbol": null,
+    "target": "scenario:the_30th_active_habit_is_accepted",
+    "tier": 3,
+    "via": [
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> raise:409 id_conflict -> code:internal/habits/routes.go:177",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> raise:409 id_conflict -> code:internal/habits/routes.go:177",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> raise:409 id_conflict -> code:internal/habits/routes.go:177",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> raise:409 id_conflict -> code:internal/habits/routes.go:177",
+     "rule:R56 -> scenario:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> raise:409 id_conflict -> code:internal/habits/routes.go:177"
+    ],
+    "what": "raise 409 id_conflict"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:182",
+      "kind": "code",
+      "what": "raise 409 name_taken"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 409 name_taken"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-0f55ace4f5",
+    "kind": "direct",
+    "line": 182,
+    "rules": [
+     "R56"
+    ],
+    "symbol": null,
+    "target": "scenario:the_30th_active_habit_is_accepted",
+    "tier": 3,
+    "via": [
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> raise:409 name_taken -> code:internal/habits/routes.go:182",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> raise:409 name_taken -> code:internal/habits/routes.go:182",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> raise:409 name_taken -> code:internal/habits/routes.go:182",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> raise:409 name_taken -> code:internal/habits/routes.go:182",
+     "rule:R56 -> scenario:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> raise:409 name_taken -> code:internal/habits/routes.go:182"
+    ],
+    "what": "raise 409 name_taken"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:185",
+      "kind": "code",
+      "what": "raise 409 habit_limit"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 409 habit_limit"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-0dc00d60ed",
+    "kind": "direct",
+    "line": 185,
+    "rules": [
+     "R56"
+    ],
+    "symbol": null,
+    "target": "scenario:the_30th_active_habit_is_accepted",
+    "tier": 3,
+    "via": [
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> raise:409 habit_limit -> code:internal/habits/routes.go:185",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> raise:409 habit_limit -> code:internal/habits/routes.go:185",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> raise:409 habit_limit -> code:internal/habits/routes.go:185",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> raise:409 habit_limit -> code:internal/habits/routes.go:185",
+     "rule:R56 -> scenario:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> raise:409 habit_limit -> code:internal/habits/routes.go:185"
+    ],
+    "what": "raise 409 habit_limit"
+   },
+   {
+    "end_line": 235,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:205",
+      "kind": "code",
+      "what": "handler declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-d16715d718",
+    "kind": "direct",
+    "line": 205,
+    "rules": [
+     "R56",
+     "R69",
+     "R86",
+     "R87",
+     "R88"
+    ],
+    "symbol": "list",
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "invariant:at_most_30_active_habits -> table:habits -> route:GET /v1/habits -> handler:habits.handler.list -> code:internal/habits/routes.go:205",
+     "rule:R69 -> scenario:archive_and_restore / step 2 -> route:GET /v1/habits -> handler:habits.handler.list -> code:internal/habits/routes.go:205",
+     "scenario:list_pagination / step 7 -> route:GET /v1/habits -> handler:habits.handler.list -> code:internal/habits/routes.go:205"
+    ],
+    "what": "handler declaration"
+   },
+   {
+    "end_line": 249,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:238",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-a884246084",
+    "kind": "table_peer",
+    "line": 238,
+    "rules": [
+     "R56"
+    ],
+    "symbol": "get",
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "invariant:at_most_30_active_habits -> table:habits -> route:GET /v1/habits/:id -> handler:habits.handler.get -> code:internal/habits/routes.go:238"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "end_line": 384,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:252",
+      "kind": "code",
+      "what": "handler declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-a564af7b15",
+    "kind": "direct",
+    "line": 252,
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "symbol": "patch",
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> handler:habits.handler.patch -> code:internal/habits/routes.go:252",
+     "invariant:at_most_30_active_habits -> table:habits -> route:PATCH /v1/habits/:id -> handler:habits.handler.patch -> code:internal/habits/routes.go:252",
+     "rule:R69 -> scenario:archive_and_restore / step 1 -> route:PATCH /v1/habits/{} -> handler:habits.handler.patch -> code:internal/habits/routes.go:252",
+     "rule:R69 -> scenario:archive_and_restore / step 3 -> route:PATCH /v1/habits/{} -> handler:habits.handler.patch -> code:internal/habits/routes.go:252",
+     "rule:R69 -> scenario:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> handler:habits.handler.patch -> code:internal/habits/routes.go:252"
+    ],
+    "what": "handler declaration"
+   },
+   {
+    "end_line": 397,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:387",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-afa8a4f640",
+    "kind": "closure",
+    "line": 387,
+    "rules": [
+     "R69"
+    ],
+    "symbol": "setTarget",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/habits:setTarget -> code:internal/habits/routes.go:387",
+     "rule:R69 -> scenario:archive_and_restore / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/habits:setTarget -> code:internal/habits/routes.go:387",
+     "rule:R69 -> scenario:archive_and_restore / step 3 -> route:PATCH /v1/habits/{} -> call:streak/internal/habits:setTarget -> code:internal/habits/routes.go:387",
+     "rule:R69 -> scenario:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/habits:setTarget -> code:internal/habits/routes.go:387"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 451,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:400",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-317d8940cf",
+    "kind": "table_peer",
+    "line": 400,
+    "rules": [
+     "R56"
+    ],
+    "symbol": "remove",
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "invariant:at_most_30_active_habits -> table:habits -> route:DELETE /v1/habits/:id -> handler:habits.handler.remove -> code:internal/habits/routes.go:400"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/home/routes.go:18",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/home/routes.go",
+    "id": "t3-4bbf0c9fc8",
+    "kind": "table_peer",
+    "line": 18,
+    "rules": [
+     "R56"
+    ],
+    "symbol": null,
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "invariant:at_most_30_active_habits -> table:habits -> route:GET /v1/home -> code:internal/home/routes.go:18"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "end_line": 64,
+    "evidence": [
+     {
+      "at": "code:internal/home/routes.go:29",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/home/routes.go",
+    "id": "t3-5f5aa6e4f8",
+    "kind": "table_peer",
+    "line": 29,
+    "rules": [
+     "R56"
+    ],
+    "symbol": "home",
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "invariant:at_most_30_active_habits -> table:habits -> route:GET /v1/home -> handler:home.handler.home -> code:internal/home/routes.go:29"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "end_line": 37,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/body.go:21",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/body.go",
+    "id": "t3-0d00a68f94",
+    "kind": "closure",
+    "line": 21,
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "symbol": "ReadBody",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 139,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/body.go:134",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/body.go",
+    "id": "t3-61586d5cb3",
+    "kind": "closure",
+    "line": 134,
+    "rules": [
+     "R69"
+    ],
+    "symbol": "CanonicalUUID",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134",
+     "rule:R69 -> scenario:archive_and_restore / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134",
+     "rule:R69 -> scenario:archive_and_restore / step 3 -> route:PATCH /v1/habits/{} -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134",
+     "rule:R69 -> scenario:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 148,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/body.go:142",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/body.go",
+    "id": "t3-a87f47c018",
+    "kind": "closure",
+    "line": 142,
+    "rules": [
+     "R69"
+    ],
+    "symbol": "PathUUID",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142",
+     "rule:R69 -> scenario:archive_and_restore / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142",
+     "rule:R69 -> scenario:archive_and_restore / step 3 -> route:PATCH /v1/habits/{} -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142",
+     "rule:R69 -> scenario:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 35,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/pagination.go:25",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/pagination.go",
+    "id": "t3-9b9b292b84",
+    "kind": "closure",
+    "line": 25,
+    "rules": [
+     "R69",
+     "R86",
+     "R87",
+     "R88"
+    ],
+    "symbol": "ParseLimit",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "rule:R69 -> scenario:archive_and_restore / step 2 -> route:GET /v1/habits -> call:streak/internal/httpapi:ParseLimit -> code:internal/httpapi/pagination.go:25",
+     "scenario:list_pagination / step 7 -> route:GET /v1/habits -> call:streak/internal/httpapi:ParseLimit -> code:internal/httpapi/pagination.go:25"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 41,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/pagination.go:38",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/pagination.go",
+    "id": "t3-a2e49ccf9b",
+    "kind": "closure",
+    "line": 38,
+    "rules": [
+     "R69",
+     "R86",
+     "R87",
+     "R88"
+    ],
+    "symbol": "EncodeCursor",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "rule:R69 -> scenario:archive_and_restore / step 2 -> route:GET /v1/habits -> call:streak/internal/httpapi:EncodeCursor -> code:internal/httpapi/pagination.go:38",
+     "scenario:list_pagination / step 7 -> route:GET /v1/habits -> call:streak/internal/httpapi:EncodeCursor -> code:internal/httpapi/pagination.go:38"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 60,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/pagination.go:44",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/pagination.go",
+    "id": "t3-0f891debe5",
+    "kind": "closure",
+    "line": 44,
+    "rules": [
+     "R69",
+     "R86",
+     "R87",
+     "R88"
+    ],
+    "symbol": "DecodeCursor",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "rule:R69 -> scenario:archive_and_restore / step 2 -> route:GET /v1/habits -> call:streak/internal/httpapi:DecodeCursor -> code:internal/httpapi/pagination.go:44",
+     "scenario:list_pagination / step 7 -> route:GET /v1/habits -> call:streak/internal/httpapi:DecodeCursor -> code:internal/httpapi/pagination.go:44"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 66,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/pagination.go:62",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/pagination.go",
+    "id": "t3-c784612e53",
+    "kind": "closure",
+    "line": 62,
+    "rules": [
+     "R69",
+     "R86",
+     "R87",
+     "R88"
+    ],
+    "symbol": "cursorMAC",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "rule:R69 -> scenario:archive_and_restore / step 2 -> route:GET /v1/habits -> call:streak/internal/httpapi:cursorMAC -> code:internal/httpapi/pagination.go:62",
+     "scenario:list_pagination / step 7 -> route:GET /v1/habits -> call:streak/internal/httpapi:cursorMAC -> code:internal/httpapi/pagination.go:62"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 80,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/pagination.go:70",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/pagination.go",
+    "id": "t3-52c4c270ad",
+    "kind": "closure",
+    "line": 70,
+    "rules": [
+     "R69",
+     "R86",
+     "R87",
+     "R88"
+    ],
+    "symbol": "ListParams",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "rule:R69 -> scenario:archive_and_restore / step 2 -> route:GET /v1/habits -> call:streak/internal/httpapi:ListParams -> code:internal/httpapi/pagination.go:70",
+     "scenario:list_pagination / step 7 -> route:GET /v1/habits -> call:streak/internal/httpapi:ListParams -> code:internal/httpapi/pagination.go:70"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 85,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/pagination.go:85",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/pagination.go",
+    "id": "t3-8f707e8414",
+    "kind": "closure",
+    "line": 85,
+    "rules": [
+     "R69",
+     "R86",
+     "R87",
+     "R88"
+    ],
+    "symbol": "NewPage",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "rule:R69 -> scenario:archive_and_restore / step 2 -> route:GET /v1/habits -> call:streak/internal/httpapi:NewPage -> code:internal/httpapi/pagination.go:85",
+     "scenario:list_pagination / step 7 -> route:GET /v1/habits -> call:streak/internal/httpapi:NewPage -> code:internal/httpapi/pagination.go:85"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 41,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:37",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-612e58f8dc",
+    "kind": "closure",
+    "line": 37,
+    "rules": [
+     "R56",
+     "R69",
+     "R86",
+     "R87",
+     "R88"
+    ],
+    "symbol": "CallerOf",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 47,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:45",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-5e41b13b04",
+    "kind": "closure",
+    "line": 45,
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "symbol": "Now",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 56,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:50",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-e7b3dfc94d",
+    "kind": "closure",
+    "line": 50,
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "symbol": "NowCtx",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 64,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:59",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-36aeb7d2a7",
+    "kind": "closure",
+    "line": 59,
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "symbol": "Today",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59",
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 67,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:67",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-7ba579bc63",
+    "kind": "closure",
+    "line": 67,
+    "rules": [
+     "R56",
+     "R69",
+     "R86",
+     "R87",
+     "R88"
+    ],
+    "symbol": "Q",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 73,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:71",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-0178bbfa03",
+    "kind": "closure",
+    "line": 71,
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "symbol": "Tx",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 24,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:24",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-2755d915b9",
+    "kind": "closure",
+    "line": 24,
+    "rules": [
+     "R56"
+    ],
+    "symbol": "Valid",
+    "target": "scenario:the_30th_active_habit_is_accepted",
+    "tier": 3,
+    "via": [
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/period:Valid -> code:internal/period/period.go:24",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> call:streak/internal/period:Valid -> code:internal/period/period.go:24",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> call:streak/internal/period:Valid -> code:internal/period/period.go:24",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/period:Valid -> code:internal/period/period.go:24",
+     "rule:R56 -> scenario:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> call:streak/internal/period:Valid -> code:internal/period/period.go:24"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 37,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:27",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-43fe333ad3",
+    "kind": "closure",
+    "line": 27,
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "symbol": "MaxTarget",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/period:MaxTarget -> code:internal/period/period.go:27",
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/period:MaxTarget -> code:internal/period/period.go:27",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> call:streak/internal/period:MaxTarget -> code:internal/period/period.go:27",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> call:streak/internal/period:MaxTarget -> code:internal/period/period.go:27",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/period:MaxTarget -> code:internal/period/period.go:27"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 55,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:55",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-9afb43af01",
+    "kind": "closure",
+    "line": 55,
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "symbol": "FormatDate",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 64,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:58",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-bf57a77d66",
+    "kind": "closure",
+    "line": 58,
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "symbol": "FormatDatePtr",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/period:FormatDatePtr -> code:internal/period/period.go:58",
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/period:FormatDatePtr -> code:internal/period/period.go:58",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> call:streak/internal/period:FormatDatePtr -> code:internal/period/period.go:58",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> call:streak/internal/period:FormatDatePtr -> code:internal/period/period.go:58",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/period:FormatDatePtr -> code:internal/period/period.go:58"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 67,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:67",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-75c990b6f4",
+    "kind": "closure",
+    "line": 67,
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "symbol": "Date",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/period:Date -> code:internal/period/period.go:67",
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/period:Date -> code:internal/period/period.go:67",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> call:streak/internal/period:Date -> code:internal/period/period.go:67",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> call:streak/internal/period:Date -> code:internal/period/period.go:67",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/period:Date -> code:internal/period/period.go:67"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 70,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:70",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-3ad8ae2732",
+    "kind": "closure",
+    "line": 70,
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "symbol": "AddDays",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70",
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 112,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:97",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-9878113fa9",
+    "kind": "closure",
+    "line": 97,
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "symbol": "Location",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/period:Location -> code:internal/period/period.go:97"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 129,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:122",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-0f6bcae5c5",
+    "kind": "closure",
+    "line": 122,
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "symbol": "Today",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/period:Today -> code:internal/period/period.go:122",
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/period:Today -> code:internal/period/period.go:122",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> call:streak/internal/period:Today -> code:internal/period/period.go:122",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> call:streak/internal/period:Today -> code:internal/period/period.go:122",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/period:Today -> code:internal/period/period.go:122"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 142,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:132",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-45aa8a73be",
+    "kind": "closure",
+    "line": 132,
+    "rules": [
+     "R56",
+     "R69"
+    ],
+    "symbol": "Start",
+    "target": "scenario:archive_and_restore",
+    "tier": 3,
+    "via": [
+     "check:restoring_past_the_limit_is_refused / step 1 -> route:PATCH /v1/habits/{} -> call:streak/internal/period:Start -> code:internal/period/period.go:132",
+     "check:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/period:Start -> code:internal/period/period.go:132",
+     "check:the_31st_active_habit_is_refused / step 1 -> route:POST /v1/habits -> call:streak/internal/period:Start -> code:internal/period/period.go:132",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 1 -> route:POST /v1/habits -> call:streak/internal/period:Start -> code:internal/period/period.go:132",
+     "rule:R56 -> scenario:the_30th_active_habit_is_accepted / step 2 -> route:POST /v1/habits -> call:streak/internal/period:Start -> code:internal/period/period.go:132"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/progress/routes.go:19",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t3-706c952045",
+    "kind": "table_peer",
+    "line": 19,
+    "rules": [
+     "R56"
+    ],
+    "symbol": null,
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "invariant:at_most_30_active_habits -> table:habits -> route:GET /v1/habits/:id/progress -> code:internal/progress/routes.go:19"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/progress/routes.go:20",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t3-e635824976",
+    "kind": "table_peer",
+    "line": 20,
+    "rules": [
+     "R56"
+    ],
+    "symbol": null,
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "invariant:at_most_30_active_habits -> table:habits -> route:GET /v1/habits/:id/history -> code:internal/progress/routes.go:20"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "end_line": 65,
+    "evidence": [
+     {
+      "at": "code:internal/progress/routes.go:45",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t3-1bedc3428e",
+    "kind": "table_peer",
+    "line": 45,
+    "rules": [
+     "R56"
+    ],
+    "symbol": "progress",
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "invariant:at_most_30_active_habits -> table:habits -> route:GET /v1/habits/:id/progress -> handler:progress.handler.progress -> code:internal/progress/routes.go:45"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "end_line": 113,
+    "evidence": [
+     {
+      "at": "code:internal/progress/routes.go:68",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t3-9d2cc3b305",
+    "kind": "table_peer",
+    "line": 68,
+    "rules": [
+     "R56"
+    ],
+    "symbol": "history",
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "invariant:at_most_30_active_habits -> table:habits -> route:GET /v1/habits/:id/history -> handler:progress.handler.history -> code:internal/progress/routes.go:68"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/sync/routes.go:17",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/sync/routes.go",
+    "id": "t3-2bc474f96e",
+    "kind": "table_peer",
+    "line": 17,
+    "rules": [
+     "R56"
+    ],
+    "symbol": null,
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "invariant:at_most_30_active_habits -> table:habits -> route:GET /v1/sync -> code:internal/sync/routes.go:17"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "end_line": 108,
+    "evidence": [
+     {
+      "at": "code:internal/sync/routes.go:31",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/sync/routes.go",
+    "id": "t3-54babe38cf",
+    "kind": "table_peer",
+    "line": 31,
+    "rules": [
+     "R56"
+    ],
+    "symbol": "sync",
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 3,
+    "via": [
+     "invariant:at_most_30_active_habits -> table:habits -> route:GET /v1/sync -> handler:sync.handler.sync -> code:internal/sync/routes.go:31"
+    ],
+    "what": "handler on a changed table"
+   }
+  ],
+  "stale": false,
+  "unread": [
+   {
+    "file": "internal/habits/routes.go",
+    "kind": "extract_unread",
+    "line": 55,
+    "reason": "the bound `period.MaxTarget(kind)` of `target_count` is not a constant",
+    "what": "bound"
+   },
+   {
+    "file": "internal/httpapi/registry.go",
+    "kind": "extract_unread",
+    "line": 51,
+    "reason": "interface dispatch: `d.Clock.Now(ctx)` has no single implementation in the module",
+    "what": "call"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of GET /v1/habits is not read from the code",
+    "what": "scenario:list_pagination / step 7"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of POST /v1/habits is not read from the code",
+    "what": "scenario:the_30th_active_habit_is_accepted / step 2"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of POST /v1/habits is not read from the code",
+    "what": "scenario:the_31st_active_habit_is_refused / step 1"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of POST /v1/habits is not read from the code",
+    "what": "scenario:the_50th_active_habit_is_accepted / step 2"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of POST /v1/habits is not read from the code",
+    "what": "scenario:the_51st_active_habit_is_refused / step 1"
+   }
+  ]
+ },
+ "tier4": {
+  "before": {
+   "failing_count": 6,
+   "flows_run": 59,
+   "matches_report": true
+  },
+  "counts": {
+   "failing_after": 0,
+   "flow_before_failed": 0,
+   "flow_changed": 0,
+   "flow_unchanged": 59,
+   "flows_run": 59,
+   "may_fail_unbacked": 0,
+   "regressions": 0,
+   "resolved": 6,
+   "still_failing": 0,
+   "t2_contradicted": 0,
+   "unexpected_regressions": 0,
+   "unreported": 0,
+   "workflow_fails": 0
+  },
+  "failing": [],
+  "flows": [
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-087fea1dbb",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-087fea1dbb",
+    "id": "t4-2931f10e3c",
+    "kind": "flow_unchanged",
+    "name": "create habits > read habits",
+    "rules": [],
+    "target": "flow:wf-087fea1dbb",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-09db39abfe",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-09db39abfe",
+    "id": "t4-9f50a6c59b",
+    "kind": "flow_unchanged",
+    "name": "create habits > read history",
+    "rules": [],
+    "target": "flow:wf-09db39abfe",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-0c6bdd7ab0",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-0c6bdd7ab0",
+    "id": "t4-1c885f053a",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read home",
+    "rules": [],
+    "target": "flow:wf-0c6bdd7ab0",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-11a98b3683",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-11a98b3683",
+    "id": "t4-e2d97e665d",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read completions",
+    "rules": [],
+    "target": "flow:wf-11a98b3683",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-12302559ed",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-12302559ed",
+    "id": "t4-2a985ce4a1",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read nudges",
+    "rules": [],
+    "target": "flow:wf-12302559ed",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-1e4314104c",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-1e4314104c",
+    "id": "t4-a859fd5339",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read habits",
+    "rules": [],
+    "target": "flow:wf-1e4314104c",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-21a2d02394",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-21a2d02394",
+    "id": "t4-58f062be50",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read history",
+    "rules": [],
+    "target": "flow:wf-21a2d02394",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2610c56483",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-2610c56483",
+    "id": "t4-4273ca9643",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read me",
+    "rules": [],
+    "target": "flow:wf-2610c56483",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2818e45412",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-2818e45412",
+    "id": "t4-3dfaac23ef",
+    "kind": "flow_unchanged",
+    "name": "create devices > delete devices",
+    "rules": [],
+    "target": "flow:wf-2818e45412",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2d3eecc464",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-2d3eecc464",
+    "id": "t4-61040e7738",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits",
+    "rules": [],
+    "target": "flow:wf-2d3eecc464",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2da750f4e8",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-2da750f4e8",
+    "id": "t4-f46b2b1605",
+    "kind": "flow_unchanged",
+    "name": "create habits > create batch",
+    "rules": [],
+    "target": "flow:wf-2da750f4e8",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2f54cb544b",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-2f54cb544b",
+    "id": "t4-7522d9c875",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read me",
+    "rules": [],
+    "target": "flow:wf-2f54cb544b",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3c5a04e0ae",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-3c5a04e0ae",
+    "id": "t4-3d86bfdff2",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read habits",
+    "rules": [],
+    "target": "flow:wf-3c5a04e0ae",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3d2436d2dd",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-3d2436d2dd",
+    "id": "t4-4a533ffe22",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read progress",
+    "rules": [],
+    "target": "flow:wf-3d2436d2dd",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3de8783507",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-3de8783507",
+    "id": "t4-bc43a91eb1",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read completions",
+    "rules": [],
+    "target": "flow:wf-3de8783507",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-45bfc39e84",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-45bfc39e84",
+    "id": "t4-8426b794fa",
+    "kind": "flow_unchanged",
+    "name": "create habits > read completions",
+    "rules": [],
+    "target": "flow:wf-45bfc39e84",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-4dfc4c5bed",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-4dfc4c5bed",
+    "id": "t4-b84f0fc36c",
+    "kind": "flow_unchanged",
+    "name": "create habits > read habits",
+    "rules": [],
+    "target": "flow:wf-4dfc4c5bed",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-4e49f96210",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-4e49f96210",
+    "id": "t4-999bed9b4b",
+    "kind": "flow_unchanged",
+    "name": "create habits > create batch",
+    "rules": [],
+    "target": "flow:wf-4e49f96210",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-52994a9544",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-52994a9544",
+    "id": "t4-abfc048024",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read history",
+    "rules": [],
+    "target": "flow:wf-52994a9544",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-597f2899e4",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-597f2899e4",
+    "id": "t4-2a3cf2a10a",
+    "kind": "flow_unchanged",
+    "name": "create habits > read completions",
+    "rules": [],
+    "target": "flow:wf-597f2899e4",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5a6bab46c9",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-5a6bab46c9",
+    "id": "t4-eb2b3781a6",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read sync",
+    "rules": [],
+    "target": "flow:wf-5a6bab46c9",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5cf3da443e",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-5cf3da443e",
+    "id": "t4-ac14b64d75",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read progress",
+    "rules": [],
+    "target": "flow:wf-5cf3da443e",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5eebdfc88b",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-5eebdfc88b",
+    "id": "t4-27855b8b1f",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read progress",
+    "rules": [],
+    "target": "flow:wf-5eebdfc88b",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-6a4cc7a302",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-6a4cc7a302",
+    "id": "t4-0ce52aaf22",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read home > dismiss nudges",
+    "rules": [],
+    "target": "flow:wf-6a4cc7a302",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-6c2282fd50",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-6c2282fd50",
+    "id": "t4-3a619fc723",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read habits",
+    "rules": [],
+    "target": "flow:wf-6c2282fd50",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-717a23507f",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-717a23507f",
+    "id": "t4-b81dbf0d6b",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read nudges",
+    "rules": [],
+    "target": "flow:wf-717a23507f",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-80123a60e5",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-80123a60e5",
+    "id": "t4-85854f059f",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read habits",
+    "rules": [],
+    "target": "flow:wf-80123a60e5",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-801d529a0f",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-801d529a0f",
+    "id": "t4-021eb02164",
+    "kind": "flow_unchanged",
+    "name": "create devices > delete devices",
+    "rules": [],
+    "target": "flow:wf-801d529a0f",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-8ae8af75df",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-8ae8af75df",
+    "id": "t4-0a37afe047",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read habits",
+    "rules": [],
+    "target": "flow:wf-8ae8af75df",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-8b2744d526",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-8b2744d526",
+    "id": "t4-37a77c8aa0",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits",
+    "rules": [],
+    "target": "flow:wf-8b2744d526",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-9ead6d0f00",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-9ead6d0f00",
+    "id": "t4-c4dd5a2aa1",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read history",
+    "rules": [],
+    "target": "flow:wf-9ead6d0f00",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a1793fed29",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-a1793fed29",
+    "id": "t4-f6bc0e569c",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits",
+    "rules": [],
+    "target": "flow:wf-a1793fed29",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a7ae5cb208",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-a7ae5cb208",
+    "id": "t4-42fc47ef3a",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions",
+    "rules": [],
+    "target": "flow:wf-a7ae5cb208",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a8966be4b8",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-a8966be4b8",
+    "id": "t4-d631ce2518",
+    "kind": "flow_unchanged",
+    "name": "create register > create login",
+    "rules": [],
+    "target": "flow:wf-a8966be4b8",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a9ac9b88a4",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-a9ac9b88a4",
+    "id": "t4-8358111868",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read sync",
+    "rules": [],
+    "target": "flow:wf-a9ac9b88a4",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b2acc9eac6",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-b2acc9eac6",
+    "id": "t4-2d00866129",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read completions",
+    "rules": [],
+    "target": "flow:wf-b2acc9eac6",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b595a756b6",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-b595a756b6",
+    "id": "t4-15fb9d99ca",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read home",
+    "rules": [],
+    "target": "flow:wf-b595a756b6",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b95fd71de1",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-b95fd71de1",
+    "id": "t4-190be5927b",
+    "kind": "flow_unchanged",
+    "name": "create habits > read home",
+    "rules": [],
+    "target": "flow:wf-b95fd71de1",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-bd46b71ee2",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-bd46b71ee2",
+    "id": "t4-782b4c8124",
+    "kind": "flow_unchanged",
+    "name": "create habits > read progress",
+    "rules": [],
+    "target": "flow:wf-bd46b71ee2",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-c00e2afaf3",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-c00e2afaf3",
+    "id": "t4-12f8c801ce",
+    "kind": "flow_unchanged",
+    "name": "create habits > read habits",
+    "rules": [],
+    "target": "flow:wf-c00e2afaf3",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-c675dd6cb3",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-c675dd6cb3",
+    "id": "t4-eab24d3d4a",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read sync",
+    "rules": [],
+    "target": "flow:wf-c675dd6cb3",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-cc7886ea28",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-cc7886ea28",
+    "id": "t4-6809546514",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits",
+    "rules": [],
+    "target": "flow:wf-cc7886ea28",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ce853d194f",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-ce853d194f",
+    "id": "t4-4229965607",
+    "kind": "flow_unchanged",
+    "name": "create habits > read sync",
+    "rules": [],
+    "target": "flow:wf-ce853d194f",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-cf27dadc73",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-cf27dadc73",
+    "id": "t4-5878e34622",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read home",
+    "rules": [],
+    "target": "flow:wf-cf27dadc73",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d06e3e8777",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-d06e3e8777",
+    "id": "t4-5adba447a9",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read nudges",
+    "rules": [],
+    "target": "flow:wf-d06e3e8777",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d2b6d84725",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-d2b6d84725",
+    "id": "t4-3a0e360245",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions",
+    "rules": [],
+    "target": "flow:wf-d2b6d84725",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d2fcd76bcd",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-d2fcd76bcd",
+    "id": "t4-d72cb23ad9",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read habits",
+    "rules": [],
+    "target": "flow:wf-d2fcd76bcd",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d650036584",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-d650036584",
+    "id": "t4-90d71c9f07",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read habits",
+    "rules": [],
+    "target": "flow:wf-d650036584",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d8340207d1",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-d8340207d1",
+    "id": "t4-ec4c4095bf",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read home",
+    "rules": [],
+    "target": "flow:wf-d8340207d1",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-dbac494b10",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-dbac494b10",
+    "id": "t4-77f0d4d3d3",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read progress",
+    "rules": [],
+    "target": "flow:wf-dbac494b10",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-de433cd704",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-de433cd704",
+    "id": "t4-be16adb885",
+    "kind": "flow_unchanged",
+    "name": "create habits > read progress",
+    "rules": [],
+    "target": "flow:wf-de433cd704",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-e3249cec66",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-e3249cec66",
+    "id": "t4-6c01f475dc",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > update habits > delete completions > delete habits",
+    "rules": [],
+    "target": "flow:wf-e3249cec66",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ee191140a0",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-ee191140a0",
+    "id": "t4-296f29670e",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read completions",
+    "rules": [],
+    "target": "flow:wf-ee191140a0",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f679309f8a",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-f679309f8a",
+    "id": "t4-c14e92707a",
+    "kind": "flow_unchanged",
+    "name": "create habits > read history",
+    "rules": [],
+    "target": "flow:wf-f679309f8a",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f67bf44692",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-f67bf44692",
+    "id": "t4-cbeeb59799",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits",
+    "rules": [],
+    "target": "flow:wf-f67bf44692",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f961306c88",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-f961306c88",
+    "id": "t4-ae246762f6",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read habits",
+    "rules": [],
+    "target": "flow:wf-f961306c88",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-fc7d0a0772",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-fc7d0a0772",
+    "id": "t4-ba3450bf06",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits",
+    "rules": [],
+    "target": "flow:wf-fc7d0a0772",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-fcf46753f5",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-fcf46753f5",
+    "id": "t4-c232b8a7d9",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read history",
+    "rules": [],
+    "target": "flow:wf-fcf46753f5",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ffaa047bf2",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-ffaa047bf2",
+    "id": "t4-8a0632bb11",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read sync",
+    "rules": [],
+    "target": "flow:wf-ffaa047bf2",
+    "tier": 4
+   }
+  ],
+  "implementation": {
+   "branch_build": "rebuild/i59500696d1",
+   "branch_spec": "implement/i59500696d1",
+   "build_tree": "896f56a21c840e9a8d85936bcde3638725dbb640",
+   "diff_sha256": "559c8346bd6e4b820731e42953afad9270c0e253dd897475286c6d3f5e1fc1b1",
+   "files": [
+    "internal/habits/routes.go"
+   ],
+   "spec_tree": "34c9d2306872a645fc279c541a39ae74988c45fd"
+  },
+  "notes": [],
+  "owner": {
+   "checked": [
+    "branch",
+    "cached",
+    "head",
+    "refs",
+    "stash",
+    "status",
+    "worktrees"
+   ],
+   "untouched": true
+  },
+  "rebuild": {
+   "agent": "oracle",
+   "gates": [
+    {
+     "command": "./check.sh",
+     "exit_code": 0
+    }
+   ],
+   "model": null,
+   "rounds": 2,
+   "status": "passed"
+  },
+  "regressions": [],
+  "resolved": [
+   {
+    "case": "restoring_past_the_limit_is_refused / step 1",
+    "endpoint": "PATCH /v1/habits/00000000-0000-4000-8000-000000000150",
+    "evidence": [
+     {
+      "at": "check:C:restoring_past_the_limit_is_refused / step 1",
+      "kind": "check",
+      "what": "[C silent] PATCH /v1/habits/00000000-0000-4000-8000-000000000150 as ann (restoring_past_the_limit_is_refused / step 1)"
+     }
+    ],
+    "id": "t4-7e91aae721",
+    "kind": "resolved",
+    "layer": "C",
+    "rule": "A user has at most 30 non-archived, non-deleted habits.",
+    "rules": [
+     "R56"
+    ],
+    "summary": "[C silent] PATCH /v1/habits/00000000-0000-4000-8000-000000000150 as ann (restoring_past_the_limit_is_refused / step 1)",
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 4
+   },
+   {
+    "case": "the_30th_active_habit_is_accepted / step 2",
+    "endpoint": "POST /v1/habits",
+    "evidence": [
+     {
+      "at": "check:C:the_30th_active_habit_is_accepted / step 2",
+      "kind": "check",
+      "what": "[C silent] POST /v1/habits as ann (the_30th_active_habit_is_accepted / step 2)"
+     }
+    ],
+    "id": "t4-dd52ee45c2",
+    "kind": "resolved",
+    "layer": "C",
+    "rule": "A user has at most 30 non-archived, non-deleted habits.",
+    "rules": [
+     "R56"
+    ],
+    "summary": "[C silent] POST /v1/habits as ann (the_30th_active_habit_is_accepted / step 2)",
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 4
+   },
+   {
+    "case": "the_31st_active_habit_is_refused / step 1",
+    "endpoint": "POST /v1/habits",
+    "evidence": [
+     {
+      "at": "check:C:the_31st_active_habit_is_refused / step 1",
+      "kind": "check",
+      "what": "[C silent] POST /v1/habits as ann (the_31st_active_habit_is_refused / step 1)"
+     }
+    ],
+    "id": "t4-5e54930fab",
+    "kind": "resolved",
+    "layer": "C",
+    "rule": "A user has at most 30 non-archived, non-deleted habits.",
+    "rules": [
+     "R56"
+    ],
+    "summary": "[C silent] POST /v1/habits as ann (the_31st_active_habit_is_refused / step 1)",
+    "target": "invariant:at_most_30_active_habits",
+    "tier": 4
+   },
+   {
+    "case": "restoring_past_the_limit_is_refused / step 1",
+    "endpoint": "PATCH /v1/habits/00000000-0000-4000-8000-000000000150",
+    "evidence": [
+     {
+      "at": "check:D:restoring_past_the_limit_is_refused / step 1",
+      "kind": "check",
+      "what": "[D silent] PATCH /v1/habits/00000000-0000-4000-8000-000000000150 as ann (restoring_past_the_limit_is_refused / step 1)"
+     }
+    ],
+    "id": "t4-2e95d67cf2",
+    "kind": "resolved",
+    "layer": "D",
+    "rule": "scenario: restoring_past_the_limit_is_refused",
+    "rules": [
+     "R69"
+    ],
+    "summary": "[D silent] PATCH /v1/habits/00000000-0000-4000-8000-000000000150 as ann (restoring_past_the_limit_is_refused / step 1)",
+    "target": "scenario:restoring_past_the_limit_is_refused",
+    "tier": 4
+   },
+   {
+    "case": "the_30th_active_habit_is_accepted / step 2",
+    "endpoint": "POST /v1/habits",
+    "evidence": [
+     {
+      "at": "check:D:the_30th_active_habit_is_accepted / step 2",
+      "kind": "check",
+      "what": "[D silent] POST /v1/habits as ann (the_30th_active_habit_is_accepted / step 2)"
+     }
+    ],
+    "id": "t4-a3ca973ca3",
+    "kind": "resolved",
+    "layer": "D",
+    "rule": "scenario: the_30th_active_habit_is_accepted",
+    "rules": [
+     "R56"
+    ],
+    "summary": "[D silent] POST /v1/habits as ann (the_30th_active_habit_is_accepted / step 2)",
+    "target": "scenario:the_30th_active_habit_is_accepted",
+    "tier": 4
+   },
+   {
+    "case": "the_31st_active_habit_is_refused / step 1",
+    "endpoint": "POST /v1/habits",
+    "evidence": [
+     {
+      "at": "check:D:the_31st_active_habit_is_refused / step 1",
+      "kind": "check",
+      "what": "[D silent] POST /v1/habits as ann (the_31st_active_habit_is_refused / step 1)"
+     }
+    ],
+    "id": "t4-f6f2745273",
+    "kind": "resolved",
+    "layer": "D",
+    "rule": "scenario: the_31st_active_habit_is_refused",
+    "rules": [
+     "R56"
+    ],
+    "summary": "[D silent] POST /v1/habits as ann (the_31st_active_habit_is_refused / step 1)",
+    "target": "scenario:the_31st_active_habit_is_refused",
+    "tier": 4
+   }
+  ],
+  "still_failing": [],
+  "t2_check": [],
+  "t2_confirmed": true,
+  "t3_vs_edit": {
+   "declarations": {
+    "listed": [
+     "internal/account/routes.go:Register",
+     "internal/account/routes.go:handler.remove",
+     "internal/completions/routes.go:Register",
+     "internal/completions/routes.go:handler.batch",
+     "internal/completions/routes.go:handler.create",
+     "internal/completions/routes.go:handler.list",
+     "internal/completions/routes.go:handler.remove",
+     "internal/db/bodies.go:HabitBody",
+     "internal/db/bodies.go:Instant",
+     "internal/db/changeseq.go:LockUser",
+     "internal/db/changeseq.go:NextChangeSeq",
+     "internal/db/models.go:Habit",
+     "internal/db/owned.go:OwnedHabit",
+     "internal/habits/routes.go:Register",
+     "internal/habits/routes.go:atLimit",
+     "internal/habits/routes.go:description",
+     "internal/habits/routes.go:endDate",
+     "internal/habits/routes.go:handler.create",
+     "internal/habits/routes.go:handler.get",
+     "internal/habits/routes.go:handler.list",
+     "internal/habits/routes.go:handler.patch",
+     "internal/habits/routes.go:handler.remove",
+     "internal/habits/routes.go:name",
+     "internal/habits/routes.go:nameTaken",
+     "internal/habits/routes.go:sameDate",
+     "internal/habits/routes.go:sameString",
+     "internal/habits/routes.go:setTarget",
+     "internal/habits/routes.go:targetCount",
+     "internal/home/routes.go:Register",
+     "internal/home/routes.go:handler.home",
+     "internal/httpapi/body.go:CanonicalUUID",
+     "internal/httpapi/body.go:PathUUID",
+     "internal/httpapi/body.go:ReadBody",
+     "internal/httpapi/pagination.go:DecodeCursor",
+     "internal/httpapi/pagination.go:EncodeCursor",
+     "internal/httpapi/pagination.go:ListParams",
+     "internal/httpapi/pagination.go:NewPage",
+     "internal/httpapi/pagination.go:ParseLimit",
+     "internal/httpapi/pagination.go:cursorMAC",
+     "internal/httpapi/registry.go:CallerOf",
+     "internal/httpapi/registry.go:Deps.Now",
+     "internal/httpapi/registry.go:Deps.NowCtx",
+     "internal/httpapi/registry.go:Deps.Q",
+     "internal/httpapi/registry.go:Deps.Today",
+     "internal/httpapi/registry.go:Deps.Tx",
+     "internal/period/period.go:AddDays",
+     "internal/period/period.go:Date",
+     "internal/period/period.go:FormatDate",
+     "internal/period/period.go:FormatDatePtr",
+     "internal/period/period.go:Location",
+     "internal/period/period.go:MaxTarget",
+     "internal/period/period.go:Start",
+     "internal/period/period.go:Today",
+     "internal/period/period.go:Valid",
+     "internal/progress/routes.go:Register",
+     "internal/progress/routes.go:handler.history",
+     "internal/progress/routes.go:handler.progress",
+     "internal/sync/routes.go:Register",
+     "internal/sync/routes.go:handler.sync"
+    ],
+    "precision": 0.017,
+    "recall": 1.0,
+    "touched": [
+     "internal/habits/routes.go:atLimit"
+    ]
+   },
+   "files": {
+    "hit": [
+     "internal/habits/routes.go"
+    ],
+    "listed": [
+     "internal/account/routes.go",
+     "internal/completions/routes.go",
+     "internal/db/bodies.go",
+     "internal/db/changeseq.go",
+     "internal/db/models.go",
+     "internal/db/owned.go",
+     "internal/habits/routes.go",
+     "internal/home/routes.go",
+     "internal/httpapi/body.go",
+     "internal/httpapi/pagination.go",
+     "internal/httpapi/registry.go",
+     "internal/period/period.go",
+     "internal/progress/routes.go",
+     "internal/sync/routes.go"
+    ],
+    "missed": [],
+    "precision": 0.071,
+    "recall": 1.0,
+    "touched": [
+     "internal/habits/routes.go"
+    ]
+   },
+   "status": "run"
+  },
+  "verdict": "pass"
+ },
+ "tiers": {
+  "1": "run",
+  "2": "run",
+  "3": "run",
+  "4": "run"
+ }
+}

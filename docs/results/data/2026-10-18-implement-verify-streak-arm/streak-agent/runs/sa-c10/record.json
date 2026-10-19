@@ -1,0 +1,44 @@
+{
+ "agent": "claude",
+ "arm": "sa",
+ "change": "c10",
+ "claude": {
+  "calls": 36,
+  "not_logged_in": false,
+  "usage_limit": false
+ },
+ "cost_usd": 0.061261,
+ "d": {
+  "rc": 0,
+  "seconds": 107.9,
+  "timed_out": false
+ },
+ "drift": {
+  "changed": [],
+  "new": [],
+  "removed": []
+ },
+ "eid": "i5491b91f1c",
+ "empty_ref": false,
+ "implement": {
+  "rc": 0,
+  "seconds": 620.7,
+  "timed_out": false
+ },
+ "job": "sa-c10",
+ "leaked_containers": [],
+ "pnm": {
+  "applicable": true,
+  "build_not_in_head": true,
+  "build_parent_is_spec": true,
+  "head_unchanged": true,
+  "ok": true,
+  "one_new_commit": true,
+  "spec_parent_is_head": true
+ },
+ "rc": 0,
+ "seconds": 730.2,
+ "token": "implp-sa-c10-44117b",
+ "usd_cap": 2.95,
+ "worktrees_left": 0
+}

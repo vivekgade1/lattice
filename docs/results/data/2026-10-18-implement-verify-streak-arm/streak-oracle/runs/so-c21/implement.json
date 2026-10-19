@@ -1,0 +1,968 @@
+{
+ "diff": {
+  "rules": {
+   "added": [
+    {
+     "id": "R39",
+     "text": "A refresh token's `expires_at` is never earlier than its `created_at`."
+    }
+   ],
+   "changed": [],
+   "removed": [],
+   "unchanged": 148
+  },
+  "targets": {
+   "added": [
+    "invariant:refresh_token_expires_after_creation"
+   ],
+   "modified": [],
+   "removed": []
+  }
+ },
+ "input": {
+  "app": {
+   "configured": true,
+   "layers": "ACD"
+  },
+  "base": {
+   "requirements": "dcac6deb3ad3ec4ab7381af040cb86064aae00eb3ed38c05237657156fbad7b1",
+   "spec": "28dfc2e6c6a2aa27168079740d28a94de7f3efcb7cf8234d795d48b7960f5624",
+   "trace": "627a2b3f4c9cfafc3ad6cd5edb01f355fb76b53c248c629e7a77fd1bd8ee82ed"
+  },
+  "candidate": {
+   "requirements": "0c55079b7790d77e3219828c7fcda078061a86d5c334c6f026d71f6019c93bb6",
+   "spec": "2cd82f379503d18cc6e6a14c1e1d83e8cce9e4e65d67c8c73ec6697f9e172d21",
+   "trace": "e9d3fee779ad2389b2bc0c03633db58c5690ea44a963f254643aa8177aa43abc"
+  },
+  "change": null,
+  "inventory": {
+   "extract_sha256": "d51ef75340d54682a8bd2c3f40220e50c2ef31ae0eab17ef3ca68c9a39f89adc",
+   "stale": false,
+   "workflows_sha256": "af1383dbf5d51f876c61a282f23a2fb60d79f536af7542dfe48387e6f1c573a0"
+  },
+  "kind": "candidate",
+  "notes": []
+ },
+ "schema": "lattice.impact/1",
+ "summary": {
+  "kinds": {
+   "closure": 13,
+   "direct": 7,
+   "table_peer": 4
+  },
+  "note": "Which workflows fail is mostly not decidable before the change exists: a flow records the answers the app gives today, so it passes today by construction. Before an implementation only a changed invariant (tier 1, observed) and an exact-prefix contradiction (tier 2, determined) decide a workflow; every other flow listed is tier 3 'may_fail' (static, with unknowns), settled by tier 4 (Spike E, observed after the change).",
+  "tiers": {
+   "1": {
+    "failing": 0,
+    "flows": 0,
+    "resolved": 0
+   },
+   "2": {
+    "decidable": 0,
+    "determined": 0,
+    "flows": 0,
+    "undecidable": 2
+   },
+   "3": {
+    "flows": 2,
+    "locations": 24,
+    "unread": 1
+   }
+  },
+  "workflows": {
+   "t1_fail": 0,
+   "t2_fail": 0,
+   "t3_may_fail": 2
+  }
+ },
+ "tier1": {
+  "baseline": {
+   "failing": [],
+   "run": true,
+   "source": "run"
+  },
+  "counts": {
+   "baseline_drift": 0,
+   "by_label": {},
+   "by_layer": {},
+   "failing": 0,
+   "flows_run": 59,
+   "resolved": 0,
+   "workflow_fails": 0
+  },
+  "failing": [],
+  "flows": [],
+  "flows_note": null,
+  "layers": "ACD",
+  "resolved": []
+ },
+ "tier2": {
+  "corpus": {
+   "baseline": "run",
+   "environment": null,
+   "flow_steps": 167,
+   "flows_note": null,
+   "scenario_steps": 462
+  },
+  "decidability": [
+   {
+    "kind": "target",
+    "reason": "invariant_or_machine",
+    "state": "undecidable",
+    "subject": "invariant:refresh_token_expires_after_creation"
+   },
+   {
+    "kind": "added",
+    "reason": "invariant_or_machine",
+    "state": "undecidable",
+    "subject": "rule:R39"
+   }
+  ],
+  "determined": [],
+  "flows": [],
+  "runtime_replay": {
+   "status": "not_applicable: 0 programs"
+  }
+ },
+ "tier3": {
+  "counts": {
+   "by_kind": {
+    "closure": 13,
+    "direct": 7,
+    "insertion": 0,
+    "table_peer": 4
+   },
+   "files": 7,
+   "flows_may_fail": 2,
+   "locations": 24,
+   "seeds": {
+    "machines": 0,
+    "routes": 2,
+    "tables": 1
+   },
+   "unread": 1
+  },
+  "external": {
+   "count": 0
+  },
+  "files": [
+   "internal/account/routes.go",
+   "internal/auth/routes.go",
+   "internal/auth/tokens.go",
+   "internal/db/changeseq.go",
+   "internal/db/models.go",
+   "internal/httpapi/body.go",
+   "internal/httpapi/registry.go"
+  ],
+  "flows": [
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-0da61e11ce",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-1bf5c1a17f",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/auth/login",
+     "POST /v1/auth/refresh"
+    ],
+    "rules": [
+     "R39"
+    ],
+    "target": "flow:wf-0da61e11ce",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a8966be4b8",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-3ba33bfb29",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/auth/login"
+    ],
+    "rules": [
+     "R39"
+    ],
+    "target": "flow:wf-a8966be4b8",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   }
+  ],
+  "locations": [
+   {
+    "evidence": [
+     {
+      "at": "code:internal/account/routes.go:22",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/account/routes.go",
+    "id": "t3-432e5bdc9f",
+    "kind": "table_peer",
+    "line": 22,
+    "rules": [
+     "R39"
+    ],
+    "symbol": null,
+    "target": "invariant:refresh_token_expires_after_creation",
+    "tier": 3,
+    "via": [
+     "invariant:refresh_token_expires_after_creation -> table:refresh_tokens -> route:DELETE /v1/me -> code:internal/account/routes.go:22"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "end_line": 165,
+    "evidence": [
+     {
+      "at": "code:internal/account/routes.go:134",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/account/routes.go",
+    "id": "t3-9a087320f5",
+    "kind": "table_peer",
+    "line": 134,
+    "rules": [
+     "R39"
+    ],
+    "symbol": "remove",
+    "target": "invariant:refresh_token_expires_after_creation",
+    "tier": 3,
+    "via": [
+     "invariant:refresh_token_expires_after_creation -> table:refresh_tokens -> route:DELETE /v1/me -> handler:account.handler.remove -> code:internal/account/routes.go:134"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:26",
+      "kind": "code",
+      "what": "route registration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-38a69b8cbc",
+    "kind": "direct",
+    "line": 26,
+    "rules": [
+     "R39"
+    ],
+    "symbol": null,
+    "target": "invariant:refresh_token_expires_after_creation",
+    "tier": 3,
+    "via": [
+     "invariant:refresh_token_expires_after_creation -> table:refresh_tokens -> route:POST /v1/auth/login -> code:internal/auth/routes.go:26",
+     "rule:R39 -> scenario:login_answers_a_bearer_token / step 1 -> route:POST /v1/auth/login -> registered -> code:internal/auth/routes.go:26"
+    ],
+    "what": "route registration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:27",
+      "kind": "code",
+      "what": "route registration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-e9933785a1",
+    "kind": "direct",
+    "line": 27,
+    "rules": [
+     "R39"
+    ],
+    "symbol": null,
+    "target": "invariant:refresh_token_expires_after_creation",
+    "tier": 3,
+    "via": [
+     "invariant:refresh_token_expires_after_creation -> table:refresh_tokens -> route:POST /v1/auth/refresh -> code:internal/auth/routes.go:27",
+     "rule:R39 -> scenario:refresh_rotates_the_token / step 1 -> route:POST /v1/auth/refresh -> registered -> code:internal/auth/routes.go:27"
+    ],
+    "what": "route registration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:28",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-8288410396",
+    "kind": "table_peer",
+    "line": 28,
+    "rules": [
+     "R39"
+    ],
+    "symbol": null,
+    "target": "invariant:refresh_token_expires_after_creation",
+    "tier": 3,
+    "via": [
+     "invariant:refresh_token_expires_after_creation -> table:refresh_tokens -> route:POST /v1/auth/logout -> code:internal/auth/routes.go:28"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "end_line": 132,
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:119",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-12a5b82275",
+    "kind": "closure",
+    "line": 119,
+    "rules": [
+     "R39"
+    ],
+    "symbol": "issue",
+    "target": "scenario:login_answers_a_bearer_token",
+    "tier": 3,
+    "via": [
+     "rule:R39 -> scenario:login_answers_a_bearer_token / step 1 -> route:POST /v1/auth/login -> call:streak/internal/auth:handler.issue -> code:internal/auth/routes.go:119",
+     "rule:R39 -> scenario:refresh_rotates_the_token / step 1 -> route:POST /v1/auth/refresh -> call:streak/internal/auth:handler.issue -> code:internal/auth/routes.go:119"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 139,
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:135",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-035754a987",
+    "kind": "closure",
+    "line": 135,
+    "rules": [
+     "R39"
+    ],
+    "symbol": "revokeSession",
+    "target": "scenario:login_answers_a_bearer_token",
+    "tier": 3,
+    "via": [
+     "rule:R39 -> scenario:login_answers_a_bearer_token / step 1 -> route:POST /v1/auth/login -> call:streak/internal/auth:revokeSession -> code:internal/auth/routes.go:135",
+     "rule:R39 -> scenario:refresh_rotates_the_token / step 1 -> route:POST /v1/auth/refresh -> call:streak/internal/auth:revokeSession -> code:internal/auth/routes.go:135"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 194,
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:142",
+      "kind": "code",
+      "what": "handler declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler declaration"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-9044110341",
+    "kind": "direct",
+    "line": 142,
+    "rules": [
+     "R39"
+    ],
+    "symbol": "login",
+    "target": "invariant:refresh_token_expires_after_creation",
+    "tier": 3,
+    "via": [
+     "invariant:refresh_token_expires_after_creation -> table:refresh_tokens -> route:POST /v1/auth/login -> handler:auth.handler.login -> code:internal/auth/routes.go:142",
+     "rule:R39 -> scenario:login_answers_a_bearer_token / step 1 -> route:POST /v1/auth/login -> handler:auth.handler.login -> code:internal/auth/routes.go:142"
+    ],
+    "what": "handler declaration"
+   },
+   {
+    "end_line": 265,
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:198",
+      "kind": "code",
+      "what": "handler declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler declaration"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-ae26054e95",
+    "kind": "direct",
+    "line": 198,
+    "rules": [
+     "R39"
+    ],
+    "symbol": "refresh",
+    "target": "invariant:refresh_token_expires_after_creation",
+    "tier": 3,
+    "via": [
+     "invariant:refresh_token_expires_after_creation -> table:refresh_tokens -> route:POST /v1/auth/refresh -> handler:auth.handler.refresh -> code:internal/auth/routes.go:198",
+     "rule:R39 -> scenario:refresh_rotates_the_token / step 1 -> route:POST /v1/auth/refresh -> handler:auth.handler.refresh -> code:internal/auth/routes.go:198"
+    ],
+    "what": "handler declaration"
+   },
+   {
+    "end_line": 289,
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:268",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-d2e41007cd",
+    "kind": "table_peer",
+    "line": 268,
+    "rules": [
+     "R39"
+    ],
+    "symbol": "logout",
+    "target": "invariant:refresh_token_expires_after_creation",
+    "tier": 3,
+    "via": [
+     "invariant:refresh_token_expires_after_creation -> table:refresh_tokens -> route:POST /v1/auth/logout -> handler:auth.handler.logout -> code:internal/auth/routes.go:268"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "end_line": 43,
+    "evidence": [
+     {
+      "at": "code:internal/auth/tokens.go:39",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/auth/tokens.go",
+    "id": "t3-6cc58a04e4",
+    "kind": "closure",
+    "line": 39,
+    "rules": [
+     "R39"
+    ],
+    "symbol": "SignAccess",
+    "target": "scenario:login_answers_a_bearer_token",
+    "tier": 3,
+    "via": [
+     "rule:R39 -> scenario:login_answers_a_bearer_token / step 1 -> route:POST /v1/auth/login -> call:streak/internal/auth:SignAccess -> code:internal/auth/tokens.go:39",
+     "rule:R39 -> scenario:refresh_rotates_the_token / step 1 -> route:POST /v1/auth/refresh -> call:streak/internal/auth:SignAccess -> code:internal/auth/tokens.go:39"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 49,
+    "evidence": [
+     {
+      "at": "code:internal/auth/tokens.go:45",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/auth/tokens.go",
+    "id": "t3-8145878715",
+    "kind": "closure",
+    "line": 45,
+    "rules": [
+     "R39"
+    ],
+    "symbol": "mac",
+    "target": "scenario:login_answers_a_bearer_token",
+    "tier": 3,
+    "via": [
+     "rule:R39 -> scenario:login_answers_a_bearer_token / step 1 -> route:POST /v1/auth/login -> call:streak/internal/auth:mac -> code:internal/auth/tokens.go:45",
+     "rule:R39 -> scenario:refresh_rotates_the_token / step 1 -> route:POST /v1/auth/refresh -> call:streak/internal/auth:mac -> code:internal/auth/tokens.go:45"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 90,
+    "evidence": [
+     {
+      "at": "code:internal/auth/tokens.go:85",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/auth/tokens.go",
+    "id": "t3-3a65b2ff42",
+    "kind": "closure",
+    "line": 85,
+    "rules": [
+     "R39"
+    ],
+    "symbol": "LoginIssuedAt",
+    "target": "scenario:login_answers_a_bearer_token",
+    "tier": 3,
+    "via": [
+     "rule:R39 -> scenario:login_answers_a_bearer_token / step 1 -> route:POST /v1/auth/login -> call:streak/internal/auth:LoginIssuedAt -> code:internal/auth/tokens.go:85"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 100,
+    "evidence": [
+     {
+      "at": "code:internal/auth/tokens.go:93",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/auth/tokens.go",
+    "id": "t3-c3cc60ae5b",
+    "kind": "closure",
+    "line": 93,
+    "rules": [
+     "R39"
+    ],
+    "symbol": "NewRefreshToken",
+    "target": "scenario:login_answers_a_bearer_token",
+    "tier": 3,
+    "via": [
+     "rule:R39 -> scenario:login_answers_a_bearer_token / step 1 -> route:POST /v1/auth/login -> call:streak/internal/auth:NewRefreshToken -> code:internal/auth/tokens.go:93",
+     "rule:R39 -> scenario:refresh_rotates_the_token / step 1 -> route:POST /v1/auth/refresh -> call:streak/internal/auth:NewRefreshToken -> code:internal/auth/tokens.go:93"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 106,
+    "evidence": [
+     {
+      "at": "code:internal/auth/tokens.go:103",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/auth/tokens.go",
+    "id": "t3-4b1d6060ad",
+    "kind": "closure",
+    "line": 103,
+    "rules": [
+     "R39"
+    ],
+    "symbol": "HashRefresh",
+    "target": "scenario:login_answers_a_bearer_token",
+    "tier": 3,
+    "via": [
+     "rule:R39 -> scenario:login_answers_a_bearer_token / step 1 -> route:POST /v1/auth/login -> call:streak/internal/auth:HashRefresh -> code:internal/auth/tokens.go:103",
+     "rule:R39 -> scenario:refresh_rotates_the_token / step 1 -> route:POST /v1/auth/refresh -> call:streak/internal/auth:HashRefresh -> code:internal/auth/tokens.go:103"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 20,
+    "evidence": [
+     {
+      "at": "code:internal/db/changeseq.go:13",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/changeseq.go",
+    "id": "t3-87d9e929f7",
+    "kind": "closure",
+    "line": 13,
+    "rules": [
+     "R39"
+    ],
+    "symbol": "LockUser",
+    "target": "scenario:login_answers_a_bearer_token",
+    "tier": 3,
+    "via": [
+     "rule:R39 -> scenario:login_answers_a_bearer_token / step 1 -> route:POST /v1/auth/login -> call:streak/internal/db:LockUser -> code:internal/db/changeseq.go:13",
+     "rule:R39 -> scenario:refresh_rotates_the_token / step 1 -> route:POST /v1/auth/refresh -> call:streak/internal/db:LockUser -> code:internal/db/changeseq.go:13"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 55,
+    "evidence": [
+     {
+      "at": "code:internal/db/models.go:46",
+      "kind": "code",
+      "what": "struct"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "struct"
+     }
+    ],
+    "file": "internal/db/models.go",
+    "id": "t3-180a7b95a2",
+    "kind": "direct",
+    "line": 46,
+    "rules": [
+     "R39"
+    ],
+    "symbol": "RefreshToken",
+    "target": "invariant:refresh_token_expires_after_creation",
+    "tier": 3,
+    "via": [
+     "invariant:refresh_token_expires_after_creation -> table:refresh_tokens -> struct:RefreshToken -> code:internal/db/models.go:46",
+     "rule:R39 -> invariant:refresh_token_expires_after_creation -> struct:RefreshToken -> code:internal/db/models.go:46"
+    ],
+    "what": "struct"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/db/models.go:51",
+      "kind": "code",
+      "what": "column expires_at"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "column expires_at"
+     }
+    ],
+    "file": "internal/db/models.go",
+    "id": "t3-6d434a4bc1",
+    "kind": "direct",
+    "line": 51,
+    "rules": [
+     "R39"
+    ],
+    "symbol": null,
+    "target": "invariant:refresh_token_expires_after_creation",
+    "tier": 3,
+    "via": [
+     "invariant:refresh_token_expires_after_creation -> table:refresh_tokens -> column:expires_at -> code:internal/db/models.go:51",
+     "rule:R39 -> invariant:refresh_token_expires_after_creation -> column:expires_at -> code:internal/db/models.go:51"
+    ],
+    "what": "column expires_at"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/db/models.go:54",
+      "kind": "code",
+      "what": "column created_at"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "column created_at"
+     }
+    ],
+    "file": "internal/db/models.go",
+    "id": "t3-9bd7770a07",
+    "kind": "direct",
+    "line": 54,
+    "rules": [
+     "R39"
+    ],
+    "symbol": null,
+    "target": "invariant:refresh_token_expires_after_creation",
+    "tier": 3,
+    "via": [
+     "invariant:refresh_token_expires_after_creation -> table:refresh_tokens -> column:created_at -> code:internal/db/models.go:54",
+     "rule:R39 -> invariant:refresh_token_expires_after_creation -> column:created_at -> code:internal/db/models.go:54"
+    ],
+    "what": "column created_at"
+   },
+   {
+    "end_line": 37,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/body.go:21",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/body.go",
+    "id": "t3-ebc3e00005",
+    "kind": "closure",
+    "line": 21,
+    "rules": [
+     "R39"
+    ],
+    "symbol": "ReadBody",
+    "target": "scenario:login_answers_a_bearer_token",
+    "tier": 3,
+    "via": [
+     "rule:R39 -> scenario:login_answers_a_bearer_token / step 1 -> route:POST /v1/auth/login -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "rule:R39 -> scenario:refresh_rotates_the_token / step 1 -> route:POST /v1/auth/refresh -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 47,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:45",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-5512180670",
+    "kind": "closure",
+    "line": 45,
+    "rules": [
+     "R39"
+    ],
+    "symbol": "Now",
+    "target": "scenario:login_answers_a_bearer_token",
+    "tier": 3,
+    "via": [
+     "rule:R39 -> scenario:login_answers_a_bearer_token / step 1 -> route:POST /v1/auth/login -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "rule:R39 -> scenario:refresh_rotates_the_token / step 1 -> route:POST /v1/auth/refresh -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 56,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:50",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-b1f7d32289",
+    "kind": "closure",
+    "line": 50,
+    "rules": [
+     "R39"
+    ],
+    "symbol": "NowCtx",
+    "target": "scenario:login_answers_a_bearer_token",
+    "tier": 3,
+    "via": [
+     "rule:R39 -> scenario:login_answers_a_bearer_token / step 1 -> route:POST /v1/auth/login -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "rule:R39 -> scenario:refresh_rotates_the_token / step 1 -> route:POST /v1/auth/refresh -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 67,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:67",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-8481784aba",
+    "kind": "closure",
+    "line": 67,
+    "rules": [
+     "R39"
+    ],
+    "symbol": "Q",
+    "target": "scenario:login_answers_a_bearer_token",
+    "tier": 3,
+    "via": [
+     "rule:R39 -> scenario:login_answers_a_bearer_token / step 1 -> route:POST /v1/auth/login -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R39 -> scenario:refresh_rotates_the_token / step 1 -> route:POST /v1/auth/refresh -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 73,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:71",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-312147db05",
+    "kind": "closure",
+    "line": 71,
+    "rules": [
+     "R39"
+    ],
+    "symbol": "Tx",
+    "target": "scenario:login_answers_a_bearer_token",
+    "tier": 3,
+    "via": [
+     "rule:R39 -> scenario:login_answers_a_bearer_token / step 1 -> route:POST /v1/auth/login -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "rule:R39 -> scenario:refresh_rotates_the_token / step 1 -> route:POST /v1/auth/refresh -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71"
+    ],
+    "what": "call declaration"
+   }
+  ],
+  "stale": false,
+  "unread": [
+   {
+    "file": "internal/httpapi/registry.go",
+    "kind": "extract_unread",
+    "line": 51,
+    "reason": "interface dispatch: `d.Clock.Now(ctx)` has no single implementation in the module",
+    "what": "call"
+   }
+  ]
+ },
+ "tier4": {
+  "before": {
+   "failing_count": 0,
+   "flows_run": 59,
+   "matches_report": true
+  },
+  "counts": {},
+  "failing": [],
+  "flows": [],
+  "implementation": null,
+  "notes": [],
+  "owner": {
+   "checked": [
+    "branch",
+    "cached",
+    "head",
+    "refs",
+    "stash",
+    "status",
+    "worktrees"
+   ],
+   "untouched": true
+  },
+  "rebuild": null,
+  "regressions": [],
+  "resolved": [],
+  "still_failing": [],
+  "t2_check": [],
+  "t2_confirmed": null,
+  "t3_vs_edit": {
+   "declarations": null,
+   "files": null,
+   "status": "not_applicable: no edit"
+  },
+  "verdict": "nothing_to_build"
+ },
+ "tiers": {
+  "1": "run",
+  "2": "run",
+  "3": "run",
+  "4": "run"
+ }
+}

@@ -1,0 +1,1832 @@
+{
+ "diff": {
+  "rules": {
+   "added": [],
+   "changed": [
+    {
+     "new": "R11",
+     "new_text": "Registering a user also creates their `notification_prefs` row with `push_enabled` true, `quiet_start` `\"22:00\"`, `quiet_end` `\"08:00\"` and `nudge_time` `\"19:00\"`.",
+     "old": "R11",
+     "old_text": "Registering a user also creates their `notification_prefs` row with `push_enabled` true, `quiet_start` `\"22:00\"`, `quiet_end` `\"08:00\"` and `nudge_time` `\"20:00\"`."
+    }
+   ],
+   "removed": [],
+   "unchanged": 147
+  },
+  "targets": {
+   "added": [],
+   "modified": [
+    "scenario:register_answers_the_user_with_a_lowercased_email"
+   ],
+   "removed": []
+  }
+ },
+ "input": {
+  "app": {
+   "configured": true,
+   "layers": "ACD"
+  },
+  "base": {
+   "requirements": "dcac6deb3ad3ec4ab7381af040cb86064aae00eb3ed38c05237657156fbad7b1",
+   "spec": "28dfc2e6c6a2aa27168079740d28a94de7f3efcb7cf8234d795d48b7960f5624",
+   "trace": "627a2b3f4c9cfafc3ad6cd5edb01f355fb76b53c248c629e7a77fd1bd8ee82ed"
+  },
+  "candidate": {
+   "requirements": "21cb1ce555c60f4b31af80b76a73f54fd8605fdae7dfad1691493e4f5a8acda4",
+   "spec": "59741ba48928009701a5f26169982377bbf24900cdd79870856a9ddbbc96de84",
+   "trace": "ea09d88ebb4fea400b084407de9b565f9de57c13dbbee7342517d8866b20e9a0"
+  },
+  "change": null,
+  "inventory": {
+   "extract_sha256": "d51ef75340d54682a8bd2c3f40220e50c2ef31ae0eab17ef3ca68c9a39f89adc",
+   "stale": false,
+   "workflows_sha256": "af1383dbf5d51f876c61a282f23a2fb60d79f536af7542dfe48387e6f1c573a0"
+  },
+  "kind": "candidate",
+  "notes": []
+ },
+ "schema": "lattice.impact/1",
+ "summary": {
+  "kinds": {
+   "check_failure": 1,
+   "closure": 9,
+   "direct": 5
+  },
+  "note": "Which workflows fail is mostly not decidable before the change exists: a flow records the answers the app gives today, so it passes today by construction. Before an implementation only a changed invariant (tier 1, observed) and an exact-prefix contradiction (tier 2, determined) decide a workflow; every other flow listed is tier 3 'may_fail' (static, with unknowns), settled by tier 4 (Spike E, observed after the change).",
+  "tiers": {
+   "1": {
+    "failing": 1,
+    "flows": 0,
+    "resolved": 0
+   },
+   "2": {
+    "decidable": 0,
+    "determined": 0,
+    "flows": 0,
+    "undecidable": 2
+   },
+   "3": {
+    "flows": 2,
+    "locations": 14,
+    "unread": 1
+   }
+  },
+  "workflows": {
+   "t1_fail": 0,
+   "t2_fail": 0,
+   "t3_may_fail": 2
+  }
+ },
+ "tier1": {
+  "baseline": {
+   "failing": [],
+   "run": true,
+   "source": "run"
+  },
+  "counts": {
+   "baseline_drift": 0,
+   "by_label": {
+    "not_built_yet": 1
+   },
+   "by_layer": {
+    "D": 1
+   },
+   "failing": 1,
+   "flows_run": 59,
+   "resolved": 0,
+   "workflow_fails": 0
+  },
+  "failing": [
+   {
+    "also_fails_on_base": false,
+    "case": "register_answers_the_user_with_a_lowercased_email / step 1",
+    "code": null,
+    "endpoint": "POST /v1/auth/register",
+    "evidence": [
+     {
+      "at": "check:D:register_answers_the_user_with_a_lowercased_email / step 1",
+      "kind": "check",
+      "what": "[D silent] POST /v1/auth/register (register_answers_the_user_with_a_lowercased_email / step 1)"
+     },
+     {
+      "at": "spec:spec.py:430",
+      "kind": "spec",
+      "what": "register_answers_the_user_with_a_lowercased_email step 1"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t1-e22e58dc78",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "D",
+    "line": 430,
+    "observation": "runtime",
+    "problems": [
+     "db NotificationPrefs where {'push_enabled': True, 'quiet_start': '22:00', 'quiet_end': '08:00', 'nudge_time': '19:00', 'last_pass_date': None}: expected 1 rows, found 0"
+    ],
+    "rule": "scenario: register_answers_the_user_with_a_lowercased_email",
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "summary": "[D silent] POST /v1/auth/register (register_answers_the_user_with_a_lowercased_email / step 1)",
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 1,
+    "verdict": "silent"
+   }
+  ],
+  "flows": [],
+  "flows_note": null,
+  "layers": "ACD",
+  "resolved": []
+ },
+ "tier2": {
+  "corpus": {
+   "baseline": "run",
+   "environment": null,
+   "flow_steps": 167,
+   "flows_note": null,
+   "scenario_steps": 462
+  },
+  "decidability": [
+   {
+    "kind": "target",
+    "reason": "compatible_expectation",
+    "state": "undecidable",
+    "subject": "scenario:register_answers_the_user_with_a_lowercased_email"
+   },
+   {
+    "kind": "changed",
+    "reason": "compatible_expectation",
+    "state": "undecidable",
+    "subject": "rule:R11"
+   }
+  ],
+  "determined": [],
+  "flows": [],
+  "runtime_replay": {
+   "status": "not_applicable: 0 programs"
+  }
+ },
+ "tier3": {
+  "counts": {
+   "by_kind": {
+    "closure": 9,
+    "direct": 5,
+    "insertion": 0,
+    "table_peer": 0
+   },
+   "files": 4,
+   "flows_may_fail": 2,
+   "locations": 14,
+   "seeds": {
+    "machines": 0,
+    "routes": 1,
+    "tables": 0
+   },
+   "unread": 1
+  },
+  "external": {
+   "count": 0
+  },
+  "files": [
+   "internal/auth/routes.go",
+   "internal/httpapi/body.go",
+   "internal/httpapi/registry.go",
+   "internal/period/period.go"
+  ],
+  "flows": [
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-0da61e11ce",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-13fe2e1e13",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/auth/register"
+    ],
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "target": "flow:wf-0da61e11ce",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a8966be4b8",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-f00ae7e762",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/auth/register"
+    ],
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "target": "flow:wf-a8966be4b8",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   }
+  ],
+  "locations": [
+   {
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:25",
+      "kind": "code",
+      "what": "route registration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route registration"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-0ce6a0d67a",
+    "kind": "direct",
+    "line": 25,
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "symbol": null,
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 3,
+    "via": [
+     "check:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> registered -> code:internal/auth/routes.go:25",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> registered -> code:internal/auth/routes.go:25",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 2 -> route:POST /v1/auth/register -> registered -> code:internal/auth/routes.go:25",
+     "scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> registered -> code:internal/auth/routes.go:25"
+    ],
+    "what": "route registration"
+   },
+   {
+    "end_line": 54,
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:48",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-0dc4ee1424",
+    "kind": "closure",
+    "line": 48,
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "symbol": "validEmail",
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 3,
+    "via": [
+     "check:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/auth:validEmail -> code:internal/auth/routes.go:48",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/auth:validEmail -> code:internal/auth/routes.go:48",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 2 -> route:POST /v1/auth/register -> call:streak/internal/auth:validEmail -> code:internal/auth/routes.go:48",
+     "scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/auth:validEmail -> code:internal/auth/routes.go:48"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 59,
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:56",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-9654255008",
+    "kind": "closure",
+    "line": 56,
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "symbol": "isDuplicate",
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 3,
+    "via": [
+     "check:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/auth:isDuplicate -> code:internal/auth/routes.go:56",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/auth:isDuplicate -> code:internal/auth/routes.go:56",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 2 -> route:POST /v1/auth/register -> call:streak/internal/auth:isDuplicate -> code:internal/auth/routes.go:56",
+     "scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/auth:isDuplicate -> code:internal/auth/routes.go:56"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 115,
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:62",
+      "kind": "code",
+      "what": "handler declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler declaration"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-8c01eb5e0f",
+    "kind": "direct",
+    "line": 62,
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "symbol": "register",
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 3,
+    "via": [
+     "check:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> handler:auth.handler.register -> code:internal/auth/routes.go:62",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> handler:auth.handler.register -> code:internal/auth/routes.go:62",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 2 -> route:POST /v1/auth/register -> handler:auth.handler.register -> code:internal/auth/routes.go:62",
+     "scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> handler:auth.handler.register -> code:internal/auth/routes.go:62"
+    ],
+    "what": "handler declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:67",
+      "kind": "code",
+      "what": "param email"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param email"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-52576832d6",
+    "kind": "direct",
+    "line": 67,
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "symbol": null,
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 3,
+    "via": [
+     "check:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> param:email -> code:internal/auth/routes.go:67",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> param:email -> code:internal/auth/routes.go:67",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 2 -> route:POST /v1/auth/register -> param:email -> code:internal/auth/routes.go:67",
+     "scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> param:email -> code:internal/auth/routes.go:67"
+    ],
+    "what": "param email"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:72",
+      "kind": "code",
+      "what": "param password"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param password"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-8228ee6c1f",
+    "kind": "direct",
+    "line": 72,
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "symbol": null,
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 3,
+    "via": [
+     "check:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> param:password -> code:internal/auth/routes.go:72",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> param:password -> code:internal/auth/routes.go:72",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 2 -> route:POST /v1/auth/register -> param:password -> code:internal/auth/routes.go:72",
+     "scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> param:password -> code:internal/auth/routes.go:72"
+    ],
+    "what": "param password"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:77",
+      "kind": "code",
+      "what": "param timezone"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param timezone"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-b2369eec20",
+    "kind": "direct",
+    "line": 77,
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "symbol": null,
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 3,
+    "via": [
+     "check:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> param:timezone -> code:internal/auth/routes.go:77",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> param:timezone -> code:internal/auth/routes.go:77",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 2 -> route:POST /v1/auth/register -> param:timezone -> code:internal/auth/routes.go:77",
+     "scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> param:timezone -> code:internal/auth/routes.go:77"
+    ],
+    "what": "param timezone"
+   },
+   {
+    "end_line": 37,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/body.go:21",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/body.go",
+    "id": "t3-3cab7c913a",
+    "kind": "closure",
+    "line": 21,
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "symbol": "ReadBody",
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 3,
+    "via": [
+     "check:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 2 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 47,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:45",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-cd7fa63127",
+    "kind": "closure",
+    "line": 45,
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "symbol": "Now",
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 3,
+    "via": [
+     "check:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 2 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 56,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:50",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-cf09841388",
+    "kind": "closure",
+    "line": 50,
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "symbol": "NowCtx",
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 3,
+    "via": [
+     "check:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 2 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 67,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:67",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-cd3de29454",
+    "kind": "closure",
+    "line": 67,
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "symbol": "Q",
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 3,
+    "via": [
+     "check:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 2 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 73,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:71",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-3ace11eb4d",
+    "kind": "closure",
+    "line": 71,
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "symbol": "Tx",
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 3,
+    "via": [
+     "check:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 2 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 112,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:97",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-2e90c7cd24",
+    "kind": "closure",
+    "line": 97,
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "symbol": "Location",
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 3,
+    "via": [
+     "check:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 2 -> route:POST /v1/auth/register -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/period:Location -> code:internal/period/period.go:97"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 118,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:115",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-448e682272",
+    "kind": "closure",
+    "line": 115,
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "symbol": "ValidZone",
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 3,
+    "via": [
+     "check:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/period:ValidZone -> code:internal/period/period.go:115",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/period:ValidZone -> code:internal/period/period.go:115",
+     "rule:R11 -> scenario:register_answers_the_user_with_a_lowercased_email / step 2 -> route:POST /v1/auth/register -> call:streak/internal/period:ValidZone -> code:internal/period/period.go:115",
+     "scenario:register_answers_the_user_with_a_lowercased_email / step 1 -> route:POST /v1/auth/register -> call:streak/internal/period:ValidZone -> code:internal/period/period.go:115"
+    ],
+    "what": "call declaration"
+   }
+  ],
+  "stale": false,
+  "unread": [
+   {
+    "file": "internal/httpapi/registry.go",
+    "kind": "extract_unread",
+    "line": 51,
+    "reason": "interface dispatch: `d.Clock.Now(ctx)` has no single implementation in the module",
+    "what": "call"
+   }
+  ]
+ },
+ "tier4": {
+  "before": {
+   "failing_count": 1,
+   "flows_run": 59,
+   "matches_report": true
+  },
+  "counts": {
+   "failing_after": 0,
+   "flow_before_failed": 0,
+   "flow_changed": 0,
+   "flow_unchanged": 59,
+   "flows_run": 59,
+   "may_fail_unbacked": 0,
+   "regressions": 0,
+   "resolved": 1,
+   "still_failing": 0,
+   "t2_contradicted": 0,
+   "unexpected_regressions": 0,
+   "unreported": 0,
+   "workflow_fails": 0
+  },
+  "failing": [],
+  "flows": [
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-087fea1dbb",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-087fea1dbb",
+    "id": "t4-2931f10e3c",
+    "kind": "flow_unchanged",
+    "name": "create habits > read habits",
+    "rules": [],
+    "target": "flow:wf-087fea1dbb",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-09db39abfe",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-09db39abfe",
+    "id": "t4-9f50a6c59b",
+    "kind": "flow_unchanged",
+    "name": "create habits > read history",
+    "rules": [],
+    "target": "flow:wf-09db39abfe",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-0c6bdd7ab0",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-0c6bdd7ab0",
+    "id": "t4-1c885f053a",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read home",
+    "rules": [],
+    "target": "flow:wf-0c6bdd7ab0",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-11a98b3683",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-11a98b3683",
+    "id": "t4-e2d97e665d",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read completions",
+    "rules": [],
+    "target": "flow:wf-11a98b3683",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-12302559ed",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-12302559ed",
+    "id": "t4-2a985ce4a1",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read nudges",
+    "rules": [],
+    "target": "flow:wf-12302559ed",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-1e4314104c",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-1e4314104c",
+    "id": "t4-a859fd5339",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read habits",
+    "rules": [],
+    "target": "flow:wf-1e4314104c",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-21a2d02394",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-21a2d02394",
+    "id": "t4-58f062be50",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read history",
+    "rules": [],
+    "target": "flow:wf-21a2d02394",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2610c56483",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-2610c56483",
+    "id": "t4-4273ca9643",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read me",
+    "rules": [],
+    "target": "flow:wf-2610c56483",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2818e45412",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-2818e45412",
+    "id": "t4-3dfaac23ef",
+    "kind": "flow_unchanged",
+    "name": "create devices > delete devices",
+    "rules": [],
+    "target": "flow:wf-2818e45412",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2d3eecc464",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-2d3eecc464",
+    "id": "t4-61040e7738",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits",
+    "rules": [],
+    "target": "flow:wf-2d3eecc464",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2da750f4e8",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-2da750f4e8",
+    "id": "t4-f46b2b1605",
+    "kind": "flow_unchanged",
+    "name": "create habits > create batch",
+    "rules": [],
+    "target": "flow:wf-2da750f4e8",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2f54cb544b",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-2f54cb544b",
+    "id": "t4-7522d9c875",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read me",
+    "rules": [],
+    "target": "flow:wf-2f54cb544b",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3c5a04e0ae",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-3c5a04e0ae",
+    "id": "t4-3d86bfdff2",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read habits",
+    "rules": [],
+    "target": "flow:wf-3c5a04e0ae",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3d2436d2dd",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-3d2436d2dd",
+    "id": "t4-4a533ffe22",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read progress",
+    "rules": [],
+    "target": "flow:wf-3d2436d2dd",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3de8783507",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-3de8783507",
+    "id": "t4-bc43a91eb1",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read completions",
+    "rules": [],
+    "target": "flow:wf-3de8783507",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-45bfc39e84",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-45bfc39e84",
+    "id": "t4-8426b794fa",
+    "kind": "flow_unchanged",
+    "name": "create habits > read completions",
+    "rules": [],
+    "target": "flow:wf-45bfc39e84",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-4dfc4c5bed",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-4dfc4c5bed",
+    "id": "t4-b84f0fc36c",
+    "kind": "flow_unchanged",
+    "name": "create habits > read habits",
+    "rules": [],
+    "target": "flow:wf-4dfc4c5bed",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-4e49f96210",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-4e49f96210",
+    "id": "t4-999bed9b4b",
+    "kind": "flow_unchanged",
+    "name": "create habits > create batch",
+    "rules": [],
+    "target": "flow:wf-4e49f96210",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-52994a9544",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-52994a9544",
+    "id": "t4-abfc048024",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read history",
+    "rules": [],
+    "target": "flow:wf-52994a9544",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-597f2899e4",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-597f2899e4",
+    "id": "t4-2a3cf2a10a",
+    "kind": "flow_unchanged",
+    "name": "create habits > read completions",
+    "rules": [],
+    "target": "flow:wf-597f2899e4",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5a6bab46c9",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-5a6bab46c9",
+    "id": "t4-eb2b3781a6",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read sync",
+    "rules": [],
+    "target": "flow:wf-5a6bab46c9",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5cf3da443e",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-5cf3da443e",
+    "id": "t4-ac14b64d75",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read progress",
+    "rules": [],
+    "target": "flow:wf-5cf3da443e",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5eebdfc88b",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-5eebdfc88b",
+    "id": "t4-27855b8b1f",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read progress",
+    "rules": [],
+    "target": "flow:wf-5eebdfc88b",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-6a4cc7a302",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-6a4cc7a302",
+    "id": "t4-0ce52aaf22",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read home > dismiss nudges",
+    "rules": [],
+    "target": "flow:wf-6a4cc7a302",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-6c2282fd50",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-6c2282fd50",
+    "id": "t4-3a619fc723",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read habits",
+    "rules": [],
+    "target": "flow:wf-6c2282fd50",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-717a23507f",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-717a23507f",
+    "id": "t4-b81dbf0d6b",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read nudges",
+    "rules": [],
+    "target": "flow:wf-717a23507f",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-80123a60e5",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-80123a60e5",
+    "id": "t4-85854f059f",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read habits",
+    "rules": [],
+    "target": "flow:wf-80123a60e5",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-801d529a0f",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-801d529a0f",
+    "id": "t4-021eb02164",
+    "kind": "flow_unchanged",
+    "name": "create devices > delete devices",
+    "rules": [],
+    "target": "flow:wf-801d529a0f",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-8ae8af75df",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-8ae8af75df",
+    "id": "t4-0a37afe047",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read habits",
+    "rules": [],
+    "target": "flow:wf-8ae8af75df",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-8b2744d526",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-8b2744d526",
+    "id": "t4-37a77c8aa0",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits",
+    "rules": [],
+    "target": "flow:wf-8b2744d526",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-9ead6d0f00",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-9ead6d0f00",
+    "id": "t4-c4dd5a2aa1",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read history",
+    "rules": [],
+    "target": "flow:wf-9ead6d0f00",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a1793fed29",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-a1793fed29",
+    "id": "t4-f6bc0e569c",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits",
+    "rules": [],
+    "target": "flow:wf-a1793fed29",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a7ae5cb208",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-a7ae5cb208",
+    "id": "t4-42fc47ef3a",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions",
+    "rules": [],
+    "target": "flow:wf-a7ae5cb208",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a8966be4b8",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-a8966be4b8",
+    "id": "t4-d631ce2518",
+    "kind": "flow_unchanged",
+    "name": "create register > create login",
+    "rules": [],
+    "target": "flow:wf-a8966be4b8",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a9ac9b88a4",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-a9ac9b88a4",
+    "id": "t4-8358111868",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read sync",
+    "rules": [],
+    "target": "flow:wf-a9ac9b88a4",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b2acc9eac6",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-b2acc9eac6",
+    "id": "t4-2d00866129",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read completions",
+    "rules": [],
+    "target": "flow:wf-b2acc9eac6",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b595a756b6",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-b595a756b6",
+    "id": "t4-15fb9d99ca",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read home",
+    "rules": [],
+    "target": "flow:wf-b595a756b6",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b95fd71de1",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-b95fd71de1",
+    "id": "t4-190be5927b",
+    "kind": "flow_unchanged",
+    "name": "create habits > read home",
+    "rules": [],
+    "target": "flow:wf-b95fd71de1",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-bd46b71ee2",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-bd46b71ee2",
+    "id": "t4-782b4c8124",
+    "kind": "flow_unchanged",
+    "name": "create habits > read progress",
+    "rules": [],
+    "target": "flow:wf-bd46b71ee2",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-c00e2afaf3",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-c00e2afaf3",
+    "id": "t4-12f8c801ce",
+    "kind": "flow_unchanged",
+    "name": "create habits > read habits",
+    "rules": [],
+    "target": "flow:wf-c00e2afaf3",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-c675dd6cb3",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-c675dd6cb3",
+    "id": "t4-eab24d3d4a",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read sync",
+    "rules": [],
+    "target": "flow:wf-c675dd6cb3",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-cc7886ea28",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-cc7886ea28",
+    "id": "t4-6809546514",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits",
+    "rules": [],
+    "target": "flow:wf-cc7886ea28",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ce853d194f",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-ce853d194f",
+    "id": "t4-4229965607",
+    "kind": "flow_unchanged",
+    "name": "create habits > read sync",
+    "rules": [],
+    "target": "flow:wf-ce853d194f",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-cf27dadc73",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-cf27dadc73",
+    "id": "t4-5878e34622",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read home",
+    "rules": [],
+    "target": "flow:wf-cf27dadc73",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d06e3e8777",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-d06e3e8777",
+    "id": "t4-5adba447a9",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read nudges",
+    "rules": [],
+    "target": "flow:wf-d06e3e8777",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d2b6d84725",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-d2b6d84725",
+    "id": "t4-3a0e360245",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions",
+    "rules": [],
+    "target": "flow:wf-d2b6d84725",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d2fcd76bcd",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-d2fcd76bcd",
+    "id": "t4-d72cb23ad9",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read habits",
+    "rules": [],
+    "target": "flow:wf-d2fcd76bcd",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d650036584",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-d650036584",
+    "id": "t4-90d71c9f07",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read habits",
+    "rules": [],
+    "target": "flow:wf-d650036584",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d8340207d1",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-d8340207d1",
+    "id": "t4-ec4c4095bf",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read home",
+    "rules": [],
+    "target": "flow:wf-d8340207d1",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-dbac494b10",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-dbac494b10",
+    "id": "t4-77f0d4d3d3",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read progress",
+    "rules": [],
+    "target": "flow:wf-dbac494b10",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-de433cd704",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-de433cd704",
+    "id": "t4-be16adb885",
+    "kind": "flow_unchanged",
+    "name": "create habits > read progress",
+    "rules": [],
+    "target": "flow:wf-de433cd704",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-e3249cec66",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-e3249cec66",
+    "id": "t4-6c01f475dc",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > update habits > delete completions > delete habits",
+    "rules": [],
+    "target": "flow:wf-e3249cec66",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ee191140a0",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-ee191140a0",
+    "id": "t4-296f29670e",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read completions",
+    "rules": [],
+    "target": "flow:wf-ee191140a0",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f679309f8a",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-f679309f8a",
+    "id": "t4-c14e92707a",
+    "kind": "flow_unchanged",
+    "name": "create habits > read history",
+    "rules": [],
+    "target": "flow:wf-f679309f8a",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f67bf44692",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-f67bf44692",
+    "id": "t4-cbeeb59799",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits",
+    "rules": [],
+    "target": "flow:wf-f67bf44692",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f961306c88",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-f961306c88",
+    "id": "t4-ae246762f6",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read habits",
+    "rules": [],
+    "target": "flow:wf-f961306c88",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-fc7d0a0772",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-fc7d0a0772",
+    "id": "t4-ba3450bf06",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits",
+    "rules": [],
+    "target": "flow:wf-fc7d0a0772",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-fcf46753f5",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-fcf46753f5",
+    "id": "t4-c232b8a7d9",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read history",
+    "rules": [],
+    "target": "flow:wf-fcf46753f5",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ffaa047bf2",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-ffaa047bf2",
+    "id": "t4-8a0632bb11",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read sync",
+    "rules": [],
+    "target": "flow:wf-ffaa047bf2",
+    "tier": 4
+   }
+  ],
+  "implementation": {
+   "branch_build": "rebuild/i57aaf5d6a8",
+   "branch_spec": "implement/i57aaf5d6a8",
+   "build_tree": "ade18cea23bdd3b16f063df89e4a6f3312ca9bef",
+   "diff_sha256": "fa670a35ea4ab419c1555e7d26f440066a18d3fd448e288b8198cd9e769c7a8e",
+   "files": [
+    "internal/account/routes.go",
+    "internal/auth/routes.go"
+   ],
+   "spec_tree": "45737a8f29124b11e160b602e613d11569fecf80"
+  },
+  "notes": [],
+  "owner": {
+   "checked": [
+    "branch",
+    "cached",
+    "head",
+    "refs",
+    "stash",
+    "status",
+    "worktrees"
+   ],
+   "untouched": true
+  },
+  "rebuild": {
+   "agent": "oracle",
+   "gates": [
+    {
+     "command": "./check.sh",
+     "exit_code": 0
+    }
+   ],
+   "model": null,
+   "rounds": 1,
+   "status": "passed"
+  },
+  "regressions": [],
+  "resolved": [
+   {
+    "case": "register_answers_the_user_with_a_lowercased_email / step 1",
+    "endpoint": "POST /v1/auth/register",
+    "evidence": [
+     {
+      "at": "check:D:register_answers_the_user_with_a_lowercased_email / step 1",
+      "kind": "check",
+      "what": "[D silent] POST /v1/auth/register (register_answers_the_user_with_a_lowercased_email / step 1)"
+     }
+    ],
+    "id": "t4-8b4aadef73",
+    "kind": "resolved",
+    "layer": "D",
+    "rule": "scenario: register_answers_the_user_with_a_lowercased_email",
+    "rules": [
+     "R8",
+     "R11",
+     "R12"
+    ],
+    "summary": "[D silent] POST /v1/auth/register (register_answers_the_user_with_a_lowercased_email / step 1)",
+    "target": "scenario:register_answers_the_user_with_a_lowercased_email",
+    "tier": 4
+   }
+  ],
+  "still_failing": [],
+  "t2_check": [],
+  "t2_confirmed": true,
+  "t3_vs_edit": {
+   "declarations": {
+    "listed": [
+     "internal/auth/routes.go:Register",
+     "internal/auth/routes.go:handler.register",
+     "internal/auth/routes.go:isDuplicate",
+     "internal/auth/routes.go:validEmail",
+     "internal/httpapi/body.go:ReadBody",
+     "internal/httpapi/registry.go:Deps.Now",
+     "internal/httpapi/registry.go:Deps.NowCtx",
+     "internal/httpapi/registry.go:Deps.Q",
+     "internal/httpapi/registry.go:Deps.Tx",
+     "internal/period/period.go:Location",
+     "internal/period/period.go:ValidZone"
+    ],
+    "precision": 0.0,
+    "recall": 0.0,
+    "touched": [
+     "internal/account/routes.go:handler.me"
+    ]
+   },
+   "files": {
+    "hit": [
+     "internal/auth/routes.go"
+    ],
+    "listed": [
+     "internal/auth/routes.go",
+     "internal/httpapi/body.go",
+     "internal/httpapi/registry.go",
+     "internal/period/period.go"
+    ],
+    "missed": [
+     {
+      "evidence": [
+       {
+        "at": "edit:internal/account/routes.go",
+        "kind": "check",
+        "what": "the edit touched it; tier 3 did not list it"
+       }
+      ],
+      "file": "internal/account/routes.go",
+      "id": "t4-55b682f034",
+      "kind": "t3_missed",
+      "rules": [],
+      "target": null,
+      "tier": 4
+     }
+    ],
+    "precision": 0.25,
+    "recall": 0.5,
+    "touched": [
+     "internal/account/routes.go",
+     "internal/auth/routes.go"
+    ]
+   },
+   "status": "run"
+  },
+  "verdict": "pass"
+ },
+ "tiers": {
+  "1": "run",
+  "2": "run",
+  "3": "run",
+  "4": "run"
+ }
+}

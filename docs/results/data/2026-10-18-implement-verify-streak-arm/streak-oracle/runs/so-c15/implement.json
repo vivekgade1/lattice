@@ -1,0 +1,3831 @@
+{
+ "diff": {
+  "rules": {
+   "added": [],
+   "changed": [
+    {
+     "new": "R14",
+     "new_text": "Login with an unknown email or a wrong password answers 401 with code `invalid_credentials`.",
+     "old": "R14",
+     "old_text": "A wrong password or an unknown email at login answers 401 with code `invalid_credentials`."
+    },
+    {
+     "new": "R29",
+     "new_text": "Each signed-in user has a budget of 120 requests per clock minute (fixed windows that start at second 0); from the 121st request of that minute on, the app answers 429 with code `rate_limited`, writes nothing, and sends a `Retry-After` header with the seconds left in the window.",
+     "old": "R29",
+     "old_text": "A signed-in user may make 120 requests per clock minute (fixed windows starting at second 0); the 121st and later requests in that minute answer 429 with code `rate_limited` and a `Retry-After` header giving the seconds until the window ends, and write nothing."
+    },
+    {
+     "new": "R59",
+     "new_text": "`GET /v1/habits/{id}` returns the habit; for a soft-deleted habit it answers 404 `not_found`.",
+     "old": "R59",
+     "old_text": "`GET /v1/habits/{id}` answers the habit; a deleted habit answers 404 `not_found`."
+    }
+   ],
+   "removed": [],
+   "unchanged": 145
+  },
+  "targets": {
+   "added": [],
+   "modified": [],
+   "removed": []
+  }
+ },
+ "input": {
+  "app": {
+   "configured": true,
+   "layers": "ACD"
+  },
+  "base": {
+   "requirements": "dcac6deb3ad3ec4ab7381af040cb86064aae00eb3ed38c05237657156fbad7b1",
+   "spec": "28dfc2e6c6a2aa27168079740d28a94de7f3efcb7cf8234d795d48b7960f5624",
+   "trace": "627a2b3f4c9cfafc3ad6cd5edb01f355fb76b53c248c629e7a77fd1bd8ee82ed"
+  },
+  "candidate": {
+   "requirements": "40e88e9cd086aed1d3a85f92e8442f648e8e2be3fa9741f28e87b8abc3d553c7",
+   "spec": "28dfc2e6c6a2aa27168079740d28a94de7f3efcb7cf8234d795d48b7960f5624",
+   "trace": "3c83b49c28a072ef736bef4dd142c6917ddbe2f5f2383be46101df4d00e592a1"
+  },
+  "change": null,
+  "inventory": {
+   "extract_sha256": "d51ef75340d54682a8bd2c3f40220e50c2ef31ae0eab17ef3ca68c9a39f89adc",
+   "stale": false,
+   "workflows_sha256": "af1383dbf5d51f876c61a282f23a2fb60d79f536af7542dfe48387e6f1c573a0"
+  },
+  "kind": "candidate",
+  "notes": []
+ },
+ "schema": "lattice.impact/1",
+ "summary": {
+  "kinds": {
+   "closure": 60,
+   "direct": 10
+  },
+  "note": "Which workflows fail is mostly not decidable before the change exists: a flow records the answers the app gives today, so it passes today by construction. Before an implementation only a changed invariant (tier 1, observed) and an exact-prefix contradiction (tier 2, determined) decide a workflow; every other flow listed is tier 3 'may_fail' (static, with unknowns), settled by tier 4 (Spike E, observed after the change).",
+  "tiers": {
+   "1": {
+    "failing": 0,
+    "flows": 0,
+    "resolved": 0
+   },
+   "2": {
+    "decidable": 0,
+    "determined": 0,
+    "flows": 0,
+    "undecidable": 3
+   },
+   "3": {
+    "flows": 66,
+    "locations": 70,
+    "unread": 2
+   }
+  },
+  "workflows": {
+   "t1_fail": 0,
+   "t2_fail": 0,
+   "t3_may_fail": 66
+  }
+ },
+ "tier1": {
+  "baseline": {
+   "failing": [],
+   "run": true,
+   "source": "run"
+  },
+  "counts": {
+   "baseline_drift": 0,
+   "by_label": {},
+   "by_layer": {},
+   "failing": 0,
+   "flows_run": 59,
+   "resolved": 0,
+   "workflow_fails": 0
+  },
+  "failing": [],
+  "flows": [],
+  "flows_note": null,
+  "layers": "ACD",
+  "resolved": []
+ },
+ "tier2": {
+  "corpus": {
+   "baseline": "run",
+   "environment": null,
+   "flow_steps": 167,
+   "flows_note": null,
+   "scenario_steps": 462
+  },
+  "decidability": [
+   {
+    "kind": "changed",
+    "reason": "compatible_expectation",
+    "state": "undecidable",
+    "subject": "rule:R14"
+   },
+   {
+    "kind": "changed",
+    "reason": "compatible_expectation",
+    "state": "undecidable",
+    "subject": "rule:R29"
+   },
+   {
+    "kind": "changed",
+    "reason": "compatible_expectation",
+    "state": "undecidable",
+    "subject": "rule:R59"
+   }
+  ],
+  "determined": [],
+  "flows": [],
+  "runtime_replay": {
+   "status": "not_applicable: 0 programs"
+  }
+ },
+ "tier3": {
+  "counts": {
+   "by_kind": {
+    "closure": 60,
+    "direct": 10,
+    "insertion": 0,
+    "table_peer": 0
+   },
+   "files": 14,
+   "flows_may_fail": 66,
+   "locations": 70,
+   "seeds": {
+    "machines": 0,
+    "routes": 5,
+    "tables": 0
+   },
+   "unread": 2
+  },
+  "external": {
+   "count": 0
+  },
+  "files": [
+   "internal/account/routes.go",
+   "internal/auth/routes.go",
+   "internal/auth/tokens.go",
+   "internal/completions/routes.go",
+   "internal/db/bodies.go",
+   "internal/db/changeseq.go",
+   "internal/db/owned.go",
+   "internal/habits/routes.go",
+   "internal/httpapi/body.go",
+   "internal/httpapi/registry.go",
+   "internal/nudges/checkin.go",
+   "internal/period/period.go",
+   "internal/progress/compute.go",
+   "internal/progress/routes.go"
+  ],
+  "flows": [
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-053146a70c",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-176d40c204",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-053146a70c",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-087fea1dbb",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-85b1e264ea",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits/{}",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29",
+     "R59"
+    ],
+    "target": "flow:wf-087fea1dbb",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-09db39abfe",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-e7e8069642",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-09db39abfe",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-0c6bdd7ab0",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-5ea4b815f1",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-0c6bdd7ab0",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-0da61e11ce",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-221865a601",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/auth/login"
+    ],
+    "rules": [
+     "R14"
+    ],
+    "target": "flow:wf-0da61e11ce",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-11a98b3683",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-26b5a3f616",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-11a98b3683",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-12302559ed",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-6426b8faed",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-12302559ed",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-1e4314104c",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-c008db7bbb",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-1e4314104c",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-21a2d02394",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-01128b668c",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-21a2d02394",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2610c56483",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-e0699667e8",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/me",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-2610c56483",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2d3eecc464",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-b12e8243ac",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-2d3eecc464",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2da750f4e8",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-9544a67c3e",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/completions/batch",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-2da750f4e8",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2f54cb544b",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-b4ce1c0a60",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/me",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-2f54cb544b",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3c5a04e0ae",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-0ed853e820",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-3c5a04e0ae",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3d2436d2dd",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-c78c6de6c3",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-3d2436d2dd",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3de8783507",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-d7c21debfa",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-3de8783507",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-45bfc39e84",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-7bf5246840",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-45bfc39e84",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-4dfc4c5bed",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-f5c4a603ce",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits/{}",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29",
+     "R59"
+    ],
+    "target": "flow:wf-4dfc4c5bed",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-4e49f96210",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-6c0de71c8b",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/completions/batch",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-4e49f96210",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-52994a9544",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-f002990632",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-52994a9544",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-597f2899e4",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-a4f1fcb941",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-597f2899e4",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5a6bab46c9",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-1726c1b25d",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-5a6bab46c9",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5cf3da443e",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-3310d9e27f",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-5cf3da443e",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5eebdfc88b",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-70bc4b918c",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-5eebdfc88b",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-6a4cc7a302",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-9ddcae9384",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-6a4cc7a302",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-6c2282fd50",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-a9899a6140",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits/{}",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29",
+     "R59"
+    ],
+    "target": "flow:wf-6c2282fd50",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-717a23507f",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-061319f08d",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-717a23507f",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-7f0f99bdcf",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-ea810e7015",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/completions/batch",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-7f0f99bdcf",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-80123a60e5",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-7a2d11b268",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-80123a60e5",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-8ae8af75df",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-d385d465f7",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits/{}",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29",
+     "R59"
+    ],
+    "target": "flow:wf-8ae8af75df",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-8b2744d526",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-b9d90d5ce1",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-8b2744d526",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-9523e7a835",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-65982ab50d",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/completions/batch",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-9523e7a835",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-9ead6d0f00",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-06bc01cd93",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-9ead6d0f00",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-9f87f3f1d9",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-f5c89fc2fe",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-9f87f3f1d9",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a1793fed29",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-9e42a45fb8",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-a1793fed29",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a7ae5cb208",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-51d7e72879",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-a7ae5cb208",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a8966be4b8",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-4d0a2b8ccf",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/auth/login"
+    ],
+    "rules": [
+     "R14"
+    ],
+    "target": "flow:wf-a8966be4b8",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a9ac9b88a4",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-95b23f8219",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-a9ac9b88a4",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b2acc9eac6",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-6a5190f0f2",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-b2acc9eac6",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b2ee5de88e",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-3d9a20dbcd",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits/{}",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29",
+     "R59"
+    ],
+    "target": "flow:wf-b2ee5de88e",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b595a756b6",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-30181a09ee",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-b595a756b6",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b95fd71de1",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-49bad41eb8",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-b95fd71de1",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-bd46b71ee2",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-3ce7d618b8",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-bd46b71ee2",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-c00e2afaf3",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-5051613d92",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-c00e2afaf3",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-c675dd6cb3",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-208a61eebe",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-c675dd6cb3",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-c71e6bbb49",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-be22c9aa0d",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-c71e6bbb49",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-cc7886ea28",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-a04157290c",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-cc7886ea28",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ce853d194f",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-ebca6f7e2d",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-ce853d194f",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-cf27dadc73",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-6054b044af",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-cf27dadc73",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d06e3e8777",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-95813904a7",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-d06e3e8777",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d2b6d84725",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-24e8210bb1",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-d2b6d84725",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d2fcd76bcd",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-97fce41763",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits/{}",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29",
+     "R59"
+    ],
+    "target": "flow:wf-d2fcd76bcd",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d650036584",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-042192ebe6",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-d650036584",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d8340207d1",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-ce6b78cf90",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-d8340207d1",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-da24bc5b11",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-c5d8a8e8f2",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-da24bc5b11",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-dbac494b10",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-33ae457dda",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-dbac494b10",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-de433cd704",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-d77d46a33c",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-de433cd704",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-e3249cec66",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-ceca838d0c",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-e3249cec66",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ebadb4a811",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-bb2f0f9723",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-ebadb4a811",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ee191140a0",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-6435be0fc5",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-ee191140a0",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f679309f8a",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-d43209fd73",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-f679309f8a",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f67bf44692",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-073416b689",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-f67bf44692",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f961306c88",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-8e49a84fd1",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits/{}",
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29",
+     "R59"
+    ],
+    "target": "flow:wf-f961306c88",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-fc7d0a0772",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-68da979e27",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-fc7d0a0772",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-fcf46753f5",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-2ee10416f5",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-fcf46753f5",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ffaa047bf2",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-f17ce09bc2",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits"
+    ],
+    "rules": [
+     "R29"
+    ],
+    "target": "flow:wf-ffaa047bf2",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   }
+  ],
+  "locations": [
+   {
+    "evidence": [
+     {
+      "at": "code:internal/account/routes.go:20",
+      "kind": "code",
+      "what": "route registration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route registration"
+     }
+    ],
+    "file": "internal/account/routes.go",
+    "id": "t3-5c54d979da",
+    "kind": "direct",
+    "line": 20,
+    "rules": [
+     "R29"
+    ],
+    "symbol": null,
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 1 -> route:GET /v1/me -> registered -> code:internal/account/routes.go:20",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 10 -> route:GET /v1/me -> registered -> code:internal/account/routes.go:20",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 100 -> route:GET /v1/me -> registered -> code:internal/account/routes.go:20",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 101 -> route:GET /v1/me -> registered -> code:internal/account/routes.go:20",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 102 -> route:GET /v1/me -> registered -> code:internal/account/routes.go:20"
+    ],
+    "what": "route registration"
+   },
+   {
+    "end_line": 58,
+    "evidence": [
+     {
+      "at": "code:internal/account/routes.go:45",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/account/routes.go",
+    "id": "t3-eaba38fc1f",
+    "kind": "closure",
+    "line": 45,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "me",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 1 -> route:GET /v1/me -> call:streak/internal/account:handler.me -> code:internal/account/routes.go:45",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 10 -> route:GET /v1/me -> call:streak/internal/account:handler.me -> code:internal/account/routes.go:45",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 100 -> route:GET /v1/me -> call:streak/internal/account:handler.me -> code:internal/account/routes.go:45",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 101 -> route:GET /v1/me -> call:streak/internal/account:handler.me -> code:internal/account/routes.go:45",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 102 -> route:GET /v1/me -> call:streak/internal/account:handler.me -> code:internal/account/routes.go:45"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 67,
+    "evidence": [
+     {
+      "at": "code:internal/account/routes.go:60",
+      "kind": "code",
+      "what": "handler declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler declaration"
+     }
+    ],
+    "file": "internal/account/routes.go",
+    "id": "t3-7fd3370fec",
+    "kind": "direct",
+    "line": 60,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "get",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 1 -> route:GET /v1/me -> handler:account.handler.get -> code:internal/account/routes.go:60",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 10 -> route:GET /v1/me -> handler:account.handler.get -> code:internal/account/routes.go:60",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 100 -> route:GET /v1/me -> handler:account.handler.get -> code:internal/account/routes.go:60",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 101 -> route:GET /v1/me -> handler:account.handler.get -> code:internal/account/routes.go:60",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 102 -> route:GET /v1/me -> handler:account.handler.get -> code:internal/account/routes.go:60"
+    ],
+    "what": "handler declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:26",
+      "kind": "code",
+      "what": "route registration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route registration"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-e8cf3b2895",
+    "kind": "direct",
+    "line": 26,
+    "rules": [
+     "R14"
+    ],
+    "symbol": null,
+    "target": "scenario:login_with_bad_credentials_is_refused",
+    "tier": 3,
+    "via": [
+     "rule:R14 -> scenario:login_with_bad_credentials_is_refused / step 1 -> route:POST /v1/auth/login -> registered -> code:internal/auth/routes.go:26",
+     "rule:R14 -> scenario:login_with_bad_credentials_is_refused / step 2 -> route:POST /v1/auth/login -> registered -> code:internal/auth/routes.go:26"
+    ],
+    "what": "route registration"
+   },
+   {
+    "end_line": 132,
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:119",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-6808a6bed8",
+    "kind": "closure",
+    "line": 119,
+    "rules": [
+     "R14"
+    ],
+    "symbol": "issue",
+    "target": "scenario:login_with_bad_credentials_is_refused",
+    "tier": 3,
+    "via": [
+     "rule:R14 -> scenario:login_with_bad_credentials_is_refused / step 1 -> route:POST /v1/auth/login -> call:streak/internal/auth:handler.issue -> code:internal/auth/routes.go:119",
+     "rule:R14 -> scenario:login_with_bad_credentials_is_refused / step 2 -> route:POST /v1/auth/login -> call:streak/internal/auth:handler.issue -> code:internal/auth/routes.go:119"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 139,
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:135",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-4338db925c",
+    "kind": "closure",
+    "line": 135,
+    "rules": [
+     "R14"
+    ],
+    "symbol": "revokeSession",
+    "target": "scenario:login_with_bad_credentials_is_refused",
+    "tier": 3,
+    "via": [
+     "rule:R14 -> scenario:login_with_bad_credentials_is_refused / step 1 -> route:POST /v1/auth/login -> call:streak/internal/auth:revokeSession -> code:internal/auth/routes.go:135",
+     "rule:R14 -> scenario:login_with_bad_credentials_is_refused / step 2 -> route:POST /v1/auth/login -> call:streak/internal/auth:revokeSession -> code:internal/auth/routes.go:135"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 194,
+    "evidence": [
+     {
+      "at": "code:internal/auth/routes.go:142",
+      "kind": "code",
+      "what": "handler declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler declaration"
+     }
+    ],
+    "file": "internal/auth/routes.go",
+    "id": "t3-5c2cb499b2",
+    "kind": "direct",
+    "line": 142,
+    "rules": [
+     "R14"
+    ],
+    "symbol": "login",
+    "target": "scenario:login_with_bad_credentials_is_refused",
+    "tier": 3,
+    "via": [
+     "rule:R14 -> scenario:login_with_bad_credentials_is_refused / step 1 -> route:POST /v1/auth/login -> handler:auth.handler.login -> code:internal/auth/routes.go:142",
+     "rule:R14 -> scenario:login_with_bad_credentials_is_refused / step 2 -> route:POST /v1/auth/login -> handler:auth.handler.login -> code:internal/auth/routes.go:142"
+    ],
+    "what": "handler declaration"
+   },
+   {
+    "end_line": 43,
+    "evidence": [
+     {
+      "at": "code:internal/auth/tokens.go:39",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/auth/tokens.go",
+    "id": "t3-3e613d86ec",
+    "kind": "closure",
+    "line": 39,
+    "rules": [
+     "R14"
+    ],
+    "symbol": "SignAccess",
+    "target": "scenario:login_with_bad_credentials_is_refused",
+    "tier": 3,
+    "via": [
+     "rule:R14 -> scenario:login_with_bad_credentials_is_refused / step 1 -> route:POST /v1/auth/login -> call:streak/internal/auth:SignAccess -> code:internal/auth/tokens.go:39",
+     "rule:R14 -> scenario:login_with_bad_credentials_is_refused / step 2 -> route:POST /v1/auth/login -> call:streak/internal/auth:SignAccess -> code:internal/auth/tokens.go:39"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 49,
+    "evidence": [
+     {
+      "at": "code:internal/auth/tokens.go:45",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/auth/tokens.go",
+    "id": "t3-dbf1952e02",
+    "kind": "closure",
+    "line": 45,
+    "rules": [
+     "R14"
+    ],
+    "symbol": "mac",
+    "target": "scenario:login_with_bad_credentials_is_refused",
+    "tier": 3,
+    "via": [
+     "rule:R14 -> scenario:login_with_bad_credentials_is_refused / step 1 -> route:POST /v1/auth/login -> call:streak/internal/auth:mac -> code:internal/auth/tokens.go:45",
+     "rule:R14 -> scenario:login_with_bad_credentials_is_refused / step 2 -> route:POST /v1/auth/login -> call:streak/internal/auth:mac -> code:internal/auth/tokens.go:45"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 90,
+    "evidence": [
+     {
+      "at": "code:internal/auth/tokens.go:85",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/auth/tokens.go",
+    "id": "t3-7420d62723",
+    "kind": "closure",
+    "line": 85,
+    "rules": [
+     "R14"
+    ],
+    "symbol": "LoginIssuedAt",
+    "target": "scenario:login_with_bad_credentials_is_refused",
+    "tier": 3,
+    "via": [
+     "rule:R14 -> scenario:login_with_bad_credentials_is_refused / step 1 -> route:POST /v1/auth/login -> call:streak/internal/auth:LoginIssuedAt -> code:internal/auth/tokens.go:85",
+     "rule:R14 -> scenario:login_with_bad_credentials_is_refused / step 2 -> route:POST /v1/auth/login -> call:streak/internal/auth:LoginIssuedAt -> code:internal/auth/tokens.go:85"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 100,
+    "evidence": [
+     {
+      "at": "code:internal/auth/tokens.go:93",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/auth/tokens.go",
+    "id": "t3-c1c5518e09",
+    "kind": "closure",
+    "line": 93,
+    "rules": [
+     "R14"
+    ],
+    "symbol": "NewRefreshToken",
+    "target": "scenario:login_with_bad_credentials_is_refused",
+    "tier": 3,
+    "via": [
+     "rule:R14 -> scenario:login_with_bad_credentials_is_refused / step 1 -> route:POST /v1/auth/login -> call:streak/internal/auth:NewRefreshToken -> code:internal/auth/tokens.go:93",
+     "rule:R14 -> scenario:login_with_bad_credentials_is_refused / step 2 -> route:POST /v1/auth/login -> call:streak/internal/auth:NewRefreshToken -> code:internal/auth/tokens.go:93"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 106,
+    "evidence": [
+     {
+      "at": "code:internal/auth/tokens.go:103",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/auth/tokens.go",
+    "id": "t3-3de9314970",
+    "kind": "closure",
+    "line": 103,
+    "rules": [
+     "R14"
+    ],
+    "symbol": "HashRefresh",
+    "target": "scenario:login_with_bad_credentials_is_refused",
+    "tier": 3,
+    "via": [
+     "rule:R14 -> scenario:login_with_bad_credentials_is_refused / step 1 -> route:POST /v1/auth/login -> call:streak/internal/auth:HashRefresh -> code:internal/auth/tokens.go:103",
+     "rule:R14 -> scenario:login_with_bad_credentials_is_refused / step 2 -> route:POST /v1/auth/login -> call:streak/internal/auth:HashRefresh -> code:internal/auth/tokens.go:103"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:28",
+      "kind": "code",
+      "what": "route registration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route registration"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-cbd28eec98",
+    "kind": "direct",
+    "line": 28,
+    "rules": [
+     "R29"
+    ],
+    "symbol": null,
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> registered -> code:internal/completions/routes.go:28"
+    ],
+    "what": "route registration"
+   },
+   {
+    "end_line": 53,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:44",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-2a4308af0d",
+    "kind": "closure",
+    "line": 44,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "refusalCode",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/completions:refusalCode -> code:internal/completions/routes.go:44"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 127,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:57",
+      "kind": "code",
+      "what": "handler declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler declaration"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-eb80e24e0a",
+    "kind": "direct",
+    "line": 57,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "batch",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> handler:completions.handler.batch -> code:internal/completions/routes.go:57"
+    ],
+    "what": "handler declaration"
+   },
+   {
+    "end_line": 158,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:139",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-9252b12673",
+    "kind": "closure",
+    "line": 139,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "ReadInput",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/completions:ReadInput -> code:internal/completions/routes.go:139"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 165,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:160",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-184215ac63",
+    "kind": "closure",
+    "line": 160,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "sameNote",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/completions:sameNote -> code:internal/completions/routes.go:160"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 214,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:169",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-afd534b12c",
+    "kind": "closure",
+    "line": 169,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "Create",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/completions:Create -> code:internal/completions/routes.go:169"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 16,
+    "evidence": [
+     {
+      "at": "code:internal/db/bodies.go:16",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/bodies.go",
+    "id": "t3-d63bc80d35",
+    "kind": "closure",
+    "line": 16,
+    "rules": [
+     "R29",
+     "R59"
+    ],
+    "symbol": "Instant",
+    "target": "scenario:access__get_habit__as_ann",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/db:Instant -> code:internal/db/bodies.go:16",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 121 -> route:POST /v1/habits -> call:streak/internal/db:Instant -> code:internal/db/bodies.go:16",
+     "rule:R59 -> scenario:access__get_habit__as_ann / step 1 -> route:GET /v1/habits/{} -> call:streak/internal/db:Instant -> code:internal/db/bodies.go:16",
+     "rule:R59 -> scenario:get_deleted_habit_is_not_found / step 1 -> route:GET /v1/habits/{} -> call:streak/internal/db:Instant -> code:internal/db/bodies.go:16",
+     "rule:R59 -> text -> route:GET /v1/habits/{} -> call:streak/internal/db:Instant -> code:internal/db/bodies.go:16"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 48,
+    "evidence": [
+     {
+      "at": "code:internal/db/bodies.go:43",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/bodies.go",
+    "id": "t3-b439595fba",
+    "kind": "closure",
+    "line": 43,
+    "rules": [
+     "R29",
+     "R59"
+    ],
+    "symbol": "HabitBody",
+    "target": "scenario:access__get_habit__as_ann",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 121 -> route:POST /v1/habits -> call:streak/internal/db:HabitBody -> code:internal/db/bodies.go:43",
+     "rule:R59 -> scenario:access__get_habit__as_ann / step 1 -> route:GET /v1/habits/{} -> call:streak/internal/db:HabitBody -> code:internal/db/bodies.go:43",
+     "rule:R59 -> scenario:get_deleted_habit_is_not_found / step 1 -> route:GET /v1/habits/{} -> call:streak/internal/db:HabitBody -> code:internal/db/bodies.go:43",
+     "rule:R59 -> text -> route:GET /v1/habits/{} -> call:streak/internal/db:HabitBody -> code:internal/db/bodies.go:43"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 64,
+    "evidence": [
+     {
+      "at": "code:internal/db/bodies.go:61",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/bodies.go",
+    "id": "t3-d24864076e",
+    "kind": "closure",
+    "line": 61,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "CompletionBody",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/db:CompletionBody -> code:internal/db/bodies.go:61"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 20,
+    "evidence": [
+     {
+      "at": "code:internal/db/changeseq.go:13",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/changeseq.go",
+    "id": "t3-5eed5c3f06",
+    "kind": "closure",
+    "line": 13,
+    "rules": [
+     "R14",
+     "R29"
+    ],
+    "symbol": "LockUser",
+    "target": "scenario:login_with_bad_credentials_is_refused",
+    "tier": 3,
+    "via": [
+     "rule:R14 -> scenario:login_with_bad_credentials_is_refused / step 1 -> route:POST /v1/auth/login -> call:streak/internal/db:LockUser -> code:internal/db/changeseq.go:13",
+     "rule:R14 -> scenario:login_with_bad_credentials_is_refused / step 2 -> route:POST /v1/auth/login -> call:streak/internal/db:LockUser -> code:internal/db/changeseq.go:13",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/db:LockUser -> code:internal/db/changeseq.go:13",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 121 -> route:POST /v1/habits -> call:streak/internal/db:LockUser -> code:internal/db/changeseq.go:13"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 32,
+    "evidence": [
+     {
+      "at": "code:internal/db/changeseq.go:24",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/changeseq.go",
+    "id": "t3-7f61406eb1",
+    "kind": "closure",
+    "line": 24,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "NextChangeSeq",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/db:NextChangeSeq -> code:internal/db/changeseq.go:24",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 121 -> route:POST /v1/habits -> call:streak/internal/db:NextChangeSeq -> code:internal/db/changeseq.go:24"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 21,
+    "evidence": [
+     {
+      "at": "code:internal/db/owned.go:14",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/owned.go",
+    "id": "t3-7f3b436a2e",
+    "kind": "closure",
+    "line": 14,
+    "rules": [
+     "R29",
+     "R59"
+    ],
+    "symbol": "OwnedHabit",
+    "target": "scenario:access__get_habit__as_ann",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14",
+     "rule:R59 -> scenario:access__get_habit__as_ann / step 1 -> route:GET /v1/habits/{} -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14",
+     "rule:R59 -> scenario:get_deleted_habit_is_not_found / step 1 -> route:GET /v1/habits/{} -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14",
+     "rule:R59 -> text -> route:GET /v1/habits/{} -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:24",
+      "kind": "code",
+      "what": "route registration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route registration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-67c5f15443",
+    "kind": "direct",
+    "line": 24,
+    "rules": [
+     "R29"
+    ],
+    "symbol": null,
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 121 -> route:POST /v1/habits -> registered -> code:internal/habits/routes.go:24"
+    ],
+    "what": "route registration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:26",
+      "kind": "code",
+      "what": "route registration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route registration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-437f0a0f6d",
+    "kind": "direct",
+    "line": 26,
+    "rules": [
+     "R59"
+    ],
+    "symbol": null,
+    "target": "scenario:access__get_habit__as_ann",
+    "tier": 3,
+    "via": [
+     "rule:R59 -> scenario:access__get_habit__as_ann / step 1 -> route:GET /v1/habits/{} -> registered -> code:internal/habits/routes.go:26",
+     "rule:R59 -> scenario:get_deleted_habit_is_not_found / step 1 -> route:GET /v1/habits/{} -> registered -> code:internal/habits/routes.go:26",
+     "rule:R59 -> text -> route:GET /v1/habits/{} -> registered -> code:internal/habits/routes.go:26"
+    ],
+    "what": "route registration"
+   },
+   {
+    "end_line": 40,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:33",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-63c92b90b0",
+    "kind": "closure",
+    "line": 33,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "name",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 121 -> route:POST /v1/habits -> call:streak/internal/habits:name -> code:internal/habits/routes.go:33"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 51,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:42",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-f45e549a2f",
+    "kind": "closure",
+    "line": 42,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "description",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 121 -> route:POST /v1/habits -> call:streak/internal/habits:description -> code:internal/habits/routes.go:42"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 60,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:53",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-69a1113bd5",
+    "kind": "closure",
+    "line": 53,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "targetCount",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 121 -> route:POST /v1/habits -> call:streak/internal/habits:targetCount -> code:internal/habits/routes.go:53"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 72,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:63",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-a3af72fafb",
+    "kind": "closure",
+    "line": 63,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "endDate",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 121 -> route:POST /v1/habits -> call:streak/internal/habits:endDate -> code:internal/habits/routes.go:63"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 79,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:74",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-995c5a9822",
+    "kind": "closure",
+    "line": 74,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "sameDate",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 121 -> route:POST /v1/habits -> call:streak/internal/habits:sameDate -> code:internal/habits/routes.go:74"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 86,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:81",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-748d5d69ca",
+    "kind": "closure",
+    "line": 81,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "sameString",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 121 -> route:POST /v1/habits -> call:streak/internal/habits:sameString -> code:internal/habits/routes.go:81"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 102,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:88",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-eab3699926",
+    "kind": "closure",
+    "line": 88,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "nameTaken",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 121 -> route:POST /v1/habits -> call:streak/internal/habits:nameTaken -> code:internal/habits/routes.go:88"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 115,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:104",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-3a2fc65c41",
+    "kind": "closure",
+    "line": 104,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "atLimit",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 121 -> route:POST /v1/habits -> call:streak/internal/habits:atLimit -> code:internal/habits/routes.go:104"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 202,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:118",
+      "kind": "code",
+      "what": "handler declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-adf96241e4",
+    "kind": "direct",
+    "line": 118,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "create",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 121 -> route:POST /v1/habits -> handler:habits.handler.create -> code:internal/habits/routes.go:118"
+    ],
+    "what": "handler declaration"
+   },
+   {
+    "end_line": 249,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:238",
+      "kind": "code",
+      "what": "handler declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler declaration"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-2ca900d062",
+    "kind": "direct",
+    "line": 238,
+    "rules": [
+     "R59"
+    ],
+    "symbol": "get",
+    "target": "scenario:access__get_habit__as_ann",
+    "tier": 3,
+    "via": [
+     "rule:R59 -> scenario:access__get_habit__as_ann / step 1 -> route:GET /v1/habits/{} -> handler:habits.handler.get -> code:internal/habits/routes.go:238",
+     "rule:R59 -> scenario:get_deleted_habit_is_not_found / step 1 -> route:GET /v1/habits/{} -> handler:habits.handler.get -> code:internal/habits/routes.go:238",
+     "rule:R59 -> text -> route:GET /v1/habits/{} -> handler:habits.handler.get -> code:internal/habits/routes.go:238"
+    ],
+    "what": "handler declaration"
+   },
+   {
+    "end_line": 37,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/body.go:21",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/body.go",
+    "id": "t3-12649e36ba",
+    "kind": "closure",
+    "line": 21,
+    "rules": [
+     "R14",
+     "R29"
+    ],
+    "symbol": "ReadBody",
+    "target": "scenario:login_with_bad_credentials_is_refused",
+    "tier": 3,
+    "via": [
+     "rule:R14 -> scenario:login_with_bad_credentials_is_refused / step 1 -> route:POST /v1/auth/login -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "rule:R14 -> scenario:login_with_bad_credentials_is_refused / step 2 -> route:POST /v1/auth/login -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 121 -> route:POST /v1/habits -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 139,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/body.go:134",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/body.go",
+    "id": "t3-afe467c780",
+    "kind": "closure",
+    "line": 134,
+    "rules": [
+     "R59"
+    ],
+    "symbol": "CanonicalUUID",
+    "target": "scenario:access__get_habit__as_ann",
+    "tier": 3,
+    "via": [
+     "rule:R59 -> scenario:access__get_habit__as_ann / step 1 -> route:GET /v1/habits/{} -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134",
+     "rule:R59 -> scenario:get_deleted_habit_is_not_found / step 1 -> route:GET /v1/habits/{} -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134",
+     "rule:R59 -> text -> route:GET /v1/habits/{} -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 148,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/body.go:142",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/body.go",
+    "id": "t3-e8626272f4",
+    "kind": "closure",
+    "line": 142,
+    "rules": [
+     "R59"
+    ],
+    "symbol": "PathUUID",
+    "target": "scenario:access__get_habit__as_ann",
+    "tier": 3,
+    "via": [
+     "rule:R59 -> scenario:access__get_habit__as_ann / step 1 -> route:GET /v1/habits/{} -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142",
+     "rule:R59 -> scenario:get_deleted_habit_is_not_found / step 1 -> route:GET /v1/habits/{} -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142",
+     "rule:R59 -> text -> route:GET /v1/habits/{} -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 41,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:37",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-5903fd9fad",
+    "kind": "closure",
+    "line": 37,
+    "rules": [
+     "R29",
+     "R59"
+    ],
+    "symbol": "CallerOf",
+    "target": "scenario:access__get_habit__as_ann",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 1 -> route:GET /v1/me -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 10 -> route:GET /v1/me -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 100 -> route:GET /v1/me -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 101 -> route:GET /v1/me -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 102 -> route:GET /v1/me -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 47,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:45",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-c2c613e7de",
+    "kind": "closure",
+    "line": 45,
+    "rules": [
+     "R14",
+     "R29"
+    ],
+    "symbol": "Now",
+    "target": "scenario:login_with_bad_credentials_is_refused",
+    "tier": 3,
+    "via": [
+     "rule:R14 -> scenario:login_with_bad_credentials_is_refused / step 1 -> route:POST /v1/auth/login -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "rule:R14 -> scenario:login_with_bad_credentials_is_refused / step 2 -> route:POST /v1/auth/login -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 121 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 56,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:50",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-8718985080",
+    "kind": "closure",
+    "line": 50,
+    "rules": [
+     "R14",
+     "R29"
+    ],
+    "symbol": "NowCtx",
+    "target": "scenario:login_with_bad_credentials_is_refused",
+    "tier": 3,
+    "via": [
+     "rule:R14 -> scenario:login_with_bad_credentials_is_refused / step 1 -> route:POST /v1/auth/login -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "rule:R14 -> scenario:login_with_bad_credentials_is_refused / step 2 -> route:POST /v1/auth/login -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 121 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 64,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:59",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-c7412c3a77",
+    "kind": "closure",
+    "line": 59,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "Today",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 121 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 67,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:67",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-d5e2f3103b",
+    "kind": "closure",
+    "line": 67,
+    "rules": [
+     "R14",
+     "R29",
+     "R59"
+    ],
+    "symbol": "Q",
+    "target": "scenario:access__get_habit__as_ann",
+    "tier": 3,
+    "via": [
+     "rule:R14 -> scenario:login_with_bad_credentials_is_refused / step 1 -> route:POST /v1/auth/login -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R14 -> scenario:login_with_bad_credentials_is_refused / step 2 -> route:POST /v1/auth/login -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 1 -> route:GET /v1/me -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 10 -> route:GET /v1/me -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 100 -> route:GET /v1/me -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 73,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:71",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-d077ae552d",
+    "kind": "closure",
+    "line": 71,
+    "rules": [
+     "R14",
+     "R29"
+    ],
+    "symbol": "Tx",
+    "target": "scenario:login_with_bad_credentials_is_refused",
+    "tier": 3,
+    "via": [
+     "rule:R14 -> scenario:login_with_bad_credentials_is_refused / step 1 -> route:POST /v1/auth/login -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "rule:R14 -> scenario:login_with_bad_credentials_is_refused / step 2 -> route:POST /v1/auth/login -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 121 -> route:POST /v1/habits -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 23,
+    "evidence": [
+     {
+      "at": "code:internal/nudges/checkin.go:17",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/nudges/checkin.go",
+    "id": "t3-1f953b3f81",
+    "kind": "closure",
+    "line": 17,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "newID",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/nudges:newID -> code:internal/nudges/checkin.go:17"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 45,
+    "evidence": [
+     {
+      "at": "code:internal/nudges/checkin.go:26",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/nudges/checkin.go",
+    "id": "t3-d8be44cb6a",
+    "kind": "closure",
+    "line": 26,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "Message",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/nudges:Message -> code:internal/nudges/checkin.go:26"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 99,
+    "evidence": [
+     {
+      "at": "code:internal/nudges/checkin.go:49",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/nudges/checkin.go",
+    "id": "t3-01eaa468d6",
+    "kind": "closure",
+    "line": 49,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "AfterCheckIn",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/nudges:AfterCheckIn -> code:internal/nudges/checkin.go:49"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 24,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:24",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-136fba3302",
+    "kind": "closure",
+    "line": 24,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "Valid",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 121 -> route:POST /v1/habits -> call:streak/internal/period:Valid -> code:internal/period/period.go:24"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 37,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:27",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-ddc3af0c44",
+    "kind": "closure",
+    "line": 27,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "MaxTarget",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 121 -> route:POST /v1/habits -> call:streak/internal/period:MaxTarget -> code:internal/period/period.go:27"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 52,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:43",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-4a049b38d7",
+    "kind": "closure",
+    "line": 43,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "ParseDate",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/period:ParseDate -> code:internal/period/period.go:43"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 55,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:55",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-17f94bda34",
+    "kind": "closure",
+    "line": 55,
+    "rules": [
+     "R29",
+     "R59"
+    ],
+    "symbol": "FormatDate",
+    "target": "scenario:access__get_habit__as_ann",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 121 -> route:POST /v1/habits -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "rule:R59 -> scenario:access__get_habit__as_ann / step 1 -> route:GET /v1/habits/{} -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "rule:R59 -> scenario:get_deleted_habit_is_not_found / step 1 -> route:GET /v1/habits/{} -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "rule:R59 -> text -> route:GET /v1/habits/{} -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 64,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:58",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-c94d6f610c",
+    "kind": "closure",
+    "line": 58,
+    "rules": [
+     "R29",
+     "R59"
+    ],
+    "symbol": "FormatDatePtr",
+    "target": "scenario:access__get_habit__as_ann",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 121 -> route:POST /v1/habits -> call:streak/internal/period:FormatDatePtr -> code:internal/period/period.go:58",
+     "rule:R59 -> scenario:access__get_habit__as_ann / step 1 -> route:GET /v1/habits/{} -> call:streak/internal/period:FormatDatePtr -> code:internal/period/period.go:58",
+     "rule:R59 -> scenario:get_deleted_habit_is_not_found / step 1 -> route:GET /v1/habits/{} -> call:streak/internal/period:FormatDatePtr -> code:internal/period/period.go:58",
+     "rule:R59 -> text -> route:GET /v1/habits/{} -> call:streak/internal/period:FormatDatePtr -> code:internal/period/period.go:58"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 67,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:67",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-9d2eb1d821",
+    "kind": "closure",
+    "line": 67,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "Date",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/period:Date -> code:internal/period/period.go:67",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 121 -> route:POST /v1/habits -> call:streak/internal/period:Date -> code:internal/period/period.go:67"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 70,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:70",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-20a2856688",
+    "kind": "closure",
+    "line": 70,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "AddDays",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 121 -> route:POST /v1/habits -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 73,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:73",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-2b86c286d9",
+    "kind": "closure",
+    "line": 73,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "Days",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/period:Days -> code:internal/period/period.go:73"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 112,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:97",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-06b0e60381",
+    "kind": "closure",
+    "line": 97,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "Location",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 121 -> route:POST /v1/habits -> call:streak/internal/period:Location -> code:internal/period/period.go:97"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 129,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:122",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-dca45a5e54",
+    "kind": "closure",
+    "line": 122,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "Today",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/period:Today -> code:internal/period/period.go:122",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 121 -> route:POST /v1/habits -> call:streak/internal/period:Today -> code:internal/period/period.go:122"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 142,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:132",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-0e0f82c1e5",
+    "kind": "closure",
+    "line": 132,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "Start",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/period:Start -> code:internal/period/period.go:132",
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 121 -> route:POST /v1/habits -> call:streak/internal/period:Start -> code:internal/period/period.go:132"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 155,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:145",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-d1d7d58d7c",
+    "kind": "closure",
+    "line": 145,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "End",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/period:End -> code:internal/period/period.go:145"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 23,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:23",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-0d29da09dc",
+    "kind": "closure",
+    "line": 23,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "L",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/progress:Window.L -> code:internal/progress/compute.go:23"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 26,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:26",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-26da98c56f",
+    "kind": "closure",
+    "line": 26,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "A",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/progress:Window.A -> code:internal/progress/compute.go:26"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 37,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:30",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-5ea608150f",
+    "kind": "closure",
+    "line": 30,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "ActiveWindow",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/progress:ActiveWindow -> code:internal/progress/compute.go:30"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 51,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:40",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-91dd654cbc",
+    "kind": "closure",
+    "line": 40,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "WindowFor",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/progress:WindowFor -> code:internal/progress/compute.go:40"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 60,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:55",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-85e7af8838",
+    "kind": "closure",
+    "line": 55,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "ProRate",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/progress:ProRate -> code:internal/progress/compute.go:55"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 65,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:65",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-e20c13ab18",
+    "kind": "closure",
+    "line": 65,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "rate",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/progress:rate -> code:internal/progress/compute.go:65"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 97,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:97",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-e404cf8401",
+    "kind": "closure",
+    "line": 97,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "ptr",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/progress:ptr -> code:internal/progress/compute.go:97"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 152,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:101",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-0d68cb15d6",
+    "kind": "closure",
+    "line": 101,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "Compute",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/progress:Compute -> code:internal/progress/compute.go:101"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 32,
+    "evidence": [
+     {
+      "at": "code:internal/progress/routes.go:26",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t3-57053b6aaf",
+    "kind": "closure",
+    "line": 26,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "liveDates",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/progress:liveDates -> code:internal/progress/routes.go:26"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 42,
+    "evidence": [
+     {
+      "at": "code:internal/progress/routes.go:35",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t3-4de433c962",
+    "kind": "closure",
+    "line": 35,
+    "rules": [
+     "R29"
+    ],
+    "symbol": "Of",
+    "target": "scenario:rate_limit_120_per_minute",
+    "tier": 3,
+    "via": [
+     "rule:R29 -> scenario:rate_limit_120_per_minute / step 119 -> route:POST /v1/completions/batch -> call:streak/internal/progress:Of -> code:internal/progress/routes.go:35"
+    ],
+    "what": "call declaration"
+   }
+  ],
+  "stale": false,
+  "unread": [
+   {
+    "file": "internal/habits/routes.go",
+    "kind": "extract_unread",
+    "line": 55,
+    "reason": "the bound `period.MaxTarget(kind)` of `target_count` is not a constant",
+    "what": "bound"
+   },
+   {
+    "file": "internal/httpapi/registry.go",
+    "kind": "extract_unread",
+    "line": 51,
+    "reason": "interface dispatch: `d.Clock.Now(ctx)` has no single implementation in the module",
+    "what": "call"
+   }
+  ]
+ },
+ "tier4": {
+  "before": {
+   "failing_count": 0,
+   "flows_run": 59,
+   "matches_report": true
+  },
+  "counts": {},
+  "failing": [],
+  "flows": [],
+  "implementation": null,
+  "notes": [],
+  "owner": {
+   "checked": [
+    "branch",
+    "cached",
+    "head",
+    "refs",
+    "stash",
+    "status",
+    "worktrees"
+   ],
+   "untouched": true
+  },
+  "rebuild": null,
+  "regressions": [],
+  "resolved": [],
+  "still_failing": [],
+  "t2_check": [],
+  "t2_confirmed": null,
+  "t3_vs_edit": {
+   "declarations": null,
+   "files": null,
+   "status": "not_applicable: no edit"
+  },
+  "verdict": "nothing_to_build"
+ },
+ "tiers": {
+  "1": "run",
+  "2": "run",
+  "3": "run",
+  "4": "run"
+ }
+}

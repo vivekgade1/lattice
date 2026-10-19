@@ -1,0 +1,1740 @@
+{
+ "diff": {
+  "rules": {
+   "added": [
+    {
+     "id": "R81",
+     "text": "There is no check-in list: a client reads check-ins through `GET /v1/sync`, and `GET /v1/habits/{habit_id}/completions` answers 405 with code `method_not_allowed`, signed in or not."
+    }
+   ],
+   "changed": [],
+   "removed": [
+    {
+     "id": "R81",
+     "text": "`GET /v1/habits/{habit_id}/completions` answers `{items, next_cursor, has_more}` with the habit's non-deleted check-ins ordered by date ascending; `?from=` and `?to=` (local dates, inclusive) filter by date, and `from` after `to` answers 422 `validation_failed`."
+    }
+   ],
+   "unchanged": 147
+  },
+  "targets": {
+   "added": [
+    "scenario:check_in_list_is_gone"
+   ],
+   "modified": [
+    "scenario:malformed_dates_are_refused"
+   ],
+   "removed": [
+    "scenario:access__list_completions__as_ann",
+    "scenario:access__list_completions__as_anon",
+    "scenario:access__list_completions__as_ben",
+    "scenario:list_check_ins_order_and_range"
+   ]
+  }
+ },
+ "input": {
+  "app": {
+   "configured": true,
+   "layers": "ACD"
+  },
+  "base": {
+   "requirements": "dcac6deb3ad3ec4ab7381af040cb86064aae00eb3ed38c05237657156fbad7b1",
+   "spec": "28dfc2e6c6a2aa27168079740d28a94de7f3efcb7cf8234d795d48b7960f5624",
+   "trace": "627a2b3f4c9cfafc3ad6cd5edb01f355fb76b53c248c629e7a77fd1bd8ee82ed"
+  },
+  "candidate": {
+   "requirements": "0165b74c0b60959b8485742c3d30cc871557a0c1ba65aeb85e13a28adc658c8a",
+   "spec": "317f7ad189b839095b938ecd74cdd674b3bb19e980164558fc7d68d60025d9ad",
+   "trace": "7c9e0426be1282ceb2a0fd6441cf4ad15b99300cbce5820ce5b9a7536eeaa5d0"
+  },
+  "change": null,
+  "inventory": {
+   "extract_sha256": "d51ef75340d54682a8bd2c3f40220e50c2ef31ae0eab17ef3ca68c9a39f89adc",
+   "stale": false,
+   "workflows_sha256": "af1383dbf5d51f876c61a282f23a2fb60d79f536af7542dfe48387e6f1c573a0"
+  },
+  "kind": "candidate",
+  "notes": []
+ },
+ "schema": "lattice.impact/1",
+ "summary": {
+  "kinds": {
+   "check_failure": 1,
+   "closure": 21,
+   "direct": 12
+  },
+  "note": "Which workflows fail is mostly not decidable before the change exists: a flow records the answers the app gives today, so it passes today by construction. Before an implementation only a changed invariant (tier 1, observed) and an exact-prefix contradiction (tier 2, determined) decide a workflow; every other flow listed is tier 3 'may_fail' (static, with unknowns), settled by tier 4 (Spike E, observed after the change).",
+  "tiers": {
+   "1": {
+    "failing": 1,
+    "flows": 0,
+    "resolved": 0
+   },
+   "2": {
+    "decidable": 0,
+    "determined": 0,
+    "flows": 0,
+    "undecidable": 8
+   },
+   "3": {
+    "flows": 11,
+    "locations": 33,
+    "unread": 12
+   }
+  },
+  "workflows": {
+   "t1_fail": 0,
+   "t2_fail": 0,
+   "t3_may_fail": 11
+  }
+ },
+ "tier1": {
+  "baseline": {
+   "failing": [],
+   "run": true,
+   "source": "run"
+  },
+  "counts": {
+   "baseline_drift": 0,
+   "by_label": {
+    "not_built_yet": 1
+   },
+   "by_layer": {
+    "D": 1
+   },
+   "failing": 1,
+   "flows_run": 59,
+   "resolved": 0,
+   "workflow_fails": 0
+  },
+  "failing": [
+   {
+    "also_fails_on_base": false,
+    "case": "check_in_list_is_gone / step 1",
+    "code": null,
+    "endpoint": "GET /v1/habits/00000000-0000-4000-8000-000000000100/completions",
+    "evidence": [
+     {
+      "at": "check:D:check_in_list_is_gone / step 1",
+      "kind": "check",
+      "what": "[D silent] GET /v1/habits/00000000-0000-4000-8000-000000000100/completions as ann (check_in_list_is_gone / step 1)"
+     },
+     {
+      "at": "spec:spec.py:1132",
+      "kind": "spec",
+      "what": "check_in_list_is_gone step 1"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t1-bfd3bd573f",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "D",
+    "line": 1132,
+    "observation": "runtime",
+    "problems": [
+     "status: expected 405, got 200",
+     "body: expected {'error': {'code': 'method_not_allowed'}} within {'items': [{'id': '00000000-0000-4000-8000-000000000300', 'habit_id': '00000000-0000-4000-8000-000000000100', 'date': '2026-03-02', 'note': None, 'created_at': '2026-03-01T00:00:00Z', 'updated_at': '2026-03-01T00:00:00Z'}], 'next_cursor': None, 'has_more': False}"
+    ],
+    "rule": "scenario: check_in_list_is_gone",
+    "rules": [
+     "R81"
+    ],
+    "summary": "[D silent] GET /v1/habits/00000000-0000-4000-8000-000000000100/completions as ann (check_in_list_is_gone / step 1)",
+    "target": "scenario:check_in_list_is_gone",
+    "tier": 1,
+    "verdict": "silent"
+   }
+  ],
+  "flows": [],
+  "flows_note": null,
+  "layers": "ACD",
+  "resolved": []
+ },
+ "tier2": {
+  "corpus": {
+   "baseline": "run",
+   "environment": null,
+   "flow_steps": 167,
+   "flows_note": null,
+   "scenario_steps": 462
+  },
+  "decidability": [
+   {
+    "kind": "target",
+    "reason": "removed_only",
+    "state": "undecidable",
+    "subject": "scenario:access__list_completions__as_ann"
+   },
+   {
+    "kind": "target",
+    "reason": "removed_only",
+    "state": "undecidable",
+    "subject": "scenario:access__list_completions__as_anon"
+   },
+   {
+    "kind": "target",
+    "reason": "removed_only",
+    "state": "undecidable",
+    "subject": "scenario:access__list_completions__as_ben"
+   },
+   {
+    "kind": "target",
+    "reason": "new_request",
+    "state": "undecidable",
+    "subject": "scenario:check_in_list_is_gone"
+   },
+   {
+    "kind": "target",
+    "reason": "removed_only",
+    "state": "undecidable",
+    "subject": "scenario:list_check_ins_order_and_range"
+   },
+   {
+    "kind": "target",
+    "reason": "compatible_expectation",
+    "state": "undecidable",
+    "subject": "scenario:malformed_dates_are_refused"
+   },
+   {
+    "kind": "added",
+    "reason": "new_request",
+    "state": "undecidable",
+    "subject": "rule:R81"
+   },
+   {
+    "kind": "removed",
+    "reason": "removed_only",
+    "state": "undecidable",
+    "subject": "rule:R81"
+   }
+  ],
+  "determined": [],
+  "flows": [],
+  "runtime_replay": {
+   "status": "not_applicable: 0 programs"
+  }
+ },
+ "tier3": {
+  "counts": {
+   "by_kind": {
+    "closure": 21,
+    "direct": 12,
+    "insertion": 0,
+    "table_peer": 0
+   },
+   "files": 8,
+   "flows_may_fail": 11,
+   "locations": 33,
+   "seeds": {
+    "machines": 0,
+    "routes": 2,
+    "tables": 0
+   },
+   "unread": 12
+  },
+  "external": {
+   "count": 0
+  },
+  "files": [
+   "internal/completions/routes.go",
+   "internal/db/bodies.go",
+   "internal/db/owned.go",
+   "internal/httpapi/body.go",
+   "internal/httpapi/pagination.go",
+   "internal/httpapi/registry.go",
+   "internal/period/period.go",
+   "internal/sync/routes.go"
+  ],
+  "flows": [
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-11a98b3683",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-3c97ea1261",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R21",
+     "R28",
+     "R43",
+     "R81"
+    ],
+    "target": "flow:wf-11a98b3683",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3de8783507",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-9f470faecc",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R21",
+     "R28",
+     "R43",
+     "R81"
+    ],
+    "target": "flow:wf-3de8783507",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-45bfc39e84",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-14a13ad86b",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R21",
+     "R28",
+     "R43",
+     "R81"
+    ],
+    "target": "flow:wf-45bfc39e84",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-597f2899e4",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-0c37c120cd",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R21",
+     "R28",
+     "R43",
+     "R81"
+    ],
+    "target": "flow:wf-597f2899e4",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5a6bab46c9",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-0759d284d3",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/sync"
+    ],
+    "rules": [
+     "R81"
+    ],
+    "target": "flow:wf-5a6bab46c9",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a9ac9b88a4",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-8658f9a626",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/sync"
+    ],
+    "rules": [
+     "R81"
+    ],
+    "target": "flow:wf-a9ac9b88a4",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b2acc9eac6",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-1a4646cae9",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R21",
+     "R28",
+     "R43",
+     "R81"
+    ],
+    "target": "flow:wf-b2acc9eac6",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-c675dd6cb3",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-7f4ce7d978",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/sync"
+    ],
+    "rules": [
+     "R81"
+    ],
+    "target": "flow:wf-c675dd6cb3",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ce853d194f",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-d0d4e62cdf",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/sync"
+    ],
+    "rules": [
+     "R81"
+    ],
+    "target": "flow:wf-ce853d194f",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ee191140a0",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-da55e5e7ad",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R21",
+     "R28",
+     "R43",
+     "R81"
+    ],
+    "target": "flow:wf-ee191140a0",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ffaa047bf2",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-9978fc6457",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/sync"
+    ],
+    "rules": [
+     "R81"
+    ],
+    "target": "flow:wf-ffaa047bf2",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   }
+  ],
+  "locations": [
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:26",
+      "kind": "code",
+      "what": "route registration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route registration"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-f1cced2904",
+    "kind": "direct",
+    "line": 26,
+    "rules": [
+     "R21",
+     "R28",
+     "R43",
+     "R81"
+    ],
+    "symbol": null,
+    "target": "scenario:access__list_completions__as_ann",
+    "tier": 3,
+    "via": [
+     "check:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> registered -> code:internal/completions/routes.go:26",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> registered -> code:internal/completions/routes.go:26",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 2 -> route:GET /v1/habits/{}/completions -> registered -> code:internal/completions/routes.go:26",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 1 -> route:GET /v1/habits/{}/completions -> registered -> code:internal/completions/routes.go:26",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 2 -> route:GET /v1/habits/{}/completions -> registered -> code:internal/completions/routes.go:26"
+    ],
+    "what": "route registration"
+   },
+   {
+    "end_line": 309,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:263",
+      "kind": "code",
+      "what": "handler declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler declaration"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-0700bf4efe",
+    "kind": "direct",
+    "line": 263,
+    "rules": [
+     "R21",
+     "R28",
+     "R43",
+     "R81"
+    ],
+    "symbol": "list",
+    "target": "scenario:access__list_completions__as_ann",
+    "tier": 3,
+    "via": [
+     "check:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> handler:completions.handler.list -> code:internal/completions/routes.go:263",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> handler:completions.handler.list -> code:internal/completions/routes.go:263",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 2 -> route:GET /v1/habits/{}/completions -> handler:completions.handler.list -> code:internal/completions/routes.go:263",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 1 -> route:GET /v1/habits/{}/completions -> handler:completions.handler.list -> code:internal/completions/routes.go:263",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 2 -> route:GET /v1/habits/{}/completions -> handler:completions.handler.list -> code:internal/completions/routes.go:263"
+    ],
+    "what": "handler declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:265",
+      "kind": "code",
+      "what": "raise 422 validation_failed"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 validation_failed"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-70e6faa2b4",
+    "kind": "direct",
+    "line": 265,
+    "rules": [
+     "R21",
+     "R28",
+     "R43",
+     "R81"
+    ],
+    "symbol": null,
+    "target": "scenario:access__list_completions__as_ann",
+    "tier": 3,
+    "via": [
+     "check:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:265",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:265",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 2 -> route:GET /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:265",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 1 -> route:GET /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:265",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 2 -> route:GET /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:265"
+    ],
+    "what": "raise 422 validation_failed"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:269",
+      "kind": "code",
+      "what": "raise 422 validation_failed"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 validation_failed"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-b6a5fdac77",
+    "kind": "direct",
+    "line": 269,
+    "rules": [
+     "R21",
+     "R28",
+     "R43",
+     "R81"
+    ],
+    "symbol": null,
+    "target": "scenario:access__list_completions__as_ann",
+    "tier": 3,
+    "via": [
+     "check:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:269",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:269",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 2 -> route:GET /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:269",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 1 -> route:GET /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:269",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 2 -> route:GET /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:269"
+    ],
+    "what": "raise 422 validation_failed"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:273",
+      "kind": "code",
+      "what": "raise 422 validation_failed"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 validation_failed"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-ef2ef333b5",
+    "kind": "direct",
+    "line": 273,
+    "rules": [
+     "R21",
+     "R28",
+     "R43",
+     "R81"
+    ],
+    "symbol": null,
+    "target": "scenario:access__list_completions__as_ann",
+    "tier": 3,
+    "via": [
+     "check:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:273",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:273",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 2 -> route:GET /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:273",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 1 -> route:GET /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:273",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 2 -> route:GET /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:273"
+    ],
+    "what": "raise 422 validation_failed"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:278",
+      "kind": "code",
+      "what": "raise 422 validation_failed"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 validation_failed"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-79ec0cae69",
+    "kind": "direct",
+    "line": 278,
+    "rules": [
+     "R21",
+     "R28",
+     "R43",
+     "R81"
+    ],
+    "symbol": null,
+    "target": "scenario:access__list_completions__as_ann",
+    "tier": 3,
+    "via": [
+     "check:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:278",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:278",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 2 -> route:GET /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:278",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 1 -> route:GET /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:278",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 2 -> route:GET /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:278"
+    ],
+    "what": "raise 422 validation_failed"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:280",
+      "kind": "code",
+      "what": "raise 422 validation_failed"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 invalid_cursor"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-37e34cfd32",
+    "kind": "direct",
+    "line": 280,
+    "rules": [
+     "R21",
+     "R28",
+     "R43",
+     "R81"
+    ],
+    "symbol": null,
+    "target": "scenario:access__list_completions__as_ann",
+    "tier": 3,
+    "via": [
+     "check:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> raise:422 invalid_cursor -> code:internal/completions/routes.go:280",
+     "check:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:280",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> raise:422 invalid_cursor -> code:internal/completions/routes.go:280",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:280",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 2 -> route:GET /v1/habits/{}/completions -> raise:422 invalid_cursor -> code:internal/completions/routes.go:280"
+    ],
+    "what": "raise 422 validation_failed"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:284",
+      "kind": "code",
+      "what": "raise 404 not_found"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "owner use habits.user_id"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-69fb13cb15",
+    "kind": "direct",
+    "line": 284,
+    "rules": [
+     "R21",
+     "R28",
+     "R43",
+     "R81"
+    ],
+    "symbol": null,
+    "target": "scenario:access__list_completions__as_ann",
+    "tier": 3,
+    "via": [
+     "check:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> owner:habits.user_id -> code:internal/completions/routes.go:284",
+     "check:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> raise:404 not_found -> code:internal/completions/routes.go:284",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> owner:habits.user_id -> code:internal/completions/routes.go:284",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> raise:404 not_found -> code:internal/completions/routes.go:284",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 2 -> route:GET /v1/habits/{}/completions -> owner:habits.user_id -> code:internal/completions/routes.go:284"
+    ],
+    "what": "raise 404 not_found"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:297",
+      "kind": "code",
+      "what": "raise 422 invalid_cursor"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 invalid_cursor"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-d6caeb96a0",
+    "kind": "direct",
+    "line": 297,
+    "rules": [
+     "R21",
+     "R28",
+     "R43",
+     "R81"
+    ],
+    "symbol": null,
+    "target": "scenario:access__list_completions__as_ann",
+    "tier": 3,
+    "via": [
+     "check:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> raise:422 invalid_cursor -> code:internal/completions/routes.go:297",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> raise:422 invalid_cursor -> code:internal/completions/routes.go:297",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 2 -> route:GET /v1/habits/{}/completions -> raise:422 invalid_cursor -> code:internal/completions/routes.go:297",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 1 -> route:GET /v1/habits/{}/completions -> raise:422 invalid_cursor -> code:internal/completions/routes.go:297",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 2 -> route:GET /v1/habits/{}/completions -> raise:422 invalid_cursor -> code:internal/completions/routes.go:297"
+    ],
+    "what": "raise 422 invalid_cursor"
+   },
+   {
+    "end_line": 16,
+    "evidence": [
+     {
+      "at": "code:internal/db/bodies.go:16",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/bodies.go",
+    "id": "t3-5e1619820d",
+    "kind": "closure",
+    "line": 16,
+    "rules": [
+     "R81"
+    ],
+    "symbol": "Instant",
+    "target": "scenario:check_in_list_is_gone",
+    "tier": 3,
+    "via": [
+     "rule:R81 -> scenario:check_in_list_is_gone / step 3 -> route:GET /v1/sync -> call:streak/internal/db:Instant -> code:internal/db/bodies.go:16",
+     "rule:R81 -> text -> route:GET /v1/sync -> call:streak/internal/db:Instant -> code:internal/db/bodies.go:16",
+     "scenario:check_in_list_is_gone / step 3 -> route:GET /v1/sync -> call:streak/internal/db:Instant -> code:internal/db/bodies.go:16"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 25,
+    "evidence": [
+     {
+      "at": "code:internal/db/bodies.go:19",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/bodies.go",
+    "id": "t3-cdd9241e22",
+    "kind": "closure",
+    "line": 19,
+    "rules": [
+     "R81"
+    ],
+    "symbol": "InstantPtr",
+    "target": "scenario:check_in_list_is_gone",
+    "tier": 3,
+    "via": [
+     "rule:R81 -> scenario:check_in_list_is_gone / step 3 -> route:GET /v1/sync -> call:streak/internal/db:InstantPtr -> code:internal/db/bodies.go:19",
+     "rule:R81 -> text -> route:GET /v1/sync -> call:streak/internal/db:InstantPtr -> code:internal/db/bodies.go:19",
+     "scenario:check_in_list_is_gone / step 3 -> route:GET /v1/sync -> call:streak/internal/db:InstantPtr -> code:internal/db/bodies.go:19"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 48,
+    "evidence": [
+     {
+      "at": "code:internal/db/bodies.go:43",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/bodies.go",
+    "id": "t3-037c6583a3",
+    "kind": "closure",
+    "line": 43,
+    "rules": [
+     "R81"
+    ],
+    "symbol": "HabitBody",
+    "target": "scenario:check_in_list_is_gone",
+    "tier": 3,
+    "via": [
+     "rule:R81 -> scenario:check_in_list_is_gone / step 3 -> route:GET /v1/sync -> call:streak/internal/db:HabitBody -> code:internal/db/bodies.go:43",
+     "rule:R81 -> text -> route:GET /v1/sync -> call:streak/internal/db:HabitBody -> code:internal/db/bodies.go:43",
+     "scenario:check_in_list_is_gone / step 3 -> route:GET /v1/sync -> call:streak/internal/db:HabitBody -> code:internal/db/bodies.go:43"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 64,
+    "evidence": [
+     {
+      "at": "code:internal/db/bodies.go:61",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/bodies.go",
+    "id": "t3-7c012e9b61",
+    "kind": "closure",
+    "line": 61,
+    "rules": [
+     "R81"
+    ],
+    "symbol": "CompletionBody",
+    "target": "scenario:check_in_list_is_gone",
+    "tier": 3,
+    "via": [
+     "rule:R81 -> scenario:check_in_list_is_gone / step 3 -> route:GET /v1/sync -> call:streak/internal/db:CompletionBody -> code:internal/db/bodies.go:61",
+     "rule:R81 -> text -> route:GET /v1/sync -> call:streak/internal/db:CompletionBody -> code:internal/db/bodies.go:61",
+     "scenario:check_in_list_is_gone / step 3 -> route:GET /v1/sync -> call:streak/internal/db:CompletionBody -> code:internal/db/bodies.go:61"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 83,
+    "evidence": [
+     {
+      "at": "code:internal/db/bodies.go:79",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/bodies.go",
+    "id": "t3-f094785b58",
+    "kind": "closure",
+    "line": 79,
+    "rules": [
+     "R81"
+    ],
+    "symbol": "NudgeBody",
+    "target": "scenario:check_in_list_is_gone",
+    "tier": 3,
+    "via": [
+     "rule:R81 -> scenario:check_in_list_is_gone / step 3 -> route:GET /v1/sync -> call:streak/internal/db:NudgeBody -> code:internal/db/bodies.go:79",
+     "rule:R81 -> text -> route:GET /v1/sync -> call:streak/internal/db:NudgeBody -> code:internal/db/bodies.go:79",
+     "scenario:check_in_list_is_gone / step 3 -> route:GET /v1/sync -> call:streak/internal/db:NudgeBody -> code:internal/db/bodies.go:79"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 21,
+    "evidence": [
+     {
+      "at": "code:internal/db/owned.go:14",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/owned.go",
+    "id": "t3-1718a5921c",
+    "kind": "closure",
+    "line": 14,
+    "rules": [
+     "R21",
+     "R28",
+     "R43",
+     "R81"
+    ],
+    "symbol": "OwnedHabit",
+    "target": "scenario:access__list_completions__as_ann",
+    "tier": 3,
+    "via": [
+     "check:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 2 -> route:GET /v1/habits/{}/completions -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 2 -> route:GET /v1/habits/{}/completions -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 139,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/body.go:134",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/body.go",
+    "id": "t3-a13339a9c8",
+    "kind": "closure",
+    "line": 134,
+    "rules": [
+     "R21",
+     "R28",
+     "R43",
+     "R81"
+    ],
+    "symbol": "CanonicalUUID",
+    "target": "scenario:access__list_completions__as_ann",
+    "tier": 3,
+    "via": [
+     "check:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 2 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 2 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 148,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/body.go:142",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/body.go",
+    "id": "t3-37a01eb705",
+    "kind": "closure",
+    "line": 142,
+    "rules": [
+     "R21",
+     "R28",
+     "R43",
+     "R81"
+    ],
+    "symbol": "PathUUID",
+    "target": "scenario:access__list_completions__as_ann",
+    "tier": 3,
+    "via": [
+     "check:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 2 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 2 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 161,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/body.go:151",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/body.go",
+    "id": "t3-525441028f",
+    "kind": "closure",
+    "line": 151,
+    "rules": [
+     "R21",
+     "R28",
+     "R43",
+     "R81"
+    ],
+    "symbol": "QueryDate",
+    "target": "scenario:access__list_completions__as_ann",
+    "tier": 3,
+    "via": [
+     "check:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:QueryDate -> code:internal/httpapi/body.go:151",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:QueryDate -> code:internal/httpapi/body.go:151",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 2 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:QueryDate -> code:internal/httpapi/body.go:151",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:QueryDate -> code:internal/httpapi/body.go:151",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 2 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:QueryDate -> code:internal/httpapi/body.go:151"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/body.go:152",
+      "kind": "code",
+      "what": "param from"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param from"
+     }
+    ],
+    "file": "internal/httpapi/body.go",
+    "id": "t3-85fa0b895b",
+    "kind": "direct",
+    "line": 152,
+    "rules": [
+     "R21",
+     "R28",
+     "R43",
+     "R81"
+    ],
+    "symbol": null,
+    "target": "scenario:access__list_completions__as_ann",
+    "tier": 3,
+    "via": [
+     "check:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> param:from -> code:internal/httpapi/body.go:152",
+     "check:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> param:to -> code:internal/httpapi/body.go:152",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> param:from -> code:internal/httpapi/body.go:152",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> param:to -> code:internal/httpapi/body.go:152",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 2 -> route:GET /v1/habits/{}/completions -> param:from -> code:internal/httpapi/body.go:152"
+    ],
+    "what": "param from"
+   },
+   {
+    "end_line": 35,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/pagination.go:25",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/pagination.go",
+    "id": "t3-14134062d6",
+    "kind": "closure",
+    "line": 25,
+    "rules": [
+     "R21",
+     "R28",
+     "R43",
+     "R81"
+    ],
+    "symbol": "ParseLimit",
+    "target": "scenario:access__list_completions__as_ann",
+    "tier": 3,
+    "via": [
+     "check:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:ParseLimit -> code:internal/httpapi/pagination.go:25",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:ParseLimit -> code:internal/httpapi/pagination.go:25",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 2 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:ParseLimit -> code:internal/httpapi/pagination.go:25",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:ParseLimit -> code:internal/httpapi/pagination.go:25",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 2 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:ParseLimit -> code:internal/httpapi/pagination.go:25"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 41,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/pagination.go:38",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/pagination.go",
+    "id": "t3-c4cff85f71",
+    "kind": "closure",
+    "line": 38,
+    "rules": [
+     "R21",
+     "R28",
+     "R43",
+     "R81"
+    ],
+    "symbol": "EncodeCursor",
+    "target": "scenario:access__list_completions__as_ann",
+    "tier": 3,
+    "via": [
+     "check:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:EncodeCursor -> code:internal/httpapi/pagination.go:38",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:EncodeCursor -> code:internal/httpapi/pagination.go:38",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 2 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:EncodeCursor -> code:internal/httpapi/pagination.go:38",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 3 -> route:GET /v1/sync -> call:streak/internal/httpapi:EncodeCursor -> code:internal/httpapi/pagination.go:38",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:EncodeCursor -> code:internal/httpapi/pagination.go:38"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 60,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/pagination.go:44",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/pagination.go",
+    "id": "t3-407beba573",
+    "kind": "closure",
+    "line": 44,
+    "rules": [
+     "R21",
+     "R28",
+     "R43",
+     "R81"
+    ],
+    "symbol": "DecodeCursor",
+    "target": "scenario:access__list_completions__as_ann",
+    "tier": 3,
+    "via": [
+     "check:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:DecodeCursor -> code:internal/httpapi/pagination.go:44",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:DecodeCursor -> code:internal/httpapi/pagination.go:44",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 2 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:DecodeCursor -> code:internal/httpapi/pagination.go:44",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 3 -> route:GET /v1/sync -> call:streak/internal/httpapi:DecodeCursor -> code:internal/httpapi/pagination.go:44",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:DecodeCursor -> code:internal/httpapi/pagination.go:44"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 66,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/pagination.go:62",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/pagination.go",
+    "id": "t3-6ceec513c1",
+    "kind": "closure",
+    "line": 62,
+    "rules": [
+     "R21",
+     "R28",
+     "R43",
+     "R81"
+    ],
+    "symbol": "cursorMAC",
+    "target": "scenario:access__list_completions__as_ann",
+    "tier": 3,
+    "via": [
+     "check:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:cursorMAC -> code:internal/httpapi/pagination.go:62",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:cursorMAC -> code:internal/httpapi/pagination.go:62",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 2 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:cursorMAC -> code:internal/httpapi/pagination.go:62",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 3 -> route:GET /v1/sync -> call:streak/internal/httpapi:cursorMAC -> code:internal/httpapi/pagination.go:62",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:cursorMAC -> code:internal/httpapi/pagination.go:62"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 80,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/pagination.go:70",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/pagination.go",
+    "id": "t3-865305e5e4",
+    "kind": "closure",
+    "line": 70,
+    "rules": [
+     "R21",
+     "R28",
+     "R43",
+     "R81"
+    ],
+    "symbol": "ListParams",
+    "target": "scenario:access__list_completions__as_ann",
+    "tier": 3,
+    "via": [
+     "check:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:ListParams -> code:internal/httpapi/pagination.go:70",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:ListParams -> code:internal/httpapi/pagination.go:70",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 2 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:ListParams -> code:internal/httpapi/pagination.go:70",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:ListParams -> code:internal/httpapi/pagination.go:70",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 2 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:ListParams -> code:internal/httpapi/pagination.go:70"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 85,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/pagination.go:85",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/pagination.go",
+    "id": "t3-b61fe52b13",
+    "kind": "closure",
+    "line": 85,
+    "rules": [
+     "R21",
+     "R28",
+     "R43",
+     "R81"
+    ],
+    "symbol": "NewPage",
+    "target": "scenario:access__list_completions__as_ann",
+    "tier": 3,
+    "via": [
+     "check:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:NewPage -> code:internal/httpapi/pagination.go:85",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:NewPage -> code:internal/httpapi/pagination.go:85",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 2 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:NewPage -> code:internal/httpapi/pagination.go:85",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:NewPage -> code:internal/httpapi/pagination.go:85",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 2 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:NewPage -> code:internal/httpapi/pagination.go:85"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 41,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:37",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-8c82521543",
+    "kind": "closure",
+    "line": 37,
+    "rules": [
+     "R21",
+     "R28",
+     "R43",
+     "R81"
+    ],
+    "symbol": "CallerOf",
+    "target": "scenario:access__list_completions__as_ann",
+    "tier": 3,
+    "via": [
+     "check:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 2 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 3 -> route:GET /v1/sync -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 67,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:67",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-57c0e4ffe8",
+    "kind": "closure",
+    "line": 67,
+    "rules": [
+     "R21",
+     "R28",
+     "R43",
+     "R81"
+    ],
+    "symbol": "Q",
+    "target": "scenario:access__list_completions__as_ann",
+    "tier": 3,
+    "via": [
+     "check:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 2 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 3 -> route:GET /v1/sync -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 52,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:43",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-5015e84ebd",
+    "kind": "closure",
+    "line": 43,
+    "rules": [
+     "R21",
+     "R28",
+     "R43",
+     "R81"
+    ],
+    "symbol": "ParseDate",
+    "target": "scenario:access__list_completions__as_ann",
+    "tier": 3,
+    "via": [
+     "check:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/period:ParseDate -> code:internal/period/period.go:43",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/period:ParseDate -> code:internal/period/period.go:43",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 2 -> route:GET /v1/habits/{}/completions -> call:streak/internal/period:ParseDate -> code:internal/period/period.go:43",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/period:ParseDate -> code:internal/period/period.go:43",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 2 -> route:GET /v1/habits/{}/completions -> call:streak/internal/period:ParseDate -> code:internal/period/period.go:43"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 55,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:55",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-9da2433e67",
+    "kind": "closure",
+    "line": 55,
+    "rules": [
+     "R21",
+     "R28",
+     "R43",
+     "R81"
+    ],
+    "symbol": "FormatDate",
+    "target": "scenario:access__list_completions__as_ann",
+    "tier": 3,
+    "via": [
+     "check:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 2 -> route:GET /v1/habits/{}/completions -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "rule:R81 -> scenario:check_in_list_is_gone / step 3 -> route:GET /v1/sync -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "rule:R81 -> scenario:list_check_ins_order_and_range / step 1 -> route:GET /v1/habits/{}/completions -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 64,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:58",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-95a3a22f01",
+    "kind": "closure",
+    "line": 58,
+    "rules": [
+     "R81"
+    ],
+    "symbol": "FormatDatePtr",
+    "target": "scenario:check_in_list_is_gone",
+    "tier": 3,
+    "via": [
+     "rule:R81 -> scenario:check_in_list_is_gone / step 3 -> route:GET /v1/sync -> call:streak/internal/period:FormatDatePtr -> code:internal/period/period.go:58",
+     "rule:R81 -> text -> route:GET /v1/sync -> call:streak/internal/period:FormatDatePtr -> code:internal/period/period.go:58",
+     "scenario:check_in_list_is_gone / step 3 -> route:GET /v1/sync -> call:streak/internal/period:FormatDatePtr -> code:internal/period/period.go:58"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/sync/routes.go:17",
+      "kind": "code",
+      "what": "route registration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route registration"
+     }
+    ],
+    "file": "internal/sync/routes.go",
+    "id": "t3-c0cc671f4f",
+    "kind": "direct",
+    "line": 17,
+    "rules": [
+     "R81"
+    ],
+    "symbol": null,
+    "target": "scenario:check_in_list_is_gone",
+    "tier": 3,
+    "via": [
+     "rule:R81 -> scenario:check_in_list_is_gone / step 3 -> route:GET /v1/sync -> registered -> code:internal/sync/routes.go:17",
+     "rule:R81 -> text -> route:GET /v1/sync -> registered -> code:internal/sync/routes.go:17",
+     "scenario:check_in_list_is_gone / step 3 -> route:GET /v1/sync -> registered -> code:internal/sync/routes.go:17"
+    ],
+    "what": "route registration"
+   },
+   {
+    "end_line": 108,
+    "evidence": [
+     {
+      "at": "code:internal/sync/routes.go:31",
+      "kind": "code",
+      "what": "handler declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler declaration"
+     }
+    ],
+    "file": "internal/sync/routes.go",
+    "id": "t3-72a17db1a4",
+    "kind": "direct",
+    "line": 31,
+    "rules": [
+     "R81"
+    ],
+    "symbol": "sync",
+    "target": "scenario:check_in_list_is_gone",
+    "tier": 3,
+    "via": [
+     "rule:R81 -> scenario:check_in_list_is_gone / step 3 -> route:GET /v1/sync -> handler:sync.handler.sync -> code:internal/sync/routes.go:31",
+     "rule:R81 -> text -> route:GET /v1/sync -> handler:sync.handler.sync -> code:internal/sync/routes.go:31",
+     "scenario:check_in_list_is_gone / step 3 -> route:GET /v1/sync -> handler:sync.handler.sync -> code:internal/sync/routes.go:31"
+    ],
+    "what": "handler declaration"
+   },
+   {
+    "end_line": 114,
+    "evidence": [
+     {
+      "at": "code:internal/sync/routes.go:111",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/sync/routes.go",
+    "id": "t3-38c30f0fe5",
+    "kind": "closure",
+    "line": 111,
+    "rules": [
+     "R81"
+    ],
+    "symbol": "owned",
+    "target": "scenario:check_in_list_is_gone",
+    "tier": 3,
+    "via": [
+     "rule:R81 -> scenario:check_in_list_is_gone / step 3 -> route:GET /v1/sync -> call:streak/internal/sync:owned -> code:internal/sync/routes.go:111",
+     "rule:R81 -> text -> route:GET /v1/sync -> call:streak/internal/sync:owned -> code:internal/sync/routes.go:111",
+     "scenario:check_in_list_is_gone / step 3 -> route:GET /v1/sync -> call:streak/internal/sync:owned -> code:internal/sync/routes.go:111"
+    ],
+    "what": "call declaration"
+   }
+  ],
+  "stale": false,
+  "unread": [
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of GET /v1/habits/{}/completions is not read from the code",
+    "what": "scenario:access__list_completions__as_ann / step 1"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of GET /v1/habits/{}/completions is not read from the code",
+    "what": "scenario:access__list_completions__as_anon / step 1"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of GET /v1/habits/{}/completions is not read from the code",
+    "what": "scenario:access__list_completions__as_ben / step 1"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of GET /v1/habits/{}/completions is not read from the code",
+    "what": "scenario:check_in_list_is_gone / step 1"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of GET /v1/habits/{}/completions is not read from the code",
+    "what": "scenario:check_in_list_is_gone / step 2"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of GET /v1/sync is not read from the code",
+    "what": "scenario:check_in_list_is_gone / step 3"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of GET /v1/habits/{}/completions is not read from the code",
+    "what": "scenario:list_check_ins_order_and_range / step 1"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of GET /v1/habits/{}/completions is not read from the code",
+    "what": "scenario:list_check_ins_order_and_range / step 2"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of GET /v1/habits/{}/completions is not read from the code",
+    "what": "scenario:list_check_ins_order_and_range / step 3"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of GET /v1/habits/{}/completions is not read from the code",
+    "what": "scenario:list_check_ins_order_and_range / step 4"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of GET /v1/habits/{}/completions is not read from the code",
+    "what": "scenario:list_check_ins_order_and_range / step 5"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of GET /v1/habits/{}/completions is not read from the code",
+    "what": "scenario:malformed_dates_are_refused / step 7"
+   }
+  ]
+ },
+ "tier4": null,
+ "tiers": {
+  "1": "run",
+  "2": "run",
+  "3": "run",
+  "4": "not_run:spike_e"
+ }
+}

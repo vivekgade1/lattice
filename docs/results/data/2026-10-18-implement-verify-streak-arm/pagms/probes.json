@@ -1,0 +1,89 @@
+[
+  {
+    "id": "PAg-MS",
+    "observed": {
+      "cost_usd": 0.1509,
+      "not_run": [],
+      "per_run": [
+        {
+          "claude": {
+            "calls": 26,
+            "not_logged_in": false,
+            "usage_limit": false
+          },
+          "cost_usd": 0.053099,
+          "drift": {
+            "changed": [],
+            "new": [],
+            "removed": []
+          },
+          "owner_untouched": true,
+          "rebuild_status": "passed",
+          "regressions": 0,
+          "rounds": 1,
+          "run": "i1",
+          "state": "run",
+          "unreported": 0,
+          "verdict": "pass"
+        },
+        {
+          "claude": {
+            "calls": 26,
+            "not_logged_in": false,
+            "usage_limit": false
+          },
+          "cost_usd": 0.026197,
+          "drift": {
+            "changed": [],
+            "new": [],
+            "removed": []
+          },
+          "owner_untouched": true,
+          "rebuild_status": "passed",
+          "regressions": 0,
+          "rounds": 1,
+          "run": "i3",
+          "state": "run",
+          "unreported": 0,
+          "verdict": "pass"
+        },
+        {
+          "claude": {
+            "calls": 24,
+            "not_logged_in": false,
+            "usage_limit": false
+          },
+          "cost_usd": 0.071556,
+          "drift": {
+            "changed": [],
+            "new": [],
+            "removed": []
+          },
+          "owner_untouched": true,
+          "rebuild_status": "passed",
+          "regressions": 0,
+          "rounds": 1,
+          "run": "bad_invariant",
+          "state": "run",
+          "unreported": 0,
+          "verdict": "pass"
+        }
+      ],
+      "prediction_hits": {
+        "bad_invariant_not_built_or_pass_0_regressions": true,
+        "i1_pass": true,
+        "unreported_0": true
+      },
+      "ran": [
+        "bad_invariant",
+        "i1",
+        "i3"
+      ],
+      "usd_cap": 3.0
+    },
+    "pass": null,
+    "predicted": "i1 pass (p 0.8); bad_invariant not_built or pass with 0 regressions; 0 unreported",
+    "probe": "real claude agent (sonnet) on i1, i3's candidate (no planted edit) and bad_invariant; max_rounds 3, USD 3.00 total cap",
+    "ran": true
+  }
+]

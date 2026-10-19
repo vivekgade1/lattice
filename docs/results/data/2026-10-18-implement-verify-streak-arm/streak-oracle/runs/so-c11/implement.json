@@ -1,0 +1,4238 @@
+{
+ "diff": {
+  "rules": {
+   "added": [],
+   "changed": [
+    {
+     "new": "R77",
+     "new_text": "`note`, when given, is 1 to 280 characters, so a stored note is never empty (no note is null); an empty or a longer note answers 422 `validation_failed` with field `note`.",
+     "old": "R77",
+     "old_text": "`note` is at most 280 characters; longer answers 422 `validation_failed` with field `note`."
+    }
+   ],
+   "removed": [],
+   "unchanged": 147
+  },
+  "targets": {
+   "added": [
+    "invariant:check_in_note_not_empty"
+   ],
+   "modified": [
+    "scenario:check_in_note_bounds"
+   ],
+   "removed": []
+  }
+ },
+ "input": {
+  "app": {
+   "configured": true,
+   "layers": "ACD"
+  },
+  "base": {
+   "requirements": "dcac6deb3ad3ec4ab7381af040cb86064aae00eb3ed38c05237657156fbad7b1",
+   "spec": "28dfc2e6c6a2aa27168079740d28a94de7f3efcb7cf8234d795d48b7960f5624",
+   "trace": "627a2b3f4c9cfafc3ad6cd5edb01f355fb76b53c248c629e7a77fd1bd8ee82ed"
+  },
+  "candidate": {
+   "requirements": "92c457ca3abd4e59c15ea1f1a74e8707dc38186c334779bb2319e6063000c863",
+   "spec": "1b51bba62a7411af42d7015d168c6b04814e55b638daa44e4a73e143fa382c92",
+   "trace": "60e494d94845a083ca61eac00a5dbab385db2939ad16a6af17b477d1d406912e"
+  },
+  "change": null,
+  "inventory": {
+   "extract_sha256": "d51ef75340d54682a8bd2c3f40220e50c2ef31ae0eab17ef3ca68c9a39f89adc",
+   "stale": false,
+   "workflows_sha256": "af1383dbf5d51f876c61a282f23a2fb60d79f536af7542dfe48387e6f1c573a0"
+  },
+  "kind": "candidate",
+  "notes": []
+ },
+ "schema": "lattice.impact/1",
+ "summary": {
+  "kinds": {
+   "check_failure": 2,
+   "closure": 39,
+   "direct": 11,
+   "table_peer": 20
+  },
+  "note": "Which workflows fail is mostly not decidable before the change exists: a flow records the answers the app gives today, so it passes today by construction. Before an implementation only a changed invariant (tier 1, observed) and an exact-prefix contradiction (tier 2, determined) decide a workflow; every other flow listed is tier 3 'may_fail' (static, with unknowns), settled by tier 4 (Spike E, observed after the change).",
+  "tiers": {
+   "1": {
+    "failing": 2,
+    "flows": 0,
+    "resolved": 0
+   },
+   "2": {
+    "decidable": 0,
+    "determined": 0,
+    "flows": 0,
+    "undecidable": 3
+   },
+   "3": {
+    "flows": 27,
+    "locations": 70,
+    "unread": 3
+   }
+  },
+  "workflows": {
+   "t1_fail": 0,
+   "t2_fail": 0,
+   "t3_may_fail": 27
+  }
+ },
+ "tier1": {
+  "baseline": {
+   "failing": [],
+   "run": true,
+   "source": "run"
+  },
+  "counts": {
+   "baseline_drift": 0,
+   "by_label": {
+    "not_built_yet": 2
+   },
+   "by_layer": {
+    "C": 1,
+    "D": 1
+   },
+   "failing": 2,
+   "flows_run": 59,
+   "resolved": 0,
+   "workflow_fails": 0
+  },
+  "failing": [
+   {
+    "also_fails_on_base": false,
+    "case": "check_in_note_bounds / step 1",
+    "code": null,
+    "endpoint": "POST /v1/habits/00000000-0000-4000-8000-000000000100/completions",
+    "evidence": [
+     {
+      "at": "check:C:check_in_note_bounds / step 1",
+      "kind": "check",
+      "what": "[C silent] POST /v1/habits/00000000-0000-4000-8000-000000000100/completions as ann (check_in_note_bounds / step 1)"
+     },
+     {
+      "at": "spec:spec.py:1079",
+      "kind": "spec",
+      "what": "check_in_note_bounds step 1"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t1-630d225b07",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "C",
+    "line": 1079,
+    "observation": "runtime",
+    "problems": [],
+    "rule": "A stored check-in note is never empty.",
+    "rules": [
+     "R77"
+    ],
+    "summary": "[C silent] POST /v1/habits/00000000-0000-4000-8000-000000000100/completions as ann (check_in_note_bounds / step 1)",
+    "target": "invariant:check_in_note_not_empty",
+    "tier": 1,
+    "verdict": "silent"
+   },
+   {
+    "also_fails_on_base": false,
+    "case": "check_in_note_bounds / step 1",
+    "code": null,
+    "endpoint": "POST /v1/habits/00000000-0000-4000-8000-000000000100/completions",
+    "evidence": [
+     {
+      "at": "check:D:check_in_note_bounds / step 1",
+      "kind": "check",
+      "what": "[D silent] POST /v1/habits/00000000-0000-4000-8000-000000000100/completions as ann (check_in_note_bounds / step 1)"
+     },
+     {
+      "at": "spec:spec.py:1079",
+      "kind": "spec",
+      "what": "check_in_note_bounds step 1"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t1-c2919b67da",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "D",
+    "line": 1079,
+    "observation": "runtime",
+    "problems": [
+     "status: expected 422, got 201",
+     "body: expected {'error': {'code': 'validation_failed', 'field': 'note'}} within {'id': '00000000-0000-4000-8000-000000000302', 'habit_id': '00000000-0000-4000-8000-000000000100', 'date': '2026-03-02', 'note': '', 'created_at': '2026-03-04T12:00:00Z', 'updated_at': '2026-03-04T12:00:00Z'}",
+     "db completions where {'habit_id': '00000000-0000-4000-8000-000000000100', 'date': '2026-03-02'}: expected 0 rows, found 1"
+    ],
+    "rule": "scenario: check_in_note_bounds",
+    "rules": [
+     "R77"
+    ],
+    "summary": "[D silent] POST /v1/habits/00000000-0000-4000-8000-000000000100/completions as ann (check_in_note_bounds / step 1)",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 1,
+    "verdict": "silent"
+   }
+  ],
+  "flows": [],
+  "flows_note": null,
+  "layers": "ACD",
+  "resolved": []
+ },
+ "tier2": {
+  "corpus": {
+   "baseline": "run",
+   "environment": null,
+   "flow_steps": 167,
+   "flows_note": null,
+   "scenario_steps": 462
+  },
+  "decidability": [
+   {
+    "kind": "target",
+    "reason": "invariant_or_machine",
+    "state": "undecidable",
+    "subject": "invariant:check_in_note_not_empty"
+   },
+   {
+    "kind": "target",
+    "reason": "new_request",
+    "state": "undecidable",
+    "subject": "scenario:check_in_note_bounds"
+   },
+   {
+    "kind": "changed",
+    "reason": "invariant_or_machine",
+    "state": "undecidable",
+    "subject": "rule:R77"
+   }
+  ],
+  "determined": [],
+  "flows": [],
+  "runtime_replay": {
+   "status": "not_applicable: 0 programs"
+  }
+ },
+ "tier3": {
+  "counts": {
+   "by_kind": {
+    "closure": 39,
+    "direct": 11,
+    "insertion": 0,
+    "table_peer": 20
+   },
+   "files": 15,
+   "flows_may_fail": 27,
+   "locations": 70,
+   "seeds": {
+    "machines": 0,
+    "routes": 1,
+    "tables": 1
+   },
+   "unread": 3
+  },
+  "external": {
+   "count": 0
+  },
+  "files": [
+   "internal/account/routes.go",
+   "internal/completions/routes.go",
+   "internal/db/bodies.go",
+   "internal/db/changeseq.go",
+   "internal/db/models.go",
+   "internal/db/owned.go",
+   "internal/habits/routes.go",
+   "internal/home/routes.go",
+   "internal/httpapi/body.go",
+   "internal/httpapi/registry.go",
+   "internal/nudges/checkin.go",
+   "internal/period/period.go",
+   "internal/progress/compute.go",
+   "internal/progress/routes.go",
+   "internal/sync/routes.go"
+  ],
+  "flows": [
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-053146a70c",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-a0dbe6c6eb",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R77"
+    ],
+    "target": "flow:wf-053146a70c",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-0c6bdd7ab0",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-4cf6957bb6",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R77"
+    ],
+    "target": "flow:wf-0c6bdd7ab0",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-11a98b3683",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-9f86def86d",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R77"
+    ],
+    "target": "flow:wf-11a98b3683",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-1e4314104c",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-57cd8b0690",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R77"
+    ],
+    "target": "flow:wf-1e4314104c",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-21a2d02394",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-f2d87e7d19",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R77"
+    ],
+    "target": "flow:wf-21a2d02394",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2610c56483",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-4ec1ebadad",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R77"
+    ],
+    "target": "flow:wf-2610c56483",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2f54cb544b",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-3d27f878d6",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R77"
+    ],
+    "target": "flow:wf-2f54cb544b",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3de8783507",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-f1a45e03b5",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R77"
+    ],
+    "target": "flow:wf-3de8783507",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5a6bab46c9",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-cfc4b0f98f",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R77"
+    ],
+    "target": "flow:wf-5a6bab46c9",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5eebdfc88b",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-800d4cd115",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R77"
+    ],
+    "target": "flow:wf-5eebdfc88b",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-6a4cc7a302",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-aec0d89d58",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R77"
+    ],
+    "target": "flow:wf-6a4cc7a302",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-717a23507f",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-0563469b49",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R77"
+    ],
+    "target": "flow:wf-717a23507f",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-9f87f3f1d9",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-8086c0f545",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R77"
+    ],
+    "target": "flow:wf-9f87f3f1d9",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a7ae5cb208",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-577adf76e3",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R77"
+    ],
+    "target": "flow:wf-a7ae5cb208",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-c71e6bbb49",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-55ac4e8329",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R77"
+    ],
+    "target": "flow:wf-c71e6bbb49",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-cf27dadc73",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-6cf37ebd85",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R77"
+    ],
+    "target": "flow:wf-cf27dadc73",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d06e3e8777",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-c62293444c",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R77"
+    ],
+    "target": "flow:wf-d06e3e8777",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d2b6d84725",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-79467cc543",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R77"
+    ],
+    "target": "flow:wf-d2b6d84725",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d2fcd76bcd",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-3483d86b85",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R77"
+    ],
+    "target": "flow:wf-d2fcd76bcd",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d650036584",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-f5e00a1ca6",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R77"
+    ],
+    "target": "flow:wf-d650036584",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-dbac494b10",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-f5874aedf9",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R77"
+    ],
+    "target": "flow:wf-dbac494b10",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-e3249cec66",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-0c585f28c4",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R77"
+    ],
+    "target": "flow:wf-e3249cec66",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f67bf44692",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-7c8dc4fc25",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R77"
+    ],
+    "target": "flow:wf-f67bf44692",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f961306c88",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-674f55d09c",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R77"
+    ],
+    "target": "flow:wf-f961306c88",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-fc7d0a0772",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-da521b630b",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R77"
+    ],
+    "target": "flow:wf-fc7d0a0772",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-fcf46753f5",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-65852d3ed1",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R77"
+    ],
+    "target": "flow:wf-fcf46753f5",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ffaa047bf2",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-357dd0e755",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R77"
+    ],
+    "target": "flow:wf-ffaa047bf2",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   }
+  ],
+  "locations": [
+   {
+    "evidence": [
+     {
+      "at": "code:internal/account/routes.go:22",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/account/routes.go",
+    "id": "t3-944adcab16",
+    "kind": "table_peer",
+    "line": 22,
+    "rules": [
+     "R77"
+    ],
+    "symbol": null,
+    "target": "invariant:check_in_note_not_empty",
+    "tier": 3,
+    "via": [
+     "invariant:check_in_note_not_empty -> table:completions -> route:DELETE /v1/me -> code:internal/account/routes.go:22"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "end_line": 165,
+    "evidence": [
+     {
+      "at": "code:internal/account/routes.go:134",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/account/routes.go",
+    "id": "t3-4cdb569ed2",
+    "kind": "table_peer",
+    "line": 134,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "remove",
+    "target": "invariant:check_in_note_not_empty",
+    "tier": 3,
+    "via": [
+     "invariant:check_in_note_not_empty -> table:completions -> route:DELETE /v1/me -> handler:account.handler.remove -> code:internal/account/routes.go:134"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:25",
+      "kind": "code",
+      "what": "route registration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param id"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-fef1f22cd0",
+    "kind": "direct",
+    "line": 25,
+    "rules": [
+     "R77"
+    ],
+    "symbol": null,
+    "target": "invariant:check_in_note_not_empty",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> param:id -> code:internal/completions/routes.go:25",
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> registered -> code:internal/completions/routes.go:25",
+     "invariant:check_in_note_not_empty -> table:completions -> route:POST /v1/habits/:id/completions -> code:internal/completions/routes.go:25",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> param:id -> code:internal/completions/routes.go:25",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> registered -> code:internal/completions/routes.go:25"
+    ],
+    "what": "route registration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:26",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-cd84f4e713",
+    "kind": "table_peer",
+    "line": 26,
+    "rules": [
+     "R77"
+    ],
+    "symbol": null,
+    "target": "invariant:check_in_note_not_empty",
+    "tier": 3,
+    "via": [
+     "invariant:check_in_note_not_empty -> table:completions -> route:GET /v1/habits/:id/completions -> code:internal/completions/routes.go:26"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:27",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-09d28cb608",
+    "kind": "table_peer",
+    "line": 27,
+    "rules": [
+     "R77"
+    ],
+    "symbol": null,
+    "target": "invariant:check_in_note_not_empty",
+    "tier": 3,
+    "via": [
+     "invariant:check_in_note_not_empty -> table:completions -> route:DELETE /v1/habits/:id/completions/:cid -> code:internal/completions/routes.go:27"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:28",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-32ef71e3ed",
+    "kind": "table_peer",
+    "line": 28,
+    "rules": [
+     "R77"
+    ],
+    "symbol": null,
+    "target": "invariant:check_in_note_not_empty",
+    "tier": 3,
+    "via": [
+     "invariant:check_in_note_not_empty -> table:completions -> route:POST /v1/completions/batch -> code:internal/completions/routes.go:28"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "end_line": 127,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:57",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-d5aca3fbe2",
+    "kind": "table_peer",
+    "line": 57,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "batch",
+    "target": "invariant:check_in_note_not_empty",
+    "tier": 3,
+    "via": [
+     "invariant:check_in_note_not_empty -> table:completions -> route:POST /v1/completions/batch -> handler:completions.handler.batch -> code:internal/completions/routes.go:57"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "end_line": 158,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:139",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-3aa6ee446c",
+    "kind": "closure",
+    "line": 139,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "ReadInput",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/completions:ReadInput -> code:internal/completions/routes.go:139",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/completions:ReadInput -> code:internal/completions/routes.go:139",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/completions:ReadInput -> code:internal/completions/routes.go:139",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/completions:ReadInput -> code:internal/completions/routes.go:139",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/completions:ReadInput -> code:internal/completions/routes.go:139"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:142",
+      "kind": "code",
+      "what": "param id"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param id"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-251b26fc60",
+    "kind": "direct",
+    "line": 142,
+    "rules": [
+     "R77"
+    ],
+    "symbol": null,
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> param:id -> code:internal/completions/routes.go:142",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> param:id -> code:internal/completions/routes.go:142",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> param:id -> code:internal/completions/routes.go:142",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> param:id -> code:internal/completions/routes.go:142",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> param:id -> code:internal/completions/routes.go:142"
+    ],
+    "what": "param id"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:145",
+      "kind": "code",
+      "what": "param date"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param date"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-c8fbf49a8f",
+    "kind": "direct",
+    "line": 145,
+    "rules": [
+     "R77"
+    ],
+    "symbol": null,
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> param:date -> code:internal/completions/routes.go:145",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> param:date -> code:internal/completions/routes.go:145",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> param:date -> code:internal/completions/routes.go:145",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> param:date -> code:internal/completions/routes.go:145",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> param:date -> code:internal/completions/routes.go:145"
+    ],
+    "what": "param date"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:150",
+      "kind": "code",
+      "what": "param note"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param note"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-0828d08f0b",
+    "kind": "direct",
+    "line": 150,
+    "rules": [
+     "R77"
+    ],
+    "symbol": null,
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> param:note -> code:internal/completions/routes.go:150",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> param:note -> code:internal/completions/routes.go:150",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> param:note -> code:internal/completions/routes.go:150",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> param:note -> code:internal/completions/routes.go:150",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> param:note -> code:internal/completions/routes.go:150"
+    ],
+    "what": "param note"
+   },
+   {
+    "end_line": 165,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:160",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-7d49276ca8",
+    "kind": "closure",
+    "line": 160,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "sameNote",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/completions:sameNote -> code:internal/completions/routes.go:160",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/completions:sameNote -> code:internal/completions/routes.go:160",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/completions:sameNote -> code:internal/completions/routes.go:160",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/completions:sameNote -> code:internal/completions/routes.go:160",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/completions:sameNote -> code:internal/completions/routes.go:160"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 214,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:169",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-94b1a1d178",
+    "kind": "closure",
+    "line": 169,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "Create",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/completions:Create -> code:internal/completions/routes.go:169",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/completions:Create -> code:internal/completions/routes.go:169",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/completions:Create -> code:internal/completions/routes.go:169",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/completions:Create -> code:internal/completions/routes.go:169",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/completions:Create -> code:internal/completions/routes.go:169"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 260,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:217",
+      "kind": "code",
+      "what": "handler declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler declaration"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-ddb1f3fafe",
+    "kind": "direct",
+    "line": 217,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "create",
+    "target": "invariant:check_in_note_not_empty",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> handler:completions.handler.create -> code:internal/completions/routes.go:217",
+     "invariant:check_in_note_not_empty -> table:completions -> route:POST /v1/habits/:id/completions -> handler:completions.handler.create -> code:internal/completions/routes.go:217",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> handler:completions.handler.create -> code:internal/completions/routes.go:217",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> handler:completions.handler.create -> code:internal/completions/routes.go:217",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> handler:completions.handler.create -> code:internal/completions/routes.go:217"
+    ],
+    "what": "handler declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:219",
+      "kind": "code",
+      "what": "raise 422 validation_failed"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 validation_failed"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-c0c80ba2b3",
+    "kind": "direct",
+    "line": 219,
+    "rules": [
+     "R77"
+    ],
+    "symbol": null,
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:219",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:219",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:219",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:219",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:219"
+    ],
+    "what": "raise 422 validation_failed"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:223",
+      "kind": "code",
+      "what": "raise 422 validation_failed"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 validation_failed"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-0493c5de74",
+    "kind": "direct",
+    "line": 223,
+    "rules": [
+     "R77"
+    ],
+    "symbol": null,
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:223",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:223",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:223",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:223",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:223"
+    ],
+    "what": "raise 422 validation_failed"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:227",
+      "kind": "code",
+      "what": "raise 422 validation_failed"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 validation_failed"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-521777077e",
+    "kind": "direct",
+    "line": 227,
+    "rules": [
+     "R77"
+    ],
+    "symbol": null,
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:227",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:227",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:227",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:227",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> raise:422 validation_failed -> code:internal/completions/routes.go:227"
+    ],
+    "what": "raise 422 validation_failed"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:245",
+      "kind": "code",
+      "what": "raise 422 date_in_future"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 date_in_future"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-58a6a46d9b",
+    "kind": "direct",
+    "line": 245,
+    "rules": [
+     "R77"
+    ],
+    "symbol": null,
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> raise:422 date_in_future -> code:internal/completions/routes.go:245",
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> raise:422 date_out_of_range -> code:internal/completions/routes.go:245",
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> raise:422 date_too_old -> code:internal/completions/routes.go:245",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> raise:422 date_in_future -> code:internal/completions/routes.go:245",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> raise:422 date_out_of_range -> code:internal/completions/routes.go:245"
+    ],
+    "what": "raise 422 date_in_future"
+   },
+   {
+    "end_line": 309,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:263",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-580c34a250",
+    "kind": "table_peer",
+    "line": 263,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "list",
+    "target": "invariant:check_in_note_not_empty",
+    "tier": 3,
+    "via": [
+     "invariant:check_in_note_not_empty -> table:completions -> route:GET /v1/habits/:id/completions -> handler:completions.handler.list -> code:internal/completions/routes.go:263"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "end_line": 355,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:312",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-7bc83be59a",
+    "kind": "table_peer",
+    "line": 312,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "remove",
+    "target": "invariant:check_in_note_not_empty",
+    "tier": 3,
+    "via": [
+     "invariant:check_in_note_not_empty -> table:completions -> route:DELETE /v1/habits/:id/completions/:cid -> handler:completions.handler.remove -> code:internal/completions/routes.go:312"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "end_line": 16,
+    "evidence": [
+     {
+      "at": "code:internal/db/bodies.go:16",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/bodies.go",
+    "id": "t3-c6a81594ea",
+    "kind": "closure",
+    "line": 16,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "Instant",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:Instant -> code:internal/db/bodies.go:16",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:Instant -> code:internal/db/bodies.go:16",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:Instant -> code:internal/db/bodies.go:16",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:Instant -> code:internal/db/bodies.go:16",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:Instant -> code:internal/db/bodies.go:16"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 64,
+    "evidence": [
+     {
+      "at": "code:internal/db/bodies.go:61",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/bodies.go",
+    "id": "t3-2399d149ea",
+    "kind": "closure",
+    "line": 61,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "CompletionBody",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:CompletionBody -> code:internal/db/bodies.go:61",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:CompletionBody -> code:internal/db/bodies.go:61",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:CompletionBody -> code:internal/db/bodies.go:61",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:CompletionBody -> code:internal/db/bodies.go:61",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:CompletionBody -> code:internal/db/bodies.go:61"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 20,
+    "evidence": [
+     {
+      "at": "code:internal/db/changeseq.go:13",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/changeseq.go",
+    "id": "t3-8a701d1a02",
+    "kind": "closure",
+    "line": 13,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "LockUser",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:LockUser -> code:internal/db/changeseq.go:13",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:LockUser -> code:internal/db/changeseq.go:13",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:LockUser -> code:internal/db/changeseq.go:13",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:LockUser -> code:internal/db/changeseq.go:13",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:LockUser -> code:internal/db/changeseq.go:13"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 32,
+    "evidence": [
+     {
+      "at": "code:internal/db/changeseq.go:24",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/changeseq.go",
+    "id": "t3-5709f4407d",
+    "kind": "closure",
+    "line": 24,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "NextChangeSeq",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:NextChangeSeq -> code:internal/db/changeseq.go:24",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:NextChangeSeq -> code:internal/db/changeseq.go:24",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:NextChangeSeq -> code:internal/db/changeseq.go:24",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:NextChangeSeq -> code:internal/db/changeseq.go:24",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:NextChangeSeq -> code:internal/db/changeseq.go:24"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 95,
+    "evidence": [
+     {
+      "at": "code:internal/db/models.go:86",
+      "kind": "code",
+      "what": "struct"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "struct"
+     }
+    ],
+    "file": "internal/db/models.go",
+    "id": "t3-a53c53975b",
+    "kind": "direct",
+    "line": 86,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "Completion",
+    "target": "invariant:check_in_note_not_empty",
+    "tier": 3,
+    "via": [
+     "invariant:check_in_note_not_empty -> table:completions -> struct:Completion -> code:internal/db/models.go:86",
+     "rule:R77 -> invariant:check_in_note_not_empty -> struct:Completion -> code:internal/db/models.go:86"
+    ],
+    "what": "struct"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/db/models.go:90",
+      "kind": "code",
+      "what": "column note"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "column note"
+     }
+    ],
+    "file": "internal/db/models.go",
+    "id": "t3-31dd786adc",
+    "kind": "direct",
+    "line": 90,
+    "rules": [
+     "R77"
+    ],
+    "symbol": null,
+    "target": "invariant:check_in_note_not_empty",
+    "tier": 3,
+    "via": [
+     "invariant:check_in_note_not_empty -> table:completions -> column:note -> code:internal/db/models.go:90",
+     "rule:R77 -> invariant:check_in_note_not_empty -> column:note -> code:internal/db/models.go:90"
+    ],
+    "what": "column note"
+   },
+   {
+    "end_line": 21,
+    "evidence": [
+     {
+      "at": "code:internal/db/owned.go:14",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/owned.go",
+    "id": "t3-216f26743d",
+    "kind": "closure",
+    "line": 14,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "OwnedHabit",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:27",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-20deeac123",
+    "kind": "table_peer",
+    "line": 27,
+    "rules": [
+     "R77"
+    ],
+    "symbol": null,
+    "target": "invariant:check_in_note_not_empty",
+    "tier": 3,
+    "via": [
+     "invariant:check_in_note_not_empty -> table:completions -> route:PATCH /v1/habits/:id -> code:internal/habits/routes.go:27"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:28",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-89dd9a85e4",
+    "kind": "table_peer",
+    "line": 28,
+    "rules": [
+     "R77"
+    ],
+    "symbol": null,
+    "target": "invariant:check_in_note_not_empty",
+    "tier": 3,
+    "via": [
+     "invariant:check_in_note_not_empty -> table:completions -> route:DELETE /v1/habits/:id -> code:internal/habits/routes.go:28"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "end_line": 384,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:252",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-236b5154fa",
+    "kind": "table_peer",
+    "line": 252,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "patch",
+    "target": "invariant:check_in_note_not_empty",
+    "tier": 3,
+    "via": [
+     "invariant:check_in_note_not_empty -> table:completions -> route:PATCH /v1/habits/:id -> handler:habits.handler.patch -> code:internal/habits/routes.go:252"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "end_line": 451,
+    "evidence": [
+     {
+      "at": "code:internal/habits/routes.go:400",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/habits/routes.go",
+    "id": "t3-e1093419ba",
+    "kind": "table_peer",
+    "line": 400,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "remove",
+    "target": "invariant:check_in_note_not_empty",
+    "tier": 3,
+    "via": [
+     "invariant:check_in_note_not_empty -> table:completions -> route:DELETE /v1/habits/:id -> handler:habits.handler.remove -> code:internal/habits/routes.go:400"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/home/routes.go:18",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/home/routes.go",
+    "id": "t3-bc014796ca",
+    "kind": "table_peer",
+    "line": 18,
+    "rules": [
+     "R77"
+    ],
+    "symbol": null,
+    "target": "invariant:check_in_note_not_empty",
+    "tier": 3,
+    "via": [
+     "invariant:check_in_note_not_empty -> table:completions -> route:GET /v1/home -> code:internal/home/routes.go:18"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "end_line": 64,
+    "evidence": [
+     {
+      "at": "code:internal/home/routes.go:29",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/home/routes.go",
+    "id": "t3-8f24691433",
+    "kind": "table_peer",
+    "line": 29,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "home",
+    "target": "invariant:check_in_note_not_empty",
+    "tier": 3,
+    "via": [
+     "invariant:check_in_note_not_empty -> table:completions -> route:GET /v1/home -> handler:home.handler.home -> code:internal/home/routes.go:29"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "end_line": 37,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/body.go:21",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/body.go",
+    "id": "t3-c7589546de",
+    "kind": "closure",
+    "line": 21,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "ReadBody",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 139,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/body.go:134",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/body.go",
+    "id": "t3-02b75b66cc",
+    "kind": "closure",
+    "line": 134,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "CanonicalUUID",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 148,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/body.go:142",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/body.go",
+    "id": "t3-bb8d034041",
+    "kind": "closure",
+    "line": 142,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "PathUUID",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 41,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:37",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-be119afdb0",
+    "kind": "closure",
+    "line": 37,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "CallerOf",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 47,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:45",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-7bd17ad731",
+    "kind": "closure",
+    "line": 45,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "Now",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 56,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:50",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-f73f3d96bc",
+    "kind": "closure",
+    "line": 50,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "NowCtx",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 64,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:59",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-bc53e325fa",
+    "kind": "closure",
+    "line": 59,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "Today",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 67,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:67",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-0a11b2b5a9",
+    "kind": "closure",
+    "line": 67,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "Q",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 73,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:71",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-899078a21a",
+    "kind": "closure",
+    "line": 71,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "Tx",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 23,
+    "evidence": [
+     {
+      "at": "code:internal/nudges/checkin.go:17",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/nudges/checkin.go",
+    "id": "t3-1547ebb5dc",
+    "kind": "closure",
+    "line": 17,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "newID",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/nudges:newID -> code:internal/nudges/checkin.go:17",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/nudges:newID -> code:internal/nudges/checkin.go:17",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/nudges:newID -> code:internal/nudges/checkin.go:17",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/nudges:newID -> code:internal/nudges/checkin.go:17",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/nudges:newID -> code:internal/nudges/checkin.go:17"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 45,
+    "evidence": [
+     {
+      "at": "code:internal/nudges/checkin.go:26",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/nudges/checkin.go",
+    "id": "t3-f26dfcacd0",
+    "kind": "closure",
+    "line": 26,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "Message",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/nudges:Message -> code:internal/nudges/checkin.go:26",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/nudges:Message -> code:internal/nudges/checkin.go:26",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/nudges:Message -> code:internal/nudges/checkin.go:26",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/nudges:Message -> code:internal/nudges/checkin.go:26",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/nudges:Message -> code:internal/nudges/checkin.go:26"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 99,
+    "evidence": [
+     {
+      "at": "code:internal/nudges/checkin.go:49",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/nudges/checkin.go",
+    "id": "t3-f2ae34ec16",
+    "kind": "closure",
+    "line": 49,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "AfterCheckIn",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/nudges:AfterCheckIn -> code:internal/nudges/checkin.go:49",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/nudges:AfterCheckIn -> code:internal/nudges/checkin.go:49",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/nudges:AfterCheckIn -> code:internal/nudges/checkin.go:49",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/nudges:AfterCheckIn -> code:internal/nudges/checkin.go:49",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/nudges:AfterCheckIn -> code:internal/nudges/checkin.go:49"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 52,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:43",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-ea2e9bb921",
+    "kind": "closure",
+    "line": 43,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "ParseDate",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:ParseDate -> code:internal/period/period.go:43",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:ParseDate -> code:internal/period/period.go:43",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:ParseDate -> code:internal/period/period.go:43",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:ParseDate -> code:internal/period/period.go:43",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:ParseDate -> code:internal/period/period.go:43"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 55,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:55",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-21c09dea1d",
+    "kind": "closure",
+    "line": 55,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "FormatDate",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 67,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:67",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-374165a72c",
+    "kind": "closure",
+    "line": 67,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "Date",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Date -> code:internal/period/period.go:67",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Date -> code:internal/period/period.go:67",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Date -> code:internal/period/period.go:67",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Date -> code:internal/period/period.go:67",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Date -> code:internal/period/period.go:67"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 70,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:70",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-99fce8c455",
+    "kind": "closure",
+    "line": 70,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "AddDays",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 73,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:73",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-45347cbbcd",
+    "kind": "closure",
+    "line": 73,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "Days",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Days -> code:internal/period/period.go:73",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Days -> code:internal/period/period.go:73",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Days -> code:internal/period/period.go:73",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Days -> code:internal/period/period.go:73",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Days -> code:internal/period/period.go:73"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 112,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:97",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-1694a25a02",
+    "kind": "closure",
+    "line": 97,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "Location",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Location -> code:internal/period/period.go:97"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 129,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:122",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-5cf1bbe725",
+    "kind": "closure",
+    "line": 122,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "Today",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Today -> code:internal/period/period.go:122",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Today -> code:internal/period/period.go:122",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Today -> code:internal/period/period.go:122",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Today -> code:internal/period/period.go:122",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Today -> code:internal/period/period.go:122"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 142,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:132",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-7c383ffc34",
+    "kind": "closure",
+    "line": 132,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "Start",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Start -> code:internal/period/period.go:132",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Start -> code:internal/period/period.go:132",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Start -> code:internal/period/period.go:132",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Start -> code:internal/period/period.go:132",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Start -> code:internal/period/period.go:132"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 155,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:145",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-d54567243a",
+    "kind": "closure",
+    "line": 145,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "End",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:End -> code:internal/period/period.go:145",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:End -> code:internal/period/period.go:145",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:End -> code:internal/period/period.go:145",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:End -> code:internal/period/period.go:145",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:End -> code:internal/period/period.go:145"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 23,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:23",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-a5d419ef7d",
+    "kind": "closure",
+    "line": 23,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "L",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Window.L -> code:internal/progress/compute.go:23",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Window.L -> code:internal/progress/compute.go:23",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Window.L -> code:internal/progress/compute.go:23",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Window.L -> code:internal/progress/compute.go:23",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Window.L -> code:internal/progress/compute.go:23"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 26,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:26",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-85442546ed",
+    "kind": "closure",
+    "line": 26,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "A",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Window.A -> code:internal/progress/compute.go:26",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Window.A -> code:internal/progress/compute.go:26",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Window.A -> code:internal/progress/compute.go:26",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Window.A -> code:internal/progress/compute.go:26",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Window.A -> code:internal/progress/compute.go:26"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 37,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:30",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-a29c69da25",
+    "kind": "closure",
+    "line": 30,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "ActiveWindow",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:ActiveWindow -> code:internal/progress/compute.go:30",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:ActiveWindow -> code:internal/progress/compute.go:30",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:ActiveWindow -> code:internal/progress/compute.go:30",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:ActiveWindow -> code:internal/progress/compute.go:30",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:ActiveWindow -> code:internal/progress/compute.go:30"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 51,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:40",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-fd59cad146",
+    "kind": "closure",
+    "line": 40,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "WindowFor",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:WindowFor -> code:internal/progress/compute.go:40",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:WindowFor -> code:internal/progress/compute.go:40",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:WindowFor -> code:internal/progress/compute.go:40",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:WindowFor -> code:internal/progress/compute.go:40",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:WindowFor -> code:internal/progress/compute.go:40"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 60,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:55",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-3bcda131b0",
+    "kind": "closure",
+    "line": 55,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "ProRate",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:ProRate -> code:internal/progress/compute.go:55",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:ProRate -> code:internal/progress/compute.go:55",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:ProRate -> code:internal/progress/compute.go:55",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:ProRate -> code:internal/progress/compute.go:55",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:ProRate -> code:internal/progress/compute.go:55"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 65,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:65",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-4828031fa7",
+    "kind": "closure",
+    "line": 65,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "rate",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:rate -> code:internal/progress/compute.go:65",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:rate -> code:internal/progress/compute.go:65",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:rate -> code:internal/progress/compute.go:65",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:rate -> code:internal/progress/compute.go:65",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:rate -> code:internal/progress/compute.go:65"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 97,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:97",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-a5812c9a51",
+    "kind": "closure",
+    "line": 97,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "ptr",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:ptr -> code:internal/progress/compute.go:97",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:ptr -> code:internal/progress/compute.go:97",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:ptr -> code:internal/progress/compute.go:97",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:ptr -> code:internal/progress/compute.go:97",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:ptr -> code:internal/progress/compute.go:97"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 152,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:101",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-d294407dae",
+    "kind": "closure",
+    "line": 101,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "Compute",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Compute -> code:internal/progress/compute.go:101",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Compute -> code:internal/progress/compute.go:101",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Compute -> code:internal/progress/compute.go:101",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Compute -> code:internal/progress/compute.go:101",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Compute -> code:internal/progress/compute.go:101"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/progress/routes.go:19",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t3-e89cb5e23e",
+    "kind": "table_peer",
+    "line": 19,
+    "rules": [
+     "R77"
+    ],
+    "symbol": null,
+    "target": "invariant:check_in_note_not_empty",
+    "tier": 3,
+    "via": [
+     "invariant:check_in_note_not_empty -> table:completions -> route:GET /v1/habits/:id/progress -> code:internal/progress/routes.go:19"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/progress/routes.go:20",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t3-a97bb78483",
+    "kind": "table_peer",
+    "line": 20,
+    "rules": [
+     "R77"
+    ],
+    "symbol": null,
+    "target": "invariant:check_in_note_not_empty",
+    "tier": 3,
+    "via": [
+     "invariant:check_in_note_not_empty -> table:completions -> route:GET /v1/habits/:id/history -> code:internal/progress/routes.go:20"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "end_line": 32,
+    "evidence": [
+     {
+      "at": "code:internal/progress/routes.go:26",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t3-378a61c0e3",
+    "kind": "closure",
+    "line": 26,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "liveDates",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:liveDates -> code:internal/progress/routes.go:26",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:liveDates -> code:internal/progress/routes.go:26",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:liveDates -> code:internal/progress/routes.go:26",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:liveDates -> code:internal/progress/routes.go:26",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:liveDates -> code:internal/progress/routes.go:26"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 42,
+    "evidence": [
+     {
+      "at": "code:internal/progress/routes.go:35",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t3-12a9af83c6",
+    "kind": "closure",
+    "line": 35,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "Of",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 3,
+    "via": [
+     "check:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Of -> code:internal/progress/routes.go:35",
+     "rule:R77 -> scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Of -> code:internal/progress/routes.go:35",
+     "rule:R77 -> scenario:check_in_note_bounds / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Of -> code:internal/progress/routes.go:35",
+     "rule:R77 -> scenario:check_in_note_bounds / step 3 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Of -> code:internal/progress/routes.go:35",
+     "scenario:check_in_note_bounds / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Of -> code:internal/progress/routes.go:35"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 65,
+    "evidence": [
+     {
+      "at": "code:internal/progress/routes.go:45",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t3-3363b2faa5",
+    "kind": "table_peer",
+    "line": 45,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "progress",
+    "target": "invariant:check_in_note_not_empty",
+    "tier": 3,
+    "via": [
+     "invariant:check_in_note_not_empty -> table:completions -> route:GET /v1/habits/:id/progress -> handler:progress.handler.progress -> code:internal/progress/routes.go:45"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "end_line": 113,
+    "evidence": [
+     {
+      "at": "code:internal/progress/routes.go:68",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t3-860f144e26",
+    "kind": "table_peer",
+    "line": 68,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "history",
+    "target": "invariant:check_in_note_not_empty",
+    "tier": 3,
+    "via": [
+     "invariant:check_in_note_not_empty -> table:completions -> route:GET /v1/habits/:id/history -> handler:progress.handler.history -> code:internal/progress/routes.go:68"
+    ],
+    "what": "handler on a changed table"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/sync/routes.go:17",
+      "kind": "code",
+      "what": "route on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route on a changed table"
+     }
+    ],
+    "file": "internal/sync/routes.go",
+    "id": "t3-a9ef329662",
+    "kind": "table_peer",
+    "line": 17,
+    "rules": [
+     "R77"
+    ],
+    "symbol": null,
+    "target": "invariant:check_in_note_not_empty",
+    "tier": 3,
+    "via": [
+     "invariant:check_in_note_not_empty -> table:completions -> route:GET /v1/sync -> code:internal/sync/routes.go:17"
+    ],
+    "what": "route on a changed table"
+   },
+   {
+    "end_line": 108,
+    "evidence": [
+     {
+      "at": "code:internal/sync/routes.go:31",
+      "kind": "code",
+      "what": "handler on a changed table"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler on a changed table"
+     }
+    ],
+    "file": "internal/sync/routes.go",
+    "id": "t3-c1774bc293",
+    "kind": "table_peer",
+    "line": 31,
+    "rules": [
+     "R77"
+    ],
+    "symbol": "sync",
+    "target": "invariant:check_in_note_not_empty",
+    "tier": 3,
+    "via": [
+     "invariant:check_in_note_not_empty -> table:completions -> route:GET /v1/sync -> handler:sync.handler.sync -> code:internal/sync/routes.go:31"
+    ],
+    "what": "handler on a changed table"
+   }
+  ],
+  "stale": false,
+  "unread": [
+   {
+    "file": "internal/httpapi/registry.go",
+    "kind": "extract_unread",
+    "line": 51,
+    "reason": "interface dispatch: `d.Clock.Now(ctx)` has no single implementation in the module",
+    "what": "call"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of POST /v1/habits/{}/completions is not read from the code",
+    "what": "scenario:check_in_note_bounds / step 2"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of POST /v1/habits/{}/completions is not read from the code",
+    "what": "scenario:check_in_note_bounds / step 3"
+   }
+  ]
+ },
+ "tier4": {
+  "before": {
+   "failing_count": 2,
+   "flows_run": 59,
+   "matches_report": true
+  },
+  "counts": {
+   "failing_after": 0,
+   "flow_before_failed": 0,
+   "flow_changed": 0,
+   "flow_unchanged": 59,
+   "flows_run": 59,
+   "may_fail_unbacked": 0,
+   "regressions": 0,
+   "resolved": 2,
+   "still_failing": 0,
+   "t2_contradicted": 0,
+   "unexpected_regressions": 0,
+   "unreported": 0,
+   "workflow_fails": 0
+  },
+  "failing": [],
+  "flows": [
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-087fea1dbb",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-087fea1dbb",
+    "id": "t4-2931f10e3c",
+    "kind": "flow_unchanged",
+    "name": "create habits > read habits",
+    "rules": [],
+    "target": "flow:wf-087fea1dbb",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-09db39abfe",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-09db39abfe",
+    "id": "t4-9f50a6c59b",
+    "kind": "flow_unchanged",
+    "name": "create habits > read history",
+    "rules": [],
+    "target": "flow:wf-09db39abfe",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-0c6bdd7ab0",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-0c6bdd7ab0",
+    "id": "t4-1c885f053a",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read home",
+    "rules": [],
+    "target": "flow:wf-0c6bdd7ab0",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-11a98b3683",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-11a98b3683",
+    "id": "t4-e2d97e665d",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read completions",
+    "rules": [],
+    "target": "flow:wf-11a98b3683",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-12302559ed",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-12302559ed",
+    "id": "t4-2a985ce4a1",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read nudges",
+    "rules": [],
+    "target": "flow:wf-12302559ed",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-1e4314104c",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-1e4314104c",
+    "id": "t4-a859fd5339",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read habits",
+    "rules": [],
+    "target": "flow:wf-1e4314104c",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-21a2d02394",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-21a2d02394",
+    "id": "t4-58f062be50",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read history",
+    "rules": [],
+    "target": "flow:wf-21a2d02394",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2610c56483",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-2610c56483",
+    "id": "t4-4273ca9643",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read me",
+    "rules": [],
+    "target": "flow:wf-2610c56483",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2818e45412",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-2818e45412",
+    "id": "t4-3dfaac23ef",
+    "kind": "flow_unchanged",
+    "name": "create devices > delete devices",
+    "rules": [],
+    "target": "flow:wf-2818e45412",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2d3eecc464",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-2d3eecc464",
+    "id": "t4-61040e7738",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits",
+    "rules": [],
+    "target": "flow:wf-2d3eecc464",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2da750f4e8",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-2da750f4e8",
+    "id": "t4-f46b2b1605",
+    "kind": "flow_unchanged",
+    "name": "create habits > create batch",
+    "rules": [],
+    "target": "flow:wf-2da750f4e8",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2f54cb544b",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-2f54cb544b",
+    "id": "t4-7522d9c875",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read me",
+    "rules": [],
+    "target": "flow:wf-2f54cb544b",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3c5a04e0ae",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-3c5a04e0ae",
+    "id": "t4-3d86bfdff2",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read habits",
+    "rules": [],
+    "target": "flow:wf-3c5a04e0ae",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3d2436d2dd",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-3d2436d2dd",
+    "id": "t4-4a533ffe22",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read progress",
+    "rules": [],
+    "target": "flow:wf-3d2436d2dd",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3de8783507",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-3de8783507",
+    "id": "t4-bc43a91eb1",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read completions",
+    "rules": [],
+    "target": "flow:wf-3de8783507",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-45bfc39e84",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-45bfc39e84",
+    "id": "t4-8426b794fa",
+    "kind": "flow_unchanged",
+    "name": "create habits > read completions",
+    "rules": [],
+    "target": "flow:wf-45bfc39e84",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-4dfc4c5bed",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-4dfc4c5bed",
+    "id": "t4-b84f0fc36c",
+    "kind": "flow_unchanged",
+    "name": "create habits > read habits",
+    "rules": [],
+    "target": "flow:wf-4dfc4c5bed",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-4e49f96210",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-4e49f96210",
+    "id": "t4-999bed9b4b",
+    "kind": "flow_unchanged",
+    "name": "create habits > create batch",
+    "rules": [],
+    "target": "flow:wf-4e49f96210",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-52994a9544",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-52994a9544",
+    "id": "t4-abfc048024",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read history",
+    "rules": [],
+    "target": "flow:wf-52994a9544",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-597f2899e4",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-597f2899e4",
+    "id": "t4-2a3cf2a10a",
+    "kind": "flow_unchanged",
+    "name": "create habits > read completions",
+    "rules": [],
+    "target": "flow:wf-597f2899e4",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5a6bab46c9",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-5a6bab46c9",
+    "id": "t4-eb2b3781a6",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read sync",
+    "rules": [],
+    "target": "flow:wf-5a6bab46c9",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5cf3da443e",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-5cf3da443e",
+    "id": "t4-ac14b64d75",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read progress",
+    "rules": [],
+    "target": "flow:wf-5cf3da443e",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5eebdfc88b",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-5eebdfc88b",
+    "id": "t4-27855b8b1f",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read progress",
+    "rules": [],
+    "target": "flow:wf-5eebdfc88b",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-6a4cc7a302",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-6a4cc7a302",
+    "id": "t4-0ce52aaf22",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read home > dismiss nudges",
+    "rules": [],
+    "target": "flow:wf-6a4cc7a302",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-6c2282fd50",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-6c2282fd50",
+    "id": "t4-3a619fc723",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read habits",
+    "rules": [],
+    "target": "flow:wf-6c2282fd50",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-717a23507f",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-717a23507f",
+    "id": "t4-b81dbf0d6b",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read nudges",
+    "rules": [],
+    "target": "flow:wf-717a23507f",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-80123a60e5",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-80123a60e5",
+    "id": "t4-85854f059f",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read habits",
+    "rules": [],
+    "target": "flow:wf-80123a60e5",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-801d529a0f",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-801d529a0f",
+    "id": "t4-021eb02164",
+    "kind": "flow_unchanged",
+    "name": "create devices > delete devices",
+    "rules": [],
+    "target": "flow:wf-801d529a0f",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-8ae8af75df",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-8ae8af75df",
+    "id": "t4-0a37afe047",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read habits",
+    "rules": [],
+    "target": "flow:wf-8ae8af75df",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-8b2744d526",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-8b2744d526",
+    "id": "t4-37a77c8aa0",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits",
+    "rules": [],
+    "target": "flow:wf-8b2744d526",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-9ead6d0f00",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-9ead6d0f00",
+    "id": "t4-c4dd5a2aa1",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read history",
+    "rules": [],
+    "target": "flow:wf-9ead6d0f00",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a1793fed29",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-a1793fed29",
+    "id": "t4-f6bc0e569c",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits",
+    "rules": [],
+    "target": "flow:wf-a1793fed29",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a7ae5cb208",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-a7ae5cb208",
+    "id": "t4-42fc47ef3a",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions",
+    "rules": [],
+    "target": "flow:wf-a7ae5cb208",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a8966be4b8",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-a8966be4b8",
+    "id": "t4-d631ce2518",
+    "kind": "flow_unchanged",
+    "name": "create register > create login",
+    "rules": [],
+    "target": "flow:wf-a8966be4b8",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a9ac9b88a4",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-a9ac9b88a4",
+    "id": "t4-8358111868",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read sync",
+    "rules": [],
+    "target": "flow:wf-a9ac9b88a4",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b2acc9eac6",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-b2acc9eac6",
+    "id": "t4-2d00866129",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read completions",
+    "rules": [],
+    "target": "flow:wf-b2acc9eac6",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b595a756b6",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-b595a756b6",
+    "id": "t4-15fb9d99ca",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read home",
+    "rules": [],
+    "target": "flow:wf-b595a756b6",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b95fd71de1",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-b95fd71de1",
+    "id": "t4-190be5927b",
+    "kind": "flow_unchanged",
+    "name": "create habits > read home",
+    "rules": [],
+    "target": "flow:wf-b95fd71de1",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-bd46b71ee2",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-bd46b71ee2",
+    "id": "t4-782b4c8124",
+    "kind": "flow_unchanged",
+    "name": "create habits > read progress",
+    "rules": [],
+    "target": "flow:wf-bd46b71ee2",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-c00e2afaf3",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-c00e2afaf3",
+    "id": "t4-12f8c801ce",
+    "kind": "flow_unchanged",
+    "name": "create habits > read habits",
+    "rules": [],
+    "target": "flow:wf-c00e2afaf3",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-c675dd6cb3",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-c675dd6cb3",
+    "id": "t4-eab24d3d4a",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read sync",
+    "rules": [],
+    "target": "flow:wf-c675dd6cb3",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-cc7886ea28",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-cc7886ea28",
+    "id": "t4-6809546514",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits",
+    "rules": [],
+    "target": "flow:wf-cc7886ea28",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ce853d194f",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-ce853d194f",
+    "id": "t4-4229965607",
+    "kind": "flow_unchanged",
+    "name": "create habits > read sync",
+    "rules": [],
+    "target": "flow:wf-ce853d194f",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-cf27dadc73",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-cf27dadc73",
+    "id": "t4-5878e34622",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read home",
+    "rules": [],
+    "target": "flow:wf-cf27dadc73",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d06e3e8777",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-d06e3e8777",
+    "id": "t4-5adba447a9",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read nudges",
+    "rules": [],
+    "target": "flow:wf-d06e3e8777",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d2b6d84725",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-d2b6d84725",
+    "id": "t4-3a0e360245",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions",
+    "rules": [],
+    "target": "flow:wf-d2b6d84725",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d2fcd76bcd",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-d2fcd76bcd",
+    "id": "t4-d72cb23ad9",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read habits",
+    "rules": [],
+    "target": "flow:wf-d2fcd76bcd",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d650036584",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-d650036584",
+    "id": "t4-90d71c9f07",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read habits",
+    "rules": [],
+    "target": "flow:wf-d650036584",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d8340207d1",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-d8340207d1",
+    "id": "t4-ec4c4095bf",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read home",
+    "rules": [],
+    "target": "flow:wf-d8340207d1",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-dbac494b10",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-dbac494b10",
+    "id": "t4-77f0d4d3d3",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read progress",
+    "rules": [],
+    "target": "flow:wf-dbac494b10",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-de433cd704",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-de433cd704",
+    "id": "t4-be16adb885",
+    "kind": "flow_unchanged",
+    "name": "create habits > read progress",
+    "rules": [],
+    "target": "flow:wf-de433cd704",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-e3249cec66",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-e3249cec66",
+    "id": "t4-6c01f475dc",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > update habits > delete completions > delete habits",
+    "rules": [],
+    "target": "flow:wf-e3249cec66",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ee191140a0",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-ee191140a0",
+    "id": "t4-296f29670e",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read completions",
+    "rules": [],
+    "target": "flow:wf-ee191140a0",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f679309f8a",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-f679309f8a",
+    "id": "t4-c14e92707a",
+    "kind": "flow_unchanged",
+    "name": "create habits > read history",
+    "rules": [],
+    "target": "flow:wf-f679309f8a",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f67bf44692",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-f67bf44692",
+    "id": "t4-cbeeb59799",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits",
+    "rules": [],
+    "target": "flow:wf-f67bf44692",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f961306c88",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-f961306c88",
+    "id": "t4-ae246762f6",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read habits",
+    "rules": [],
+    "target": "flow:wf-f961306c88",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-fc7d0a0772",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-fc7d0a0772",
+    "id": "t4-ba3450bf06",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits",
+    "rules": [],
+    "target": "flow:wf-fc7d0a0772",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-fcf46753f5",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-fcf46753f5",
+    "id": "t4-c232b8a7d9",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read history",
+    "rules": [],
+    "target": "flow:wf-fcf46753f5",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ffaa047bf2",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-ffaa047bf2",
+    "id": "t4-8a0632bb11",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read sync",
+    "rules": [],
+    "target": "flow:wf-ffaa047bf2",
+    "tier": 4
+   }
+  ],
+  "implementation": {
+   "branch_build": "rebuild/i430cb8a907",
+   "branch_spec": "implement/i430cb8a907",
+   "build_tree": "afe8c6a08ab238023ae376bb84995489d66cc7a5",
+   "diff_sha256": "17006331250f11e243419d9d51d22df8637cea4e59c2be5eeebb533b0a07021d",
+   "files": [
+    "internal/completions/routes.go"
+   ],
+   "spec_tree": "9c7d07856cf743ffe0637e51519bb8076dd39432"
+  },
+  "notes": [],
+  "owner": {
+   "checked": [
+    "branch",
+    "cached",
+    "head",
+    "refs",
+    "stash",
+    "status",
+    "worktrees"
+   ],
+   "untouched": true
+  },
+  "rebuild": {
+   "agent": "oracle",
+   "gates": [
+    {
+     "command": "./check.sh",
+     "exit_code": 0
+    }
+   ],
+   "model": null,
+   "rounds": 1,
+   "status": "passed"
+  },
+  "regressions": [],
+  "resolved": [
+   {
+    "case": "check_in_note_bounds / step 1",
+    "endpoint": "POST /v1/habits/00000000-0000-4000-8000-000000000100/completions",
+    "evidence": [
+     {
+      "at": "check:C:check_in_note_bounds / step 1",
+      "kind": "check",
+      "what": "[C silent] POST /v1/habits/00000000-0000-4000-8000-000000000100/completions as ann (check_in_note_bounds / step 1)"
+     }
+    ],
+    "id": "t4-bf42f0d414",
+    "kind": "resolved",
+    "layer": "C",
+    "rule": "A stored check-in note is never empty.",
+    "rules": [
+     "R77"
+    ],
+    "summary": "[C silent] POST /v1/habits/00000000-0000-4000-8000-000000000100/completions as ann (check_in_note_bounds / step 1)",
+    "target": "invariant:check_in_note_not_empty",
+    "tier": 4
+   },
+   {
+    "case": "check_in_note_bounds / step 1",
+    "endpoint": "POST /v1/habits/00000000-0000-4000-8000-000000000100/completions",
+    "evidence": [
+     {
+      "at": "check:D:check_in_note_bounds / step 1",
+      "kind": "check",
+      "what": "[D silent] POST /v1/habits/00000000-0000-4000-8000-000000000100/completions as ann (check_in_note_bounds / step 1)"
+     }
+    ],
+    "id": "t4-0aed8b66d8",
+    "kind": "resolved",
+    "layer": "D",
+    "rule": "scenario: check_in_note_bounds",
+    "rules": [
+     "R77"
+    ],
+    "summary": "[D silent] POST /v1/habits/00000000-0000-4000-8000-000000000100/completions as ann (check_in_note_bounds / step 1)",
+    "target": "scenario:check_in_note_bounds",
+    "tier": 4
+   }
+  ],
+  "still_failing": [],
+  "t2_check": [],
+  "t2_confirmed": true,
+  "t3_vs_edit": {
+   "declarations": {
+    "listed": [
+     "internal/account/routes.go:Register",
+     "internal/account/routes.go:handler.remove",
+     "internal/completions/routes.go:Create",
+     "internal/completions/routes.go:ReadInput",
+     "internal/completions/routes.go:Register",
+     "internal/completions/routes.go:handler.batch",
+     "internal/completions/routes.go:handler.create",
+     "internal/completions/routes.go:handler.list",
+     "internal/completions/routes.go:handler.remove",
+     "internal/completions/routes.go:sameNote",
+     "internal/db/bodies.go:CompletionBody",
+     "internal/db/bodies.go:Instant",
+     "internal/db/changeseq.go:LockUser",
+     "internal/db/changeseq.go:NextChangeSeq",
+     "internal/db/models.go:Completion",
+     "internal/db/owned.go:OwnedHabit",
+     "internal/habits/routes.go:Register",
+     "internal/habits/routes.go:handler.patch",
+     "internal/habits/routes.go:handler.remove",
+     "internal/home/routes.go:Register",
+     "internal/home/routes.go:handler.home",
+     "internal/httpapi/body.go:CanonicalUUID",
+     "internal/httpapi/body.go:PathUUID",
+     "internal/httpapi/body.go:ReadBody",
+     "internal/httpapi/registry.go:CallerOf",
+     "internal/httpapi/registry.go:Deps.Now",
+     "internal/httpapi/registry.go:Deps.NowCtx",
+     "internal/httpapi/registry.go:Deps.Q",
+     "internal/httpapi/registry.go:Deps.Today",
+     "internal/httpapi/registry.go:Deps.Tx",
+     "internal/nudges/checkin.go:AfterCheckIn",
+     "internal/nudges/checkin.go:Message",
+     "internal/nudges/checkin.go:newID",
+     "internal/period/period.go:AddDays",
+     "internal/period/period.go:Date",
+     "internal/period/period.go:Days",
+     "internal/period/period.go:End",
+     "internal/period/period.go:FormatDate",
+     "internal/period/period.go:Location",
+     "internal/period/period.go:ParseDate",
+     "internal/period/period.go:Start",
+     "internal/period/period.go:Today",
+     "internal/progress/compute.go:ActiveWindow",
+     "internal/progress/compute.go:Compute",
+     "internal/progress/compute.go:ProRate",
+     "internal/progress/compute.go:Window.A",
+     "internal/progress/compute.go:Window.L",
+     "internal/progress/compute.go:WindowFor",
+     "internal/progress/compute.go:ptr",
+     "internal/progress/compute.go:rate",
+     "internal/progress/routes.go:Of",
+     "internal/progress/routes.go:Register",
+     "internal/progress/routes.go:handler.history",
+     "internal/progress/routes.go:handler.progress",
+     "internal/progress/routes.go:liveDates",
+     "internal/sync/routes.go:Register",
+     "internal/sync/routes.go:handler.sync"
+    ],
+    "precision": 0.018,
+    "recall": 1.0,
+    "touched": [
+     "internal/completions/routes.go:ReadInput"
+    ]
+   },
+   "files": {
+    "hit": [
+     "internal/completions/routes.go"
+    ],
+    "listed": [
+     "internal/account/routes.go",
+     "internal/completions/routes.go",
+     "internal/db/bodies.go",
+     "internal/db/changeseq.go",
+     "internal/db/models.go",
+     "internal/db/owned.go",
+     "internal/habits/routes.go",
+     "internal/home/routes.go",
+     "internal/httpapi/body.go",
+     "internal/httpapi/registry.go",
+     "internal/nudges/checkin.go",
+     "internal/period/period.go",
+     "internal/progress/compute.go",
+     "internal/progress/routes.go",
+     "internal/sync/routes.go"
+    ],
+    "missed": [],
+    "precision": 0.067,
+    "recall": 1.0,
+    "touched": [
+     "internal/completions/routes.go"
+    ]
+   },
+   "status": "run"
+  },
+  "verdict": "pass"
+ },
+ "tiers": {
+  "1": "run",
+  "2": "run",
+  "3": "run",
+  "4": "run"
+ }
+}

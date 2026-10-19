@@ -1,0 +1,43 @@
+{
+ "agent": "oracle",
+ "arm": "so",
+ "change": "c12",
+ "claude": {
+  "calls": 0,
+  "not_logged_in": false,
+  "usage_limit": false
+ },
+ "cost_usd": 0.0,
+ "d": {
+  "rc": 0,
+  "seconds": 99.0,
+  "timed_out": false
+ },
+ "drift": {
+  "changed": [],
+  "new": [],
+  "removed": []
+ },
+ "eid": "i9fe8a3f809",
+ "empty_ref": false,
+ "implement": {
+  "rc": 0,
+  "seconds": 331.9,
+  "timed_out": false
+ },
+ "job": "so-c12",
+ "leaked_containers": [],
+ "pnm": {
+  "applicable": true,
+  "build_not_in_head": true,
+  "build_parent_is_spec": true,
+  "head_unchanged": true,
+  "ok": true,
+  "one_new_commit": true,
+  "spec_parent_is_head": true
+ },
+ "rc": 0,
+ "seconds": 432.5,
+ "token": "implp-so-c12-584ad6",
+ "worktrees_left": 0
+}

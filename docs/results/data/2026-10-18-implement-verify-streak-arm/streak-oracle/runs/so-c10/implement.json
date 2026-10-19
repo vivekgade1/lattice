@@ -1,0 +1,4327 @@
+{
+ "diff": {
+  "rules": {
+   "added": [],
+   "changed": [
+    {
+     "new": "R78",
+     "new_text": "A habit has at most one non-deleted check-in per date; another one with a new id answers 409 with code `duplicate_check_in`.",
+     "old": "R78",
+     "old_text": "A habit has at most one non-deleted check-in per date; another one with a new id answers 409 with code `already_checked_in`."
+    },
+    {
+     "new": "R84",
+     "new_text": "A batch processes its items in order, each exactly as a single check-in create would, and answers 200 `{results: [{id, status, code?, completion?}, ...]}` in the items' order, where `status` is `created` (with the completion), `existing` (an identical retry, with the completion) or `rejected` (with the `code` the single create would answer, e.g. `not_found`, `date_too_old`, `duplicate_check_in`, `id_conflict`).",
+     "old": "R84",
+     "old_text": "A batch processes its items in order, each exactly as a single check-in create would, and answers 200 `{results: [{id, status, code?, completion?}, ...]}` in the items' order, where `status` is `created` (with the completion), `existing` (an identical retry, with the completion) or `rejected` (with the `code` the single create would answer, e.g. `not_found`, `date_too_old`, `already_checked_in`, `id_conflict`)."
+    }
+   ],
+   "removed": [],
+   "unchanged": 146
+  },
+  "targets": {
+   "added": [],
+   "modified": [
+    "scenario:batch_processes_items_in_order",
+    "scenario:second_check_in_on_a_date_is_refused"
+   ],
+   "removed": []
+  }
+ },
+ "input": {
+  "app": {
+   "configured": true,
+   "layers": "ACD"
+  },
+  "base": {
+   "requirements": "dcac6deb3ad3ec4ab7381af040cb86064aae00eb3ed38c05237657156fbad7b1",
+   "spec": "28dfc2e6c6a2aa27168079740d28a94de7f3efcb7cf8234d795d48b7960f5624",
+   "trace": "627a2b3f4c9cfafc3ad6cd5edb01f355fb76b53c248c629e7a77fd1bd8ee82ed"
+  },
+  "candidate": {
+   "requirements": "27ab9e436c03fa66472421190bd9dd27127f82b4025f9b4d097e8af920c9cd09",
+   "spec": "2f1f0a3832baa196be3365e1d3765e00695f90c29f4fed498bee86fcfb9f92af",
+   "trace": "da608382b31949bce96e5db7579cd5b0b29562d48c1f1feb16fa0062b3b19cce"
+  },
+  "change": null,
+  "inventory": {
+   "extract_sha256": "d51ef75340d54682a8bd2c3f40220e50c2ef31ae0eab17ef3ca68c9a39f89adc",
+   "stale": false,
+   "workflows_sha256": "af1383dbf5d51f876c61a282f23a2fb60d79f536af7542dfe48387e6f1c573a0"
+  },
+  "kind": "candidate",
+  "notes": []
+ },
+ "schema": "lattice.impact/1",
+ "summary": {
+  "kinds": {
+   "check_failure": 2,
+   "closure": 41,
+   "direct": 14,
+   "scenario_fails": 2
+  },
+  "note": "Which workflows fail is mostly not decidable before the change exists: a flow records the answers the app gives today, so it passes today by construction. Before an implementation only a changed invariant (tier 1, observed) and an exact-prefix contradiction (tier 2, determined) decide a workflow; every other flow listed is tier 3 'may_fail' (static, with unknowns), settled by tier 4 (Spike E, observed after the change).",
+  "tiers": {
+   "1": {
+    "failing": 2,
+    "flows": 0,
+    "resolved": 0
+   },
+   "2": {
+    "decidable": 4,
+    "determined": 2,
+    "flows": 0,
+    "undecidable": 0
+   },
+   "3": {
+    "flows": 31,
+    "locations": 55,
+    "unread": 3
+   }
+  },
+  "workflows": {
+   "t1_fail": 0,
+   "t2_fail": 0,
+   "t3_may_fail": 31
+  }
+ },
+ "tier1": {
+  "baseline": {
+   "failing": [],
+   "run": true,
+   "source": "run"
+  },
+  "counts": {
+   "baseline_drift": 0,
+   "by_label": {
+    "not_built_yet": 2
+   },
+   "by_layer": {
+    "D": 2
+   },
+   "failing": 2,
+   "flows_run": 59,
+   "resolved": 0,
+   "workflow_fails": 0
+  },
+  "failing": [
+   {
+    "also_fails_on_base": false,
+    "case": "batch_processes_items_in_order / step 1",
+    "code": null,
+    "endpoint": "POST /v1/completions/batch",
+    "evidence": [
+     {
+      "at": "check:D:batch_processes_items_in_order / step 1",
+      "kind": "check",
+      "what": "[D silent] POST /v1/completions/batch as ann (batch_processes_items_in_order / step 1)"
+     },
+     {
+      "at": "spec:spec.py:1196",
+      "kind": "spec",
+      "what": "batch_processes_items_in_order step 1"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t1-6c5d0c963f",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "D",
+    "line": 1196,
+    "observation": "runtime",
+    "problems": [
+     "body: expected {'results': [{'id': '00000000-0000-4000-8000-000000000301', 'status': 'created', 'completion': {'date': '2026-03-03'}}, {'id': '00000000-0000-4000-8000-000000000300', 'status': 'existing', 'completion': {'date': '2026-03-02'}}, {'id': '00000000-0000-4000-8000-000000000302', 'status': 'rejected', 'code': 'not_found'}, {'id': '00000000-0000-4000-8000-000000000303', 'status': 'rejected', 'code': 'date_too_old'}, {'id': '00000000-0000-4000-8000-000000000304', 'status': 'rejected', 'code': 'duplicate_check_in'}, {'id': '00000000-0000-4000-8000-000000000301', 'status': 'rejected', 'code': 'id_conflict'}, {'id': '00000000-0000-4000-8000-000000000305', 'status': 'created', 'completion': {'date': '2026-03-04'}}]} within {'results': [{'id': '00000000-0000-4000-8000-000000000301', 'status': 'created', 'completion': {'id': '00000000-0000-4000-8000-000000000301', 'habit_id': '00000000-0000-4000-8000-000000000100', 'date': '2026-03-03', 'note': None, 'created_at': '2026-03-04T12:00:00Z', 'updated_at': '2026-03-04T12:00:00Z'}}, {'id': '00000000-0000-4000-8000-000000000300', 'status': 'existing', 'completion': {'id': '00000000-0000-4000-8000-000000000300', 'habit_id': '00000000-0000-4000-8000-000000000100', 'date': '2026-03-02', 'note': None, 'created_at': '2026-03-01T00:00:00Z', 'updated_at': '2026-03-01T00:00:00Z'}}, {'id': '00000000-0000-4000-8000-000000000302', 'status': 'rejected', 'code': 'not_found'}, {'id': '00000000-0000-4000-8000-000000000303', 'status': 'rejected', 'code': 'date_too_old'}, {'id': '00000000-0000-4000-8000-000000000304', 'status': 'rejected', 'code': 'already_checked_in'}, {'id': '00000000-0000-4000-8000-000000000301', 'status': 'rejected', 'code': 'id_conflict'}, {'id': '00000000-0000-4000-8000-000000000305', 'status': 'created', 'completion': {'id': '00000000-0000-4000-8000-000000000305', 'habit_id': '00000000-0000-4000-8000-000000000100', 'date': '2026-03-04', 'note': None, 'created_at': '2026-03-04T12:00:00Z', 'updated_at': '2026-03-04T12:00:00Z'}}]}"
+    ],
+    "rule": "scenario: batch_processes_items_in_order",
+    "rules": [
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "summary": "[D silent] POST /v1/completions/batch as ann (batch_processes_items_in_order / step 1)",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 1,
+    "verdict": "silent"
+   },
+   {
+    "also_fails_on_base": false,
+    "case": "second_check_in_on_a_date_is_refused / step 2",
+    "code": null,
+    "endpoint": "POST /v1/habits/00000000-0000-4000-8000-000000000100/completions",
+    "evidence": [
+     {
+      "at": "check:D:second_check_in_on_a_date_is_refused / step 2",
+      "kind": "check",
+      "what": "[D silent] POST /v1/habits/00000000-0000-4000-8000-000000000100/completions as ann (second_check_in_on_a_date_is_refused / step 2)"
+     },
+     {
+      "at": "spec:spec.py:1090",
+      "kind": "spec",
+      "what": "second_check_in_on_a_date_is_refused step 2"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t1-0dab854e2a",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "D",
+    "line": 1090,
+    "observation": "runtime",
+    "problems": [
+     "body: expected {'error': {'code': 'duplicate_check_in'}} within {'error': {'code': 'already_checked_in', 'message': 'the habit already has a check-in on this date'}}"
+    ],
+    "rule": "scenario: second_check_in_on_a_date_is_refused",
+    "rules": [
+     "R78"
+    ],
+    "summary": "[D silent] POST /v1/habits/00000000-0000-4000-8000-000000000100/completions as ann (second_check_in_on_a_date_is_refused / step 2)",
+    "target": "scenario:second_check_in_on_a_date_is_refused",
+    "tier": 1,
+    "verdict": "silent"
+   }
+  ],
+  "flows": [],
+  "flows_note": null,
+  "layers": "ACD",
+  "resolved": []
+ },
+ "tier2": {
+  "corpus": {
+   "baseline": "run",
+   "environment": null,
+   "flow_steps": 167,
+   "flows_note": null,
+   "scenario_steps": 462
+  },
+  "decidability": [
+   {
+    "claims": [
+     "scenario:batch_processes_items_in_order fails at step <= 1"
+    ],
+    "kind": "target",
+    "state": "determined",
+    "subject": "scenario:batch_processes_items_in_order"
+   },
+   {
+    "claims": [
+     "scenario:second_check_in_on_a_date_is_refused fails at step <= 2"
+    ],
+    "kind": "target",
+    "state": "determined",
+    "subject": "scenario:second_check_in_on_a_date_is_refused"
+   },
+   {
+    "claims": [
+     "scenario:second_check_in_on_a_date_is_refused fails at step <= 2"
+    ],
+    "kind": "changed",
+    "state": "determined",
+    "subject": "rule:R78"
+   },
+   {
+    "claims": [
+     "scenario:batch_processes_items_in_order fails at step <= 1"
+    ],
+    "kind": "changed",
+    "state": "determined",
+    "subject": "rule:R84"
+   }
+  ],
+  "determined": [
+   {
+    "against": {
+     "expect": {
+      "body": {
+       "results": [
+        {
+         "completion": {
+          "date": "2026-03-03"
+         },
+         "id": "00000000-0000-4000-8000-000000000301",
+         "status": "created"
+        },
+        {
+         "completion": {
+          "date": "2026-03-02"
+         },
+         "id": "00000000-0000-4000-8000-000000000300",
+         "status": "existing"
+        },
+        {
+         "code": "not_found",
+         "id": "00000000-0000-4000-8000-000000000302",
+         "status": "rejected"
+        },
+        {
+         "code": "date_too_old",
+         "id": "00000000-0000-4000-8000-000000000303",
+         "status": "rejected"
+        },
+        {
+         "code": "already_checked_in",
+         "id": "00000000-0000-4000-8000-000000000304",
+         "status": "rejected"
+        },
+        {
+         "code": "id_conflict",
+         "id": "00000000-0000-4000-8000-000000000301",
+         "status": "rejected"
+        },
+        {
+         "completion": {
+          "date": "2026-03-04"
+         },
+         "id": "00000000-0000-4000-8000-000000000305",
+         "status": "created"
+        }
+       ]
+      },
+      "db": {
+       "completions": {
+        "count": 3
+       },
+       "nudges": {
+        "count": 1,
+        "equals": {
+         "delivery": "pending",
+         "kind": "achieved",
+         "message": "Goal reached: 3 of 3 this week. Nice work!"
+        },
+        "where": {
+         "for_date": "2026-03-04",
+         "habit_id": "00000000-0000-4000-8000-000000000100"
+        }
+       }
+      },
+      "status": 200
+     },
+     "provenance": "run",
+     "source": "scenario:batch_processes_items_in_order",
+     "step": 1
+    },
+    "candidate_expect": {
+     "body": {
+      "results": [
+       {
+        "completion": {
+         "date": "2026-03-03"
+        },
+        "id": "00000000-0000-4000-8000-000000000301",
+        "status": "created"
+       },
+       {
+        "completion": {
+         "date": "2026-03-02"
+        },
+        "id": "00000000-0000-4000-8000-000000000300",
+        "status": "existing"
+       },
+       {
+        "code": "not_found",
+        "id": "00000000-0000-4000-8000-000000000302",
+        "status": "rejected"
+       },
+       {
+        "code": "date_too_old",
+        "id": "00000000-0000-4000-8000-000000000303",
+        "status": "rejected"
+       },
+       {
+        "code": "duplicate_check_in",
+        "id": "00000000-0000-4000-8000-000000000304",
+        "status": "rejected"
+       },
+       {
+        "code": "id_conflict",
+        "id": "00000000-0000-4000-8000-000000000301",
+        "status": "rejected"
+       },
+       {
+        "completion": {
+         "date": "2026-03-04"
+        },
+        "id": "00000000-0000-4000-8000-000000000305",
+        "status": "created"
+       }
+      ]
+     },
+     "db": {
+      "completions": {
+       "count": 3
+      },
+      "nudges": {
+       "count": 1,
+       "equals": {
+        "delivery": "pending",
+        "kind": "achieved",
+        "message": "Goal reached: 3 of 3 this week. Nice work!"
+       },
+       "where": {
+        "for_date": "2026-03-04",
+        "habit_id": "00000000-0000-4000-8000-000000000100"
+       }
+      }
+     },
+     "status": 200
+    },
+    "claim": "scenario:batch_processes_items_in_order fails at step <= 1",
+    "evidence": [
+     {
+      "at": "spec:spec.py:1196",
+      "kind": "spec",
+      "what": "candidate step 1 expects status 200, body {\"results\":[{\"completion\":{\"date\":\"2026-03-03\"},\"id\":\"00000000-0000-4000-8000-000000000301\",\"status\":\"created\"},{\"comple, db {\"completions\":{\"count\":3},\"nudges\":{\"count\":1,\"equals\":{\"delivery\":\"pending\",\"kind\":\"achieved\",\"message\":\"Goal reached:"
+     },
+     {
+      "at": "spec:base/spec.py:1196",
+      "kind": "spec",
+      "what": "scenario:batch_processes_items_in_order step 1 passed on the app and expects status 200, body {\"results\":[{\"completion\":{\"date\":\"2026-03-03\"},\"id\":\"00000000-0000-4000-8000-000000000301\",\"status\":\"created\"},{\"comple, db {\"completions\":{\"count\":3},\"nudges\":{\"count\":1,\"equals\":{\"delivery\":\"pending\",\"kind\":\"achieved\",\"message\":\"Goal reached:"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t2-2593b19478",
+    "kind": "scenario_fails",
+    "line": 1196,
+    "rules": [
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "status": "determined",
+    "step": 1,
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 2,
+    "why": "body:$.results[4].code"
+   },
+   {
+    "against": {
+     "expect": {
+      "body": {
+       "error": {
+        "code": "already_checked_in"
+       }
+      },
+      "db": {
+       "Completion": {
+        "count": 0,
+        "where": {
+         "id": "00000000-0000-4000-8000-000000000301"
+        }
+       },
+       "completions": {
+        "count": 1,
+        "where": {
+         "date": "2026-03-03",
+         "deleted_at": null,
+         "habit_id": "00000000-0000-4000-8000-000000000100"
+        }
+       }
+      },
+      "status": 409
+     },
+     "provenance": "run",
+     "source": "scenario:second_check_in_on_a_date_is_refused",
+     "step": 2
+    },
+    "candidate_expect": {
+     "body": {
+      "error": {
+       "code": "duplicate_check_in"
+      }
+     },
+     "db": {
+      "Completion": {
+       "count": 0,
+       "where": {
+        "id": "00000000-0000-4000-8000-000000000301"
+       }
+      },
+      "completions": {
+       "count": 1,
+       "where": {
+        "date": "2026-03-03",
+        "deleted_at": null,
+        "habit_id": "00000000-0000-4000-8000-000000000100"
+       }
+      }
+     },
+     "status": 409
+    },
+    "claim": "scenario:second_check_in_on_a_date_is_refused fails at step <= 2",
+    "evidence": [
+     {
+      "at": "spec:spec.py:1090",
+      "kind": "spec",
+      "what": "candidate step 2 expects status 409, body {\"error\":{\"code\":\"duplicate_check_in\"}}, db {\"Completion\":{\"count\":0,\"where\":{\"id\":\"00000000-0000-4000-8000-000000000301\"}},\"completions\":{\"count\":1,\"where\":{\"date\""
+     },
+     {
+      "at": "spec:base/spec.py:1090",
+      "kind": "spec",
+      "what": "scenario:second_check_in_on_a_date_is_refused step 2 passed on the app and expects status 409, body {\"error\":{\"code\":\"already_checked_in\"}}, db {\"Completion\":{\"count\":0,\"where\":{\"id\":\"00000000-0000-4000-8000-000000000301\"}},\"completions\":{\"count\":1,\"where\":{\"date\""
+     }
+    ],
+    "file": "spec.py",
+    "id": "t2-3e36d80eeb",
+    "kind": "scenario_fails",
+    "line": 1090,
+    "rules": [
+     "R78"
+    ],
+    "status": "determined",
+    "step": 2,
+    "target": "scenario:second_check_in_on_a_date_is_refused",
+    "tier": 2,
+    "why": "body:$.error.code"
+   }
+  ],
+  "flows": [],
+  "runtime_replay": {
+   "status": "not_applicable: 0 programs"
+  }
+ },
+ "tier3": {
+  "counts": {
+   "by_kind": {
+    "closure": 41,
+    "direct": 14,
+    "insertion": 0,
+    "table_peer": 0
+   },
+   "files": 11,
+   "flows_may_fail": 31,
+   "locations": 55,
+   "seeds": {
+    "machines": 0,
+    "routes": 3,
+    "tables": 1
+   },
+   "unread": 3
+  },
+  "external": {
+   "count": 0
+  },
+  "files": [
+   "internal/completions/routes.go",
+   "internal/db/bodies.go",
+   "internal/db/changeseq.go",
+   "internal/db/models.go",
+   "internal/db/owned.go",
+   "internal/httpapi/body.go",
+   "internal/httpapi/registry.go",
+   "internal/nudges/checkin.go",
+   "internal/period/period.go",
+   "internal/progress/compute.go",
+   "internal/progress/routes.go"
+  ],
+  "flows": [
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-053146a70c",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-a09381c38a",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R78"
+    ],
+    "target": "flow:wf-053146a70c",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-0c6bdd7ab0",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-6a0f4cfdd5",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R78"
+    ],
+    "target": "flow:wf-0c6bdd7ab0",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-11a98b3683",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-500e8828a3",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R78"
+    ],
+    "target": "flow:wf-11a98b3683",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-1e4314104c",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-25ce5a748f",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R78"
+    ],
+    "target": "flow:wf-1e4314104c",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-21a2d02394",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-4180e5dab8",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "DELETE /v1/habits/{}/completions/{}",
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R78"
+    ],
+    "target": "flow:wf-21a2d02394",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2610c56483",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-02fb8acf44",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R78"
+    ],
+    "target": "flow:wf-2610c56483",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2da750f4e8",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-fae5ba3d87",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/completions/batch"
+    ],
+    "rules": [
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "target": "flow:wf-2da750f4e8",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2f54cb544b",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-d852769203",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "DELETE /v1/habits/{}/completions/{}",
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R78"
+    ],
+    "target": "flow:wf-2f54cb544b",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3de8783507",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-86da5fe8e2",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "DELETE /v1/habits/{}/completions/{}",
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R78"
+    ],
+    "target": "flow:wf-3de8783507",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-4e49f96210",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-bc3ccffa81",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/completions/batch"
+    ],
+    "rules": [
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "target": "flow:wf-4e49f96210",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5a6bab46c9",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-e8364bf34c",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R78"
+    ],
+    "target": "flow:wf-5a6bab46c9",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5eebdfc88b",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-1b19c719bd",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R78"
+    ],
+    "target": "flow:wf-5eebdfc88b",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-6a4cc7a302",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-9c3ef7008e",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R78"
+    ],
+    "target": "flow:wf-6a4cc7a302",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-717a23507f",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-0cd09b7a1b",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "DELETE /v1/habits/{}/completions/{}",
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R78"
+    ],
+    "target": "flow:wf-717a23507f",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-7f0f99bdcf",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-7b68a4cf8d",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/completions/batch"
+    ],
+    "rules": [
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "target": "flow:wf-7f0f99bdcf",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-9523e7a835",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-3dba63af1b",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/completions/batch"
+    ],
+    "rules": [
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "target": "flow:wf-9523e7a835",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-9f87f3f1d9",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-a333bd01cc",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R78"
+    ],
+    "target": "flow:wf-9f87f3f1d9",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a7ae5cb208",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-1d0254f6fd",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "DELETE /v1/habits/{}/completions/{}",
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R78"
+    ],
+    "target": "flow:wf-a7ae5cb208",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-c71e6bbb49",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-ca4f7e2251",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R78"
+    ],
+    "target": "flow:wf-c71e6bbb49",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-cf27dadc73",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-20e98e5bea",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "DELETE /v1/habits/{}/completions/{}",
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R78"
+    ],
+    "target": "flow:wf-cf27dadc73",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d06e3e8777",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-3b0d4ddffe",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R78"
+    ],
+    "target": "flow:wf-d06e3e8777",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d2b6d84725",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-fb90e07205",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "DELETE /v1/habits/{}/completions/{}",
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R78"
+    ],
+    "target": "flow:wf-d2b6d84725",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d2fcd76bcd",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-0c13e9040f",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "DELETE /v1/habits/{}/completions/{}",
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R78"
+    ],
+    "target": "flow:wf-d2fcd76bcd",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d650036584",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-50a2f74f24",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "DELETE /v1/habits/{}/completions/{}",
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R78"
+    ],
+    "target": "flow:wf-d650036584",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-dbac494b10",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-a52b014e05",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "DELETE /v1/habits/{}/completions/{}",
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R78"
+    ],
+    "target": "flow:wf-dbac494b10",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-e3249cec66",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-539c7555db",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "DELETE /v1/habits/{}/completions/{}",
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R78"
+    ],
+    "target": "flow:wf-e3249cec66",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f67bf44692",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-3a603b198b",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R78"
+    ],
+    "target": "flow:wf-f67bf44692",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f961306c88",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-822ccca963",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R78"
+    ],
+    "target": "flow:wf-f961306c88",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-fc7d0a0772",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-11dba1d8e3",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R78"
+    ],
+    "target": "flow:wf-fc7d0a0772",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-fcf46753f5",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-2abc47360c",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R78"
+    ],
+    "target": "flow:wf-fcf46753f5",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ffaa047bf2",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-eef7944359",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "DELETE /v1/habits/{}/completions/{}",
+     "POST /v1/habits/{}/completions"
+    ],
+    "rules": [
+     "R78"
+    ],
+    "target": "flow:wf-ffaa047bf2",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   }
+  ],
+  "locations": [
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:25",
+      "kind": "code",
+      "what": "route registration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param id"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-e990302417",
+    "kind": "direct",
+    "line": 25,
+    "rules": [
+     "R78"
+    ],
+    "symbol": null,
+    "target": "scenario:second_check_in_on_a_date_is_refused",
+    "tier": 3,
+    "via": [
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> param:id -> code:internal/completions/routes.go:25",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> registered -> code:internal/completions/routes.go:25",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> param:id -> code:internal/completions/routes.go:25",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> registered -> code:internal/completions/routes.go:25",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> param:id -> code:internal/completions/routes.go:25"
+    ],
+    "what": "route registration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:27",
+      "kind": "code",
+      "what": "route registration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route registration"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-928fbbd6ad",
+    "kind": "direct",
+    "line": 27,
+    "rules": [
+     "R78"
+    ],
+    "symbol": null,
+    "target": "scenario:second_check_in_on_a_date_is_refused",
+    "tier": 3,
+    "via": [
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> registered -> code:internal/completions/routes.go:27"
+    ],
+    "what": "route registration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:28",
+      "kind": "code",
+      "what": "route registration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route registration"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-a3f3b90e20",
+    "kind": "direct",
+    "line": 28,
+    "rules": [
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": null,
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> registered -> code:internal/completions/routes.go:28",
+     "rule:R84 -> scenario:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> registered -> code:internal/completions/routes.go:28",
+     "scenario:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> registered -> code:internal/completions/routes.go:28"
+    ],
+    "what": "route registration"
+   },
+   {
+    "end_line": 53,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:44",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-26a2b8856b",
+    "kind": "closure",
+    "line": 44,
+    "rules": [
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "refusalCode",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/completions:refusalCode -> code:internal/completions/routes.go:44",
+     "rule:R84 -> scenario:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/completions:refusalCode -> code:internal/completions/routes.go:44",
+     "scenario:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/completions:refusalCode -> code:internal/completions/routes.go:44"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 127,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:57",
+      "kind": "code",
+      "what": "handler declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler declaration"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-6541b5cfe7",
+    "kind": "direct",
+    "line": 57,
+    "rules": [
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "batch",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> handler:completions.handler.batch -> code:internal/completions/routes.go:57",
+     "rule:R84 -> scenario:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> handler:completions.handler.batch -> code:internal/completions/routes.go:57",
+     "scenario:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> handler:completions.handler.batch -> code:internal/completions/routes.go:57"
+    ],
+    "what": "handler declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:64",
+      "kind": "code",
+      "what": "param items"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param items"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-332148e51b",
+    "kind": "direct",
+    "line": 64,
+    "rules": [
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": null,
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> param:items -> code:internal/completions/routes.go:64",
+     "rule:R84 -> scenario:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> param:items -> code:internal/completions/routes.go:64",
+     "scenario:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> param:items -> code:internal/completions/routes.go:64"
+    ],
+    "what": "param items"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:85",
+      "kind": "code",
+      "what": "param id"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param id"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-a085f14335",
+    "kind": "direct",
+    "line": 85,
+    "rules": [
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": null,
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> param:id -> code:internal/completions/routes.go:85",
+     "rule:R84 -> scenario:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> param:id -> code:internal/completions/routes.go:85",
+     "scenario:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> param:id -> code:internal/completions/routes.go:85"
+    ],
+    "what": "param id"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:93",
+      "kind": "code",
+      "what": "param habit_id"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param habit_id"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-d941bb4ddc",
+    "kind": "direct",
+    "line": 93,
+    "rules": [
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": null,
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> param:habit_id -> code:internal/completions/routes.go:93",
+     "rule:R84 -> scenario:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> param:habit_id -> code:internal/completions/routes.go:93",
+     "scenario:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> param:habit_id -> code:internal/completions/routes.go:93"
+    ],
+    "what": "param habit_id"
+   },
+   {
+    "end_line": 158,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:139",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-884ac9c5f9",
+    "kind": "closure",
+    "line": 139,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "ReadInput",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/completions:ReadInput -> code:internal/completions/routes.go:139",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/completions:ReadInput -> code:internal/completions/routes.go:139",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/completions:ReadInput -> code:internal/completions/routes.go:139",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/completions:ReadInput -> code:internal/completions/routes.go:139",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 4 -> route:POST /v1/habits/{}/completions -> call:streak/internal/completions:ReadInput -> code:internal/completions/routes.go:139"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:142",
+      "kind": "code",
+      "what": "param id"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param id"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-a84837ddb0",
+    "kind": "direct",
+    "line": 142,
+    "rules": [
+     "R78"
+    ],
+    "symbol": null,
+    "target": "scenario:second_check_in_on_a_date_is_refused",
+    "tier": 3,
+    "via": [
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> param:id -> code:internal/completions/routes.go:142",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> param:id -> code:internal/completions/routes.go:142",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> param:id -> code:internal/completions/routes.go:142",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 4 -> route:POST /v1/habits/{}/completions -> param:id -> code:internal/completions/routes.go:142",
+     "scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> param:id -> code:internal/completions/routes.go:142"
+    ],
+    "what": "param id"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:145",
+      "kind": "code",
+      "what": "param date"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param date"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-e621bc12ad",
+    "kind": "direct",
+    "line": 145,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": null,
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> param:date -> code:internal/completions/routes.go:145",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> param:date -> code:internal/completions/routes.go:145",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> param:date -> code:internal/completions/routes.go:145",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> param:date -> code:internal/completions/routes.go:145",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 4 -> route:POST /v1/habits/{}/completions -> param:date -> code:internal/completions/routes.go:145"
+    ],
+    "what": "param date"
+   },
+   {
+    "end_line": 165,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:160",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-4701182fad",
+    "kind": "closure",
+    "line": 160,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "sameNote",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/completions:sameNote -> code:internal/completions/routes.go:160",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/completions:sameNote -> code:internal/completions/routes.go:160",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/completions:sameNote -> code:internal/completions/routes.go:160",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/completions:sameNote -> code:internal/completions/routes.go:160",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 4 -> route:POST /v1/habits/{}/completions -> call:streak/internal/completions:sameNote -> code:internal/completions/routes.go:160"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 214,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:169",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-665e328c77",
+    "kind": "closure",
+    "line": 169,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "Create",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/completions:Create -> code:internal/completions/routes.go:169",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/completions:Create -> code:internal/completions/routes.go:169",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/completions:Create -> code:internal/completions/routes.go:169",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/completions:Create -> code:internal/completions/routes.go:169",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 4 -> route:POST /v1/habits/{}/completions -> call:streak/internal/completions:Create -> code:internal/completions/routes.go:169"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 260,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:217",
+      "kind": "code",
+      "what": "handler declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler declaration"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-8814a1ecb1",
+    "kind": "direct",
+    "line": 217,
+    "rules": [
+     "R78"
+    ],
+    "symbol": "create",
+    "target": "scenario:second_check_in_on_a_date_is_refused",
+    "tier": 3,
+    "via": [
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> handler:completions.handler.create -> code:internal/completions/routes.go:217",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> handler:completions.handler.create -> code:internal/completions/routes.go:217",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> handler:completions.handler.create -> code:internal/completions/routes.go:217",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 4 -> route:POST /v1/habits/{}/completions -> handler:completions.handler.create -> code:internal/completions/routes.go:217",
+     "scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> handler:completions.handler.create -> code:internal/completions/routes.go:217"
+    ],
+    "what": "handler declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:245",
+      "kind": "code",
+      "what": "raise 409 habit_archived"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 409 already_checked_in"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-b450fa4c0f",
+    "kind": "direct",
+    "line": 245,
+    "rules": [
+     "R78"
+    ],
+    "symbol": null,
+    "target": "scenario:second_check_in_on_a_date_is_refused",
+    "tier": 3,
+    "via": [
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> raise:409 already_checked_in -> code:internal/completions/routes.go:245",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> raise:409 habit_archived -> code:internal/completions/routes.go:245",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> raise:409 id_conflict -> code:internal/completions/routes.go:245",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> raise:409 already_checked_in -> code:internal/completions/routes.go:245",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> raise:409 habit_archived -> code:internal/completions/routes.go:245"
+    ],
+    "what": "raise 409 habit_archived"
+   },
+   {
+    "end_line": 355,
+    "evidence": [
+     {
+      "at": "code:internal/completions/routes.go:312",
+      "kind": "code",
+      "what": "handler declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler declaration"
+     }
+    ],
+    "file": "internal/completions/routes.go",
+    "id": "t3-48b8bca1bd",
+    "kind": "direct",
+    "line": 312,
+    "rules": [
+     "R78"
+    ],
+    "symbol": "remove",
+    "target": "scenario:second_check_in_on_a_date_is_refused",
+    "tier": 3,
+    "via": [
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> handler:completions.handler.remove -> code:internal/completions/routes.go:312"
+    ],
+    "what": "handler declaration"
+   },
+   {
+    "end_line": 16,
+    "evidence": [
+     {
+      "at": "code:internal/db/bodies.go:16",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/bodies.go",
+    "id": "t3-cfc05e770d",
+    "kind": "closure",
+    "line": 16,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "Instant",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/db:Instant -> code:internal/db/bodies.go:16",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:Instant -> code:internal/db/bodies.go:16",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:Instant -> code:internal/db/bodies.go:16",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:Instant -> code:internal/db/bodies.go:16",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 4 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:Instant -> code:internal/db/bodies.go:16"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 64,
+    "evidence": [
+     {
+      "at": "code:internal/db/bodies.go:61",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/bodies.go",
+    "id": "t3-88ae0778ca",
+    "kind": "closure",
+    "line": 61,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "CompletionBody",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/db:CompletionBody -> code:internal/db/bodies.go:61",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:CompletionBody -> code:internal/db/bodies.go:61",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:CompletionBody -> code:internal/db/bodies.go:61",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:CompletionBody -> code:internal/db/bodies.go:61",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 4 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:CompletionBody -> code:internal/db/bodies.go:61"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 20,
+    "evidence": [
+     {
+      "at": "code:internal/db/changeseq.go:13",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/changeseq.go",
+    "id": "t3-5384b8ae84",
+    "kind": "closure",
+    "line": 13,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "LockUser",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/db:LockUser -> code:internal/db/changeseq.go:13",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:LockUser -> code:internal/db/changeseq.go:13",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:LockUser -> code:internal/db/changeseq.go:13",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:LockUser -> code:internal/db/changeseq.go:13",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/db:LockUser -> code:internal/db/changeseq.go:13"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 32,
+    "evidence": [
+     {
+      "at": "code:internal/db/changeseq.go:24",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/changeseq.go",
+    "id": "t3-1055ec377f",
+    "kind": "closure",
+    "line": 24,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "NextChangeSeq",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/db:NextChangeSeq -> code:internal/db/changeseq.go:24",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:NextChangeSeq -> code:internal/db/changeseq.go:24",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:NextChangeSeq -> code:internal/db/changeseq.go:24",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:NextChangeSeq -> code:internal/db/changeseq.go:24",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/db:NextChangeSeq -> code:internal/db/changeseq.go:24"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 95,
+    "evidence": [
+     {
+      "at": "code:internal/db/models.go:86",
+      "kind": "code",
+      "what": "struct"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "struct"
+     }
+    ],
+    "file": "internal/db/models.go",
+    "id": "t3-57c64feb6a",
+    "kind": "direct",
+    "line": 86,
+    "rules": [
+     "R78"
+    ],
+    "symbol": "Completion",
+    "target": "invariant:one_check_in_per_day",
+    "tier": 3,
+    "via": [
+     "rule:R78 -> invariant:one_check_in_per_day -> struct:Completion -> code:internal/db/models.go:86"
+    ],
+    "what": "struct"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/db/models.go:94",
+      "kind": "code",
+      "what": "column deleted_at"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "column deleted_at"
+     }
+    ],
+    "file": "internal/db/models.go",
+    "id": "t3-a5813b3a09",
+    "kind": "direct",
+    "line": 94,
+    "rules": [
+     "R78"
+    ],
+    "symbol": null,
+    "target": "invariant:one_check_in_per_day",
+    "tier": 3,
+    "via": [
+     "rule:R78 -> invariant:one_check_in_per_day -> column:deleted_at -> code:internal/db/models.go:94"
+    ],
+    "what": "column deleted_at"
+   },
+   {
+    "end_line": 21,
+    "evidence": [
+     {
+      "at": "code:internal/db/owned.go:14",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/owned.go",
+    "id": "t3-b83b96632f",
+    "kind": "closure",
+    "line": 14,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "OwnedHabit",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 31,
+    "evidence": [
+     {
+      "at": "code:internal/db/owned.go:24",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/owned.go",
+    "id": "t3-f3c57bc4f0",
+    "kind": "closure",
+    "line": 24,
+    "rules": [
+     "R78"
+    ],
+    "symbol": "LiveCompletion",
+    "target": "scenario:second_check_in_on_a_date_is_refused",
+    "tier": 3,
+    "via": [
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/db:LiveCompletion -> code:internal/db/owned.go:24"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 37,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/body.go:21",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/body.go",
+    "id": "t3-54312ff9f9",
+    "kind": "closure",
+    "line": 21,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "ReadBody",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 4 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 139,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/body.go:134",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/body.go",
+    "id": "t3-b5e5572411",
+    "kind": "closure",
+    "line": 134,
+    "rules": [
+     "R78"
+    ],
+    "symbol": "CanonicalUUID",
+    "target": "scenario:second_check_in_on_a_date_is_refused",
+    "tier": 3,
+    "via": [
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 4 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 148,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/body.go:142",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/body.go",
+    "id": "t3-3cf02fd5e3",
+    "kind": "closure",
+    "line": 142,
+    "rules": [
+     "R78"
+    ],
+    "symbol": "PathUUID",
+    "target": "scenario:second_check_in_on_a_date_is_refused",
+    "tier": 3,
+    "via": [
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 4 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 41,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:37",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-246cd042e0",
+    "kind": "closure",
+    "line": 37,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "CallerOf",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 47,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:45",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-f6cc1d5d89",
+    "kind": "closure",
+    "line": 45,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "Now",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 56,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:50",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-9cccf185d4",
+    "kind": "closure",
+    "line": 50,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "NowCtx",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 64,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:59",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-98117574d9",
+    "kind": "closure",
+    "line": 59,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "Today",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 67,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:67",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-e08c552371",
+    "kind": "closure",
+    "line": 67,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "Q",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 73,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:71",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-594a1ebbc0",
+    "kind": "closure",
+    "line": 71,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "Tx",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 23,
+    "evidence": [
+     {
+      "at": "code:internal/nudges/checkin.go:17",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/nudges/checkin.go",
+    "id": "t3-e2ca77e58c",
+    "kind": "closure",
+    "line": 17,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "newID",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/nudges:newID -> code:internal/nudges/checkin.go:17",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/nudges:newID -> code:internal/nudges/checkin.go:17",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/nudges:newID -> code:internal/nudges/checkin.go:17",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/nudges:newID -> code:internal/nudges/checkin.go:17",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/nudges:newID -> code:internal/nudges/checkin.go:17"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 45,
+    "evidence": [
+     {
+      "at": "code:internal/nudges/checkin.go:26",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/nudges/checkin.go",
+    "id": "t3-06899274cb",
+    "kind": "closure",
+    "line": 26,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "Message",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/nudges:Message -> code:internal/nudges/checkin.go:26",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/nudges:Message -> code:internal/nudges/checkin.go:26",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/nudges:Message -> code:internal/nudges/checkin.go:26",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/nudges:Message -> code:internal/nudges/checkin.go:26",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/nudges:Message -> code:internal/nudges/checkin.go:26"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 99,
+    "evidence": [
+     {
+      "at": "code:internal/nudges/checkin.go:49",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/nudges/checkin.go",
+    "id": "t3-504d4914f9",
+    "kind": "closure",
+    "line": 49,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "AfterCheckIn",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/nudges:AfterCheckIn -> code:internal/nudges/checkin.go:49",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/nudges:AfterCheckIn -> code:internal/nudges/checkin.go:49",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/nudges:AfterCheckIn -> code:internal/nudges/checkin.go:49",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/nudges:AfterCheckIn -> code:internal/nudges/checkin.go:49",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/nudges:AfterCheckIn -> code:internal/nudges/checkin.go:49"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 52,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:43",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-735ca2acf1",
+    "kind": "closure",
+    "line": 43,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "ParseDate",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/period:ParseDate -> code:internal/period/period.go:43",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:ParseDate -> code:internal/period/period.go:43",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:ParseDate -> code:internal/period/period.go:43",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:ParseDate -> code:internal/period/period.go:43",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/period:ParseDate -> code:internal/period/period.go:43"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 55,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:55",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-744b49d804",
+    "kind": "closure",
+    "line": 55,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "FormatDate",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 67,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:67",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-ec6b5f67a2",
+    "kind": "closure",
+    "line": 67,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "Date",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/period:Date -> code:internal/period/period.go:67",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Date -> code:internal/period/period.go:67",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Date -> code:internal/period/period.go:67",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Date -> code:internal/period/period.go:67",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/period:Date -> code:internal/period/period.go:67"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 70,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:70",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-7f50025dda",
+    "kind": "closure",
+    "line": 70,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "AddDays",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 73,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:73",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-e0957f21c2",
+    "kind": "closure",
+    "line": 73,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "Days",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/period:Days -> code:internal/period/period.go:73",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Days -> code:internal/period/period.go:73",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Days -> code:internal/period/period.go:73",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Days -> code:internal/period/period.go:73",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/period:Days -> code:internal/period/period.go:73"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 112,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:97",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-f109c40f91",
+    "kind": "closure",
+    "line": 97,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "Location",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/period:Location -> code:internal/period/period.go:97"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 129,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:122",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-c67599dcc8",
+    "kind": "closure",
+    "line": 122,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "Today",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/period:Today -> code:internal/period/period.go:122",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Today -> code:internal/period/period.go:122",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Today -> code:internal/period/period.go:122",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Today -> code:internal/period/period.go:122",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/period:Today -> code:internal/period/period.go:122"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 142,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:132",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-5214e64fc5",
+    "kind": "closure",
+    "line": 132,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "Start",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/period:Start -> code:internal/period/period.go:132",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Start -> code:internal/period/period.go:132",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Start -> code:internal/period/period.go:132",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:Start -> code:internal/period/period.go:132",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/period:Start -> code:internal/period/period.go:132"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 155,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:145",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-5a10c39aed",
+    "kind": "closure",
+    "line": 145,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "End",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/period:End -> code:internal/period/period.go:145",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:End -> code:internal/period/period.go:145",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:End -> code:internal/period/period.go:145",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/period:End -> code:internal/period/period.go:145",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/period:End -> code:internal/period/period.go:145"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 23,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:23",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-78b6e6a821",
+    "kind": "closure",
+    "line": 23,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "L",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/progress:Window.L -> code:internal/progress/compute.go:23",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Window.L -> code:internal/progress/compute.go:23",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Window.L -> code:internal/progress/compute.go:23",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Window.L -> code:internal/progress/compute.go:23",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/progress:Window.L -> code:internal/progress/compute.go:23"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 26,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:26",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-80444fba5e",
+    "kind": "closure",
+    "line": 26,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "A",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/progress:Window.A -> code:internal/progress/compute.go:26",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Window.A -> code:internal/progress/compute.go:26",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Window.A -> code:internal/progress/compute.go:26",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Window.A -> code:internal/progress/compute.go:26",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/progress:Window.A -> code:internal/progress/compute.go:26"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 37,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:30",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-403ec0ff45",
+    "kind": "closure",
+    "line": 30,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "ActiveWindow",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/progress:ActiveWindow -> code:internal/progress/compute.go:30",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:ActiveWindow -> code:internal/progress/compute.go:30",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:ActiveWindow -> code:internal/progress/compute.go:30",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:ActiveWindow -> code:internal/progress/compute.go:30",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/progress:ActiveWindow -> code:internal/progress/compute.go:30"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 51,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:40",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-e87c9c56f9",
+    "kind": "closure",
+    "line": 40,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "WindowFor",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/progress:WindowFor -> code:internal/progress/compute.go:40",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:WindowFor -> code:internal/progress/compute.go:40",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:WindowFor -> code:internal/progress/compute.go:40",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:WindowFor -> code:internal/progress/compute.go:40",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/progress:WindowFor -> code:internal/progress/compute.go:40"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 60,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:55",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-93a9374279",
+    "kind": "closure",
+    "line": 55,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "ProRate",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/progress:ProRate -> code:internal/progress/compute.go:55",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:ProRate -> code:internal/progress/compute.go:55",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:ProRate -> code:internal/progress/compute.go:55",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:ProRate -> code:internal/progress/compute.go:55",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/progress:ProRate -> code:internal/progress/compute.go:55"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 65,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:65",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-d75dfae8df",
+    "kind": "closure",
+    "line": 65,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "rate",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/progress:rate -> code:internal/progress/compute.go:65",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:rate -> code:internal/progress/compute.go:65",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:rate -> code:internal/progress/compute.go:65",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:rate -> code:internal/progress/compute.go:65",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/progress:rate -> code:internal/progress/compute.go:65"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 97,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:97",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-ddc9c988b5",
+    "kind": "closure",
+    "line": 97,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "ptr",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/progress:ptr -> code:internal/progress/compute.go:97",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:ptr -> code:internal/progress/compute.go:97",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:ptr -> code:internal/progress/compute.go:97",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:ptr -> code:internal/progress/compute.go:97",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/progress:ptr -> code:internal/progress/compute.go:97"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 152,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:101",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-989a8fe91e",
+    "kind": "closure",
+    "line": 101,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "Compute",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/progress:Compute -> code:internal/progress/compute.go:101",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Compute -> code:internal/progress/compute.go:101",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Compute -> code:internal/progress/compute.go:101",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Compute -> code:internal/progress/compute.go:101",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/progress:Compute -> code:internal/progress/compute.go:101"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 32,
+    "evidence": [
+     {
+      "at": "code:internal/progress/routes.go:26",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t3-7546612c6e",
+    "kind": "closure",
+    "line": 26,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "liveDates",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/progress:liveDates -> code:internal/progress/routes.go:26",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:liveDates -> code:internal/progress/routes.go:26",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:liveDates -> code:internal/progress/routes.go:26",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:liveDates -> code:internal/progress/routes.go:26",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/progress:liveDates -> code:internal/progress/routes.go:26"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 42,
+    "evidence": [
+     {
+      "at": "code:internal/progress/routes.go:35",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t3-7ec55388b1",
+    "kind": "closure",
+    "line": 35,
+    "rules": [
+     "R78",
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "symbol": "Of",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 3,
+    "via": [
+     "check:batch_processes_items_in_order / step 1 -> route:POST /v1/completions/batch -> call:streak/internal/progress:Of -> code:internal/progress/routes.go:35",
+     "check:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Of -> code:internal/progress/routes.go:35",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 1 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Of -> code:internal/progress/routes.go:35",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 2 -> route:POST /v1/habits/{}/completions -> call:streak/internal/progress:Of -> code:internal/progress/routes.go:35",
+     "rule:R78 -> scenario:second_check_in_on_a_date_is_refused / step 3 -> route:DELETE /v1/habits/{}/completions/{} -> call:streak/internal/progress:Of -> code:internal/progress/routes.go:35"
+    ],
+    "what": "call declaration"
+   }
+  ],
+  "stale": false,
+  "unread": [
+   {
+    "file": "internal/httpapi/registry.go",
+    "kind": "extract_unread",
+    "line": 51,
+    "reason": "interface dispatch: `d.Clock.Now(ctx)` has no single implementation in the module",
+    "what": "call"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of POST /v1/completions/batch is not read from the code",
+    "what": "scenario:batch_processes_items_in_order / step 1"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of POST /v1/habits/{}/completions is not read from the code",
+    "what": "scenario:second_check_in_on_a_date_is_refused / step 2"
+   }
+  ]
+ },
+ "tier4": {
+  "before": {
+   "failing_count": 2,
+   "flows_run": 59,
+   "matches_report": true
+  },
+  "counts": {
+   "failing_after": 0,
+   "flow_before_failed": 0,
+   "flow_changed": 0,
+   "flow_unchanged": 59,
+   "flows_run": 59,
+   "may_fail_unbacked": 0,
+   "regressions": 0,
+   "resolved": 2,
+   "still_failing": 0,
+   "t2_contradicted": 0,
+   "unexpected_regressions": 0,
+   "unreported": 0,
+   "workflow_fails": 0
+  },
+  "failing": [],
+  "flows": [
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-087fea1dbb",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-087fea1dbb",
+    "id": "t4-2931f10e3c",
+    "kind": "flow_unchanged",
+    "name": "create habits > read habits",
+    "rules": [],
+    "target": "flow:wf-087fea1dbb",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-09db39abfe",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-09db39abfe",
+    "id": "t4-9f50a6c59b",
+    "kind": "flow_unchanged",
+    "name": "create habits > read history",
+    "rules": [],
+    "target": "flow:wf-09db39abfe",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-0c6bdd7ab0",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-0c6bdd7ab0",
+    "id": "t4-1c885f053a",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read home",
+    "rules": [],
+    "target": "flow:wf-0c6bdd7ab0",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-11a98b3683",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-11a98b3683",
+    "id": "t4-e2d97e665d",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read completions",
+    "rules": [],
+    "target": "flow:wf-11a98b3683",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-12302559ed",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-12302559ed",
+    "id": "t4-2a985ce4a1",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read nudges",
+    "rules": [],
+    "target": "flow:wf-12302559ed",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-1e4314104c",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-1e4314104c",
+    "id": "t4-a859fd5339",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read habits",
+    "rules": [],
+    "target": "flow:wf-1e4314104c",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-21a2d02394",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-21a2d02394",
+    "id": "t4-58f062be50",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read history",
+    "rules": [],
+    "target": "flow:wf-21a2d02394",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2610c56483",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-2610c56483",
+    "id": "t4-4273ca9643",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read me",
+    "rules": [],
+    "target": "flow:wf-2610c56483",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2818e45412",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-2818e45412",
+    "id": "t4-3dfaac23ef",
+    "kind": "flow_unchanged",
+    "name": "create devices > delete devices",
+    "rules": [],
+    "target": "flow:wf-2818e45412",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2d3eecc464",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-2d3eecc464",
+    "id": "t4-61040e7738",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits",
+    "rules": [],
+    "target": "flow:wf-2d3eecc464",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2da750f4e8",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-2da750f4e8",
+    "id": "t4-f46b2b1605",
+    "kind": "flow_unchanged",
+    "name": "create habits > create batch",
+    "rules": [],
+    "target": "flow:wf-2da750f4e8",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2f54cb544b",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-2f54cb544b",
+    "id": "t4-7522d9c875",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read me",
+    "rules": [],
+    "target": "flow:wf-2f54cb544b",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3c5a04e0ae",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-3c5a04e0ae",
+    "id": "t4-3d86bfdff2",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read habits",
+    "rules": [],
+    "target": "flow:wf-3c5a04e0ae",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3d2436d2dd",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-3d2436d2dd",
+    "id": "t4-4a533ffe22",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read progress",
+    "rules": [],
+    "target": "flow:wf-3d2436d2dd",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3de8783507",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-3de8783507",
+    "id": "t4-bc43a91eb1",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read completions",
+    "rules": [],
+    "target": "flow:wf-3de8783507",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-45bfc39e84",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-45bfc39e84",
+    "id": "t4-8426b794fa",
+    "kind": "flow_unchanged",
+    "name": "create habits > read completions",
+    "rules": [],
+    "target": "flow:wf-45bfc39e84",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-4dfc4c5bed",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-4dfc4c5bed",
+    "id": "t4-b84f0fc36c",
+    "kind": "flow_unchanged",
+    "name": "create habits > read habits",
+    "rules": [],
+    "target": "flow:wf-4dfc4c5bed",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-4e49f96210",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-4e49f96210",
+    "id": "t4-999bed9b4b",
+    "kind": "flow_unchanged",
+    "name": "create habits > create batch",
+    "rules": [],
+    "target": "flow:wf-4e49f96210",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-52994a9544",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-52994a9544",
+    "id": "t4-abfc048024",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read history",
+    "rules": [],
+    "target": "flow:wf-52994a9544",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-597f2899e4",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-597f2899e4",
+    "id": "t4-2a3cf2a10a",
+    "kind": "flow_unchanged",
+    "name": "create habits > read completions",
+    "rules": [],
+    "target": "flow:wf-597f2899e4",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5a6bab46c9",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-5a6bab46c9",
+    "id": "t4-eb2b3781a6",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read sync",
+    "rules": [],
+    "target": "flow:wf-5a6bab46c9",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5cf3da443e",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-5cf3da443e",
+    "id": "t4-ac14b64d75",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read progress",
+    "rules": [],
+    "target": "flow:wf-5cf3da443e",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5eebdfc88b",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-5eebdfc88b",
+    "id": "t4-27855b8b1f",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read progress",
+    "rules": [],
+    "target": "flow:wf-5eebdfc88b",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-6a4cc7a302",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-6a4cc7a302",
+    "id": "t4-0ce52aaf22",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read home > dismiss nudges",
+    "rules": [],
+    "target": "flow:wf-6a4cc7a302",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-6c2282fd50",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-6c2282fd50",
+    "id": "t4-3a619fc723",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read habits",
+    "rules": [],
+    "target": "flow:wf-6c2282fd50",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-717a23507f",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-717a23507f",
+    "id": "t4-b81dbf0d6b",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read nudges",
+    "rules": [],
+    "target": "flow:wf-717a23507f",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-80123a60e5",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-80123a60e5",
+    "id": "t4-85854f059f",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read habits",
+    "rules": [],
+    "target": "flow:wf-80123a60e5",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-801d529a0f",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-801d529a0f",
+    "id": "t4-021eb02164",
+    "kind": "flow_unchanged",
+    "name": "create devices > delete devices",
+    "rules": [],
+    "target": "flow:wf-801d529a0f",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-8ae8af75df",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-8ae8af75df",
+    "id": "t4-0a37afe047",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read habits",
+    "rules": [],
+    "target": "flow:wf-8ae8af75df",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-8b2744d526",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-8b2744d526",
+    "id": "t4-37a77c8aa0",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits",
+    "rules": [],
+    "target": "flow:wf-8b2744d526",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-9ead6d0f00",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-9ead6d0f00",
+    "id": "t4-c4dd5a2aa1",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read history",
+    "rules": [],
+    "target": "flow:wf-9ead6d0f00",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a1793fed29",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-a1793fed29",
+    "id": "t4-f6bc0e569c",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits",
+    "rules": [],
+    "target": "flow:wf-a1793fed29",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a7ae5cb208",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-a7ae5cb208",
+    "id": "t4-42fc47ef3a",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions",
+    "rules": [],
+    "target": "flow:wf-a7ae5cb208",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a8966be4b8",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-a8966be4b8",
+    "id": "t4-d631ce2518",
+    "kind": "flow_unchanged",
+    "name": "create register > create login",
+    "rules": [],
+    "target": "flow:wf-a8966be4b8",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a9ac9b88a4",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-a9ac9b88a4",
+    "id": "t4-8358111868",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read sync",
+    "rules": [],
+    "target": "flow:wf-a9ac9b88a4",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b2acc9eac6",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-b2acc9eac6",
+    "id": "t4-2d00866129",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read completions",
+    "rules": [],
+    "target": "flow:wf-b2acc9eac6",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b595a756b6",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-b595a756b6",
+    "id": "t4-15fb9d99ca",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read home",
+    "rules": [],
+    "target": "flow:wf-b595a756b6",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b95fd71de1",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-b95fd71de1",
+    "id": "t4-190be5927b",
+    "kind": "flow_unchanged",
+    "name": "create habits > read home",
+    "rules": [],
+    "target": "flow:wf-b95fd71de1",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-bd46b71ee2",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-bd46b71ee2",
+    "id": "t4-782b4c8124",
+    "kind": "flow_unchanged",
+    "name": "create habits > read progress",
+    "rules": [],
+    "target": "flow:wf-bd46b71ee2",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-c00e2afaf3",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-c00e2afaf3",
+    "id": "t4-12f8c801ce",
+    "kind": "flow_unchanged",
+    "name": "create habits > read habits",
+    "rules": [],
+    "target": "flow:wf-c00e2afaf3",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-c675dd6cb3",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-c675dd6cb3",
+    "id": "t4-eab24d3d4a",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read sync",
+    "rules": [],
+    "target": "flow:wf-c675dd6cb3",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-cc7886ea28",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-cc7886ea28",
+    "id": "t4-6809546514",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits",
+    "rules": [],
+    "target": "flow:wf-cc7886ea28",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ce853d194f",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-ce853d194f",
+    "id": "t4-4229965607",
+    "kind": "flow_unchanged",
+    "name": "create habits > read sync",
+    "rules": [],
+    "target": "flow:wf-ce853d194f",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-cf27dadc73",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-cf27dadc73",
+    "id": "t4-5878e34622",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read home",
+    "rules": [],
+    "target": "flow:wf-cf27dadc73",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d06e3e8777",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-d06e3e8777",
+    "id": "t4-5adba447a9",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read nudges",
+    "rules": [],
+    "target": "flow:wf-d06e3e8777",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d2b6d84725",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-d2b6d84725",
+    "id": "t4-3a0e360245",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions",
+    "rules": [],
+    "target": "flow:wf-d2b6d84725",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d2fcd76bcd",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-d2fcd76bcd",
+    "id": "t4-d72cb23ad9",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read habits",
+    "rules": [],
+    "target": "flow:wf-d2fcd76bcd",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d650036584",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-d650036584",
+    "id": "t4-90d71c9f07",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read habits",
+    "rules": [],
+    "target": "flow:wf-d650036584",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d8340207d1",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-d8340207d1",
+    "id": "t4-ec4c4095bf",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read home",
+    "rules": [],
+    "target": "flow:wf-d8340207d1",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-dbac494b10",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-dbac494b10",
+    "id": "t4-77f0d4d3d3",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read progress",
+    "rules": [],
+    "target": "flow:wf-dbac494b10",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-de433cd704",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-de433cd704",
+    "id": "t4-be16adb885",
+    "kind": "flow_unchanged",
+    "name": "create habits > read progress",
+    "rules": [],
+    "target": "flow:wf-de433cd704",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-e3249cec66",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-e3249cec66",
+    "id": "t4-6c01f475dc",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > update habits > delete completions > delete habits",
+    "rules": [],
+    "target": "flow:wf-e3249cec66",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ee191140a0",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-ee191140a0",
+    "id": "t4-296f29670e",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read completions",
+    "rules": [],
+    "target": "flow:wf-ee191140a0",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f679309f8a",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-f679309f8a",
+    "id": "t4-c14e92707a",
+    "kind": "flow_unchanged",
+    "name": "create habits > read history",
+    "rules": [],
+    "target": "flow:wf-f679309f8a",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f67bf44692",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-f67bf44692",
+    "id": "t4-cbeeb59799",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits",
+    "rules": [],
+    "target": "flow:wf-f67bf44692",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f961306c88",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-f961306c88",
+    "id": "t4-ae246762f6",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read habits",
+    "rules": [],
+    "target": "flow:wf-f961306c88",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-fc7d0a0772",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-fc7d0a0772",
+    "id": "t4-ba3450bf06",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits",
+    "rules": [],
+    "target": "flow:wf-fc7d0a0772",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-fcf46753f5",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-fcf46753f5",
+    "id": "t4-c232b8a7d9",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read history",
+    "rules": [],
+    "target": "flow:wf-fcf46753f5",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ffaa047bf2",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-ffaa047bf2",
+    "id": "t4-8a0632bb11",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read sync",
+    "rules": [],
+    "target": "flow:wf-ffaa047bf2",
+    "tier": 4
+   }
+  ],
+  "implementation": {
+   "branch_build": "rebuild/i5491b91f1c",
+   "branch_spec": "implement/i5491b91f1c",
+   "build_tree": "8bfb9a40be7686db28fe63b2f92c77e9edc3ff97",
+   "diff_sha256": "92741faab3675d8a49641b3ba040fe4e8eddbb13fec1fcf7489f0759892049ff",
+   "files": [
+    "internal/completions/routes.go"
+   ],
+   "spec_tree": "931c9d5e3f95302bbc8add0add73a187f46ed787"
+  },
+  "notes": [],
+  "owner": {
+   "checked": [
+    "branch",
+    "cached",
+    "head",
+    "refs",
+    "stash",
+    "status",
+    "worktrees"
+   ],
+   "untouched": true
+  },
+  "rebuild": {
+   "agent": "oracle",
+   "gates": [
+    {
+     "command": "./check.sh",
+     "exit_code": 0
+    }
+   ],
+   "model": null,
+   "rounds": 1,
+   "status": "passed"
+  },
+  "regressions": [],
+  "resolved": [
+   {
+    "case": "batch_processes_items_in_order / step 1",
+    "endpoint": "POST /v1/completions/batch",
+    "evidence": [
+     {
+      "at": "check:D:batch_processes_items_in_order / step 1",
+      "kind": "check",
+      "what": "[D silent] POST /v1/completions/batch as ann (batch_processes_items_in_order / step 1)"
+     }
+    ],
+    "id": "t4-f9a5bec25e",
+    "kind": "resolved",
+    "layer": "D",
+    "rule": "scenario: batch_processes_items_in_order",
+    "rules": [
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "summary": "[D silent] POST /v1/completions/batch as ann (batch_processes_items_in_order / step 1)",
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 4
+   },
+   {
+    "case": "second_check_in_on_a_date_is_refused / step 2",
+    "endpoint": "POST /v1/habits/00000000-0000-4000-8000-000000000100/completions",
+    "evidence": [
+     {
+      "at": "check:D:second_check_in_on_a_date_is_refused / step 2",
+      "kind": "check",
+      "what": "[D silent] POST /v1/habits/00000000-0000-4000-8000-000000000100/completions as ann (second_check_in_on_a_date_is_refused / step 2)"
+     }
+    ],
+    "id": "t4-e1affc2620",
+    "kind": "resolved",
+    "layer": "D",
+    "rule": "scenario: second_check_in_on_a_date_is_refused",
+    "rules": [
+     "R78"
+    ],
+    "summary": "[D silent] POST /v1/habits/00000000-0000-4000-8000-000000000100/completions as ann (second_check_in_on_a_date_is_refused / step 2)",
+    "target": "scenario:second_check_in_on_a_date_is_refused",
+    "tier": 4
+   }
+  ],
+  "still_failing": [],
+  "t2_check": [
+   {
+    "claim": "scenario:batch_processes_items_in_order fails at step <= 1",
+    "confirmed": true,
+    "evidence": [
+     {
+      "at": "check:D:scenario:batch_processes_items_in_order",
+      "kind": "check",
+      "what": "fails before the build"
+     }
+    ],
+    "id": "t4-3c51942ab6",
+    "kind": "t2_scenario_claim",
+    "rules": [
+     "R84",
+     "R85",
+     "R122"
+    ],
+    "target": "scenario:batch_processes_items_in_order",
+    "tier": 4
+   },
+   {
+    "claim": "scenario:second_check_in_on_a_date_is_refused fails at step <= 2",
+    "confirmed": true,
+    "evidence": [
+     {
+      "at": "check:D:scenario:second_check_in_on_a_date_is_refused",
+      "kind": "check",
+      "what": "fails before the build"
+     }
+    ],
+    "id": "t4-759398fa09",
+    "kind": "t2_scenario_claim",
+    "rules": [
+     "R78"
+    ],
+    "target": "scenario:second_check_in_on_a_date_is_refused",
+    "tier": 4
+   }
+  ],
+  "t2_confirmed": true,
+  "t3_vs_edit": {
+   "declarations": {
+    "listed": [
+     "internal/completions/routes.go:Create",
+     "internal/completions/routes.go:ReadInput",
+     "internal/completions/routes.go:Register",
+     "internal/completions/routes.go:handler.batch",
+     "internal/completions/routes.go:handler.create",
+     "internal/completions/routes.go:handler.remove",
+     "internal/completions/routes.go:refusalCode",
+     "internal/completions/routes.go:sameNote",
+     "internal/db/bodies.go:CompletionBody",
+     "internal/db/bodies.go:Instant",
+     "internal/db/changeseq.go:LockUser",
+     "internal/db/changeseq.go:NextChangeSeq",
+     "internal/db/models.go:Completion",
+     "internal/db/owned.go:LiveCompletion",
+     "internal/db/owned.go:OwnedHabit",
+     "internal/httpapi/body.go:CanonicalUUID",
+     "internal/httpapi/body.go:PathUUID",
+     "internal/httpapi/body.go:ReadBody",
+     "internal/httpapi/registry.go:CallerOf",
+     "internal/httpapi/registry.go:Deps.Now",
+     "internal/httpapi/registry.go:Deps.NowCtx",
+     "internal/httpapi/registry.go:Deps.Q",
+     "internal/httpapi/registry.go:Deps.Today",
+     "internal/httpapi/registry.go:Deps.Tx",
+     "internal/nudges/checkin.go:AfterCheckIn",
+     "internal/nudges/checkin.go:Message",
+     "internal/nudges/checkin.go:newID",
+     "internal/period/period.go:AddDays",
+     "internal/period/period.go:Date",
+     "internal/period/period.go:Days",
+     "internal/period/period.go:End",
+     "internal/period/period.go:FormatDate",
+     "internal/period/period.go:Location",
+     "internal/period/period.go:ParseDate",
+     "internal/period/period.go:Start",
+     "internal/period/period.go:Today",
+     "internal/progress/compute.go:ActiveWindow",
+     "internal/progress/compute.go:Compute",
+     "internal/progress/compute.go:ProRate",
+     "internal/progress/compute.go:Window.A",
+     "internal/progress/compute.go:Window.L",
+     "internal/progress/compute.go:WindowFor",
+     "internal/progress/compute.go:ptr",
+     "internal/progress/compute.go:rate",
+     "internal/progress/routes.go:Of",
+     "internal/progress/routes.go:liveDates"
+    ],
+    "precision": 0.022,
+    "recall": 1.0,
+    "touched": [
+     "internal/completions/routes.go:Create"
+    ]
+   },
+   "files": {
+    "hit": [
+     "internal/completions/routes.go"
+    ],
+    "listed": [
+     "internal/completions/routes.go",
+     "internal/db/bodies.go",
+     "internal/db/changeseq.go",
+     "internal/db/models.go",
+     "internal/db/owned.go",
+     "internal/httpapi/body.go",
+     "internal/httpapi/registry.go",
+     "internal/nudges/checkin.go",
+     "internal/period/period.go",
+     "internal/progress/compute.go",
+     "internal/progress/routes.go"
+    ],
+    "missed": [],
+    "precision": 0.091,
+    "recall": 1.0,
+    "touched": [
+     "internal/completions/routes.go"
+    ]
+   },
+   "status": "run"
+  },
+  "verdict": "pass"
+ },
+ "tiers": {
+  "1": "run",
+  "2": "run",
+  "3": "run",
+  "4": "run"
+ }
+}

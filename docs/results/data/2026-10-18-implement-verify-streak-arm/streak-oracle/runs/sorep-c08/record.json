@@ -1,0 +1,43 @@
+{
+ "agent": "oracle",
+ "arm": "sorep",
+ "change": "c08",
+ "claude": {
+  "calls": 0,
+  "not_logged_in": false,
+  "usage_limit": false
+ },
+ "cost_usd": 0.0,
+ "d": {
+  "rc": 0,
+  "seconds": 87.3,
+  "timed_out": false
+ },
+ "drift": {
+  "changed": [],
+  "new": [],
+  "removed": []
+ },
+ "eid": "i8f56e79942",
+ "empty_ref": false,
+ "implement": {
+  "rc": 0,
+  "seconds": 286.8,
+  "timed_out": false
+ },
+ "job": "sorep-c08",
+ "leaked_containers": [],
+ "pnm": {
+  "applicable": true,
+  "build_not_in_head": true,
+  "build_parent_is_spec": true,
+  "head_unchanged": true,
+  "ok": true,
+  "one_new_commit": true,
+  "spec_parent_is_head": true
+ },
+ "rc": 0,
+ "seconds": 375.8,
+ "token": "implp-sorep-c08-a27102",
+ "worktrees_left": 0
+}
