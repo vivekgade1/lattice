@@ -413,3 +413,25 @@ Q1: the merge is 3679ab2; no other merge is meant ("tun" = run). Round 3 builds 
 
 Root-cause node (read-only; report in the session record): (b) m_cancel_sneaky x R19: `ownership()` silently drops `refused_other: {db: unchanged}` when the path placeholder is not a column and the form states no `given` row (set-error/D1 gap + silent drop). RULING: D3 `unchanged` is asserted only on rows the form's own `given` states; the generator emits a `db_unchecked:<case>` note instead of dropping silently (about 4 lines in forms.py); the 30-line owner-row synthesis is NOT built; (b) is registered as a predicted K7 cell (reported, outside the PG1t gate), and a form addressing a seeded row with no `given` is a set property. (c) m_pair2 x R15: library defect: `row_limit()` rule C gives every synthesised row the same value on non-`by` columns, so a sibling row_limit form's invariant is violated on other forms' `given` states. RULING: synthesised counted rows are pairwise distinct on any column that another row_limit form of the set counts by (about 15-20 lines in forms.py). (d) N12/N13: `outcome()` hard-codes F004 for any non-literal `db.equals` value; the node names are already in the cause-7 list. RULING: cause 7's order covers every non-`Lit` position including `Outcome.db.equals` values; a 1-line change to F017/F001; H2's expectation stands. (The first commit of this amendment, f17ee04, lost its backticked identifiers to a shell expansion; this text replaces that paragraph and the rulings are unchanged.)
 H3 set (separate author): MANIFEST.sha256 sha256 = 1d0b8256344a8ac67345de519abf62c76ddb4846c755ce2ef10194fafbec3d98 (11 entries; 38 rules, 22 forms, 33 apps, 726 cells, 28 pairs, 29 invalid, 16 not-expressible). DISCLOSED DEVIATION: the author read the language-definition sections (D1-D6) of the round-1 and round-2 typed-conditions pre-registrations, which section 4 forbids, because its brief lacked D1''/D3/D4'/D6 verbatim; it read no results doc, data directory, earlier set, forms code or test. RULING: accepted and labelled in the results; no row is dropped. The author also designed its own JSON layout (README.md documents data types only); the build node may read ONLY hshapes3/README.md to write the reader, and any reader-only change after the set is opened is post hoc for the rows it touches.
+
+## Amendment (Streak arm, orchestrator, 2026-10-18, before any Streak run)
+The Streak arm (PS0-PSx) was NOT RUN because no `streak/` shape set and no Streak runner stage existed. A separate author has
+now written the Streak set (23 formed rules, 43 forms, 29 Go mutations, 24 form pairs including the 50-vs-60 habit-limit pair P9,
+27 invalid forms, a classification of all 146 in-scope rules; manifest sha256 `f8727792...c1655`, 58 files; archived in
+`docs/results/data/2026-10-18-typed-conditions-streak-arm/streak-set.tgz`, hash in `streak-set.freeze.sha256`). A new runner file
+`dogfood/forms_probes_streak.py` (not a frozen file) is written by a build node from the set's README and the PS rows,
+frozen before any Streak run, and run once by a separate node. Rulings: forms are the author's (the generator must produce checks
+that agree with the truth cells; disagreements are findings, not edits); the set is development-blind for the library (the library
+was not tuned on it) but not for the builder of the runner; PS rows are report-only as registered ("not part of this round's gate"),
+the gate verdict of Spike H is unchanged. The author's one truth correction made after a run and before the manifest (R56 on
+`m_restore_limit_skipped`) is disclosed. Transition forms for Streak are not expressible (a form-language limit, a finding).
+
+## Amendment (library fix before the Streak scored run, orchestrator, 2026-10-18)
+The Streak runner's preflight found that the round-3 library generates `Habit.deleted_at == None` for four row-limit forms
+(F28, F29, F33, F35), refused by the validator (S008) and by `forms check` (F004); the strict G could not run. A minimal fix
+(+8/-1 in `lattice/spec/forms.py` only: `None` in a row_limit `where` object types against a nullable column and is generated as
+`is_null(...)`; NOT NULL columns and wrongly typed literals still give F004; generated output for forms without None is
+byte-identical, pinned by sha256 in `tests/spec/test_forms_none_literal.py`) was made BEFORE any Streak scored run. The
+Streak arm is therefore run on the fixed library; the pre-fix refusal is finding one of the arm. `forms.py` sha256 after the fix
+`3e2cb2f9...4c54`; the runner (sha256 in `FREEZE`) is frozen with the library hashes it depends on. The round 1-3 frozen
+runners pin the old library hash and cannot run on this tree; their regression is the unit tests.

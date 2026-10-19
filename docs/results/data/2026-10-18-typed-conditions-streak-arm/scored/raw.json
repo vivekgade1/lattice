@@ -1,0 +1,2937 @@
+{
+ "apps": {
+  "m_behind_one_decimal": {
+   "build": {
+    "build": {
+     "bin_rc": 0,
+     "build_all_rc": 0,
+     "err": "",
+     "ok": true,
+     "wall_s": 1.31
+    },
+    "patch_applied": {
+     "err": "",
+     "ok": true,
+     "step": "apply"
+    }
+   },
+   "run": {
+    "cases": 564,
+    "containers_removed_after": [],
+    "counts": {
+     "C": 0,
+     "D": 5
+    },
+    "err_tail": "",
+    "findings": [
+     {
+      "case": "check_in_writes_today_nudge_messages / step 1",
+      "layer": "D",
+      "rule": "scenario: check_in_writes_today_nudge_messages",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "nudge_after_daily_pass_is_suppressed / step 4",
+      "layer": "D",
+      "rule": "scenario: nudge_after_daily_pass_is_suppressed",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "nudger_creates_missing_nudges / step 2",
+      "layer": "D",
+      "rule": "scenario: nudger_creates_missing_nudges",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "pass_suppressions / step 2",
+      "layer": "D",
+      "rule": "scenario: pass_suppressions",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F13:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F13:at_bound",
+      "verdict": "silent",
+      "violations": []
+     }
+    ],
+    "ok": true,
+    "rc": 1,
+    "timed_out": false,
+    "total_s": 104.763,
+    "verdict": "fail",
+    "wall_s": 105.035
+   }
+  },
+  "m_checkin_same_day_twice": {
+   "build": {
+    "build": {
+     "bin_rc": 0,
+     "build_all_rc": 0,
+     "err": "",
+     "ok": true,
+     "wall_s": 1.31
+    },
+    "patch_applied": {
+     "err": "",
+     "ok": true,
+     "step": "apply"
+    }
+   },
+   "run": {
+    "cases": 570,
+    "containers_removed_after": [],
+    "counts": {
+     "C": 6,
+     "D": 4
+    },
+    "err_tail": "",
+    "findings": [
+     {
+      "case": "second_check_in_on_a_date_is_refused / step 2",
+      "layer": "C",
+      "rule": "A habit has at most one non-deleted check-in per date.",
+      "verdict": "silent",
+      "violations": [
+       "one_check_in_per_day"
+      ]
+     },
+     {
+      "case": "second_check_in_on_a_date_is_refused / step 2",
+      "layer": "C",
+      "rule": "at most 1 Completion rows per habit_id, date (form F35)",
+      "verdict": "silent",
+      "violations": [
+       "form:F35:invariant"
+      ]
+     },
+     {
+      "case": "batch_processes_items_in_order / step 1",
+      "layer": "C",
+      "rule": "A habit has at most one non-deleted check-in per date.",
+      "verdict": "silent",
+      "violations": [
+       "one_check_in_per_day"
+      ]
+     },
+     {
+      "case": "batch_processes_items_in_order / step 1",
+      "layer": "C",
+      "rule": "at most 1 Completion rows per habit_id, date (form F35)",
+      "verdict": "silent",
+      "violations": [
+       "form:F35:invariant"
+      ]
+     },
+     {
+      "case": "form:F35:at_limit / step 1",
+      "layer": "C",
+      "rule": "A habit has at most one non-deleted check-in per date.",
+      "verdict": "silent",
+      "violations": [
+       "one_check_in_per_day"
+      ]
+     },
+     {
+      "case": "form:F35:at_limit / step 1",
+      "layer": "C",
+      "rule": "at most 1 Completion rows per habit_id, date (form F35)",
+      "verdict": "silent",
+      "violations": [
+       "form:F35:invariant"
+      ]
+     },
+     {
+      "case": "second_check_in_on_a_date_is_refused / step 2",
+      "layer": "D",
+      "rule": "scenario: second_check_in_on_a_date_is_refused",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "batch_processes_items_in_order / step 1",
+      "layer": "D",
+      "rule": "scenario: batch_processes_items_in_order",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F13:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F13:at_bound",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F35:at_limit / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F35:at_limit",
+      "verdict": "silent",
+      "violations": []
+     }
+    ],
+    "ok": true,
+    "rc": 1,
+    "timed_out": false,
+    "total_s": 61.1973,
+    "verdict": "fail",
+    "wall_s": 61.489
+   }
+  },
+  "m_date_too_old_59": {
+   "build": {
+    "build": {
+     "bin_rc": 0,
+     "build_all_rc": 0,
+     "err": "",
+     "ok": true,
+     "wall_s": 1.24
+    },
+    "patch_applied": {
+     "err": "",
+     "ok": true,
+     "step": "apply"
+    }
+   },
+   "run": {
+    "cases": 568,
+    "containers_removed_after": [],
+    "counts": {
+     "C": 0,
+     "D": 3
+    },
+    "err_tail": "",
+    "findings": [
+     {
+      "case": "check_in_dates / step 5",
+      "layer": "D",
+      "rule": "scenario: check_in_dates",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "batch_item_bounds / step 3",
+      "layer": "D",
+      "rule": "scenario: batch_item_bounds",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F13:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F13:at_bound",
+      "verdict": "silent",
+      "violations": []
+     }
+    ],
+    "ok": true,
+    "rc": 1,
+    "timed_out": false,
+    "total_s": 44.3499,
+    "verdict": "fail",
+    "wall_s": 44.616
+   }
+  },
+  "m_delete_device_any_owner": {
+   "build": {
+    "build": {
+     "bin_rc": 0,
+     "build_all_rc": 0,
+     "err": "",
+     "ok": true,
+     "wall_s": 1.33
+    },
+    "patch_applied": {
+     "err": "",
+     "ok": true,
+     "step": "apply"
+    }
+   },
+   "run": {
+    "cases": 572,
+    "containers_removed_after": [],
+    "counts": {
+     "C": 0,
+     "D": 4
+    },
+    "err_tail": "",
+    "findings": [
+     {
+      "case": "access__delete_device__as_ben / step 1",
+      "layer": "D",
+      "rule": "scenario: access__delete_device__as_ben",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F10:other_delete_v1_devices_id / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F10:other_delete_v1_devices_id",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F13:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F13:at_bound",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F14:other_delete_v1_devices_id / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F14:other_delete_v1_devices_id",
+      "verdict": "silent",
+      "violations": []
+     }
+    ],
+    "ok": true,
+    "rc": 1,
+    "timed_out": false,
+    "total_s": 48.21,
+    "verdict": "fail",
+    "wall_s": 48.494
+   }
+  },
+  "m_description_max_499": {
+   "build": {
+    "build": {
+     "bin_rc": 0,
+     "build_all_rc": 0,
+     "err": "",
+     "ok": true,
+     "wall_s": 1.41
+    },
+    "patch_applied": {
+     "err": "",
+     "ok": true,
+     "step": "apply"
+    }
+   },
+   "run": {
+    "cases": 572,
+    "containers_removed_after": [],
+    "counts": {
+     "C": 0,
+     "D": 3
+    },
+    "err_tail": "",
+    "findings": [
+     {
+      "case": "habit_description_bounds / step 2",
+      "layer": "D",
+      "rule": "scenario: habit_description_bounds",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F13:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F13:at_bound",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F22:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F22:at_bound",
+      "verdict": "silent",
+      "violations": []
+     }
+    ],
+    "ok": true,
+    "rc": 1,
+    "timed_out": false,
+    "total_s": 71.5538,
+    "verdict": "fail",
+    "wall_s": 71.888
+   }
+  },
+  "m_dismiss_any_owner": {
+   "build": {
+    "build": {
+     "bin_rc": 0,
+     "build_all_rc": 0,
+     "err": "",
+     "ok": true,
+     "wall_s": 1.31
+    },
+    "patch_applied": {
+     "err": "",
+     "ok": true,
+     "step": "apply"
+    }
+   },
+   "run": {
+    "cases": 572,
+    "containers_removed_after": [],
+    "counts": {
+     "C": 0,
+     "D": 3
+    },
+    "err_tail": "",
+    "findings": [
+     {
+      "case": "access__dismiss__as_ben / step 1",
+      "layer": "D",
+      "rule": "scenario: access__dismiss__as_ben",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F9:other_post_v1_nudges_id_dismiss / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F9:other_post_v1_nudges_id_dismiss",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F13:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F13:at_bound",
+      "verdict": "silent",
+      "violations": []
+     }
+    ],
+    "ok": true,
+    "rc": 1,
+    "timed_out": false,
+    "total_s": 53.6107,
+    "verdict": "fail",
+    "wall_s": 53.899
+   }
+  },
+  "m_dismiss_marks_suppressed": {
+   "build": {
+    "build": {
+     "bin_rc": 0,
+     "build_all_rc": 0,
+     "err": "",
+     "ok": true,
+     "wall_s": 1.29
+    },
+    "patch_applied": {
+     "err": "",
+     "ok": true,
+     "step": "apply"
+    }
+   },
+   "run": {
+    "cases": 565,
+    "containers_removed_after": [],
+    "counts": {
+     "C": 0,
+     "D": 4
+    },
+    "err_tail": "",
+    "findings": [
+     {
+      "case": "dismissal_leaves_every_list_and_stays_in_sync / step 2",
+      "layer": "D",
+      "rule": "scenario: dismissal_leaves_every_list_and_stays_in_sync",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "failed_clear_push_does_not_fail_the_dismiss / step 1",
+      "layer": "D",
+      "rule": "scenario: failed_clear_push_does_not_fail_the_dismiss",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "clear_pushes_do_not_count_towards_the_daily_limit / step 1",
+      "layer": "D",
+      "rule": "scenario: clear_pushes_do_not_count_towards_the_daily_limit",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F13:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F13:at_bound",
+      "verdict": "silent",
+      "violations": []
+     }
+    ],
+    "ok": true,
+    "rc": 1,
+    "timed_out": false,
+    "total_s": 47.7701,
+    "verdict": "fail",
+    "wall_s": 48.046
+   }
+  },
+  "m_email_taken_422": {
+   "build": {
+    "build": {
+     "bin_rc": 0,
+     "build_all_rc": 0,
+     "err": "",
+     "ok": true,
+     "wall_s": 1.31
+    },
+    "patch_applied": {
+     "err": "",
+     "ok": true,
+     "step": "apply"
+    }
+   },
+   "run": {
+    "cases": 571,
+    "containers_removed_after": [],
+    "counts": {
+     "C": 0,
+     "D": 3
+    },
+    "err_tail": "",
+    "findings": [
+     {
+      "case": "duplicate_email_is_refused / step 1",
+      "layer": "D",
+      "rule": "scenario: duplicate_email_is_refused",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F3:at_limit / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F3:at_limit",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F13:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F13:at_bound",
+      "verdict": "silent",
+      "violations": []
+     }
+    ],
+    "ok": true,
+    "rc": 1,
+    "timed_out": false,
+    "total_s": 43.5386,
+    "verdict": "fail",
+    "wall_s": 43.811
+   }
+  },
+  "m_get_habit_any_owner": {
+   "build": {
+    "build": {
+     "bin_rc": 0,
+     "build_all_rc": 0,
+     "err": "",
+     "ok": true,
+     "wall_s": 1.3
+    },
+    "patch_applied": {
+     "err": "",
+     "ok": true,
+     "step": "apply"
+    }
+   },
+   "run": {
+    "cases": 572,
+    "containers_removed_after": [],
+    "counts": {
+     "C": 0,
+     "D": 3
+    },
+    "err_tail": "",
+    "findings": [
+     {
+      "case": "access__get_habit__as_ben / step 1",
+      "layer": "D",
+      "rule": "scenario: access__get_habit__as_ben",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F8:other_get_v1_habits_id / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F8:other_get_v1_habits_id",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F13:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F13:at_bound",
+      "verdict": "silent",
+      "violations": []
+     }
+    ],
+    "ok": true,
+    "rc": 1,
+    "timed_out": false,
+    "total_s": 53.9636,
+    "verdict": "fail",
+    "wall_s": 54.246
+   }
+  },
+  "m_habit_limit_49": {
+   "build": {
+    "build": {
+     "bin_rc": 0,
+     "build_all_rc": 0,
+     "err": "",
+     "ok": true,
+     "wall_s": 1.37
+    },
+    "patch_applied": {
+     "err": "",
+     "ok": true,
+     "step": "apply"
+    }
+   },
+   "run": {
+    "cases": 571,
+    "containers_removed_after": [],
+    "counts": {
+     "C": 0,
+     "D": 4
+    },
+    "err_tail": "",
+    "findings": [
+     {
+      "case": "the_50th_active_habit_is_accepted / step 1",
+      "layer": "D",
+      "rule": "scenario: the_50th_active_habit_is_accepted",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F13:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F13:at_bound",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F29:below / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F29:below",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F33:below / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F33:below",
+      "verdict": "silent",
+      "violations": []
+     }
+    ],
+    "ok": true,
+    "rc": 1,
+    "timed_out": false,
+    "total_s": 62.1494,
+    "verdict": "fail",
+    "wall_s": 62.448
+   }
+  },
+  "m_habit_limit_gt": {
+   "build": {
+    "build": {
+     "bin_rc": 0,
+     "build_all_rc": 0,
+     "err": "",
+     "ok": true,
+     "wall_s": 1.66
+    },
+    "patch_applied": {
+     "err": "",
+     "ok": true,
+     "step": "apply"
+    }
+   },
+   "run": {
+    "cases": 572,
+    "containers_removed_after": [],
+    "counts": {
+     "C": 15,
+     "D": 6
+    },
+    "err_tail": "",
+    "findings": [
+     {
+      "case": "the_51st_active_habit_is_refused / step 1",
+      "layer": "C",
+      "rule": "A user has at most 50 non-archived, non-deleted habits.",
+      "verdict": "silent",
+      "violations": [
+       "at_most_50_active_habits"
+      ]
+     },
+     {
+      "case": "the_51st_active_habit_is_refused / step 1",
+      "layer": "C",
+      "rule": "at most 50 Habit rows per user_id (form F29)",
+      "verdict": "silent",
+      "violations": [
+       "form:F29:invariant"
+      ]
+     },
+     {
+      "case": "the_51st_active_habit_is_refused / step 1",
+      "layer": "C",
+      "rule": "at most 50 Habit rows per user_id (form F33)",
+      "verdict": "silent",
+      "violations": [
+       "form:F33:invariant"
+      ]
+     },
+     {
+      "case": "the_50th_active_habit_is_accepted / step 2",
+      "layer": "C",
+      "rule": "A user has at most 50 non-archived, non-deleted habits.",
+      "verdict": "silent",
+      "violations": [
+       "at_most_50_active_habits"
+      ]
+     },
+     {
+      "case": "the_50th_active_habit_is_accepted / step 2",
+      "layer": "C",
+      "rule": "at most 50 Habit rows per user_id (form F29)",
+      "verdict": "silent",
+      "violations": [
+       "form:F29:invariant"
+      ]
+     },
+     {
+      "case": "the_50th_active_habit_is_accepted / step 2",
+      "layer": "C",
+      "rule": "at most 50 Habit rows per user_id (form F33)",
+      "verdict": "silent",
+      "violations": [
+       "form:F33:invariant"
+      ]
+     },
+     {
+      "case": "restoring_past_the_limit_is_refused / step 1",
+      "layer": "C",
+      "rule": "A user has at most 50 non-archived, non-deleted habits.",
+      "verdict": "silent",
+      "violations": [
+       "at_most_50_active_habits"
+      ]
+     },
+     {
+      "case": "restoring_past_the_limit_is_refused / step 1",
+      "layer": "C",
+      "rule": "at most 50 Habit rows per user_id (form F29)",
+      "verdict": "silent",
+      "violations": [
+       "form:F29:invariant"
+      ]
+     },
+     {
+      "case": "restoring_past_the_limit_is_refused / step 1",
+      "layer": "C",
+      "rule": "at most 50 Habit rows per user_id (form F33)",
+      "verdict": "silent",
+      "violations": [
+       "form:F33:invariant"
+      ]
+     },
+     {
+      "case": "form:F29:at_limit / step 1",
+      "layer": "C",
+      "rule": "A user has at most 50 non-archived, non-deleted habits.",
+      "verdict": "silent",
+      "violations": [
+       "at_most_50_active_habits"
+      ]
+     },
+     {
+      "case": "form:F29:at_limit / step 1",
+      "layer": "C",
+      "rule": "at most 50 Habit rows per user_id (form F29)",
+      "verdict": "silent",
+      "violations": [
+       "form:F29:invariant"
+      ]
+     },
+     {
+      "case": "form:F29:at_limit / step 1",
+      "layer": "C",
+      "rule": "at most 50 Habit rows per user_id (form F33)",
+      "verdict": "silent",
+      "violations": [
+       "form:F33:invariant"
+      ]
+     },
+     {
+      "case": "form:F33:at_limit / step 1",
+      "layer": "C",
+      "rule": "A user has at most 50 non-archived, non-deleted habits.",
+      "verdict": "silent",
+      "violations": [
+       "at_most_50_active_habits"
+      ]
+     },
+     {
+      "case": "form:F33:at_limit / step 1",
+      "layer": "C",
+      "rule": "at most 50 Habit rows per user_id (form F29)",
+      "verdict": "silent",
+      "violations": [
+       "form:F29:invariant"
+      ]
+     },
+     {
+      "case": "form:F33:at_limit / step 1",
+      "layer": "C",
+      "rule": "at most 50 Habit rows per user_id (form F33)",
+      "verdict": "silent",
+      "violations": [
+       "form:F33:invariant"
+      ]
+     },
+     {
+      "case": "the_51st_active_habit_is_refused / step 1",
+      "layer": "D",
+      "rule": "scenario: the_51st_active_habit_is_refused",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "the_50th_active_habit_is_accepted / step 2",
+      "layer": "D",
+      "rule": "scenario: the_50th_active_habit_is_accepted",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "restoring_past_the_limit_is_refused / step 1",
+      "layer": "D",
+      "rule": "scenario: restoring_past_the_limit_is_refused",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F13:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F13:at_bound",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F29:at_limit / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F29:at_limit",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F33:at_limit / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F33:at_limit",
+      "verdict": "silent",
+      "violations": []
+     }
+    ],
+    "ok": true,
+    "rc": 1,
+    "timed_out": false,
+    "total_s": 65.8589,
+    "verdict": "fail",
+    "wall_s": 66.16
+   }
+  },
+  "m_history_limit_max_101": {
+   "build": {
+    "build": {
+     "bin_rc": 0,
+     "build_all_rc": 0,
+     "err": "",
+     "ok": true,
+     "wall_s": 1.32
+    },
+    "patch_applied": {
+     "err": "",
+     "ok": true,
+     "step": "apply"
+    }
+   },
+   "run": {
+    "cases": 568,
+    "containers_removed_after": [],
+    "counts": {
+     "C": 0,
+     "D": 3
+    },
+    "err_tail": "",
+    "findings": [
+     {
+      "case": "history_limit_bounds / step 2",
+      "layer": "D",
+      "rule": "scenario: history_limit_bounds",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F13:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F13:at_bound",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F43:beyond / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F43:beyond",
+      "verdict": "silent",
+      "violations": []
+     }
+    ],
+    "ok": true,
+    "rc": 1,
+    "timed_out": false,
+    "total_s": 65.7774,
+    "verdict": "fail",
+    "wall_s": 66.064
+   }
+  },
+  "m_list_limit_max_201": {
+   "build": {
+    "build": {
+     "bin_rc": 0,
+     "build_all_rc": 0,
+     "err": "",
+     "ok": true,
+     "wall_s": 1.37
+    },
+    "patch_applied": {
+     "err": "",
+     "ok": true,
+     "step": "apply"
+    }
+   },
+   "run": {
+    "cases": 562,
+    "containers_removed_after": [],
+    "counts": {
+     "C": 0,
+     "D": 6
+    },
+    "err_tail": "",
+    "findings": [
+     {
+      "case": "list_pagination / step 2",
+      "layer": "D",
+      "rule": "scenario: list_pagination",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "nudges_list_pagination / step 2",
+      "layer": "D",
+      "rule": "scenario: nudges_list_pagination",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F13:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F13:at_bound",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F37:beyond / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F37:beyond",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F38:beyond / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F38:beyond",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F41:beyond / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F41:beyond",
+      "verdict": "silent",
+      "violations": []
+     }
+    ],
+    "ok": true,
+    "rc": 1,
+    "timed_out": false,
+    "total_s": 70.4699,
+    "verdict": "fail",
+    "wall_s": 70.772
+   }
+  },
+  "m_login_skip_password": {
+   "build": {
+    "build": {
+     "bin_rc": 0,
+     "build_all_rc": 0,
+     "err": "",
+     "ok": true,
+     "wall_s": 1.23
+    },
+    "patch_applied": {
+     "err": "",
+     "ok": true,
+     "step": "apply"
+    }
+   },
+   "run": {
+    "cases": 571,
+    "containers_removed_after": [],
+    "counts": {
+     "C": 0,
+     "D": 3
+    },
+    "err_tail": "",
+    "findings": [
+     {
+      "case": "login_with_bad_credentials_is_refused / step 1",
+      "layer": "D",
+      "rule": "scenario: login_with_bad_credentials_is_refused",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F4:beyond / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F4:beyond",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F13:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F13:at_bound",
+      "verdict": "silent",
+      "violations": []
+     }
+    ],
+    "ok": true,
+    "rc": 1,
+    "timed_out": false,
+    "total_s": 43.5158,
+    "verdict": "fail",
+    "wall_s": 43.789
+   }
+  },
+  "m_name_max_101": {
+   "build": {
+    "build": {
+     "bin_rc": 0,
+     "build_all_rc": 0,
+     "err": "",
+     "ok": true,
+     "wall_s": 1.4
+    },
+    "patch_applied": {
+     "err": "",
+     "ok": true,
+     "step": "apply"
+    }
+   },
+   "run": {
+    "cases": 564,
+    "containers_removed_after": [],
+    "counts": {
+     "C": 0,
+     "D": 5
+    },
+    "err_tail": "",
+    "findings": [
+     {
+      "case": "habit_name_bounds / step 3",
+      "layer": "D",
+      "rule": "scenario: habit_name_bounds",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "patch_validation_changes_nothing / step 3",
+      "layer": "D",
+      "rule": "scenario: patch_validation_changes_nothing",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F13:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F13:at_bound",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F20:beyond / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F20:beyond",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F30:beyond / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F30:beyond",
+      "verdict": "silent",
+      "violations": []
+     }
+    ],
+    "ok": true,
+    "rc": 1,
+    "timed_out": false,
+    "total_s": 73.0321,
+    "verdict": "fail",
+    "wall_s": 73.332
+   }
+  },
+  "m_name_taken_case_sensitive": {
+   "build": {
+    "build": {
+     "bin_rc": 0,
+     "build_all_rc": 0,
+     "err": "",
+     "ok": true,
+     "wall_s": 1.32
+    },
+    "patch_applied": {
+     "err": "",
+     "ok": true,
+     "step": "apply"
+    }
+   },
+   "run": {
+    "cases": 569,
+    "containers_removed_after": [],
+    "counts": {
+     "C": 0,
+     "D": 2
+    },
+    "err_tail": "",
+    "findings": [
+     {
+      "case": "duplicate_habit_name_is_refused / step 4",
+      "layer": "D",
+      "rule": "scenario: duplicate_habit_name_is_refused",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F13:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F13:at_bound",
+      "verdict": "silent",
+      "violations": []
+     }
+    ],
+    "ok": true,
+    "rc": 1,
+    "timed_out": false,
+    "total_s": 59.0106,
+    "verdict": "fail",
+    "wall_s": 59.301
+   }
+  },
+  "m_name_taken_create_skipped": {
+   "build": {
+    "build": {
+     "bin_rc": 0,
+     "build_all_rc": 0,
+     "err": "",
+     "ok": true,
+     "wall_s": 1.34
+    },
+    "patch_applied": {
+     "err": "",
+     "ok": true,
+     "step": "apply"
+    }
+   },
+   "run": {
+    "cases": 566,
+    "containers_removed_after": [],
+    "counts": {
+     "C": 4,
+     "D": 3
+    },
+    "err_tail": "",
+    "findings": [
+     {
+      "case": "duplicate_habit_name_is_refused / step 1",
+      "layer": "C",
+      "rule": "A user's non-deleted habit names are unique.",
+      "verdict": "silent",
+      "violations": [
+       "habit_names_unique_per_user"
+      ]
+     },
+     {
+      "case": "duplicate_habit_name_is_refused / step 1",
+      "layer": "C",
+      "rule": "at most 1 Habit rows per user_id, name (form F28)",
+      "verdict": "silent",
+      "violations": [
+       "form:F28:invariant"
+      ]
+     },
+     {
+      "case": "form:F28:at_limit / step 1",
+      "layer": "C",
+      "rule": "A user's non-deleted habit names are unique.",
+      "verdict": "silent",
+      "violations": [
+       "habit_names_unique_per_user"
+      ]
+     },
+     {
+      "case": "form:F28:at_limit / step 1",
+      "layer": "C",
+      "rule": "at most 1 Habit rows per user_id, name (form F28)",
+      "verdict": "silent",
+      "violations": [
+       "form:F28:invariant"
+      ]
+     },
+     {
+      "case": "duplicate_habit_name_is_refused / step 1",
+      "layer": "D",
+      "rule": "scenario: duplicate_habit_name_is_refused",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F13:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F13:at_bound",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F28:at_limit / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F28:at_limit",
+      "verdict": "silent",
+      "violations": []
+     }
+    ],
+    "ok": true,
+    "rc": 1,
+    "timed_out": false,
+    "total_s": 54.5249,
+    "verdict": "fail",
+    "wall_s": 54.823
+   }
+  },
+  "m_note_max_281": {
+   "build": {
+    "build": {
+     "bin_rc": 0,
+     "build_all_rc": 0,
+     "err": "",
+     "ok": true,
+     "wall_s": 1.32
+    },
+    "patch_applied": {
+     "err": "",
+     "ok": true,
+     "step": "apply"
+    }
+   },
+   "run": {
+    "cases": 571,
+    "containers_removed_after": [],
+    "counts": {
+     "C": 0,
+     "D": 3
+    },
+    "err_tail": "",
+    "findings": [
+     {
+      "case": "check_in_note_bounds / step 1",
+      "layer": "D",
+      "rule": "scenario: check_in_note_bounds",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F13:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F13:at_bound",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F34:beyond / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F34:beyond",
+      "verdict": "silent",
+      "violations": []
+     }
+    ],
+    "ok": true,
+    "rc": 1,
+    "timed_out": false,
+    "total_s": 66.261,
+    "verdict": "fail",
+    "wall_s": 66.554
+   }
+  },
+  "m_password_min_7": {
+   "build": {
+    "build": {
+     "bin_rc": 0,
+     "build_all_rc": 0,
+     "err": "",
+     "ok": true,
+     "wall_s": 1.4
+    },
+    "patch_applied": {
+     "err": "",
+     "ok": true,
+     "step": "apply"
+    }
+   },
+   "run": {
+    "cases": 567,
+    "containers_removed_after": [],
+    "counts": {
+     "C": 0,
+     "D": 3
+    },
+    "err_tail": "",
+    "findings": [
+     {
+      "case": "password_length_bounds / step 1",
+      "layer": "D",
+      "rule": "scenario: password_length_bounds",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F1:beyond / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F1:beyond",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F13:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F13:at_bound",
+      "verdict": "silent",
+      "violations": []
+     }
+    ],
+    "ok": true,
+    "rc": 1,
+    "timed_out": false,
+    "total_s": 57.3883,
+    "verdict": "fail",
+    "wall_s": 57.685
+   }
+  },
+  "m_patch_habit_any_owner": {
+   "build": {
+    "build": {
+     "bin_rc": 0,
+     "build_all_rc": 0,
+     "err": "",
+     "ok": true,
+     "wall_s": 1.28
+    },
+    "patch_applied": {
+     "err": "",
+     "ok": true,
+     "step": "apply"
+    }
+   },
+   "run": {
+    "cases": 572,
+    "containers_removed_after": [],
+    "counts": {
+     "C": 0,
+     "D": 2
+    },
+    "err_tail": "",
+    "findings": [
+     {
+      "case": "access__patch_habit__as_ben / step 1",
+      "layer": "D",
+      "rule": "scenario: access__patch_habit__as_ben",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F13:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F13:at_bound",
+      "verdict": "silent",
+      "violations": []
+     }
+    ],
+    "ok": true,
+    "rc": 1,
+    "timed_out": false,
+    "total_s": 58.6132,
+    "verdict": "fail",
+    "wall_s": 58.892
+   }
+  },
+  "m_patch_version_ignored": {
+   "build": {
+    "build": {
+     "bin_rc": 0,
+     "build_all_rc": 0,
+     "err": "",
+     "ok": true,
+     "wall_s": 1.29
+    },
+    "patch_applied": {
+     "err": "",
+     "ok": true,
+     "step": "apply"
+    }
+   },
+   "run": {
+    "cases": 570,
+    "containers_removed_after": [],
+    "counts": {
+     "C": 0,
+     "D": 3
+    },
+    "err_tail": "",
+    "findings": [
+     {
+      "case": "patch_version_rules / step 2",
+      "layer": "D",
+      "rule": "scenario: patch_version_rules",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F13:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F13:at_bound",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F32:beyond / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F32:beyond",
+      "verdict": "silent",
+      "violations": []
+     }
+    ],
+    "ok": true,
+    "rc": 1,
+    "timed_out": false,
+    "total_s": 55.4955,
+    "verdict": "fail",
+    "wall_s": 55.795
+   }
+  },
+  "m_platform_unchecked": {
+   "build": {
+    "build": {
+     "bin_rc": 0,
+     "build_all_rc": 0,
+     "err": "",
+     "ok": true,
+     "wall_s": 1.36
+    },
+    "patch_applied": {
+     "err": "",
+     "ok": true,
+     "step": "apply"
+    }
+   },
+   "run": {
+    "cases": 567,
+    "containers_removed_after": [],
+    "counts": {
+     "C": 2,
+     "D": 3
+    },
+    "err_tail": "",
+    "findings": [
+     {
+      "case": "device_registration / step 2",
+      "layer": "C",
+      "rule": "Device.platform is one of ['android', 'ios'] (form F15)",
+      "verdict": "silent",
+      "violations": [
+       "form:F15:invariant"
+      ]
+     },
+     {
+      "case": "form:F11:beyond / step 1",
+      "layer": "C",
+      "rule": "Device.platform is one of ['android', 'ios'] (form F15)",
+      "verdict": "silent",
+      "violations": [
+       "form:F15:invariant"
+      ]
+     },
+     {
+      "case": "device_registration / step 2",
+      "layer": "D",
+      "rule": "scenario: device_registration",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F11:beyond / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F11:beyond",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F13:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F13:at_bound",
+      "verdict": "silent",
+      "violations": []
+     }
+    ],
+    "ok": true,
+    "rc": 1,
+    "timed_out": false,
+    "total_s": 50.6162,
+    "verdict": "fail",
+    "wall_s": 50.899
+   }
+  },
+  "m_push_enabled_lenient": {
+   "build": {
+    "build": {
+     "bin_rc": 0,
+     "build_all_rc": 0,
+     "err": "",
+     "ok": true,
+     "wall_s": 1.37
+    },
+    "patch_applied": {
+     "err": "",
+     "ok": true,
+     "step": "apply"
+    }
+   },
+   "run": {
+    "cases": 571,
+    "containers_removed_after": [],
+    "counts": {
+     "C": 0,
+     "D": 3
+    },
+    "err_tail": "",
+    "findings": [
+     {
+      "case": "me_update_and_validation / step 6",
+      "layer": "D",
+      "rule": "scenario: me_update_and_validation",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F7:beyond / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F7:beyond",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F13:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F13:at_bound",
+      "verdict": "silent",
+      "violations": []
+     }
+    ],
+    "ok": true,
+    "rc": 1,
+    "timed_out": false,
+    "total_s": 48.3772,
+    "verdict": "fail",
+    "wall_s": 48.653
+   }
+  },
+  "m_push_token_max_4097": {
+   "build": {
+    "build": {
+     "bin_rc": 0,
+     "build_all_rc": 0,
+     "err": "",
+     "ok": true,
+     "wall_s": 1.34
+    },
+    "patch_applied": {
+     "err": "",
+     "ok": true,
+     "step": "apply"
+    }
+   },
+   "run": {
+    "cases": 569,
+    "containers_removed_after": [],
+    "counts": {
+     "C": 0,
+     "D": 3
+    },
+    "err_tail": "",
+    "findings": [
+     {
+      "case": "device_registration / step 4",
+      "layer": "D",
+      "rule": "scenario: device_registration",
+      "verdict": "loud",
+      "violations": []
+     },
+     {
+      "case": "form:F12:beyond / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F12:beyond",
+      "verdict": "loud",
+      "violations": []
+     },
+     {
+      "case": "form:F13:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F13:at_bound",
+      "verdict": "silent",
+      "violations": []
+     }
+    ],
+    "ok": true,
+    "rc": 1,
+    "timed_out": false,
+    "total_s": 46.2637,
+    "verdict": "fail",
+    "wall_s": 46.558
+   }
+  },
+  "m_refresh_unknown_422": {
+   "build": {
+    "build": {
+     "bin_rc": 0,
+     "build_all_rc": 0,
+     "err": "",
+     "ok": true,
+     "wall_s": 1.23
+    },
+    "patch_applied": {
+     "err": "",
+     "ok": true,
+     "step": "apply"
+    }
+   },
+   "run": {
+    "cases": 570,
+    "containers_removed_after": [],
+    "counts": {
+     "C": 0,
+     "D": 3
+    },
+    "err_tail": "",
+    "findings": [
+     {
+      "case": "refresh_token_unknown_or_expired_is_refused / step 1",
+      "layer": "D",
+      "rule": "scenario: refresh_token_unknown_or_expired_is_refused",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F6:beyond / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F6:beyond",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F13:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F13:at_bound",
+      "verdict": "silent",
+      "violations": []
+     }
+    ],
+    "ok": true,
+    "rc": 1,
+    "timed_out": false,
+    "total_s": 48.9576,
+    "verdict": "fail",
+    "wall_s": 49.227
+   }
+  },
+  "m_restore_limit_skipped": {
+   "build": {
+    "build": {
+     "bin_rc": 0,
+     "build_all_rc": 0,
+     "err": "",
+     "ok": true,
+     "wall_s": 1.44
+    },
+    "patch_applied": {
+     "err": "",
+     "ok": true,
+     "step": "apply"
+    }
+   },
+   "run": {
+    "cases": 572,
+    "containers_removed_after": [],
+    "counts": {
+     "C": 6,
+     "D": 3
+    },
+    "err_tail": "",
+    "findings": [
+     {
+      "case": "restoring_past_the_limit_is_refused / step 1",
+      "layer": "C",
+      "rule": "A user has at most 50 non-archived, non-deleted habits.",
+      "verdict": "silent",
+      "violations": [
+       "at_most_50_active_habits"
+      ]
+     },
+     {
+      "case": "restoring_past_the_limit_is_refused / step 1",
+      "layer": "C",
+      "rule": "at most 50 Habit rows per user_id (form F29)",
+      "verdict": "silent",
+      "violations": [
+       "form:F29:invariant"
+      ]
+     },
+     {
+      "case": "restoring_past_the_limit_is_refused / step 1",
+      "layer": "C",
+      "rule": "at most 50 Habit rows per user_id (form F33)",
+      "verdict": "silent",
+      "violations": [
+       "form:F33:invariant"
+      ]
+     },
+     {
+      "case": "form:F33:at_limit / step 1",
+      "layer": "C",
+      "rule": "A user has at most 50 non-archived, non-deleted habits.",
+      "verdict": "silent",
+      "violations": [
+       "at_most_50_active_habits"
+      ]
+     },
+     {
+      "case": "form:F33:at_limit / step 1",
+      "layer": "C",
+      "rule": "at most 50 Habit rows per user_id (form F29)",
+      "verdict": "silent",
+      "violations": [
+       "form:F29:invariant"
+      ]
+     },
+     {
+      "case": "form:F33:at_limit / step 1",
+      "layer": "C",
+      "rule": "at most 50 Habit rows per user_id (form F33)",
+      "verdict": "silent",
+      "violations": [
+       "form:F33:invariant"
+      ]
+     },
+     {
+      "case": "restoring_past_the_limit_is_refused / step 1",
+      "layer": "D",
+      "rule": "scenario: restoring_past_the_limit_is_refused",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F13:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F13:at_bound",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F33:at_limit / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F33:at_limit",
+      "verdict": "silent",
+      "violations": []
+     }
+    ],
+    "ok": true,
+    "rc": 1,
+    "timed_out": false,
+    "total_s": 68.5583,
+    "verdict": "fail",
+    "wall_s": 68.872
+   }
+  },
+  "m_rewrite_resets_delivery": {
+   "build": {
+    "build": {
+     "bin_rc": 0,
+     "build_all_rc": 0,
+     "err": "",
+     "ok": true,
+     "wall_s": 1.29
+    },
+    "patch_applied": {
+     "err": "",
+     "ok": true,
+     "step": "apply"
+    }
+   },
+   "run": {
+    "cases": 571,
+    "containers_removed_after": [],
+    "counts": {
+     "C": 0,
+     "D": 2
+    },
+    "err_tail": "",
+    "findings": [
+     {
+      "case": "check_in_rewrites_today_nudge / step 1",
+      "layer": "D",
+      "rule": "scenario: check_in_rewrites_today_nudge",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F13:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F13:at_bound",
+      "verdict": "silent",
+      "violations": []
+     }
+    ],
+    "ok": true,
+    "rc": 1,
+    "timed_out": false,
+    "total_s": 49.0386,
+    "verdict": "fail",
+    "wall_s": 49.318
+   }
+  },
+  "m_sync_limit_min_0": {
+   "build": {
+    "build": {
+     "bin_rc": 0,
+     "build_all_rc": 0,
+     "err": "",
+     "ok": true,
+     "wall_s": 1.36
+    },
+    "patch_applied": {
+     "err": "",
+     "ok": true,
+     "step": "apply"
+    }
+   },
+   "run": {
+    "cases": 567,
+    "containers_removed_after": [],
+    "counts": {
+     "C": 0,
+     "D": 3
+    },
+    "err_tail": "",
+    "findings": [
+     {
+      "case": "sync_limits_and_cursors / step 3",
+      "layer": "D",
+      "rule": "scenario: sync_limits_and_cursors",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F13:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F13:at_bound",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F39:beyond / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F39:beyond",
+      "verdict": "silent",
+      "violations": []
+     }
+    ],
+    "ok": true,
+    "rc": 1,
+    "timed_out": false,
+    "total_s": 65.1172,
+    "verdict": "fail",
+    "wall_s": 65.426
+   }
+  },
+  "m_target_week_max_8": {
+   "build": {
+    "build": {
+     "bin_rc": 0,
+     "build_all_rc": 0,
+     "err": "",
+     "ok": true,
+     "wall_s": 1.91
+    },
+    "patch_applied": {
+     "err": "",
+     "ok": true,
+     "step": "apply"
+    }
+   },
+   "run": {
+    "cases": 560,
+    "containers_removed_after": [],
+    "counts": {
+     "C": 4,
+     "D": 5
+    },
+    "err_tail": "",
+    "findings": [
+     {
+      "case": "habit_target_count_bounds / step 2",
+      "layer": "C",
+      "rule": "A target is 1..7 a week, 1..31 a month, 1..366 a year.",
+      "verdict": "silent",
+      "violations": [
+       "habit_target_in_bounds"
+      ]
+     },
+     {
+      "case": "patch_validation_changes_nothing / step 4",
+      "layer": "C",
+      "rule": "A target is 1..7 a week, 1..31 a month, 1..366 a year.",
+      "verdict": "silent",
+      "violations": [
+       "habit_target_in_bounds"
+      ]
+     },
+     {
+      "case": "form:F25:beyond / step 1",
+      "layer": "C",
+      "rule": "A target is 1..7 a week, 1..31 a month, 1..366 a year.",
+      "verdict": "silent",
+      "violations": [
+       "habit_target_in_bounds"
+      ]
+     },
+     {
+      "case": "form:F31:beyond / step 1",
+      "layer": "C",
+      "rule": "A target is 1..7 a week, 1..31 a month, 1..366 a year.",
+      "verdict": "silent",
+      "violations": [
+       "habit_target_in_bounds"
+      ]
+     },
+     {
+      "case": "habit_target_count_bounds / step 2",
+      "layer": "D",
+      "rule": "scenario: habit_target_count_bounds",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "patch_validation_changes_nothing / step 4",
+      "layer": "D",
+      "rule": "scenario: patch_validation_changes_nothing",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F13:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F13:at_bound",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F25:beyond / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F25:beyond",
+      "verdict": "silent",
+      "violations": []
+     },
+     {
+      "case": "form:F31:beyond / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F31:beyond",
+      "verdict": "silent",
+      "violations": []
+     }
+    ],
+    "ok": true,
+    "rc": 1,
+    "timed_out": false,
+    "total_s": 65.1659,
+    "verdict": "fail",
+    "wall_s": 65.455
+   }
+  },
+  "ok": {
+   "build": {
+    "build": {
+     "bin_rc": 0,
+     "build_all_rc": 0,
+     "err": "",
+     "ok": true,
+     "wall_s": 7.45
+    },
+    "patch_applied": {
+     "ok": true
+    }
+   },
+   "run": {
+    "canon_sha256": "089852e3ef7f91044e6bbcfdd66bec8c29e29be682af19276c479475e867823e",
+    "cases": 572,
+    "containers_removed_after": [],
+    "counts": {
+     "C": 0,
+     "D": 1
+    },
+    "err_tail": "",
+    "findings": [
+     {
+      "case": "form:F13:at_bound / step 1",
+      "layer": "D",
+      "rule": "scenario: form:F13:at_bound",
+      "verdict": "silent",
+      "violations": []
+     }
+    ],
+    "hashseed": "1839907672",
+    "i": 1,
+    "ok": true,
+    "rc": 1,
+    "root": "a",
+    "timed_out": false,
+    "total_s": 48.1456,
+    "verdict": "fail",
+    "wall_s": 48.418
+   }
+  }
+ },
+ "baseline": [
+  {
+   "cases": 480,
+   "containers_removed_after": [],
+   "counts": {
+    "C": 0,
+    "D": 0
+   },
+   "err_tail": "",
+   "findings": [],
+   "ok": true,
+   "rc": 0,
+   "timed_out": false,
+   "total_s": 42.0436,
+   "verdict": "pass",
+   "wall_s": 42.268
+  },
+  {
+   "cases": 480,
+   "containers_removed_after": [],
+   "counts": {
+    "C": 0,
+    "D": 0
+   },
+   "err_tail": "",
+   "findings": [],
+   "ok": true,
+   "rc": 0,
+   "timed_out": false,
+   "total_s": 40.7256,
+   "verdict": "pass",
+   "wall_s": 40.943
+  },
+  {
+   "cases": 480,
+   "containers_removed_after": [],
+   "counts": {
+    "C": 0,
+    "D": 0
+   },
+   "err_tail": "",
+   "findings": [],
+   "ok": true,
+   "rc": 0,
+   "timed_out": false,
+   "total_s": 34.7714,
+   "verdict": "pass",
+   "wall_s": 34.983
+  }
+ ],
+ "containers_left": [],
+ "ctx": {
+  "elem_rules": {
+   "invariant:at_most_50_active_habits": [
+    "R56"
+   ],
+   "invariant:habit_name_not_empty": [
+    "R51"
+   ],
+   "invariant:habit_names_unique_per_user": [
+    "R55"
+   ],
+   "invariant:habit_target_in_bounds": [
+    "R51"
+   ],
+   "invariant:habit_version_positive": [
+    "R39"
+   ],
+   "invariant:nudge_reason_matches_delivery": [
+    "R42"
+   ],
+   "invariant:one_account_per_email": [
+    "R10"
+   ],
+   "invariant:one_check_in_per_day": [
+    "R78"
+   ],
+   "invariant:one_device_per_push_token": [
+    "R37"
+   ],
+   "invariant:one_nudge_per_day": [
+    "R42"
+   ],
+   "scenario:access__add_completion__as_ben": [
+    "R28"
+   ],
+   "scenario:access__add_device__as_ann": [
+    "R31"
+   ],
+   "scenario:access__batch__as_ben": [
+    "R28"
+   ],
+   "scenario:access__delete_completion__as_ben": [
+    "R28"
+   ],
+   "scenario:access__delete_device__as_ann": [
+    "R33"
+   ],
+   "scenario:access__delete_device__as_ben": [
+    "R28"
+   ],
+   "scenario:access__delete_habit__as_ben": [
+    "R28"
+   ],
+   "scenario:access__dismiss__as_ben": [
+    "R28"
+   ],
+   "scenario:access__get_habit__as_ben": [
+    "R28"
+   ],
+   "scenario:access__history__as_ben": [
+    "R28"
+   ],
+   "scenario:access__list_completions__as_ben": [
+    "R28"
+   ],
+   "scenario:access__nudges__as_ann": [
+    "R137"
+   ],
+   "scenario:access__nudges__as_ben": [
+    "R137"
+   ],
+   "scenario:access__patch_habit__as_ann": [
+    "R60"
+   ],
+   "scenario:access__patch_habit__as_ben": [
+    "R28"
+   ],
+   "scenario:access__progress__as_ben": [
+    "R28"
+   ],
+   "scenario:access__update_me__as_ann": [
+    "R25"
+   ],
+   "scenario:active_nudges_list": [
+    "R137"
+   ],
+   "scenario:archive_and_restore": [
+    "R69"
+   ],
+   "scenario:check_in_note_bounds": [
+    "R77"
+   ],
+   "scenario:completion_of_another_habit_is_not_found": [
+    "R28"
+   ],
+   "scenario:create_habit_with_every_field": [
+    "R39"
+   ],
+   "scenario:device_registration": [
+    "R31"
+   ],
+   "scenario:duplicate_email_is_refused": [
+    "R10"
+   ],
+   "scenario:duplicate_habit_name_is_refused": [
+    "R55"
+   ],
+   "scenario:habit_description_bounds": [
+    "R51"
+   ],
+   "scenario:habit_name_bounds": [
+    "R51"
+   ],
+   "scenario:habit_period_values": [
+    "R51"
+   ],
+   "scenario:habit_target_count_bounds": [
+    "R51"
+   ],
+   "scenario:history_default_limit_is_12": [
+    "R147"
+   ],
+   "scenario:history_limit_bounds": [
+    "R147"
+   ],
+   "scenario:invalid_email_is_refused": [
+    "R9"
+   ],
+   "scenario:list_pagination": [
+    "R86"
+   ],
+   "scenario:login_with_bad_credentials_is_refused": [
+    "R14"
+   ],
+   "scenario:me_update_and_validation": [
+    "R25"
+   ],
+   "scenario:nudges_list_pagination": [
+    "R137"
+   ],
+   "scenario:password_length_bounds": [
+    "R9"
+   ],
+   "scenario:patch_version_rules": [
+    "R60",
+    "R62"
+   ],
+   "scenario:refresh_token_reuse_revokes_the_session": [
+    "R19"
+   ],
+   "scenario:refresh_token_unknown_or_expired_is_refused": [
+    "R19"
+   ],
+   "scenario:restoring_past_the_limit_is_refused": [
+    "R69"
+   ],
+   "scenario:second_check_in_on_a_date_is_refused": [
+    "R78"
+   ],
+   "scenario:sync_limits_and_cursors": [
+    "R92"
+   ],
+   "scenario:the_50th_active_habit_is_accepted": [
+    "R56"
+   ],
+   "scenario:the_51st_active_habit_is_refused": [
+    "R56"
+   ],
+   "scenario:unknown_ids_answer_not_found": [
+    "R28"
+   ]
+  },
+  "form_rule": {
+   "F1": "R9",
+   "F10": "R28",
+   "F11": "R31",
+   "F12": "R31",
+   "F13": "R31",
+   "F14": "R33",
+   "F15": "R37",
+   "F16": "R39",
+   "F17": "R39",
+   "F18": "R42",
+   "F19": "R42",
+   "F2": "R9",
+   "F20": "R51",
+   "F21": "R51",
+   "F22": "R51",
+   "F23": "R51",
+   "F24": "R51",
+   "F25": "R51",
+   "F26": "R51",
+   "F27": "R51",
+   "F28": "R55",
+   "F29": "R56",
+   "F3": "R10",
+   "F30": "R60",
+   "F31": "R60",
+   "F32": "R62",
+   "F33": "R69",
+   "F34": "R77",
+   "F35": "R78",
+   "F36": "R86",
+   "F37": "R86",
+   "F38": "R86",
+   "F39": "R92",
+   "F4": "R14",
+   "F40": "R92",
+   "F41": "R137",
+   "F42": "R147",
+   "F43": "R147",
+   "F5": "R14",
+   "F6": "R19",
+   "F7": "R25",
+   "F8": "R28",
+   "F9": "R28"
+  },
+  "sent2name": {
+   "A habit has at most one non-deleted check-in per date.": "one_check_in_per_day",
+   "A habit has at most one nudge per day.": "one_nudge_per_day",
+   "A habit has one target row per effective_from.": "one_target_row_per_period",
+   "A habit name is never empty.": "habit_name_not_empty",
+   "A habit's version starts at 1.": "habit_version_positive",
+   "A push_token is on at most one device row.": "one_device_per_push_token",
+   "A sent or failed nudge has no reason; a suppressed one has one.": "nudge_reason_matches_delivery",
+   "A stored target is at least 1.": "target_rows_positive",
+   "A target is 1..7 a week, 1..31 a month, 1..366 a year.": "habit_target_in_bounds",
+   "A user has at most 50 non-archived, non-deleted habits.": "at_most_50_active_habits",
+   "A user has at most one unrotated, unrevoked refresh token per installation.": "one_live_refresh_token_per_installation",
+   "A user has one notification_prefs row.": "one_prefs_row_per_user",
+   "A user's non-deleted habit names are unique.": "habit_names_unique_per_user",
+   "An email is registered at most once.": "one_account_per_email",
+   "An end date is on or after the start date.": "habit_end_not_before_start",
+   "Device.platform is one of ['android', 'ios'] (form F15)": "form:F15:invariant",
+   "Habit.period is one of ['month', 'week', 'year'] (form F17)": "form:F17:invariant",
+   "Habit.version ge 1 (form F16)": "form:F16:invariant",
+   "Nudge.delivery is one of ['failed', 'pending', 'sent', 'suppressed'] (form F19)": "form:F19:invariant",
+   "Nudge.kind is one of ['achieved', 'behind', 'on_track', 'unreachable'] (form F18)": "form:F18:invariant",
+   "at most 1 Completion rows per habit_id, date (form F35)": "form:F35:invariant",
+   "at most 1 Habit rows per user_id, name (form F28)": "form:F28:invariant",
+   "at most 1 User rows per email (form F3)": "form:F3:invariant",
+   "at most 50 Habit rows per user_id (form F29)": "form:F29:invariant",
+   "at most 50 Habit rows per user_id (form F33)": "form:F33:invariant"
+  }
+ },
+ "forms_sha256": "6a09f55224c9ec06f364bc49ab9c71c732f1e207131ad6619024d3cdaf05e94c",
+ "g_meta": {
+  "dropped_invariants": {},
+  "form_states": {
+   "F1": "current",
+   "F10": "current",
+   "F11": "current",
+   "F12": "current",
+   "F13": "current",
+   "F14": "current",
+   "F15": "current",
+   "F16": "current",
+   "F17": "current",
+   "F18": "current",
+   "F19": "current",
+   "F2": "current",
+   "F20": "current",
+   "F21": "current",
+   "F22": "current",
+   "F23": "current",
+   "F24": "current",
+   "F25": "current",
+   "F26": "current",
+   "F27": "current",
+   "F28": "current",
+   "F29": "current",
+   "F3": "current",
+   "F30": "current",
+   "F31": "current",
+   "F32": "current",
+   "F33": "current",
+   "F34": "current",
+   "F35": "current",
+   "F36": "current",
+   "F37": "current",
+   "F38": "current",
+   "F39": "current",
+   "F4": "current",
+   "F40": "current",
+   "F41": "current",
+   "F42": "current",
+   "F43": "current",
+   "F5": "current",
+   "F6": "current",
+   "F7": "current",
+   "F8": "current",
+   "F9": "current"
+  },
+  "forms_that_raise": {},
+  "forms_usable": [
+   "F1",
+   "F10",
+   "F11",
+   "F12",
+   "F13",
+   "F14",
+   "F15",
+   "F16",
+   "F17",
+   "F18",
+   "F19",
+   "F2",
+   "F20",
+   "F21",
+   "F22",
+   "F23",
+   "F24",
+   "F25",
+   "F26",
+   "F27",
+   "F28",
+   "F29",
+   "F3",
+   "F30",
+   "F31",
+   "F32",
+   "F33",
+   "F34",
+   "F35",
+   "F36",
+   "F37",
+   "F38",
+   "F39",
+   "F4",
+   "F40",
+   "F41",
+   "F42",
+   "F43",
+   "F5",
+   "F6",
+   "F7",
+   "F8",
+   "F9"
+  ],
+  "invariants": [
+   "form:F15:invariant",
+   "form:F16:invariant",
+   "form:F17:invariant",
+   "form:F18:invariant",
+   "form:F19:invariant",
+   "form:F28:invariant",
+   "form:F29:invariant",
+   "form:F33:invariant",
+   "form:F35:invariant",
+   "form:F3:invariant"
+  ],
+  "notes": [
+   "F1: db_locus:given_only",
+   "F2: db_locus:given_only",
+   "F4: db_locus:given_only",
+   "F5: db_locus:given_only",
+   "F6: db_locus:given_only",
+   "accepted_default:POST /v1/devices",
+   "F26: db_locus:given_only",
+   "F27: db_locus:given_only",
+   "F31: db_locus:given_only",
+   "F32: db_locus:given_only",
+   "F36: db_locus:given_only",
+   "F37: db_locus:given_only",
+   "F38: db_locus:given_only",
+   "F39: db_locus:given_only",
+   "F40: db_locus:given_only",
+   "F41: db_locus:given_only",
+   "F42: db_locus:given_only",
+   "F43: db_locus:given_only"
+  ],
+  "scenarios": [
+   "form:F10:anon_delete_v1_devices_id",
+   "form:F10:other_delete_v1_devices_id",
+   "form:F10:owner_delete_v1_devices_id",
+   "form:F11:at_bound",
+   "form:F11:beyond",
+   "form:F12:at_bound",
+   "form:F12:beyond",
+   "form:F13:at_bound",
+   "form:F13:beyond",
+   "form:F14:anon_delete_v1_devices_id",
+   "form:F14:other_delete_v1_devices_id",
+   "form:F14:owner_delete_v1_devices_id",
+   "form:F1:at_bound",
+   "form:F1:beyond",
+   "form:F20:at_bound",
+   "form:F20:beyond",
+   "form:F21:at_bound",
+   "form:F21:beyond",
+   "form:F22:at_bound",
+   "form:F22:beyond",
+   "form:F23:at_bound",
+   "form:F23:beyond",
+   "form:F24:at_bound",
+   "form:F24:beyond",
+   "form:F25:at_bound",
+   "form:F25:beyond",
+   "form:F26:at_bound",
+   "form:F26:beyond",
+   "form:F27:at_bound",
+   "form:F27:beyond",
+   "form:F28:at_limit",
+   "form:F28:below",
+   "form:F29:at_limit",
+   "form:F29:below",
+   "form:F2:at_bound",
+   "form:F2:beyond",
+   "form:F30:at_bound",
+   "form:F30:beyond",
+   "form:F31:at_bound",
+   "form:F31:beyond",
+   "form:F32:at_bound",
+   "form:F32:beyond",
+   "form:F33:at_limit",
+   "form:F33:below",
+   "form:F34:at_bound",
+   "form:F34:beyond",
+   "form:F35:at_limit",
+   "form:F35:below",
+   "form:F36:at_bound",
+   "form:F36:beyond",
+   "form:F37:at_bound",
+   "form:F37:beyond",
+   "form:F38:at_bound",
+   "form:F38:beyond",
+   "form:F39:at_bound",
+   "form:F39:beyond",
+   "form:F3:at_limit",
+   "form:F3:below",
+   "form:F40:at_bound",
+   "form:F40:beyond",
+   "form:F41:at_bound",
+   "form:F41:beyond",
+   "form:F42:at_bound",
+   "form:F42:beyond",
+   "form:F43:at_bound",
+   "form:F43:beyond",
+   "form:F4:at_bound",
+   "form:F4:beyond",
+   "form:F5:at_bound",
+   "form:F5:beyond",
+   "form:F6:at_bound",
+   "form:F6:beyond",
+   "form:F7:at_bound",
+   "form:F7:beyond",
+   "form:F8:anon_delete_v1_habits_id",
+   "form:F8:anon_get_v1_habits_id",
+   "form:F8:anon_get_v1_habits_id_completions",
+   "form:F8:anon_get_v1_habits_id_history",
+   "form:F8:anon_get_v1_habits_id_progress",
+   "form:F8:other_delete_v1_habits_id",
+   "form:F8:other_get_v1_habits_id",
+   "form:F8:other_get_v1_habits_id_completions",
+   "form:F8:other_get_v1_habits_id_history",
+   "form:F8:other_get_v1_habits_id_progress",
+   "form:F8:owner_delete_v1_habits_id",
+   "form:F8:owner_get_v1_habits_id",
+   "form:F8:owner_get_v1_habits_id_completions",
+   "form:F8:owner_get_v1_habits_id_history",
+   "form:F8:owner_get_v1_habits_id_progress",
+   "form:F9:anon_post_v1_nudges_id_dismiss",
+   "form:F9:other_post_v1_nudges_id_dismiss",
+   "form:F9:owner_post_v1_nudges_id_dismiss"
+  ],
+  "self_check": [],
+  "validate_problems": [],
+  "variant": "strict",
+  "whole_set_error": null
+ },
+ "g_runnable": true,
+ "ok_builds": {
+  "a": {
+   "build": {
+    "bin_rc": 0,
+    "build_all_rc": 0,
+    "err": "",
+    "ok": true,
+    "wall_s": 7.45
+   },
+   "patch_applied": {
+    "ok": true
+   }
+  },
+  "b": {
+   "build": {
+    "bin_rc": 0,
+    "build_all_rc": 0,
+    "err": "",
+    "ok": true,
+    "wall_s": 1.37
+   },
+   "patch_applied": {
+    "ok": true
+   }
+  }
+ },
+ "ps3_generate": {
+  "distinct": [
+   "f124307d83f34143ddd05185c771e05c550976b0a5a1eea249e9e97b517bc6f9"
+  ],
+  "leaks": [],
+  "runs": 10
+ },
+ "ps3_runs": [
+  {
+   "canon_sha256": "089852e3ef7f91044e6bbcfdd66bec8c29e29be682af19276c479475e867823e",
+   "cases": 572,
+   "containers_removed_after": [],
+   "counts": {
+    "C": 0,
+    "D": 1
+   },
+   "err_tail": "",
+   "findings": [
+    {
+     "case": "form:F13:at_bound / step 1",
+     "layer": "D",
+     "rule": "scenario: form:F13:at_bound",
+     "verdict": "silent",
+     "violations": []
+    }
+   ],
+   "hashseed": "1839907672",
+   "i": 1,
+   "ok": true,
+   "rc": 1,
+   "root": "a",
+   "timed_out": false,
+   "total_s": 48.1456,
+   "verdict": "fail",
+   "wall_s": 48.418
+  },
+  {
+   "canon_sha256": "089852e3ef7f91044e6bbcfdd66bec8c29e29be682af19276c479475e867823e",
+   "cases": 572,
+   "containers_removed_after": [],
+   "counts": {
+    "C": 0,
+    "D": 1
+   },
+   "diff_vs_first": {
+    "await_only": true,
+    "await_timing": 0,
+    "differences": 0,
+    "other": []
+   },
+   "err_tail": "",
+   "findings": [
+    {
+     "case": "form:F13:at_bound / step 1",
+     "layer": "D",
+     "rule": "scenario: form:F13:at_bound",
+     "verdict": "silent",
+     "violations": []
+    }
+   ],
+   "hashseed": "1681598144",
+   "i": 2,
+   "ok": true,
+   "rc": 1,
+   "root": "b",
+   "timed_out": false,
+   "total_s": 53.4898,
+   "verdict": "fail",
+   "wall_s": 53.76
+  },
+  {
+   "canon_sha256": "089852e3ef7f91044e6bbcfdd66bec8c29e29be682af19276c479475e867823e",
+   "cases": 572,
+   "containers_removed_after": [],
+   "counts": {
+    "C": 0,
+    "D": 1
+   },
+   "diff_vs_first": {
+    "await_only": true,
+    "await_timing": 0,
+    "differences": 0,
+    "other": []
+   },
+   "err_tail": "",
+   "findings": [
+    {
+     "case": "form:F13:at_bound / step 1",
+     "layer": "D",
+     "rule": "scenario: form:F13:at_bound",
+     "verdict": "silent",
+     "violations": []
+    }
+   ],
+   "hashseed": "431412461",
+   "i": 3,
+   "ok": true,
+   "rc": 1,
+   "root": "a",
+   "timed_out": false,
+   "total_s": 51.0429,
+   "verdict": "fail",
+   "wall_s": 51.329
+  },
+  {
+   "canon_sha256": "089852e3ef7f91044e6bbcfdd66bec8c29e29be682af19276c479475e867823e",
+   "cases": 572,
+   "containers_removed_after": [],
+   "counts": {
+    "C": 0,
+    "D": 1
+   },
+   "diff_vs_first": {
+    "await_only": true,
+    "await_timing": 0,
+    "differences": 0,
+    "other": []
+   },
+   "err_tail": "",
+   "findings": [
+    {
+     "case": "form:F13:at_bound / step 1",
+     "layer": "D",
+     "rule": "scenario: form:F13:at_bound",
+     "verdict": "silent",
+     "violations": []
+    }
+   ],
+   "hashseed": "707521810",
+   "i": 4,
+   "ok": true,
+   "rc": 1,
+   "root": "b",
+   "timed_out": false,
+   "total_s": 48.864,
+   "verdict": "fail",
+   "wall_s": 49.144
+  },
+  {
+   "canon_sha256": "089852e3ef7f91044e6bbcfdd66bec8c29e29be682af19276c479475e867823e",
+   "cases": 572,
+   "containers_removed_after": [],
+   "counts": {
+    "C": 0,
+    "D": 1
+   },
+   "diff_vs_first": {
+    "await_only": true,
+    "await_timing": 0,
+    "differences": 0,
+    "other": []
+   },
+   "err_tail": "",
+   "findings": [
+    {
+     "case": "form:F13:at_bound / step 1",
+     "layer": "D",
+     "rule": "scenario: form:F13:at_bound",
+     "verdict": "silent",
+     "violations": []
+    }
+   ],
+   "hashseed": "1677071946",
+   "i": 5,
+   "ok": true,
+   "rc": 1,
+   "root": "a",
+   "timed_out": false,
+   "total_s": 55.2162,
+   "verdict": "fail",
+   "wall_s": 55.501
+  },
+  {
+   "canon_sha256": "089852e3ef7f91044e6bbcfdd66bec8c29e29be682af19276c479475e867823e",
+   "cases": 572,
+   "containers_removed_after": [],
+   "counts": {
+    "C": 0,
+    "D": 1
+   },
+   "diff_vs_first": {
+    "await_only": true,
+    "await_timing": 0,
+    "differences": 0,
+    "other": []
+   },
+   "err_tail": "",
+   "findings": [
+    {
+     "case": "form:F13:at_bound / step 1",
+     "layer": "D",
+     "rule": "scenario: form:F13:at_bound",
+     "verdict": "silent",
+     "violations": []
+    }
+   ],
+   "hashseed": "136944670",
+   "i": 6,
+   "ok": true,
+   "rc": 1,
+   "root": "b",
+   "timed_out": false,
+   "total_s": 55.9931,
+   "verdict": "fail",
+   "wall_s": 56.284
+  },
+  {
+   "canon_sha256": "089852e3ef7f91044e6bbcfdd66bec8c29e29be682af19276c479475e867823e",
+   "cases": 572,
+   "containers_removed_after": [],
+   "counts": {
+    "C": 0,
+    "D": 1
+   },
+   "diff_vs_first": {
+    "await_only": true,
+    "await_timing": 0,
+    "differences": 0,
+    "other": []
+   },
+   "err_tail": "",
+   "findings": [
+    {
+     "case": "form:F13:at_bound / step 1",
+     "layer": "D",
+     "rule": "scenario: form:F13:at_bound",
+     "verdict": "silent",
+     "violations": []
+    }
+   ],
+   "hashseed": "1854399569",
+   "i": 7,
+   "ok": true,
+   "rc": 1,
+   "root": "a",
+   "timed_out": false,
+   "total_s": 50.6556,
+   "verdict": "fail",
+   "wall_s": 50.951
+  },
+  {
+   "canon_sha256": "089852e3ef7f91044e6bbcfdd66bec8c29e29be682af19276c479475e867823e",
+   "cases": 572,
+   "containers_removed_after": [],
+   "counts": {
+    "C": 0,
+    "D": 1
+   },
+   "diff_vs_first": {
+    "await_only": true,
+    "await_timing": 0,
+    "differences": 0,
+    "other": []
+   },
+   "err_tail": "",
+   "findings": [
+    {
+     "case": "form:F13:at_bound / step 1",
+     "layer": "D",
+     "rule": "scenario: form:F13:at_bound",
+     "verdict": "silent",
+     "violations": []
+    }
+   ],
+   "hashseed": "982114003",
+   "i": 8,
+   "ok": true,
+   "rc": 1,
+   "root": "b",
+   "timed_out": false,
+   "total_s": 47.9626,
+   "verdict": "fail",
+   "wall_s": 48.258
+  },
+  {
+   "canon_sha256": "089852e3ef7f91044e6bbcfdd66bec8c29e29be682af19276c479475e867823e",
+   "cases": 572,
+   "containers_removed_after": [],
+   "counts": {
+    "C": 0,
+    "D": 1
+   },
+   "diff_vs_first": {
+    "await_only": true,
+    "await_timing": 0,
+    "differences": 0,
+    "other": []
+   },
+   "err_tail": "",
+   "findings": [
+    {
+     "case": "form:F13:at_bound / step 1",
+     "layer": "D",
+     "rule": "scenario: form:F13:at_bound",
+     "verdict": "silent",
+     "violations": []
+    }
+   ],
+   "hashseed": "1078736626",
+   "i": 9,
+   "ok": true,
+   "rc": 1,
+   "root": "a",
+   "timed_out": false,
+   "total_s": 56.2561,
+   "verdict": "fail",
+   "wall_s": 56.535
+  },
+  {
+   "canon_sha256": "089852e3ef7f91044e6bbcfdd66bec8c29e29be682af19276c479475e867823e",
+   "cases": 572,
+   "containers_removed_after": [],
+   "counts": {
+    "C": 0,
+    "D": 1
+   },
+   "diff_vs_first": {
+    "await_only": true,
+    "await_timing": 0,
+    "differences": 0,
+    "other": []
+   },
+   "err_tail": "",
+   "findings": [
+    {
+     "case": "form:F13:at_bound / step 1",
+     "layer": "D",
+     "rule": "scenario: form:F13:at_bound",
+     "verdict": "silent",
+     "violations": []
+    }
+   ],
+   "hashseed": "2045083668",
+   "i": 10,
+   "ok": true,
+   "rc": 1,
+   "root": "b",
+   "timed_out": false,
+   "total_s": 63.2574,
+   "verdict": "fail",
+   "wall_s": 63.554
+  }
+ ],
+ "runner_sha256": "93f3262edf3af154349827f44f8881af631e8a6fb442a04baeb83c9456c768ac",
+ "schema": "lattice.streak-arm-raw/1",
+ "set_verification": {
+  "files": 58,
+  "manifest_sha256": "f872779237e9b45251410551561de5bde4bd7692eb95f0d2af45913540ec1655",
+  "ok": true,
+  "problems": []
+ },
+ "streak": "a0679e9044486c98611febcd050a1fd23b6cd756",
+ "variant": "strict"
+}

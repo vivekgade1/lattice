@@ -1,0 +1,884 @@
+{
+  "rules": [
+    {
+      "rule": "R3",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R4",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R5",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R6",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R7",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R8",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R9",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R10",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R11",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R12",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R13",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R14",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R15",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R16",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R17",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R18",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R19",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R20",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R21",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R22",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R23",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R24",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R25",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R26",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R27",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R28",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R29",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R30",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R31",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R32",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R33",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R34",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R35",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R36",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R37",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R38",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R39",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R40",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R41",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R42",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R43",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R44",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R45",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R46",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R47",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R48",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R49",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R50",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R51",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R52",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R53",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R54",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R55",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R56",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R57",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R58",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R59",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R60",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R61",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R62",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R63",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R64",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R65",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R66",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R67",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R68",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R69",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R70",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R71",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R72",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R73",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R74",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R75",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R76",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R77",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R78",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R79",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R80",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R81",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R82",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R83",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R84",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R85",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R86",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R87",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R88",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R89",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R90",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R91",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R92",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R93",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R94",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R95",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R96",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R97",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R98",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R99",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R100",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R101",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R102",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R103",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R104",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R105",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R106",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R107",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R108",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R109",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R110",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R111",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R112",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R113",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R114",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R115",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R116",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R117",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R118",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R119",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R120",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R121",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R122",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R123",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R124",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R125",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R126",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R127",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R128",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R129",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R130",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R131",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R132",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R133",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R134",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R135",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R136",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R137",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R138",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R139",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R140",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R141",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R142",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R143",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R144",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R145",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R146",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R147",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    },
+    {
+      "rule": "R148",
+      "state": "english",
+      "forms": [],
+      "proposed": []
+    }
+  ],
+  "counts": {
+    "english": 146
+  },
+  "scope": 146
+}

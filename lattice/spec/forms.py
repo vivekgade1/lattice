@@ -717,6 +717,8 @@ class _Checker:
         for c, v in w.items():
             if c not in cols:
                 self.err("F012", f"{ptr}/{c}", f"where column {c!r} is not in {table}")
+            elif v is None and c in schema.nullable:
+                continue  # `column == None` on a nullable column: generated as is_null(T.c)
             else:
                 self.lit(f"{ptr}/{c}", cols[c], v)
 
@@ -1197,8 +1199,13 @@ def _lit_src(v: Any) -> str:
     return repr(v)
 
 
+def _eq_src(ref: str, v: Any) -> str:
+    """``ref == v``; the None literal is spelt ``is_null(ref)`` (S008 refuses ``== None``)."""
+    return f"is_null({ref})" if v is None else f"{ref} == {_lit_src(v)}"
+
+
 def _row_rule(table: str, where: Mapping[str, Any]) -> str:
-    return " and ".join(f"{table}.{c} == {_lit_src(where[c])}" for c in sorted(where))
+    return " and ".join(_eq_src(f"{table}.{c}", where[c]) for c in sorted(where))
 
 
 def _set_nested(obj: dict[str, Any], dotted: str, value: Any) -> None:

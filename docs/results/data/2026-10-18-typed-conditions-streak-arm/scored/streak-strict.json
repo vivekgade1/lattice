@@ -1,0 +1,1534 @@
+[
+ {
+  "counts": {
+   "formed": 23,
+   "not_expressible": 123
+  },
+  "english": 0,
+  "form_states": [
+   "current"
+  ],
+  "formed": 23,
+  "formed_band": [
+   22,
+   45
+  ],
+  "formed_in_band": true,
+  "formed_share": 0.15753424657534246,
+  "formed_with_full_coverage": [
+   "R14",
+   "R56",
+   "R77",
+   "R78"
+  ],
+  "formed_with_partial_coverage": 19,
+  "forms_usable": 43,
+  "label": "report-only; library frozen at round 3, set development-blind for the library",
+  "largest_two_categories": [
+   "time",
+   "other"
+  ],
+  "library_vs_author_classification_mismatches": [],
+  "not_expressible": 123,
+  "not_expressible_band": [
+   40,
+   70
+  ],
+  "not_expressible_by_category": {
+   "aggregate": 5,
+   "background": 10,
+   "cross_request": 7,
+   "cross_table": 13,
+   "effect_value": 9,
+   "external": 5,
+   "other": 21,
+   "rate": 3,
+   "response_shape": 18,
+   "time": 32
+  },
+  "not_expressible_in_band": false,
+  "probe": "PS0",
+  "scope": 146,
+  "status": "REPORTED",
+  "strict_reading_formed": 4,
+  "time_and_cross_request_are_the_largest": false,
+  "what": "forms coverage on Streak's in-scope rules (146): formed / not_expressible / english"
+ },
+ {
+  "apps_missing": [],
+  "bad_gne_h_and_h_eq_t": [
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "ok",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_habit_limit_gt",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_habit_limit_49",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_restore_limit_skipped",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_name_max_101",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_description_max_499",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_target_week_max_8",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_note_max_281",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_list_limit_max_201",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_sync_limit_min_0",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_history_limit_max_101",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_checkin_same_day_twice",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_name_taken_case_sensitive",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": false,
+    "H": true,
+    "T": true,
+    "app": "m_name_taken_case_sensitive",
+    "form_gap": true,
+    "k6": false,
+    "k7": false,
+    "rule": "R55"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_name_taken_create_skipped",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_get_habit_any_owner",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": false,
+    "H": true,
+    "T": true,
+    "app": "m_patch_habit_any_owner",
+    "form_gap": true,
+    "k6": false,
+    "k7": false,
+    "rule": "R28"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_patch_habit_any_owner",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_dismiss_any_owner",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_delete_device_any_owner",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_rewrite_resets_delivery",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_dismiss_marks_suppressed",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_patch_version_ignored",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_password_min_7",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_email_taken_422",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_login_skip_password",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_refresh_unknown_422",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_push_enabled_lenient",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_date_too_old_59",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_behind_one_decimal",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   }
+  ],
+  "cells": 690,
+  "cells_expected": 690,
+  "g_eq_h": 654,
+  "g_eq_h_share": 0.9478260869565217,
+  "g_ne_h": [
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "ok",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_habit_limit_gt",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_habit_limit_49",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": true,
+    "app": "m_habit_limit_49",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R69"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_restore_limit_skipped",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_name_max_101",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": true,
+    "app": "m_name_max_101",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R60"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_description_max_499",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_target_week_max_8",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": true,
+    "app": "m_target_week_max_8",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R60"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_note_max_281",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_list_limit_max_201",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_sync_limit_min_0",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_history_limit_max_101",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_checkin_same_day_twice",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_name_taken_case_sensitive",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": false,
+    "H": true,
+    "T": true,
+    "app": "m_name_taken_case_sensitive",
+    "form_gap": true,
+    "k6": false,
+    "k7": false,
+    "rule": "R55"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_name_taken_create_skipped",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_get_habit_any_owner",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": false,
+    "H": true,
+    "T": true,
+    "app": "m_patch_habit_any_owner",
+    "form_gap": true,
+    "k6": false,
+    "k7": false,
+    "rule": "R28"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_patch_habit_any_owner",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_dismiss_any_owner",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_delete_device_any_owner",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": true,
+    "app": "m_delete_device_any_owner",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R33"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_rewrite_resets_delivery",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_dismiss_marks_suppressed",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_patch_version_ignored",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": false,
+    "H": true,
+    "T": false,
+    "app": "m_patch_version_ignored",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R60"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_password_min_7",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": true,
+    "app": "m_platform_unchecked",
+    "form_gap": false,
+    "k6": true,
+    "k7": false,
+    "rule": "R37"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_email_taken_422",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_login_skip_password",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_refresh_unknown_422",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_push_enabled_lenient",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_date_too_old_59",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_behind_one_decimal",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   }
+  ],
+  "generated_findings_not_attributed": [],
+  "in_band": true,
+  "label": "report-only; library frozen at round 3, set development-blind for the library",
+  "predicted_band": [
+   0.85,
+   1.0
+  ],
+  "probe": "PS1",
+  "status": "FAIL",
+  "variant": "strict",
+  "what": "G == H per cell (PG1): no cell with G != H and H == T"
+ },
+ {
+  "apps_missing": [],
+  "bad_outside_exempt": [
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "ok",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_habit_limit_gt",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_habit_limit_49",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_restore_limit_skipped",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_name_max_101",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_description_max_499",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_target_week_max_8",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_note_max_281",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_list_limit_max_201",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_sync_limit_min_0",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_history_limit_max_101",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_checkin_same_day_twice",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_name_taken_case_sensitive",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_name_taken_create_skipped",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_get_habit_any_owner",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_patch_habit_any_owner",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_dismiss_any_owner",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_delete_device_any_owner",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_rewrite_resets_delivery",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_dismiss_marks_suppressed",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_patch_version_ignored",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_password_min_7",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_email_taken_422",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_login_skip_password",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_refresh_unknown_422",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_push_enabled_lenient",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_date_too_old_59",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   },
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "m_behind_one_decimal",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   }
+  ],
+  "cells": 690,
+  "cells_expected": 690,
+  "form_gap_cells": [
+   {
+    "G": false,
+    "H": false,
+    "T": true,
+    "app": "m_description_max_499",
+    "form_gap": true,
+    "k6": false,
+    "k7": false,
+    "rule": "R60"
+   },
+   {
+    "G": false,
+    "H": true,
+    "T": true,
+    "app": "m_name_taken_case_sensitive",
+    "form_gap": true,
+    "k6": false,
+    "k7": false,
+    "rule": "R55"
+   },
+   {
+    "G": false,
+    "H": true,
+    "T": true,
+    "app": "m_patch_habit_any_owner",
+    "form_gap": true,
+    "k6": false,
+    "k7": false,
+    "rule": "R28"
+   }
+  ],
+  "g_eq_t": 659,
+  "g_eq_t_share": 0.9550724637681159,
+  "k6_cells": 90,
+  "k6_cells_g_fail": [
+   {
+    "G": true,
+    "H": false,
+    "T": true,
+    "app": "m_platform_unchecked",
+    "form_gap": false,
+    "k6": true,
+    "k7": false,
+    "rule": "R37"
+   }
+  ],
+  "k6_misses": [],
+  "k6_rules_truth": [
+   "R37",
+   "R39",
+   "R42"
+  ],
+  "k7_cells": [],
+  "k7_rules": [],
+  "label": "report-only; library frozen at round 3, set development-blind for the library",
+  "predicted_band": [
+   0.9,
+   1.0
+  ],
+  "probe": "PS1t",
+  "status": "FAIL",
+  "variant": "strict",
+  "what": "G == T per cell (PG1t): 100 % outside the K6, K7 and form_gap cells"
+ },
+ {
+  "apps_missing": [],
+  "bad": [
+   {
+    "G": true,
+    "H": false,
+    "T": false,
+    "app": "ok",
+    "form_gap": false,
+    "k6": false,
+    "k7": false,
+    "rule": "R31"
+   }
+  ],
+  "cells": 690,
+  "cells_expected": 690,
+  "g_fail_on_ok": [
+   "R31"
+  ],
+  "h_fail_on_ok": [],
+  "label": "report-only; library frozen at round 3, set development-blind for the library",
+  "probe": "PS1o",
+  "status": "FAIL",
+  "t_violated_on_ok": [],
+  "variant": "strict",
+  "what": "on ok, G fails exactly the rules T marks violated (PG1o)"
+ },
+ {
+  "apps_missing": [],
+  "apps_non_ok": 29,
+  "cells": 690,
+  "cells_expected": 690,
+  "g_kills": [
+   "m_checkin_same_day_twice",
+   "m_delete_device_any_owner",
+   "m_description_max_499",
+   "m_dismiss_any_owner",
+   "m_email_taken_422",
+   "m_get_habit_any_owner",
+   "m_habit_limit_49",
+   "m_habit_limit_gt",
+   "m_history_limit_max_101",
+   "m_list_limit_max_201",
+   "m_login_skip_password",
+   "m_name_max_101",
+   "m_name_taken_create_skipped",
+   "m_note_max_281",
+   "m_password_min_7",
+   "m_patch_version_ignored",
+   "m_platform_unchecked",
+   "m_push_enabled_lenient",
+   "m_refresh_unknown_422",
+   "m_restore_limit_skipped",
+   "m_sync_limit_min_0",
+   "m_target_week_max_8"
+  ],
+  "g_only": [],
+  "h_kills": [
+   "m_checkin_same_day_twice",
+   "m_delete_device_any_owner",
+   "m_description_max_499",
+   "m_dismiss_any_owner",
+   "m_email_taken_422",
+   "m_get_habit_any_owner",
+   "m_habit_limit_49",
+   "m_habit_limit_gt",
+   "m_history_limit_max_101",
+   "m_list_limit_max_201",
+   "m_login_skip_password",
+   "m_name_max_101",
+   "m_name_taken_case_sensitive",
+   "m_name_taken_create_skipped",
+   "m_note_max_281",
+   "m_password_min_7",
+   "m_patch_habit_any_owner",
+   "m_patch_version_ignored",
+   "m_platform_unchecked",
+   "m_push_enabled_lenient",
+   "m_push_token_max_4097",
+   "m_refresh_unknown_422",
+   "m_restore_limit_skipped",
+   "m_sync_limit_min_0",
+   "m_target_week_max_8"
+  ],
+  "h_only": [
+   "m_name_taken_case_sensitive",
+   "m_patch_habit_any_owner",
+   "m_push_token_max_4097"
+  ],
+  "label": "report-only; library frozen at round 3, set development-blind for the library",
+  "probe": "PS1k",
+  "status": "FAIL",
+  "variant": "strict",
+  "what": "G kills (flips vs ok, formed rules) a superset of H's (PG1k)"
+ },
+ {
+  "apps_missing": [],
+  "both_include_d": 25,
+  "cells": 690,
+  "cells_both_fail": 26,
+  "cells_expected": 690,
+  "h_includes_d": 25,
+  "label": "report-only; library frozen at round 3, set development-blind for the library",
+  "layer_d_agreement": 1.0,
+  "probe": "PS1layer",
+  "same_layer_sets": 23,
+  "status": "REPORTED",
+  "variant": "strict",
+  "what": "layer of the failing check where both fail (PG2); layer-D agreement"
+ },
+ {
+  "apps_missing": [],
+  "cells": 690,
+  "cells_compared": 690,
+  "cells_expected": 690,
+  "differ": [],
+  "h_elements_seen_in_generated_cases": {
+   "m_checkin_same_day_twice": [
+    "invariant:one_check_in_per_day"
+   ],
+   "m_habit_limit_gt": [
+    "invariant:at_most_50_active_habits"
+   ],
+   "m_name_taken_create_skipped": [
+    "invariant:habit_names_unique_per_user"
+   ],
+   "m_restore_limit_skipped": [
+    "invariant:at_most_50_active_habits"
+   ],
+   "m_target_week_max_8": [
+    "invariant:habit_target_in_bounds"
+   ]
+  },
+  "h_vs_truth_disagree": 7,
+  "label": "report-only; library frozen at round 3, set development-blind for the library",
+  "probe": "PS-H",
+  "status": "REPORTED",
+  "variant": "strict",
+  "what": "H as run here (CD, with G in the same run) against the author's h_verdicts.json (ACD, no G)"
+ },
+ {
+  "candidates": {
+   "impact": {
+    "determined_total": 1,
+    "form_items": [
+     {
+      "class": "b",
+      "forms": [
+       "F29",
+       "F44"
+      ],
+      "tier": 2,
+      "witness": {
+       "counted_rows": 50
+      }
+     }
+    ],
+    "rc": 0
+   },
+   "limit50": {
+    "err": "",
+    "items": [],
+    "rc": 0
+   },
+   "limit60": {
+    "err": "",
+    "items": [],
+    "rc": 0
+   },
+   "stated_twice": {
+    "err": "",
+    "items": [
+     {
+      "class": "b",
+      "forms": [
+       "F29",
+       "F44"
+      ],
+      "id": "fc:b:F29:F44",
+      "witness": {
+       "counted_rows": 50
+      }
+     }
+    ],
+    "rc": 0
+   }
+  },
+  "impact_cli_gains_exactly_that_item_in_tier2": true,
+  "label": "report-only; library frozen at round 3, set development-blind for the library",
+  "p9_determined": true,
+  "pairs": {
+   "errors": [],
+   "false_neg": [],
+   "false_pos": [],
+   "items_outside_the_pair": [],
+   "p9": {
+    "forms": [
+     "F29",
+     "F111"
+    ],
+    "found": true,
+    "items": [
+     {
+      "class": "b",
+      "forms": [
+       "F29",
+       "F111"
+      ],
+      "id": "fc:b:F29:F111",
+      "witness": {
+       "counted_rows": 50
+      }
+     }
+    ]
+   },
+   "pairs": 24,
+   "per_class": {
+    "a": {
+     "compatible": 4,
+     "contradict": 4,
+     "false_pos": 0,
+     "found": 4
+    },
+    "b": {
+     "compatible": 2,
+     "contradict": 3,
+     "false_pos": 0,
+     "found": 3
+    },
+    "c": {
+     "compatible": 2,
+     "contradict": 3,
+     "false_pos": 0,
+     "found": 3
+    },
+    "d": {
+     "compatible": 0,
+     "contradict": 0,
+     "false_pos": 0,
+     "found": 0
+    },
+    "e": {
+     "compatible": 3,
+     "contradict": 3,
+     "false_pos": 0,
+     "found": 3
+    }
+   },
+   "precision": 1.0,
+   "recall_abcd": "10/10",
+   "recall_abcd_all": true,
+   "true_neg": 11,
+   "true_pos": 13,
+   "undecided": []
+  },
+  "probe": "PS2",
+  "pt2f_pass": true,
+  "single_limit_candidates_clean": true,
+  "stated_twice_exactly_the_50_60_item": true,
+  "status": "PASS",
+  "what": "PT2f on Streak pairs; the 50-active-habit limit stated twice (50 and 60) is determined"
+ },
+ {
+  "differ_await_timing_only": 0,
+  "differ_other": [],
+  "findings_per_run": [
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1
+  ],
+  "generate_distinct_outputs": 1,
+  "generate_runs": 10,
+  "identical_to_first": 9,
+  "label": "report-only; library frozen at round 3, set development-blind for the library",
+  "path_or_time_leaks": [],
+  "probe": "PS3",
+  "runs": 10,
+  "runs_not_ok": [],
+  "runs_ok": 10,
+  "status": "PASS",
+  "verdicts": [
+   "fail"
+  ],
+  "what": "CD with G 10x, byte-identical except Await timing (PG3)"
+ },
+ {
+  "all_apps_wall_s_max": 105.035,
+  "apps_over_gate": [],
+  "checker_total_s_with_g": [
+   48.1456,
+   53.4898,
+   51.0429,
+   48.864,
+   55.2162,
+   55.9931,
+   50.6556,
+   47.9626,
+   56.2561,
+   63.2574
+  ],
+  "gate_s": 180,
+  "in_predicted_band": true,
+  "label": "report-only; library frozen at round 3, set development-blind for the library",
+  "max_s": 63.554,
+  "median_no_g_s": 40.943,
+  "median_s": 52.5445,
+  "note": "gated on the clean-app (ok) runs; mutant runs are reported (a failing Await waits out its 30 s window)",
+  "predicted_band_s": [
+   30,
+   60
+  ],
+  "probe": "PSx",
+  "status": "PASS",
+  "wall_s_no_g_baseline": [
+   42.268,
+   40.943,
+   34.983
+  ],
+  "wall_s_with_g": [
+   48.418,
+   53.76,
+   51.329,
+   49.144,
+   55.501,
+   56.284,
+   50.951,
+   48.258,
+   56.535,
+   63.554
+  ],
+  "what": "wall time of CD on S with G; gate <= 180 s"
+ },
+ {
+  "accepted_invalid": [
+   "I2"
+  ],
+  "codes_not_exact": [],
+  "exact_code": 26,
+  "invalid": 27,
+  "label": "report-only; library frozen at round 3, set development-blind for the library",
+  "probe": "PS-PG5",
+  "status": "FAIL",
+  "valid_forms": 43,
+  "valid_refused": [],
+  "what": "invalid.json refused; the set's valid forms accepted (PG5)"
+ },
+ {
+  "accepted": [
+   "N100"
+  ],
+  "label": "report-only; library frozen at round 3, set development-blind for the library",
+  "probe": "PS-PNX",
+  "refused_with_other_code": [],
+  "rules": 123,
+  "status": "FAIL",
+  "what": "not-expressible attempts refused with F001 or F017 (PNX)",
+  "with_attempt": 16
+ },
+ {
+  "dropped_invariants": {},
+  "forms_that_raise": {},
+  "generated_invariants": 10,
+  "generated_scenarios": 92,
+  "label": "report-only; library frozen at round 3, set development-blind for the library",
+  "notes": [
+   "F1: db_locus:given_only",
+   "F2: db_locus:given_only",
+   "F4: db_locus:given_only",
+   "F5: db_locus:given_only",
+   "F6: db_locus:given_only",
+   "accepted_default:POST /v1/devices",
+   "F26: db_locus:given_only",
+   "F27: db_locus:given_only",
+   "F31: db_locus:given_only",
+   "F32: db_locus:given_only",
+   "F36: db_locus:given_only",
+   "F37: db_locus:given_only",
+   "F38: db_locus:given_only",
+   "F39: db_locus:given_only",
+   "F40: db_locus:given_only",
+   "F41: db_locus:given_only",
+   "F42: db_locus:given_only",
+   "F43: db_locus:given_only"
+  ],
+  "probe": "PS-PG4",
+  "self_check": [],
+  "status": "PASS",
+  "validate_problems": [],
+  "variant": "strict",
+  "what": "generated invariants compile (sqlite, mysql), scenarios validate, 0 L011/L012, the effective spec validates (PG4)",
+  "whole_set_error": null
+ },
+ {
+  "after": {
+   "files": 7,
+   "freeze_sha256": "c8313c1c41ef6a325922c19b0a22da8e7f625d621c0204ca8984225bfe527344",
+   "ok": true,
+   "problems": [],
+   "runner_sha256": "93f3262edf3af154349827f44f8881af631e8a6fb442a04baeb83c9456c768ac"
+  },
+  "before": {
+   "files": 7,
+   "freeze_sha256": "c8313c1c41ef6a325922c19b0a22da8e7f625d621c0204ca8984225bfe527344",
+   "ok": true,
+   "problems": [],
+   "runner_sha256": "93f3262edf3af154349827f44f8881af631e8a6fb442a04baeb83c9456c768ac"
+  },
+  "label": "report-only; library frozen at round 3, set development-blind for the library",
+  "library_vs_freeze3": {
+   "changed": [
+    "lattice/spec/forms.py"
+   ],
+   "checked": true,
+   "library_unchanged_since_round3": false
+  },
+  "probe": "PH",
+  "runner_sha256": "93f3262edf3af154349827f44f8881af631e8a6fb442a04baeb83c9456c768ac",
+  "set_manifest_sha256": "f872779237e9b45251410551561de5bde4bd7692eb95f0d2af45913540ec1655",
+  "status": "PASS",
+  "streak": "a0679e9044486c98611febcd050a1fd23b6cd756",
+  "what": "hash discipline: freeze file, this runner, library (before and after the run)"
+ },
+ {
+  "label": "report-only; library frozen at round 3, set development-blind for the library",
+  "left": [],
+  "owner": "h-streak-arm",
+  "probe": "containers",
+  "status": "PASS",
+  "what": "throwaway containers left carrying this run's label"
+ },
+ {
+  "label": "report-only; library frozen at round 3, set development-blind for the library",
+  "probe": "wall",
+  "seconds": 2417.5,
+  "status": "REPORTED",
+  "what": "total"
+ }
+]
