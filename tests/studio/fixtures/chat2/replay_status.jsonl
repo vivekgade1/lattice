@@ -1,0 +1,8 @@
+{"type": "system", "subtype": "init", "session_id": "11111111-2222-3333-4444-555555555555"}
+{"type": "stream_event", "event": {"type": "message_start", "message": {"id": "m1"}}}
+{"type": "stream_event", "event": {"type": "content_block_start", "index": 0, "content_block": {"type": "text"}}}
+{"type": "stream_event", "event": {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "wf-053146a70c is failed"}}}
+{"type": "stream_event", "event": {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": ". It stopped at step 1."}}}
+{"type": "stream_event", "event": {"type": "content_block_stop", "index": 0}}
+{"type": "assistant", "message": {"id": "m1", "content": [{"type": "text", "text": "wf-053146a70c is failed. It stopped at step 1."}]}}
+{"type": "result", "subtype": "success", "is_error": false, "result": "wf-053146a70c is failed. It stopped at step 1.", "session_id": "11111111-2222-3333-4444-555555555555", "total_cost_usd": 0.05, "duration_ms": 1200, "num_turns": 1, "usage": {"input_tokens": 100, "output_tokens": 20}}

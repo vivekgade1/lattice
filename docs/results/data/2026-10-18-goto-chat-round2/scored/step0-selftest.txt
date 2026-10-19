@@ -1,0 +1,8 @@
+ok   G3 routed 19/20 = 95%: pass
+ok   G3 routed 18/19 < 95%: not met
+ok   G3 a routed answer with a claim
+ok   G3 routing rate counts
+ok   G3 raw arm and no damage
+ok   G3 damage: correct raw, incorrect checked
+ok   G3 not run without an agent file
+self-test: 97/97 cases as specified (incl. the qset shape, the wording check and the fixture checks)

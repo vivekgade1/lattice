@@ -1,0 +1,800 @@
+{
+ "n": 44,
+ "correct_before": 27,
+ "correct_after": 37,
+ "claims_before": 67,
+ "claims_after": 0,
+ "lenient_after": 0,
+ "i_compliance": 12,
+ "damage": [],
+ "by_set_n_before_after": {
+  "M_rules": [
+   5,
+   5,
+   5
+  ],
+  "M_workflows": [
+   5,
+   1,
+   1
+  ],
+  "M_machines": [
+   3,
+   3,
+   3
+  ],
+  "M_access": [
+   5,
+   4,
+   4
+  ],
+  "N_not_built": [
+   4,
+   2,
+   2
+  ],
+  "I_impact": [
+   12,
+   8,
+   12
+  ],
+  "H_hypothetical": [
+   6,
+   0,
+   6
+  ],
+  "C_control": [
+   4,
+   4,
+   4
+  ]
+ },
+ "pc1_acted_equals_scorer": true,
+ "pc1_exceptions": [],
+ "rows": [
+  {
+   "id": "M-R1",
+   "set": "M_rules",
+   "before": true,
+   "after": true,
+   "claims_before": 0,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.108,
+   "counts": {
+    "kept": 13
+   },
+   "missed": []
+  },
+  {
+   "id": "M-R2",
+   "set": "M_rules",
+   "before": true,
+   "after": true,
+   "claims_before": 0,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.025,
+   "counts": {
+    "kept": 17
+   },
+   "missed": []
+  },
+  {
+   "id": "M-R3",
+   "set": "M_rules",
+   "before": true,
+   "after": true,
+   "claims_before": 0,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.025,
+   "counts": {
+    "kept": 15
+   },
+   "missed": []
+  },
+  {
+   "id": "M-R4",
+   "set": "M_rules",
+   "before": true,
+   "after": true,
+   "claims_before": 0,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.025,
+   "counts": {
+    "kept": 14
+   },
+   "missed": []
+  },
+  {
+   "id": "M-R5",
+   "set": "M_rules",
+   "before": true,
+   "after": true,
+   "claims_before": 0,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.025,
+   "counts": {
+    "kept": 12
+   },
+   "missed": []
+  },
+  {
+   "id": "M-W1",
+   "set": "M_workflows",
+   "before": false,
+   "after": false,
+   "claims_before": 1,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.044,
+   "counts": {
+    "kept": 42,
+    "withheld": 1
+   },
+   "missed": [
+    "id_set:0"
+   ]
+  },
+  {
+   "id": "M-W2",
+   "set": "M_workflows",
+   "before": false,
+   "after": false,
+   "claims_before": 3,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.045,
+   "counts": {
+    "kept": 33,
+    "replaced_replay": 1,
+    "withheld": 2
+   },
+   "missed": [
+    "id_set:0"
+   ]
+  },
+  {
+   "id": "M-W3",
+   "set": "M_workflows",
+   "before": true,
+   "after": true,
+   "claims_before": 1,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.038,
+   "counts": {
+    "kept": 14,
+    "replaced_replay": 1
+   },
+   "missed": []
+  },
+  {
+   "id": "M-W4",
+   "set": "M_workflows",
+   "before": false,
+   "after": false,
+   "claims_before": 4,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.037,
+   "counts": {
+    "kept": 10,
+    "replaced_replay": 1,
+    "withheld": 3
+   },
+   "missed": [
+    "id_set:0"
+   ]
+  },
+  {
+   "id": "M-W5",
+   "set": "M_workflows",
+   "before": false,
+   "after": false,
+   "claims_before": 0,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.024,
+   "counts": {
+    "kept": 12
+   },
+   "missed": [
+    "all:DELETE /v1/habits/{}"
+   ]
+  },
+  {
+   "id": "M-M1",
+   "set": "M_machines",
+   "before": true,
+   "after": true,
+   "claims_before": 4,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.037,
+   "counts": {
+    "kept": 15,
+    "replaced_quote": 3,
+    "withheld": 1
+   },
+   "missed": []
+  },
+  {
+   "id": "M-M2",
+   "set": "M_machines",
+   "before": true,
+   "after": true,
+   "claims_before": 3,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.037,
+   "counts": {
+    "kept": 9,
+    "replaced_quote": 3
+   },
+   "missed": []
+  },
+  {
+   "id": "M-M3",
+   "set": "M_machines",
+   "before": true,
+   "after": true,
+   "claims_before": 4,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.037,
+   "counts": {
+    "kept": 28,
+    "replaced_quote": 3,
+    "withheld": 1
+   },
+   "missed": []
+  },
+  {
+   "id": "M-A1",
+   "set": "M_access",
+   "before": true,
+   "after": true,
+   "claims_before": 1,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.039,
+   "counts": {
+    "kept": 17,
+    "replaced_replay": 1
+   },
+   "missed": []
+  },
+  {
+   "id": "M-A2",
+   "set": "M_access",
+   "before": true,
+   "after": true,
+   "claims_before": 2,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.038,
+   "counts": {
+    "kept": 17,
+    "withheld": 2
+   },
+   "missed": []
+  },
+  {
+   "id": "M-A3",
+   "set": "M_access",
+   "before": true,
+   "after": true,
+   "claims_before": 1,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.04,
+   "counts": {
+    "kept": 23,
+    "replaced_replay": 1
+   },
+   "missed": []
+  },
+  {
+   "id": "M-A4",
+   "set": "M_access",
+   "before": true,
+   "after": true,
+   "claims_before": 1,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.036,
+   "counts": {
+    "kept": 19,
+    "replaced_replay": 1
+   },
+   "missed": []
+  },
+  {
+   "id": "M-A5",
+   "set": "M_access",
+   "before": false,
+   "after": false,
+   "claims_before": 0,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.024,
+   "counts": {
+    "kept": 10
+   },
+   "missed": [
+    "any:1"
+   ]
+  },
+  {
+   "id": "N-1",
+   "set": "N_not_built",
+   "before": true,
+   "after": true,
+   "claims_before": 0,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.07,
+   "counts": {
+    "kept": 12
+   },
+   "missed": []
+  },
+  {
+   "id": "N-2",
+   "set": "N_not_built",
+   "before": false,
+   "after": false,
+   "claims_before": 0,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.02,
+   "counts": {
+    "kept": 20
+   },
+   "missed": [
+    "route_set"
+   ]
+  },
+  {
+   "id": "N-3",
+   "set": "N_not_built",
+   "before": false,
+   "after": false,
+   "claims_before": 0,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.02,
+   "counts": {
+    "kept": 19
+   },
+   "missed": [
+    "id_set:0"
+   ]
+  },
+  {
+   "id": "N-4",
+   "set": "N_not_built",
+   "before": true,
+   "after": true,
+   "claims_before": 0,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.019,
+   "counts": {
+    "kept": 14
+   },
+   "missed": []
+  },
+  {
+   "id": "I-c1-1",
+   "set": "I_impact",
+   "before": true,
+   "after": true,
+   "claims_before": 2,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": true,
+   "seconds": 0.257,
+   "counts": {
+    "kept": 19,
+    "labelled": 2,
+    "withheld": 3,
+    "speculative_hedge": 1
+   },
+   "missed": []
+  },
+  {
+   "id": "I-c1-2",
+   "set": "I_impact",
+   "before": true,
+   "after": true,
+   "claims_before": 2,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": true,
+   "seconds": 0.258,
+   "counts": {
+    "kept": 16,
+    "labelled": 2,
+    "withheld": 2
+   },
+   "missed": []
+  },
+  {
+   "id": "I-c2-1",
+   "set": "I_impact",
+   "before": true,
+   "after": true,
+   "claims_before": 1,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": true,
+   "seconds": 0.128,
+   "counts": {
+    "kept": 24,
+    "labelled": 1,
+    "withheld": 1
+   },
+   "missed": []
+  },
+  {
+   "id": "I-c2-2",
+   "set": "I_impact",
+   "before": true,
+   "after": true,
+   "claims_before": 1,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": true,
+   "seconds": 0.124,
+   "counts": {
+    "kept": 19,
+    "labelled": 2,
+    "withheld": 1
+   },
+   "missed": []
+  },
+  {
+   "id": "I-c3-1",
+   "set": "I_impact",
+   "before": true,
+   "after": true,
+   "claims_before": 2,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": true,
+   "seconds": 0.124,
+   "counts": {
+    "kept": 23,
+    "labelled": 1,
+    "withheld": 3,
+    "speculative_hedge": 1
+   },
+   "missed": []
+  },
+  {
+   "id": "I-c3-2",
+   "set": "I_impact",
+   "before": true,
+   "after": true,
+   "claims_before": 2,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": true,
+   "seconds": 0.142,
+   "counts": {
+    "kept": 13,
+    "labelled": 1,
+    "withheld": 3,
+    "speculative_hedge": 1
+   },
+   "missed": []
+  },
+  {
+   "id": "I-c4-1",
+   "set": "I_impact",
+   "before": false,
+   "after": true,
+   "claims_before": 1,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": true,
+   "seconds": 0.132,
+   "counts": {
+    "kept": 16,
+    "labelled": 1,
+    "replaced_item": 1,
+    "withheld": 1,
+    "appended": 1,
+    "speculative_hedge": 1
+   },
+   "missed": []
+  },
+  {
+   "id": "I-c4-2",
+   "set": "I_impact",
+   "before": false,
+   "after": true,
+   "claims_before": 2,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": true,
+   "seconds": 0.15,
+   "counts": {
+    "kept": 13,
+    "labelled": 1,
+    "replaced_item": 1,
+    "replaced_tier3": 1,
+    "withheld": 1,
+    "appended": 1,
+    "speculative_hedge": 1
+   },
+   "missed": []
+  },
+  {
+   "id": "I-c5-1",
+   "set": "I_impact",
+   "before": false,
+   "after": true,
+   "claims_before": 3,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": true,
+   "seconds": 0.161,
+   "counts": {
+    "kept": 12,
+    "labelled": 1,
+    "replaced_item": 1,
+    "withheld": 2,
+    "appended": 1
+   },
+   "missed": []
+  },
+  {
+   "id": "I-c5-2",
+   "set": "I_impact",
+   "before": false,
+   "after": true,
+   "claims_before": 2,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": true,
+   "seconds": 0.154,
+   "counts": {
+    "kept": 16,
+    "labelled": 1,
+    "replaced_item": 1,
+    "withheld": 1,
+    "appended": 1
+   },
+   "missed": []
+  },
+  {
+   "id": "I-c6-1",
+   "set": "I_impact",
+   "before": true,
+   "after": true,
+   "claims_before": 2,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": true,
+   "seconds": 0.132,
+   "counts": {
+    "kept": 25,
+    "labelled": 1,
+    "withheld": 3,
+    "speculative_hedge": 1
+   },
+   "missed": []
+  },
+  {
+   "id": "I-c6-2",
+   "set": "I_impact",
+   "before": true,
+   "after": true,
+   "claims_before": 2,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": true,
+   "seconds": 0.125,
+   "counts": {
+    "kept": 11,
+    "labelled": 1,
+    "withheld": 3,
+    "speculative_hedge": 1
+   },
+   "missed": []
+  },
+  {
+   "id": "H-1",
+   "set": "H_hypothetical",
+   "before": false,
+   "after": true,
+   "claims_before": 2,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.041,
+   "counts": {
+    "kept": 21,
+    "withheld": 2,
+    "appended": 1
+   },
+   "missed": []
+  },
+  {
+   "id": "H-2",
+   "set": "H_hypothetical",
+   "before": false,
+   "after": true,
+   "claims_before": 1,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.036,
+   "counts": {
+    "kept": 17,
+    "labelled": 1,
+    "withheld": 1
+   },
+   "missed": []
+  },
+  {
+   "id": "H-3",
+   "set": "H_hypothetical",
+   "before": false,
+   "after": true,
+   "claims_before": 2,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.037,
+   "counts": {
+    "kept": 23,
+    "labelled": 1,
+    "withheld": 2,
+    "appended": 1
+   },
+   "missed": []
+  },
+  {
+   "id": "H-4",
+   "set": "H_hypothetical",
+   "before": false,
+   "after": true,
+   "claims_before": 2,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.039,
+   "counts": {
+    "kept": 18,
+    "withheld": 2
+   },
+   "missed": []
+  },
+  {
+   "id": "H-5",
+   "set": "H_hypothetical",
+   "before": false,
+   "after": true,
+   "claims_before": 10,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.044,
+   "counts": {
+    "kept": 11,
+    "replaced_quote": 7,
+    "withheld": 3
+   },
+   "missed": []
+  },
+  {
+   "id": "H-6",
+   "set": "H_hypothetical",
+   "before": false,
+   "after": true,
+   "claims_before": 2,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.045,
+   "counts": {
+    "kept": 18,
+    "replaced_replay": 1,
+    "withheld": 1
+   },
+   "missed": []
+  },
+  {
+   "id": "C-1",
+   "set": "C_control",
+   "before": true,
+   "after": true,
+   "claims_before": 1,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.039,
+   "counts": {
+    "kept": 9,
+    "withheld": 1
+   },
+   "missed": []
+  },
+  {
+   "id": "C-2",
+   "set": "C_control",
+   "before": true,
+   "after": true,
+   "claims_before": 0,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.027,
+   "counts": {
+    "kept": 7
+   },
+   "missed": []
+  },
+  {
+   "id": "C-3",
+   "set": "C_control",
+   "before": true,
+   "after": true,
+   "claims_before": 0,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.042,
+   "counts": {
+    "kept": 14,
+    "replaced_replay": 1,
+    "speculative_hedge": 1
+   },
+   "missed": []
+  },
+  {
+   "id": "C-4",
+   "set": "C_control",
+   "before": true,
+   "after": true,
+   "claims_before": 0,
+   "claims_after": 0,
+   "lenient_after": 0,
+   "compliant": null,
+   "seconds": 0.029,
+   "counts": {
+    "kept": 9
+   },
+   "missed": []
+  }
+ ]
+}

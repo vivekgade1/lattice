@@ -1,0 +1,4375 @@
+{
+ "schema": "lattice.goto-score-selftest/1",
+ "cases": [
+  {
+   "name": "map good M-R1",
+   "surface": "map",
+   "qid": "M-R1",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "rules": [
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R3"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R5"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R7"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R16"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R18"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R19"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R20"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R21"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R22"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R23"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R25"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R26"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R35"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R36"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R37"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R38"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R40"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R41"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R42"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R47"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R123"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R124"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R125"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R126"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R127"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R128"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R129"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R130"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R131"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R132"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R133"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R134"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R135"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R143"
+     },
+     {
+      "id": "distractor",
+      "impl_status": "something_else"
+     }
+    ]
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "map good M-R2",
+   "surface": "map",
+   "qid": "M-R2",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "rules": [
+     {
+      "impl_status": "no_element",
+      "id": "R1"
+     },
+     {
+      "impl_status": "no_element",
+      "id": "R2"
+     },
+     {
+      "impl_status": "no_element",
+      "id": "R6"
+     },
+     {
+      "impl_status": "no_element",
+      "id": "R15"
+     },
+     {
+      "impl_status": "no_element",
+      "id": "R136"
+     },
+     {
+      "impl_status": "no_element",
+      "id": "R142"
+     },
+     {
+      "id": "distractor",
+      "impl_status": "something_else"
+     }
+    ]
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "map good M-R3",
+   "surface": "map",
+   "qid": "M-R3",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "rules": [
+     {
+      "id": "other"
+     },
+     {
+      "id": "R123",
+      "basis": "static",
+      "impl_status": "implemented_unverified",
+      "reasons": [
+       "machine static"
+      ]
+     }
+    ]
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "map good M-R4",
+   "surface": "map",
+   "qid": "M-R4",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "rules": [
+     {
+      "id": "other"
+     },
+     {
+      "id": "R56",
+      "basis": "observed",
+      "impl_status": "implemented_verified",
+      "evidence": [
+       "code:internal/habits/routes.go:24",
+       "code:internal/habits/routes.go:118",
+       "code:internal/db/models.go:58"
+      ]
+     }
+    ]
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "map good M-R5",
+   "surface": "map",
+   "qid": "M-R5",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "rules": [
+     {
+      "id": "other"
+     },
+     {
+      "id": "R33",
+      "workflows": [
+       "wf-801d529a0f",
+       "wf-2818e45412"
+      ]
+     }
+    ]
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "map good M-W1",
+   "surface": "map",
+   "qid": "M-W1",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "workflows": [
+     {
+      "status": "verified",
+      "id": "wf-0c6bdd7ab0",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-11a98b3683",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-1e4314104c",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-21a2d02394",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-2610c56483",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-2f54cb544b",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-3de8783507",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-5a6bab46c9",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-5eebdfc88b",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-6a4cc7a302",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-717a23507f",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-a7ae5cb208",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-cf27dadc73",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-d06e3e8777",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-d2b6d84725",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-d2fcd76bcd",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-d650036584",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-dbac494b10",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-e3249cec66",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-f67bf44692",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-f961306c88",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-fc7d0a0772",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-fcf46753f5",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-ffaa047bf2",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "id": "distractor",
+      "status": "something_else"
+     }
+    ]
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "map good M-W2",
+   "surface": "map",
+   "qid": "M-W2",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "workflows": [
+     {
+      "status": "failed",
+      "id": "wf-053146a70c"
+     },
+     {
+      "status": "failed",
+      "id": "wf-7f0f99bdcf"
+     },
+     {
+      "status": "failed",
+      "id": "wf-9523e7a835"
+     },
+     {
+      "status": "failed",
+      "id": "wf-9f87f3f1d9"
+     },
+     {
+      "status": "failed",
+      "id": "wf-b2ee5de88e"
+     },
+     {
+      "status": "failed",
+      "id": "wf-c71e6bbb49"
+     },
+     {
+      "status": "failed",
+      "id": "wf-da24bc5b11"
+     },
+     {
+      "status": "failed",
+      "id": "wf-ebadb4a811"
+     },
+     {
+      "id": "distractor",
+      "status": "something_else"
+     }
+    ]
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "map good M-W3",
+   "surface": "map",
+   "qid": "M-W3",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "workflows": [
+     {
+      "id": "other"
+     },
+     {
+      "id": "wf-053146a70c",
+      "basis": "static",
+      "reason": "step 3 POST /v1/nudges/{id}/dismiss answered 404 (not_found): status 404",
+      "status": "failed"
+     }
+    ]
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "map good M-W4",
+   "surface": "map",
+   "qid": "M-W4",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "workflows": [
+     {
+      "status": "unverified",
+      "id": "wf-0da61e11ce",
+      "reason": "replay failed at step 3: [\"status: expected 200, got 401\"]"
+     },
+     {
+      "id": "distractor",
+      "status": "something_else"
+     }
+    ]
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "map good M-W5",
+   "surface": "map",
+   "qid": "M-W5",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "workflows": [
+     {
+      "id": "other"
+     },
+     {
+      "id": "wf-a1793fed29",
+      "status": "verified",
+      "routes": [
+       "DELETE /v1/habits/{}",
+       "POST /v1/habits"
+      ],
+      "steps": [
+       {
+        "i": 1,
+        "caller": "ben",
+        "expect_status": 404
+       },
+       {
+        "i": 0,
+        "caller": "ann",
+        "expect_status": 201
+       }
+      ]
+     }
+    ]
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "map good M-M1",
+   "surface": "map",
+   "qid": "M-M1",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "machines": [
+     {
+      "key": "other"
+     },
+     {
+      "key": "impl:machine:nudges.delivery",
+      "status": "static"
+     }
+    ]
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "map good M-M2",
+   "surface": "map",
+   "qid": "M-M2",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "machines": [
+     {
+      "key": "other"
+     },
+     {
+      "key": "impl:machine:nudges.delivery",
+      "edges": [
+       "pending -> suppressed",
+       "pending -> sent",
+       "pending -> failed"
+      ],
+      "states": [
+       "suppressed",
+       "sent",
+       "pending",
+       "failed"
+      ]
+     }
+    ]
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "map good M-M3",
+   "surface": "map",
+   "qid": "M-M3",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "machines": [
+     {
+      "key": "other"
+     },
+     {
+      "key": "impl:machine:nudges.delivery",
+      "evidence": [
+       "code:internal/nudges/nudger.go:180",
+       "code:internal/nudges/nudger.go:125"
+      ],
+      "rules": [
+       "R127",
+       "R123"
+      ]
+     }
+    ]
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "map good M-A1",
+   "surface": "map",
+   "qid": "M-A1",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "access": {
+     "cells": [
+      {
+       "col": "other",
+       "row": "other"
+      },
+      {
+       "col": "DELETE /v1/habits/{}",
+       "row": "ben",
+       "auth": "Customer",
+       "route_status": "implemented",
+       "spec": "404",
+       "observed": [
+        {
+         "flow": "wf-0000000000",
+         "step": 1,
+         "status": 404
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "map good M-A2",
+   "surface": "map",
+   "qid": "M-A2",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "access": {
+     "cells": [
+      {
+       "col": "other",
+       "row": "other"
+      },
+      {
+       "col": "POST /v1/auth/register",
+       "row": "no token",
+       "auth": "Public",
+       "route_status": "implemented",
+       "spec": "201/409/422",
+       "observed": [
+        {
+         "flow": "wf-0000000000",
+         "step": 1,
+         "status": 201
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "map good M-A3",
+   "surface": "map",
+   "qid": "M-A3",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "access": {
+     "cells": [
+      {
+       "col": "other",
+       "row": "other"
+      },
+      {
+       "col": "POST /v1/completions/batch",
+       "row": "ann",
+       "auth": "Customer",
+       "route_status": "implemented",
+       "spec": "200/422",
+       "observed": [
+        {
+         "flow": "wf-0000000000",
+         "step": 1,
+         "status": 422
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "map good M-A4",
+   "surface": "map",
+   "qid": "M-A4",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "access": {
+     "cells": [
+      {
+       "col": "other",
+       "row": "other"
+      },
+      {
+       "col": "GET /v1/home",
+       "row": "ben",
+       "auth": "Customer",
+       "route_status": "implemented",
+       "spec": "200",
+       "observed": []
+      }
+     ]
+    }
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "map good M-A5",
+   "surface": "map",
+   "qid": "M-A5",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "access": {
+     "cells": [
+      {
+       "col": "other",
+       "row": "other"
+      },
+      {
+       "col": "GET /health",
+       "row": "ann",
+       "auth": "Public",
+       "route_status": "implemented",
+       "spec": "·",
+       "observed": []
+      }
+     ]
+    }
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "map good N-1",
+   "surface": "map",
+   "qid": "N-1",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "endpoints": [
+     {
+      "key": "other"
+     },
+     {
+      "key": "GET /v1/sync",
+      "status": "spec_only"
+     }
+    ]
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "map good N-2",
+   "surface": "map",
+   "qid": "N-2",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "endpoints": [
+     {
+      "status": "spec_only",
+      "key": "DELETE /v1/devices/{}"
+     },
+     {
+      "status": "spec_only",
+      "key": "GET /v1/home"
+     },
+     {
+      "status": "spec_only",
+      "key": "GET /v1/nudges"
+     },
+     {
+      "status": "spec_only",
+      "key": "GET /v1/sync"
+     },
+     {
+      "status": "spec_only",
+      "key": "POST /v1/devices"
+     },
+     {
+      "status": "spec_only",
+      "key": "POST /v1/nudges/{}/dismiss"
+     },
+     {
+      "key": "distractor",
+      "status": "something_else"
+     }
+    ]
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "map good N-3",
+   "surface": "map",
+   "qid": "N-3",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "rules": [
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R7"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R21"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R27"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R28"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R31"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R32"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R33"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R34"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R89"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R90"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R91"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R92"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R93"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R94"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R114"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R125"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R127"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R128"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R129"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R132"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R133"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R134"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R135"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R137"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R138"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R139"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R140"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R141"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R143"
+     },
+     {
+      "id": "distractor",
+      "impl_status": "something_else"
+     }
+    ]
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "map good N-4",
+   "surface": "map",
+   "qid": "N-4",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "access": {
+     "cells": [
+      {
+       "col": "other",
+       "row": "other"
+      },
+      {
+       "col": "POST /v1/nudges/{}/dismiss",
+       "row": "ann",
+       "auth": null,
+       "route": null,
+       "route_status": "spec_only",
+       "spec": "200/404/409",
+       "observed": []
+      }
+     ]
+    }
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "map bad M-R1: one unverified rule shown as verified (GM1)",
+   "surface": "map",
+   "qid": "M-R1",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "rules": [
+     {
+      "impl_status": "implemented_verified",
+      "id": "R3"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R5"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R7"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R16"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R18"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R19"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R20"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R21"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R22"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R23"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R25"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R26"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R35"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R36"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R37"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R38"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R40"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R41"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R42"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R47"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R123"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R124"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R125"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R126"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R127"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R128"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R129"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R130"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R131"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R132"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R133"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R134"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R135"
+     },
+     {
+      "impl_status": "implemented_unverified",
+      "id": "R143"
+     },
+     {
+      "id": "distractor",
+      "impl_status": "something_else"
+     }
+    ]
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "select_equal"
+    ]
+   }
+  },
+  {
+   "name": "map bad M-R3: static rule labelled observed",
+   "surface": "map",
+   "qid": "M-R3",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "rules": [
+     {
+      "id": "other"
+     },
+     {
+      "id": "R123",
+      "basis": "observed",
+      "impl_status": "implemented_unverified",
+      "reasons": [
+       "machine static"
+      ]
+     }
+    ]
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "field.basis"
+    ]
+   }
+  },
+  {
+   "name": "map bad M-R4: absolute evidence paths (GM3)",
+   "surface": "map",
+   "qid": "M-R4",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "rules": [
+     {
+      "id": "other"
+     },
+     {
+      "id": "R56",
+      "basis": "observed",
+      "impl_status": "implemented_verified",
+      "evidence": [
+       "/Users/x/streak/internal/habits/routes.go:24",
+       "/Users/x/streak/internal/habits/routes.go:118",
+       "/Users/x/streak/internal/db/models.go:58"
+      ]
+     }
+    ]
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "set.evidence"
+    ]
+   }
+  },
+  {
+   "name": "map bad M-W1: an extra workflow listed",
+   "surface": "map",
+   "qid": "M-W1",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "workflows": [
+     {
+      "status": "verified",
+      "id": "wf-0c6bdd7ab0",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-11a98b3683",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-1e4314104c",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-21a2d02394",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-2610c56483",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-2f54cb544b",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-3de8783507",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-5a6bab46c9",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-5eebdfc88b",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-6a4cc7a302",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-717a23507f",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-a7ae5cb208",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-cf27dadc73",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-d06e3e8777",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-d2b6d84725",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-d2fcd76bcd",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-d650036584",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-dbac494b10",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-e3249cec66",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-f67bf44692",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-f961306c88",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-fc7d0a0772",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-fcf46753f5",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "status": "verified",
+      "id": "wf-ffaa047bf2",
+      "routes": [
+       "X /other",
+       "POST /v1/habits/{}/completions"
+      ]
+     },
+     {
+      "id": "distractor",
+      "status": "something_else"
+     },
+     {
+      "id": "wf-7f0f99bdcf",
+      "status": "verified",
+      "routes": [
+       "POST /v1/habits/{}/completions"
+      ]
+     }
+    ]
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "select_equal"
+    ]
+   }
+  },
+  {
+   "name": "map bad M-W5: wrong step caller",
+   "surface": "map",
+   "qid": "M-W5",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "workflows": [
+     {
+      "id": "other"
+     },
+     {
+      "id": "wf-a1793fed29",
+      "status": "verified",
+      "routes": [
+       "DELETE /v1/habits/{}",
+       "POST /v1/habits"
+      ],
+      "steps": [
+       {
+        "i": 1,
+        "caller": "ann",
+        "expect_status": 404
+       },
+       {
+        "i": 0,
+        "caller": "ann",
+        "expect_status": 201
+       }
+      ]
+     }
+    ]
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "steps.caller"
+    ]
+   }
+  },
+  {
+   "name": "map bad M-M1: static machine reported observed (GM1)",
+   "surface": "map",
+   "qid": "M-M1",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "machines": [
+     {
+      "key": "other"
+     },
+     {
+      "key": "impl:machine:nudges.delivery",
+      "status": "observed"
+     }
+    ]
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "field.status"
+    ]
+   }
+  },
+  {
+   "name": "map bad M-A2: caller null not joined to 'no token' (GM6)",
+   "surface": "map",
+   "qid": "M-A2",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "access": {
+     "cells": [
+      {
+       "col": "other",
+       "row": "other"
+      },
+      {
+       "col": "POST /v1/auth/register",
+       "row": "no token",
+       "auth": "Public",
+       "route_status": "implemented",
+       "spec": "201/409/422",
+       "observed": []
+      }
+     ]
+    }
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "observed.count",
+     "observed.statuses"
+    ]
+   }
+  },
+  {
+   "name": "map bad M-A1: auth from a name heuristic (GM4)",
+   "surface": "map",
+   "qid": "M-A1",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "access": {
+     "cells": [
+      {
+       "col": "other",
+       "row": "other"
+      },
+      {
+       "col": "DELETE /v1/habits/{}",
+       "row": "ben",
+       "auth": "Staff",
+       "route_status": "implemented",
+       "spec": "404",
+       "observed": [
+        {
+         "flow": "wf-0000000000",
+         "step": 1,
+         "status": 404
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "field.auth"
+    ]
+   }
+  },
+  {
+   "name": "map bad M-A4: a failed flow's step counted as observed",
+   "surface": "map",
+   "qid": "M-A4",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "access": {
+     "cells": [
+      {
+       "col": "other",
+       "row": "other"
+      },
+      {
+       "col": "GET /v1/home",
+       "row": "ben",
+       "auth": "Customer",
+       "route_status": "implemented",
+       "spec": "200",
+       "observed": [
+        {
+         "flow": "wf-9f87f3f1d9",
+         "step": 3,
+         "status": 200
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "observed.count",
+     "observed.statuses"
+    ]
+   }
+  },
+  {
+   "name": "map bad M-A5: the '·' spec value not kept verbatim",
+   "surface": "map",
+   "qid": "M-A5",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "access": {
+     "cells": [
+      {
+       "col": "other",
+       "row": "other"
+      },
+      {
+       "col": "GET /health",
+       "row": "ann",
+       "auth": "Public",
+       "route_status": "implemented",
+       "spec": "",
+       "observed": []
+      }
+     ]
+    }
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "field.spec"
+    ]
+   }
+  },
+  {
+   "name": "map bad N-1: spec_only endpoint shown implemented",
+   "surface": "map",
+   "qid": "N-1",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "endpoints": [
+     {
+      "key": "other"
+     },
+     {
+      "key": "GET /v1/sync",
+      "status": "implemented"
+     }
+    ]
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "field.status"
+    ]
+   }
+  },
+  {
+   "name": "map bad N-4: a route row invented for a spec_only endpoint",
+   "surface": "map",
+   "qid": "N-4",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "access": {
+     "cells": [
+      {
+       "col": "other",
+       "row": "other"
+      },
+      {
+       "col": "POST /v1/nudges/{}/dismiss",
+       "row": "ann",
+       "auth": null,
+       "route": "POST /v1/nudges/{}/dismiss",
+       "route_status": "spec_only",
+       "spec": "200/404/409",
+       "observed": []
+      }
+     ]
+    }
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "field.route"
+    ]
+   }
+  },
+  {
+   "name": "map bad N-3: state not ok",
+   "surface": "map",
+   "qid": "N-3",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "inventory_missing",
+    "inputs": {},
+    "rules": [
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R7"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R21"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R27"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R28"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R31"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R32"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R33"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R34"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R89"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R90"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R91"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R92"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R93"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R94"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R114"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R125"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R127"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R128"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R129"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R132"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R133"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R134"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R135"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R137"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R138"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R139"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R140"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R141"
+     },
+     {
+      "impl_status": "required_not_implemented",
+      "id": "R143"
+     },
+     {
+      "id": "distractor",
+      "impl_status": "something_else"
+     }
+    ]
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "state_ok"
+    ]
+   }
+  },
+  {
+   "name": "map good M-R2 as a ?section=rules response",
+   "surface": "map",
+   "qid": "M-R2",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {},
+    "rules": [
+     {
+      "impl_status": "no_element",
+      "id": "R1"
+     },
+     {
+      "impl_status": "no_element",
+      "id": "R2"
+     },
+     {
+      "impl_status": "no_element",
+      "id": "R6"
+     },
+     {
+      "impl_status": "no_element",
+      "id": "R15"
+     },
+     {
+      "impl_status": "no_element",
+      "id": "R136"
+     },
+     {
+      "impl_status": "no_element",
+      "id": "R142"
+     },
+     {
+      "id": "distractor",
+      "impl_status": "something_else"
+     }
+    ]
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "map bad M-R2: section missing",
+   "surface": "map",
+   "qid": "M-R2",
+   "answer": {
+    "schema": "lattice.appmap/1",
+    "state": "ok",
+    "inputs": {}
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "section_present",
+     "select_equal"
+    ]
+   }
+  },
+  {
+   "name": "map bad: no answer",
+   "surface": "map",
+   "qid": "M-R1",
+   "answer": null,
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "answered"
+    ]
+   }
+  },
+  {
+   "name": "router good I-c5-1",
+   "surface": "router",
+   "qid": "I-c5-1",
+   "answer": {
+    "response": {
+     "kind": "value",
+     "answer": "Tier 1 (observed): 0 failing; Tier 2 (determined): 2; Tier 3 (static, may fail): 20 locations, 3 workflows; Tier 4: not run.",
+     "citations": [
+      "impact:t2-3452760d56",
+      "impact:t2-a234b1ca88"
+     ],
+     "impact": {
+      "change": "c5",
+      "tiers": {
+       "1": "not_run:not_requested",
+       "2": "run",
+       "3": "run",
+       "4": "not_run:spike_e"
+      },
+      "tier1": {
+       "failing": []
+      },
+      "tier2": {
+       "determined": [
+        {
+         "id": "t2-3452760d56",
+         "tier": 2
+        },
+        {
+         "id": "t2-a234b1ca88",
+         "tier": 2
+        }
+       ]
+      },
+      "tier3": {
+       "items": [
+        {
+         "id": "t3-0104ebc3dc",
+         "tier": 3
+        },
+        {
+         "id": "t3-07f7c93649",
+         "tier": 3
+        },
+        {
+         "id": "t3-09120f47f6",
+         "tier": 3
+        },
+        {
+         "id": "t3-096125c7db",
+         "tier": 3
+        },
+        {
+         "id": "t3-09beb977c5",
+         "tier": 3
+        },
+        {
+         "id": "t3-09c6cfbf78",
+         "tier": 3
+        },
+        {
+         "id": "t3-0a6708dd5b",
+         "tier": 3
+        },
+        {
+         "id": "t3-0aaffb3eba",
+         "tier": 3
+        },
+        {
+         "id": "t3-0ac3ecfc83",
+         "tier": 3
+        },
+        {
+         "id": "t3-0be7502924",
+         "tier": 3
+        },
+        {
+         "id": "t3-0cb99d9193",
+         "tier": 3
+        },
+        {
+         "id": "t3-0dc1ab5745",
+         "tier": 3
+        },
+        {
+         "id": "t3-10ca1f9826",
+         "tier": 3
+        },
+        {
+         "id": "t3-12a8519c38",
+         "tier": 3
+        },
+        {
+         "id": "t3-14c2cd4b30",
+         "tier": 3
+        },
+        {
+         "id": "t3-155525aadd",
+         "tier": 3
+        },
+        {
+         "id": "t3-1724516347",
+         "tier": 3
+        },
+        {
+         "id": "t3-17cb2c17ab",
+         "tier": 3
+        },
+        {
+         "id": "t3-18497b164f",
+         "tier": 3
+        },
+        {
+         "id": "t3-1b69acb649",
+         "tier": 3
+        }
+       ],
+       "total": 166
+      }
+     },
+     "usage": {
+      "tokens": 0
+     }
+    },
+    "generator_calls": 0
+   },
+   "expect": {
+    "correct": true,
+    "unsupported": 0
+   }
+  },
+  {
+   "name": "router good I-c6-1 (rewording control: tiers 1 and 2 empty)",
+   "surface": "router",
+   "qid": "I-c6-1",
+   "answer": {
+    "response": {
+     "kind": "value",
+     "answer": "Tier 1 (observed): 0 failing; Tier 2 (determined): 0; Tier 3 (static, may fail): 20 locations, 3 workflows; Tier 4: not run.",
+     "citations": [],
+     "impact": {
+      "change": "c6",
+      "tiers": {
+       "1": "not_run:not_requested",
+       "2": "run",
+       "3": "run",
+       "4": "not_run:spike_e"
+      },
+      "tier1": {
+       "failing": []
+      },
+      "tier2": {
+       "determined": []
+      },
+      "tier3": {
+       "items": [
+        {
+         "id": "t3-0046554144",
+         "tier": 3
+        },
+        {
+         "id": "t3-04c528fa6f",
+         "tier": 3
+        },
+        {
+         "id": "t3-0620682835",
+         "tier": 3
+        },
+        {
+         "id": "t3-0707c48e3c",
+         "tier": 3
+        },
+        {
+         "id": "t3-0711bd9b69",
+         "tier": 3
+        },
+        {
+         "id": "t3-0791fe5a37",
+         "tier": 3
+        },
+        {
+         "id": "t3-083b8c33da",
+         "tier": 3
+        },
+        {
+         "id": "t3-0b1db7e5bb",
+         "tier": 3
+        },
+        {
+         "id": "t3-104d4734fe",
+         "tier": 3
+        },
+        {
+         "id": "t3-137e72f099",
+         "tier": 3
+        },
+        {
+         "id": "t3-13e165dd97",
+         "tier": 3
+        },
+        {
+         "id": "t3-1539802385",
+         "tier": 3
+        },
+        {
+         "id": "t3-18636cf9cd",
+         "tier": 3
+        },
+        {
+         "id": "t3-1960fd5c85",
+         "tier": 3
+        },
+        {
+         "id": "t3-1a427da4b3",
+         "tier": 3
+        },
+        {
+         "id": "t3-1e2cc59b3b",
+         "tier": 3
+        },
+        {
+         "id": "t3-2544b6bdf4",
+         "tier": 3
+        },
+        {
+         "id": "t3-2735a569fe",
+         "tier": 3
+        },
+        {
+         "id": "t3-287beb8b6c",
+         "tier": 3
+        },
+        {
+         "id": "t3-2dc1ec3cf8",
+         "tier": 3
+        }
+       ],
+       "total": 100
+      }
+     },
+     "usage": {
+      "tokens": 0
+     }
+    },
+    "generator_calls": 0
+   },
+   "expect": {
+    "correct": true,
+    "unsupported": 0
+   }
+  },
+  {
+   "name": "router good I-c4-2",
+   "surface": "router",
+   "qid": "I-c4-2",
+   "answer": {
+    "response": {
+     "kind": "value",
+     "answer": "Tier 1 (observed): 0 failing; Tier 2 (determined): 2; Tier 3 (static, may fail): 20 locations, 3 workflows; Tier 4: not run.",
+     "citations": [
+      "impact:t2-1da637132c",
+      "impact:t2-22fc49acc5"
+     ],
+     "impact": {
+      "change": "c4",
+      "tiers": {
+       "1": "not_run:not_requested",
+       "2": "run",
+       "3": "run",
+       "4": "not_run:spike_e"
+      },
+      "tier1": {
+       "failing": []
+      },
+      "tier2": {
+       "determined": [
+        {
+         "id": "t2-1da637132c",
+         "tier": 2
+        },
+        {
+         "id": "t2-22fc49acc5",
+         "tier": 2
+        }
+       ]
+      },
+      "tier3": {
+       "items": [
+        {
+         "id": "t3-1213fcfbf6",
+         "tier": 3
+        },
+        {
+         "id": "t3-13c21bf523",
+         "tier": 3
+        },
+        {
+         "id": "t3-17bf0aa18a",
+         "tier": 3
+        },
+        {
+         "id": "t3-1918dee65e",
+         "tier": 3
+        },
+        {
+         "id": "t3-307dd1ad82",
+         "tier": 3
+        },
+        {
+         "id": "t3-374bd975c9",
+         "tier": 3
+        },
+        {
+         "id": "t3-3e404f1da2",
+         "tier": 3
+        },
+        {
+         "id": "t3-4a6e2d78e2",
+         "tier": 3
+        },
+        {
+         "id": "t3-595247af0d",
+         "tier": 3
+        },
+        {
+         "id": "t3-6783886c5e",
+         "tier": 3
+        },
+        {
+         "id": "t3-92bc046a1c",
+         "tier": 3
+        },
+        {
+         "id": "t3-9db35a7d05",
+         "tier": 3
+        },
+        {
+         "id": "t3-9f6d9426e7",
+         "tier": 3
+        },
+        {
+         "id": "t3-9fe457005e",
+         "tier": 3
+        },
+        {
+         "id": "t3-a0cdcdebc2",
+         "tier": 3
+        },
+        {
+         "id": "t3-a5120e3ec4",
+         "tier": 3
+        },
+        {
+         "id": "t3-a6dd6023ab",
+         "tier": 3
+        },
+        {
+         "id": "t3-aab3a40f11",
+         "tier": 3
+        },
+        {
+         "id": "t3-b69759baf2",
+         "tier": 3
+        },
+        {
+         "id": "t3-cd0d92144e",
+         "tier": 3
+        }
+       ],
+       "total": 21
+      }
+     },
+     "usage": {
+      "tokens": 0
+     }
+    }
+   },
+   "expect": {
+    "correct": true,
+    "unsupported": 0
+   }
+  },
+  {
+   "name": "router bad I-c5-2: a tier 2 id missing",
+   "surface": "router",
+   "qid": "I-c5-2",
+   "answer": {
+    "response": {
+     "kind": "value",
+     "answer": "Tier 1 (observed): 0 failing; Tier 2 (determined): 1; Tier 3 (static, may fail): 20 locations, 3 workflows; Tier 4: not run.",
+     "citations": [
+      "impact:t2-3452760d56"
+     ],
+     "impact": {
+      "change": "c5",
+      "tiers": {
+       "1": "not_run:not_requested",
+       "2": "run",
+       "3": "run",
+       "4": "not_run:spike_e"
+      },
+      "tier1": {
+       "failing": []
+      },
+      "tier2": {
+       "determined": [
+        {
+         "id": "t2-3452760d56",
+         "tier": 2
+        }
+       ]
+      },
+      "tier3": {
+       "items": [
+        {
+         "id": "t3-0104ebc3dc",
+         "tier": 3
+        },
+        {
+         "id": "t3-07f7c93649",
+         "tier": 3
+        },
+        {
+         "id": "t3-09120f47f6",
+         "tier": 3
+        },
+        {
+         "id": "t3-096125c7db",
+         "tier": 3
+        },
+        {
+         "id": "t3-09beb977c5",
+         "tier": 3
+        },
+        {
+         "id": "t3-09c6cfbf78",
+         "tier": 3
+        },
+        {
+         "id": "t3-0a6708dd5b",
+         "tier": 3
+        },
+        {
+         "id": "t3-0aaffb3eba",
+         "tier": 3
+        },
+        {
+         "id": "t3-0ac3ecfc83",
+         "tier": 3
+        },
+        {
+         "id": "t3-0be7502924",
+         "tier": 3
+        },
+        {
+         "id": "t3-0cb99d9193",
+         "tier": 3
+        },
+        {
+         "id": "t3-0dc1ab5745",
+         "tier": 3
+        },
+        {
+         "id": "t3-10ca1f9826",
+         "tier": 3
+        },
+        {
+         "id": "t3-12a8519c38",
+         "tier": 3
+        },
+        {
+         "id": "t3-14c2cd4b30",
+         "tier": 3
+        },
+        {
+         "id": "t3-155525aadd",
+         "tier": 3
+        },
+        {
+         "id": "t3-1724516347",
+         "tier": 3
+        },
+        {
+         "id": "t3-17cb2c17ab",
+         "tier": 3
+        },
+        {
+         "id": "t3-18497b164f",
+         "tier": 3
+        },
+        {
+         "id": "t3-1b69acb649",
+         "tier": 3
+        }
+       ],
+       "total": 166
+      }
+     },
+     "usage": {
+      "tokens": 0
+     }
+    }
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "tier2_ids_equal"
+    ]
+   }
+  },
+  {
+   "name": "router bad I-c6-2: a tier 2 id invented",
+   "surface": "router",
+   "qid": "I-c6-2",
+   "answer": {
+    "response": {
+     "kind": "value",
+     "answer": "Tier 1 (observed): 0 failing; Tier 2 (determined): 1; Tier 3 (static, may fail): 20 locations, 3 workflows; Tier 4: not run.",
+     "citations": [
+      "impact:t2-0123456789"
+     ],
+     "impact": {
+      "change": "c6",
+      "tiers": {
+       "1": "not_run:not_requested",
+       "2": "run",
+       "3": "run",
+       "4": "not_run:spike_e"
+      },
+      "tier1": {
+       "failing": []
+      },
+      "tier2": {
+       "determined": [
+        {
+         "id": "t2-0123456789",
+         "tier": 2
+        }
+       ]
+      },
+      "tier3": {
+       "items": [
+        {
+         "id": "t3-0046554144",
+         "tier": 3
+        },
+        {
+         "id": "t3-04c528fa6f",
+         "tier": 3
+        },
+        {
+         "id": "t3-0620682835",
+         "tier": 3
+        },
+        {
+         "id": "t3-0707c48e3c",
+         "tier": 3
+        },
+        {
+         "id": "t3-0711bd9b69",
+         "tier": 3
+        },
+        {
+         "id": "t3-0791fe5a37",
+         "tier": 3
+        },
+        {
+         "id": "t3-083b8c33da",
+         "tier": 3
+        },
+        {
+         "id": "t3-0b1db7e5bb",
+         "tier": 3
+        },
+        {
+         "id": "t3-104d4734fe",
+         "tier": 3
+        },
+        {
+         "id": "t3-137e72f099",
+         "tier": 3
+        },
+        {
+         "id": "t3-13e165dd97",
+         "tier": 3
+        },
+        {
+         "id": "t3-1539802385",
+         "tier": 3
+        },
+        {
+         "id": "t3-18636cf9cd",
+         "tier": 3
+        },
+        {
+         "id": "t3-1960fd5c85",
+         "tier": 3
+        },
+        {
+         "id": "t3-1a427da4b3",
+         "tier": 3
+        },
+        {
+         "id": "t3-1e2cc59b3b",
+         "tier": 3
+        },
+        {
+         "id": "t3-2544b6bdf4",
+         "tier": 3
+        },
+        {
+         "id": "t3-2735a569fe",
+         "tier": 3
+        },
+        {
+         "id": "t3-287beb8b6c",
+         "tier": 3
+        },
+        {
+         "id": "t3-2dc1ec3cf8",
+         "tier": 3
+        }
+       ],
+       "total": 100
+      }
+     },
+     "usage": {
+      "tokens": 0
+     }
+    }
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "tier2_ids_equal"
+    ]
+   }
+  },
+  {
+   "name": "router bad I-c5-1: tier 3 items merged into tier 1 failing (GM7)",
+   "surface": "router",
+   "qid": "I-c5-1",
+   "answer": {
+    "response": {
+     "kind": "value",
+     "answer": "Tier 1 (observed): 0 failing; Tier 2 (determined): 2; Tier 3 (static, may fail): 20 locations, 3 workflows; Tier 4: not run.",
+     "citations": [
+      "impact:t2-3452760d56",
+      "impact:t2-a234b1ca88"
+     ],
+     "impact": {
+      "change": "c5",
+      "tiers": {
+       "1": "not_run:not_requested",
+       "2": "run",
+       "3": "run",
+       "4": "not_run:spike_e"
+      },
+      "tier1": {
+       "failing": [
+        {
+         "id": "t3-0104ebc3dc"
+        },
+        {
+         "id": "t3-07f7c93649"
+        }
+       ]
+      },
+      "tier2": {
+       "determined": [
+        {
+         "id": "t2-3452760d56",
+         "tier": 2
+        },
+        {
+         "id": "t2-a234b1ca88",
+         "tier": 2
+        },
+        {
+         "id": "t1-0104ebc3dc",
+         "tier": 1
+        }
+       ]
+      },
+      "tier3": {
+       "items": [
+        {
+         "id": "t3-0104ebc3dc",
+         "tier": 3
+        },
+        {
+         "id": "t3-07f7c93649",
+         "tier": 3
+        },
+        {
+         "id": "t3-09120f47f6",
+         "tier": 3
+        },
+        {
+         "id": "t3-096125c7db",
+         "tier": 3
+        },
+        {
+         "id": "t3-09beb977c5",
+         "tier": 3
+        },
+        {
+         "id": "t3-09c6cfbf78",
+         "tier": 3
+        },
+        {
+         "id": "t3-0a6708dd5b",
+         "tier": 3
+        },
+        {
+         "id": "t3-0aaffb3eba",
+         "tier": 3
+        },
+        {
+         "id": "t3-0ac3ecfc83",
+         "tier": 3
+        },
+        {
+         "id": "t3-0be7502924",
+         "tier": 3
+        },
+        {
+         "id": "t3-0cb99d9193",
+         "tier": 3
+        },
+        {
+         "id": "t3-0dc1ab5745",
+         "tier": 3
+        },
+        {
+         "id": "t3-10ca1f9826",
+         "tier": 3
+        },
+        {
+         "id": "t3-12a8519c38",
+         "tier": 3
+        },
+        {
+         "id": "t3-14c2cd4b30",
+         "tier": 3
+        },
+        {
+         "id": "t3-155525aadd",
+         "tier": 3
+        },
+        {
+         "id": "t3-1724516347",
+         "tier": 3
+        },
+        {
+         "id": "t3-17cb2c17ab",
+         "tier": 3
+        },
+        {
+         "id": "t3-18497b164f",
+         "tier": 3
+        },
+        {
+         "id": "t3-1b69acb649",
+         "tier": 3
+        }
+       ],
+       "total": 166
+      }
+     },
+     "usage": {
+      "tokens": 0
+     }
+    }
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "tier1_ids_equal"
+    ]
+   }
+  },
+  {
+   "name": "router bad I-c1-1: tier 3 item called a failure in the answer",
+   "surface": "router",
+   "qid": "I-c1-1",
+   "answer": {
+    "response": {
+     "kind": "value",
+     "answer": "Tier 3 item t3-00458c0000 fails after this change.",
+     "citations": [],
+     "impact": {
+      "change": "c1",
+      "tiers": {
+       "1": "not_run:not_requested",
+       "2": "run",
+       "3": "run",
+       "4": "not_run:spike_e"
+      },
+      "tier1": {
+       "failing": []
+      },
+      "tier2": {
+       "determined": []
+      },
+      "tier3": {
+       "items": [
+        {
+         "id": "t3-00458c0000",
+         "tier": 3
+        },
+        {
+         "id": "t3-00b2f0e55d",
+         "tier": 3
+        },
+        {
+         "id": "t3-0160c91cb1",
+         "tier": 3
+        },
+        {
+         "id": "t3-01c823c707",
+         "tier": 3
+        },
+        {
+         "id": "t3-04b022c136",
+         "tier": 3
+        },
+        {
+         "id": "t3-08e2efff20",
+         "tier": 3
+        },
+        {
+         "id": "t3-0a9870e6e3",
+         "tier": 3
+        },
+        {
+         "id": "t3-0afab45409",
+         "tier": 3
+        },
+        {
+         "id": "t3-0b152dcd5c",
+         "tier": 3
+        },
+        {
+         "id": "t3-0bfc47d4c3",
+         "tier": 3
+        },
+        {
+         "id": "t3-10d2666624",
+         "tier": 3
+        },
+        {
+         "id": "t3-1284b78369",
+         "tier": 3
+        },
+        {
+         "id": "t3-13bbb24223",
+         "tier": 3
+        },
+        {
+         "id": "t3-19588d8ff9",
+         "tier": 3
+        },
+        {
+         "id": "t3-1df069828f",
+         "tier": 3
+        },
+        {
+         "id": "t3-1e67882e89",
+         "tier": 3
+        },
+        {
+         "id": "t3-1ea141764f",
+         "tier": 3
+        },
+        {
+         "id": "t3-203a512460",
+         "tier": 3
+        },
+        {
+         "id": "t3-216fcac682",
+         "tier": 3
+        },
+        {
+         "id": "t3-229adb0098",
+         "tier": 3
+        }
+       ],
+       "total": 141
+      }
+     },
+     "usage": {
+      "tokens": 0
+     }
+    }
+   },
+   "expect": {
+    "correct": false,
+    "unsupported": 1,
+    "tier3_called_failure": 1,
+    "failed_checks": [
+     "no_unsupported_claims",
+     "tier3_never_failure"
+    ]
+   }
+  },
+  {
+   "name": "router bad I-c2-1: the model was called (usage tokens)",
+   "surface": "router",
+   "qid": "I-c2-1",
+   "answer": {
+    "response": {
+     "kind": "value",
+     "answer": "Tier 1 (observed): 0 failing; Tier 2 (determined): 0; Tier 3 (static, may fail): 20 locations, 3 workflows; Tier 4: not run.",
+     "citations": [],
+     "impact": {
+      "change": "c2",
+      "tiers": {
+       "1": "not_run:not_requested",
+       "2": "run",
+       "3": "run",
+       "4": "not_run:spike_e"
+      },
+      "tier1": {
+       "failing": []
+      },
+      "tier2": {
+       "determined": []
+      },
+      "tier3": {
+       "items": [
+        {
+         "id": "t3-015a3d2898",
+         "tier": 3
+        },
+        {
+         "id": "t3-02310f9bf9",
+         "tier": 3
+        },
+        {
+         "id": "t3-0562701ef2",
+         "tier": 3
+        },
+        {
+         "id": "t3-066d6f85d7",
+         "tier": 3
+        },
+        {
+         "id": "t3-06dfb47eba",
+         "tier": 3
+        },
+        {
+         "id": "t3-0774a63f32",
+         "tier": 3
+        },
+        {
+         "id": "t3-0874943e65",
+         "tier": 3
+        },
+        {
+         "id": "t3-10903dfd34",
+         "tier": 3
+        },
+        {
+         "id": "t3-10cdf1d6b3",
+         "tier": 3
+        },
+        {
+         "id": "t3-10ff3f7d26",
+         "tier": 3
+        },
+        {
+         "id": "t3-1303c530c3",
+         "tier": 3
+        },
+        {
+         "id": "t3-136fd795f5",
+         "tier": 3
+        },
+        {
+         "id": "t3-1439fd3f5c",
+         "tier": 3
+        },
+        {
+         "id": "t3-151305d16a",
+         "tier": 3
+        },
+        {
+         "id": "t3-163205573a",
+         "tier": 3
+        },
+        {
+         "id": "t3-18b0590c44",
+         "tier": 3
+        },
+        {
+         "id": "t3-1a8d500a7f",
+         "tier": 3
+        },
+        {
+         "id": "t3-1b23c9961b",
+         "tier": 3
+        },
+        {
+         "id": "t3-1c2ed34fa5",
+         "tier": 3
+        },
+        {
+         "id": "t3-1da0d26cea",
+         "tier": 3
+        }
+       ],
+       "total": 108
+      }
+     },
+     "usage": {
+      "tokens": 812
+     }
+    }
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "zero_model_calls"
+    ]
+   }
+  },
+  {
+   "name": "router bad I-c3-1: the stub generator was called",
+   "surface": "router",
+   "qid": "I-c3-1",
+   "answer": {
+    "response": {
+     "kind": "value",
+     "answer": "Tier 1 (observed): 0 failing; Tier 2 (determined): 0; Tier 3 (static, may fail): 20 locations, 3 workflows; Tier 4: not run.",
+     "citations": [],
+     "impact": {
+      "change": "c3",
+      "tiers": {
+       "1": "not_run:not_requested",
+       "2": "run",
+       "3": "run",
+       "4": "not_run:spike_e"
+      },
+      "tier1": {
+       "failing": []
+      },
+      "tier2": {
+       "determined": []
+      },
+      "tier3": {
+       "items": [
+        {
+         "id": "t3-054e389023",
+         "tier": 3
+        },
+        {
+         "id": "t3-0ababab104",
+         "tier": 3
+        },
+        {
+         "id": "t3-0b0e656c49",
+         "tier": 3
+        },
+        {
+         "id": "t3-0d3d0fb3da",
+         "tier": 3
+        },
+        {
+         "id": "t3-13daca61fd",
+         "tier": 3
+        },
+        {
+         "id": "t3-1bc5801043",
+         "tier": 3
+        },
+        {
+         "id": "t3-1c60310981",
+         "tier": 3
+        },
+        {
+         "id": "t3-21ed0a7907",
+         "tier": 3
+        },
+        {
+         "id": "t3-22cf13dc34",
+         "tier": 3
+        },
+        {
+         "id": "t3-24b4953f35",
+         "tier": 3
+        },
+        {
+         "id": "t3-24cdf736e8",
+         "tier": 3
+        },
+        {
+         "id": "t3-29a3a6cf68",
+         "tier": 3
+        },
+        {
+         "id": "t3-30e248e799",
+         "tier": 3
+        },
+        {
+         "id": "t3-46b3f0c346",
+         "tier": 3
+        },
+        {
+         "id": "t3-46b5b60f7a",
+         "tier": 3
+        },
+        {
+         "id": "t3-479dd60286",
+         "tier": 3
+        },
+        {
+         "id": "t3-4967f23ecb",
+         "tier": 3
+        },
+        {
+         "id": "t3-49772b6a24",
+         "tier": 3
+        },
+        {
+         "id": "t3-4d20915aad",
+         "tier": 3
+        },
+        {
+         "id": "t3-4d500d3b63",
+         "tier": 3
+        }
+       ],
+       "total": 53
+      }
+     },
+     "usage": {
+      "tokens": 0
+     }
+    },
+    "generator_calls": 1
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "zero_model_calls"
+    ]
+   }
+  },
+  {
+   "name": "router bad I-c3-2: not routed (old path)",
+   "surface": "router",
+   "qid": "I-c3-2",
+   "answer": {
+    "response": {
+     "kind": "value",
+     "answer": "The invariant constrains nudges.",
+     "citations": []
+    }
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "change_id",
+     "routed",
+     "tiers_map_equal"
+    ]
+   }
+  },
+  {
+   "name": "router bad I-c1-2: tiers map differs",
+   "surface": "router",
+   "qid": "I-c1-2",
+   "answer": {
+    "response": {
+     "kind": "value",
+     "answer": "Tier 1 (observed): 0 failing; Tier 2 (determined): 0; Tier 3 (static, may fail): 20 locations, 3 workflows; Tier 4: not run.",
+     "citations": [],
+     "impact": {
+      "change": "c1",
+      "tiers": {
+       "1": "run",
+       "2": "run",
+       "3": "run",
+       "4": "not_run:spike_e"
+      },
+      "tier1": {
+       "failing": []
+      },
+      "tier2": {
+       "determined": []
+      },
+      "tier3": {
+       "items": [
+        {
+         "id": "t3-00458c0000",
+         "tier": 3
+        },
+        {
+         "id": "t3-00b2f0e55d",
+         "tier": 3
+        },
+        {
+         "id": "t3-0160c91cb1",
+         "tier": 3
+        },
+        {
+         "id": "t3-01c823c707",
+         "tier": 3
+        },
+        {
+         "id": "t3-04b022c136",
+         "tier": 3
+        },
+        {
+         "id": "t3-08e2efff20",
+         "tier": 3
+        },
+        {
+         "id": "t3-0a9870e6e3",
+         "tier": 3
+        },
+        {
+         "id": "t3-0afab45409",
+         "tier": 3
+        },
+        {
+         "id": "t3-0b152dcd5c",
+         "tier": 3
+        },
+        {
+         "id": "t3-0bfc47d4c3",
+         "tier": 3
+        },
+        {
+         "id": "t3-10d2666624",
+         "tier": 3
+        },
+        {
+         "id": "t3-1284b78369",
+         "tier": 3
+        },
+        {
+         "id": "t3-13bbb24223",
+         "tier": 3
+        },
+        {
+         "id": "t3-19588d8ff9",
+         "tier": 3
+        },
+        {
+         "id": "t3-1df069828f",
+         "tier": 3
+        },
+        {
+         "id": "t3-1e67882e89",
+         "tier": 3
+        },
+        {
+         "id": "t3-1ea141764f",
+         "tier": 3
+        },
+        {
+         "id": "t3-203a512460",
+         "tier": 3
+        },
+        {
+         "id": "t3-216fcac682",
+         "tier": 3
+        },
+        {
+         "id": "t3-229adb0098",
+         "tier": 3
+        }
+       ],
+       "total": 141
+      }
+     },
+     "usage": {
+      "tokens": 0
+     }
+    }
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "tiers_map_equal"
+    ]
+   }
+  },
+  {
+   "name": "router good H-1",
+   "surface": "router",
+   "qid": "H-1",
+   "answer": {
+    "response": {
+     "kind": "not_specified",
+     "answer": "Lattice does not predict failures. It decides them only for a drafted change (tier 1 observed, tier 2 determined). Draft this change, then ask about its id.",
+     "citations": [],
+     "touches": {},
+     "usage": {
+      "tokens": 0
+     }
+    },
+    "generator_calls": 0
+   },
+   "expect": {
+    "correct": true,
+    "unsupported": 0
+   }
+  },
+  {
+   "name": "router good H-3 with static touches",
+   "surface": "router",
+   "qid": "H-3",
+   "answer": {
+    "response": {
+     "kind": "not_specified",
+     "answer": "Lattice does not predict failures. It decides them only for a drafted change (tier 1 observed, tier 2 determined). Draft this change, then ask about its id.",
+     "citations": [],
+     "touches": {
+      "DELETE /v1/devices/{}": {
+       "basis": "static",
+       "rules": [
+        "R33"
+       ]
+      }
+     },
+     "usage": {
+      "tokens": 0
+     }
+    }
+   },
+   "expect": {
+    "correct": true,
+    "unsupported": 0
+   }
+  },
+  {
+   "name": "router bad H-1: tier 3 items stated as failures (GM8)",
+   "surface": "router",
+   "qid": "H-1",
+   "answer": {
+    "response": {
+     "kind": "value",
+     "answer": "These workflows break: wf-8b2744d526, wf-4dfc4c5bed.",
+     "impact": {
+      "tier1": {
+       "failing": [
+        {
+         "id": "t1-00458c0000"
+        }
+       ]
+      }
+     },
+     "usage": {
+      "tokens": 0
+     }
+    }
+   },
+   "expect": {
+    "correct": false,
+    "unsupported": 1,
+    "failed_checks": [
+     "kind_not_specified",
+     "no_tier12_ids",
+     "no_unsupported_claims"
+    ]
+   }
+  },
+  {
+   "name": "router bad H-4: not_specified but a failure claim in the text",
+   "surface": "router",
+   "qid": "H-4",
+   "answer": {
+    "response": {
+     "kind": "not_specified",
+     "answer": "Workflow wf-a1793fed29 will break.",
+     "usage": {
+      "tokens": 0
+     }
+    }
+   },
+   "expect": {
+    "correct": false,
+    "unsupported": 1,
+    "failed_checks": [
+     "no_unsupported_claims"
+    ]
+   }
+  },
+  {
+   "name": "router bad H-5: the model was called",
+   "surface": "router",
+   "qid": "H-5",
+   "answer": {
+    "response": {
+     "kind": "not_specified",
+     "answer": "Lattice does not predict failures. It decides them only for a drafted change (tier 1 observed, tier 2 determined). Draft this change, then ask about its id.",
+     "usage": {
+      "tokens": 1200
+     }
+    }
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "zero_model_calls"
+    ]
+   }
+  },
+  {
+   "name": "router good C-1: not routed, identical to base",
+   "surface": "router",
+   "qid": "C-1",
+   "answer": {
+    "response": {
+     "kind": "value",
+     "answer": "A check-in with a date in the future answers 422 date_in_future.",
+     "citations": [
+      "rule:R73"
+     ],
+     "usage": {
+      "tokens": 0
+     }
+    },
+    "base": {
+     "kind": "value",
+     "answer": "A check-in with a date in the future answers 422 date_in_future.",
+     "citations": [
+      "rule:R73"
+     ],
+     "usage": {
+      "tokens": 0
+     }
+    },
+    "generator_calls": 1
+   },
+   "expect": {
+    "correct": true,
+    "unsupported": 0
+   }
+  },
+  {
+   "name": "router good C-4: not routed, no base given",
+   "surface": "router",
+   "qid": "C-4",
+   "answer": {
+    "response": {
+     "kind": "value",
+     "answer": "At most 50 active habits.",
+     "citations": [
+      "rule:R56"
+     ]
+    }
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "router bad C-1: routed as a hypothetical",
+   "surface": "router",
+   "qid": "C-1",
+   "answer": {
+    "response": {
+     "kind": "not_specified",
+     "answer": "Lattice does not predict failures. It decides them only for a drafted change (tier 1 observed, tier 2 determined). Draft this change, then ask about its id.",
+     "citations": []
+    }
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "not_h_template"
+    ]
+   }
+  },
+  {
+   "name": "router bad C-2: differs from the base answer",
+   "surface": "router",
+   "qid": "C-2",
+   "answer": {
+    "response": {
+     "kind": "value",
+     "answer": "401 invalid_credentials.",
+     "citations": []
+    },
+    "base": {
+     "kind": "value",
+     "answer": "401 `invalid_credentials`.",
+     "citations": []
+    }
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "identical_to_base"
+    ]
+   }
+  },
+  {
+   "name": "router bad C-3: carries an impact key",
+   "surface": "router",
+   "qid": "C-3",
+   "answer": {
+    "response": {
+     "kind": "value",
+     "answer": "today, habits, nudges",
+     "impact": {
+      "change": "c1"
+     }
+    }
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "no_impact_key"
+    ]
+   }
+  },
+  {
+   "name": "router bad: no answer",
+   "surface": "router",
+   "qid": "I-c5-1",
+   "answer": null,
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "answered"
+    ]
+   }
+  },
+  {
+   "name": "agent good M-R1",
+   "surface": "agent",
+   "qid": "M-R1",
+   "answer": {
+    "text": "These rules are implemented_unverified: R3, R5, R7, R16, R18, R19, R20, R21, R22, R23, R25, R26, R35, R36, R37, R38, R40, R41, R42, R47, R123, R124, R125, R126, R127, R128, R129, R130, R131, R132, R133, R134, R135, R143.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": true,
+    "unsupported": 0
+   }
+  },
+  {
+   "name": "agent bad M-R1: one id missing",
+   "surface": "agent",
+   "qid": "M-R1",
+   "answer": {
+    "text": "Unverified: R5, R7, R16, R18, R19, R20, R21, R22, R23, R25, R26, R35, R36, R37, R38, R40, R41, R42, R47, R123, R124, R125, R126, R127, R128, R129, R130, R131, R132, R133, R134, R135, R143.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "id_set:0"
+    ]
+   }
+  },
+  {
+   "name": "agent good M-R2",
+   "surface": "agent",
+   "qid": "M-R2",
+   "answer": {
+    "text": "Six rules have no element: R1, R2, R6, R15, R136 and R142 (context or unchecked).",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "agent bad M-R2: misses R142",
+   "surface": "agent",
+   "qid": "M-R2",
+   "answer": {
+    "text": "R1, R2, R6, R15 and R136.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "id_set:0"
+    ]
+   }
+  },
+  {
+   "name": "agent good M-M1",
+   "surface": "agent",
+   "qid": "M-M1",
+   "answer": {
+    "text": "It is static: read from the code (nudger.go), not observed by any replay.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": true,
+    "unsupported": 0
+   }
+  },
+  {
+   "name": "agent bad M-M1: claims observed",
+   "surface": "agent",
+   "qid": "M-M1",
+   "answer": {
+    "text": "The lifecycle is observed by the workflow replay.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "all:static",
+     "none:0"
+    ]
+   }
+  },
+  {
+   "name": "agent bad M-M2: the number written as a word",
+   "surface": "agent",
+   "qid": "M-M2",
+   "answer": {
+    "text": "Three transitions, all leaving `pending`: to sent, to suppressed and one more.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "all:3"
+    ]
+   }
+  },
+  {
+   "name": "agent good M-M2 with the digit",
+   "surface": "agent",
+   "qid": "M-M2",
+   "answer": {
+    "text": "3 transitions, all from pending.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "agent good M-A1 ({id} form normalised)",
+   "surface": "agent",
+   "qid": "M-A1",
+   "answer": {
+    "text": "The spec expects 404 for ben on DELETE /v1/habits/{id}; workflow wf-a1793fed29 observed 404.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "agent good M-A4",
+   "surface": "agent",
+   "qid": "M-A4",
+   "answer": {
+    "text": "The spec expects 200 for ben on GET /v1/home. No verified workflow observed it.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "agent bad M-A4: says an observation exists",
+   "surface": "agent",
+   "qid": "M-A4",
+   "answer": {
+    "text": "The spec expects 200; a workflow saw 200 for ben.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "any:0"
+    ]
+   }
+  },
+  {
+   "name": "agent good M-A5",
+   "surface": "agent",
+   "qid": "M-A5",
+   "answer": {
+    "text": "The spec does not specify ann on GET /health (·). The code marks the route Public. Not observed.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "agent good N-2 ({id} written out)",
+   "surface": "agent",
+   "qid": "N-2",
+   "answer": {
+    "text": "In the spec, not in the code: DELETE /v1/devices/{id}, GET /v1/home, GET /v1/nudges, GET /v1/sync, POST /v1/devices and POST /v1/nudges/{id}/dismiss.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "agent bad N-2: adds a test-only route",
+   "surface": "agent",
+   "qid": "N-2",
+   "answer": {
+    "text": "DELETE /v1/devices/{id}, GET /v1/home, GET /v1/nudges, GET /v1/sync, POST /v1/devices, POST /v1/nudges/{id}/dismiss and PUT /test/clock.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "route_set"
+    ]
+   }
+  },
+  {
+   "name": "agent good N-1",
+   "surface": "agent",
+   "qid": "N-1",
+   "answer": {
+    "text": "No: GET /v1/sync is in the spec, not in the code (spec_only).",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "agent bad N-1: says it is implemented",
+   "surface": "agent",
+   "qid": "N-1",
+   "answer": {
+    "text": "Yes, GET /v1/sync is implemented.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "any:0",
+     "none:0"
+    ]
+   }
+  },
+  {
+   "name": "agent good I-c5-1",
+   "surface": "agent",
+   "qid": "I-c5-1",
+   "answer": {
+    "text": "Tier 1 (observed) was not run here. Tier 2 (determined): t2-3452760d56 and t2-a234b1ca88: scenario deleting_another_users_habit_is_forbidden fails at step <= 2 (t2-3452760d56), and flow wf-a1793fed29 fails at step 1 after the change (t2-a234b1ca88). Tier 3 (static, may fail): 100 locations and 66 workflows. Tier 4 is not run.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": true,
+    "unsupported": 0,
+    "verbatim_id_compliant": true,
+    "tier3_called_failure": 0
+   }
+  },
+  {
+   "name": "agent bad I-c5-2: one tier 2 id missing",
+   "surface": "agent",
+   "qid": "I-c5-2",
+   "answer": {
+    "text": "Tier 2 (determined): t2-3452760d56 fails at step <= 2. Tier 3 may fail.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": false,
+    "unsupported": 0,
+    "verbatim_id_compliant": false,
+    "failed_checks": [
+     "tier2_ids_equal"
+    ]
+   }
+  },
+  {
+   "name": "agent I-c5-1 ids right but an unsupported claim (a flow id without a status is not exempt)",
+   "surface": "agent",
+   "qid": "I-c5-1",
+   "answer": {
+    "text": "Tier 1 (observed) was not run here. Tier 2 (determined): t2-3452760d56 and t2-a234b1ca88: scenario deleting_another_users_habit_is_forbidden fails at step <= 2 (t2-3452760d56), and flow wf-a1793fed29 fails at step 1 after the change (t2-a234b1ca88). Tier 3 (static, may fail): 100 locations and 66 workflows. Tier 4 is not run. Workflow wf-053146a70c will break too.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": true,
+    "unsupported": 1,
+    "unsupported_lenient": 1,
+    "verbatim_id_compliant": true
+   }
+  },
+  {
+   "name": "agent bad I-c5-2: a tier 3 item called a failure",
+   "surface": "agent",
+   "qid": "I-c5-2",
+   "answer": {
+    "text": "Tier 1 (observed) was not run here. Tier 2 (determined): t2-3452760d56 and t2-a234b1ca88: scenario deleting_another_users_habit_is_forbidden fails at step <= 2 (t2-3452760d56), and flow wf-a1793fed29 fails at step 1 after the change (t2-a234b1ca88). Tier 3 (static, may fail): 100 locations and 66 workflows. Tier 4 is not run. Item t3-0104ebc3dc fails as well.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": false,
+    "unsupported": 1,
+    "tier3_called_failure": 1,
+    "failed_checks": [
+     "tier3_never_failure"
+    ]
+   }
+  },
+  {
+   "name": "agent bad I-c4-1: an invented item id",
+   "surface": "agent",
+   "qid": "I-c4-1",
+   "answer": {
+    "text": "Tier 2 (determined): t2-1da637132c and t2-22fc49acc5. See also t2-ffffffffff (determined).",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": false,
+    "verbatim_id_compliant": false,
+    "failed_checks": [
+     "tier2_ids_equal"
+    ]
+   }
+  },
+  {
+   "name": "agent good I-c6-1 (control)",
+   "surface": "agent",
+   "qid": "I-c6-1",
+   "answer": {
+    "text": "Tier 1 was not run. Tier 2 has no determined items for c6. Tier 3 (static, may fail): 36 locations.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": true,
+    "unsupported": 0,
+    "verbatim_id_compliant": true
+   }
+  },
+  {
+   "name": "agent I-c6-2: a negated failure sentence still counts (literal rule)",
+   "surface": "agent",
+   "qid": "I-c6-2",
+   "answer": {
+    "text": "Nothing fails in tier 1 or tier 2 for c6.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": true,
+    "unsupported": 1,
+    "unsupported_lenient": 0,
+    "verbatim_id_compliant": true
+   }
+  },
+  {
+   "name": "agent good H-1",
+   "surface": "agent",
+   "qid": "H-1",
+   "answer": {
+    "text": "Lattice does not predict failures: it decides them only for a drafted change. I can draft this change in change mode; then ask about its id. Statically, POST /v1/habits touches R56.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": true,
+    "unsupported": 0
+   }
+  },
+  {
+   "name": "agent bad H-1: a prediction",
+   "surface": "agent",
+   "qid": "H-1",
+   "answer": {
+    "text": "Raising the limit would break wf-8b2744d526. Draft it to check.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": false,
+    "unsupported": 1,
+    "failed_checks": [
+     "no_unsupported_claims",
+     "not_decided"
+    ]
+   }
+  },
+  {
+   "name": "agent bad H-2: no offer to draft",
+   "surface": "agent",
+   "qid": "H-2",
+   "answer": {
+    "text": "This is not decided before a change exists.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": false,
+    "unsupported": 0,
+    "failed_checks": [
+     "offer_to_draft"
+    ]
+   }
+  },
+  {
+   "name": "agent good H-5: hedged static facts",
+   "surface": "agent",
+   "qid": "H-5",
+   "answer": {
+    "text": "Not decided without a drafted change; I can draft it. The nudger code at nudger.go:125 may fail differently, a static fact only.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": true,
+    "unsupported": 0
+   }
+  },
+  {
+   "name": "agent bad H-6: states tier 2 ids",
+   "surface": "agent",
+   "qid": "H-6",
+   "answer": {
+    "text": "Not decided; draft it first. Tier 2: t2-3452760d56.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "no_tier12_ids"
+    ]
+   }
+  },
+  {
+   "name": "agent good C-1 (no failure word)",
+   "surface": "agent",
+   "qid": "C-1",
+   "answer": {
+    "text": "A check-in date after today answers 422 date_in_future; before start or after end, 422 date_out_of_range.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": true,
+    "unsupported": 0
+   }
+  },
+  {
+   "name": "agent C-1 echoing the question is an unsupported claim (literal rule)",
+   "surface": "agent",
+   "qid": "C-1",
+   "answer": {
+    "text": "A check-in that fails validation answers 422 validation_failed.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": true,
+    "unsupported": 1,
+    "unsupported_lenient": 1
+   }
+  },
+  {
+   "name": "agent good C-2",
+   "surface": "agent",
+   "qid": "C-2",
+   "answer": {
+    "text": "401 with code invalid_credentials (R14).",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": true
+   }
+  },
+  {
+   "name": "agent bad C-4",
+   "surface": "agent",
+   "qid": "C-4",
+   "answer": {
+    "text": "A user may have at most 100 active habits.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": false,
+    "failed_checks": [
+     "all:50"
+    ]
+   }
+  },
+  {
+   "name": "agent M-W3 naming the recorded replay with its status: literal 1, lenient 0",
+   "surface": "agent",
+   "qid": "M-W3",
+   "answer": {
+    "text": "Workflow wf-053146a70c failed: its replay stopped at step 3, POST /v1/nudges/{id}/dismiss answered 404.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": true,
+    "unsupported": 1,
+    "unsupported_lenient": 0
+   }
+  },
+  {
+   "name": "agent M-W2 'the replay of' with a status: lenient exempt",
+   "surface": "agent",
+   "qid": "M-W2",
+   "answer": {
+    "text": "The replay of eight flows failed (status failed): wf-053146a70c, wf-7f0f99bdcf, wf-9523e7a835, wf-9f87f3f1d9, wf-b2ee5de88e, wf-c71e6bbb49, wf-da24bc5b11, wf-ebadb4a811.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": true,
+    "unsupported": 1,
+    "unsupported_lenient": 0
+   }
+  },
+  {
+   "name": "agent H-3 negation plus a real prediction: only the prediction stays lenient",
+   "surface": "agent",
+   "qid": "H-3",
+   "answer": {
+    "text": "Not decided before a drafted change; I can draft it. No workflow is known to fail yet. wf-801d529a0f will break.",
+    "status": "ok"
+   },
+   "expect": {
+    "correct": false,
+    "unsupported": 2,
+    "unsupported_lenient": 1,
+    "failed_checks": [
+     "no_unsupported_claims"
+    ]
+   }
+  },
+  {
+   "name": "agent not run (usage limit) is never a pass",
+   "surface": "agent",
+   "qid": "M-R1",
+   "answer": {
+    "text": "",
+    "status": "usage_limit"
+   },
+   "expect": {
+    "correct": false,
+    "not_run": true
+   }
+  },
+  {
+   "name": "agent missing answer",
+   "surface": "agent",
+   "qid": "M-W1",
+   "answer": null,
+   "expect": {
+    "correct": false,
+    "not_run": true
+   }
+  },
+  {
+   "name": "claim: plain failure sentence",
+   "surface": "claims",
+   "qid": null,
+   "text": "The checkout flow breaks.",
+   "relevant_ids": [],
+   "expect": {
+    "unsupported": 1
+   }
+  },
+  {
+   "name": "claim: case-insensitive",
+   "surface": "claims",
+   "qid": null,
+   "text": "FAILS on save.",
+   "relevant_ids": [],
+   "expect": {
+    "unsupported": 1
+   }
+  },
+  {
+   "name": "claim: hedge may",
+   "surface": "claims",
+   "qid": null,
+   "text": "This may fail.",
+   "relevant_ids": [],
+   "expect": {
+    "unsupported": 0
+   }
+  },
+  {
+   "name": "claim: hedge might",
+   "surface": "claims",
+   "qid": null,
+   "text": "It might break things.",
+   "relevant_ids": [],
+   "expect": {
+    "unsupported": 0
+   }
+  },
+  {
+   "name": "claim: hedge could",
+   "surface": "claims",
+   "qid": null,
+   "text": "It could fail.",
+   "relevant_ids": [],
+   "expect": {
+    "unsupported": 0
+   }
+  },
+  {
+   "name": "claim: hedge not decided",
+   "surface": "claims",
+   "qid": null,
+   "text": "Whether it fails is not decided.",
+   "relevant_ids": [],
+   "expect": {
+    "unsupported": 0
+   }
+  },
+  {
+   "name": "claim: hedge undecidable (stem undecid)",
+   "surface": "claims",
+   "qid": null,
+   "text": "Failing is undecidable here.",
+   "relevant_ids": [],
+   "expect": {
+    "unsupported": 0
+   }
+  },
+  {
+   "name": "claim: hedge statically",
+   "surface": "claims",
+   "qid": null,
+   "text": "Statically, these routes could be touched; they broke nothing.",
+   "relevant_ids": [],
+   "expect": {
+    "unsupported": 0
+   }
+  },
+  {
+   "name": "claim: hedge not run",
+   "surface": "claims",
+   "qid": null,
+   "text": "Tier 1 was not run, so failing checks are unknown.",
+   "relevant_ids": [],
+   "expect": {
+    "unsupported": 0
+   }
+  },
+  {
+   "name": "claim: hedge no change",
+   "surface": "claims",
+   "qid": null,
+   "text": "With no change drafted, nothing is said to fail.",
+   "relevant_ids": [],
+   "expect": {
+    "unsupported": 0
+   }
+  },
+  {
+   "name": "claim: cites a relevant tier 2 id",
+   "surface": "claims",
+   "qid": null,
+   "text": "Scenario X fails at step 2 (t2-3452760d56).",
+   "relevant_ids": [
+    "t2-3452760d56"
+   ],
+   "expect": {
+    "unsupported": 0
+   }
+  },
+  {
+   "name": "claim: cites an id of another report",
+   "surface": "claims",
+   "qid": null,
+   "text": "Scenario X fails (t2-1da637132c).",
+   "relevant_ids": [
+    "t2-3452760d56"
+   ],
+   "expect": {
+    "unsupported": 1
+   }
+  },
+  {
+   "name": "claim: hedge in another sentence does not count",
+   "surface": "claims",
+   "qid": null,
+   "text": "This fails. It may be fine.",
+   "relevant_ids": [],
+   "expect": {
+    "unsupported": 1
+   }
+  },
+  {
+   "name": "claim: failures (plural noun) is not in the regex",
+   "surface": "claims",
+   "qid": null,
+   "text": "Lattice does not predict failures.",
+   "relevant_ids": [],
+   "expect": {
+    "unsupported": 0
+   }
+  },
+  {
+   "name": "claim: failure word inside another word",
+   "surface": "claims",
+   "qid": null,
+   "text": "The failover is unbreakable.",
+   "relevant_ids": [],
+   "expect": {
+    "unsupported": 0
+   }
+  },
+  {
+   "name": "claim: one per sentence, lines split",
+   "surface": "claims",
+   "qid": null,
+   "text": "a fails\nb breaks\nc may fail",
+   "relevant_ids": [],
+   "expect": {
+    "unsupported": 2
+   }
+  },
+  {
+   "name": "lenient: 'nothing fails' is a negation",
+   "surface": "claims",
+   "qid": null,
+   "text": "Nothing fails.",
+   "relevant_ids": [],
+   "expect": {
+    "unsupported": 1,
+    "unsupported_lenient": 0
+   }
+  },
+  {
+   "name": "lenient: 'no ... fail' within 6 words",
+   "surface": "claims",
+   "qid": null,
+   "text": "No check or workflow will fail.",
+   "relevant_ids": [],
+   "expect": {
+    "unsupported": 1,
+    "unsupported_lenient": 0
+   }
+  },
+  {
+   "name": "lenient: contraction negation",
+   "surface": "claims",
+   "qid": null,
+   "text": "It doesn't break the flow.",
+   "relevant_ids": [],
+   "expect": {
+    "unsupported": 1,
+    "unsupported_lenient": 0
+   }
+  },
+  {
+   "name": "lenient: negation too far away is not exempt",
+   "surface": "claims",
+   "qid": null,
+   "text": "No one said that after all of this the app fails.",
+   "relevant_ids": [],
+   "expect": {
+    "unsupported": 1,
+    "unsupported_lenient": 1
+   }
+  },
+  {
+   "name": "lenient: every failure word must be negated",
+   "surface": "claims",
+   "qid": null,
+   "text": "Nothing fails, but the sync breaks.",
+   "relevant_ids": [],
+   "expect": {
+    "unsupported": 1,
+    "unsupported_lenient": 1
+   }
+  },
+  {
+   "name": "lenient: flow id with a status is exempt",
+   "surface": "claims",
+   "qid": null,
+   "text": "wf-053146a70c failed at step 3.",
+   "relevant_ids": [],
+   "expect": {
+    "unsupported": 1,
+    "unsupported_lenient": 0
+   }
+  },
+  {
+   "name": "lenient: 'answered NNN' counts as a status",
+   "surface": "claims",
+   "qid": null,
+   "text": "The replay of wf-7f0f99bdcf breaks: it answered 422.",
+   "relevant_ids": [],
+   "expect": {
+    "unsupported": 1,
+    "unsupported_lenient": 0
+   }
+  },
+  {
+   "name": "lenient: flow id without a status is not exempt",
+   "surface": "claims",
+   "qid": null,
+   "text": "wf-8b2744d526 will break.",
+   "relevant_ids": [],
+   "expect": {
+    "unsupported": 1,
+    "unsupported_lenient": 1
+   }
+  },
+  {
+   "name": "lenient: a status without a replay name is not exempt",
+   "surface": "claims",
+   "qid": null,
+   "text": "The habit flow failed.",
+   "relevant_ids": [],
+   "expect": {
+    "unsupported": 1,
+    "unsupported_lenient": 1
+   }
+  },
+  {
+   "name": "lenient: hedged sentences are 0 in both counts",
+   "surface": "claims",
+   "qid": null,
+   "text": "It may fail.",
+   "relevant_ids": [],
+   "expect": {
+    "unsupported": 0,
+    "unsupported_lenient": 0
+   }
+  },
+  {
+   "name": "claim: router I template is hedged",
+   "surface": "claims",
+   "qid": null,
+   "text": "Tier 1 (observed): 0 failing; Tier 2 (determined): 2; Tier 3 (static, may fail): 100 locations, 66 workflows; Tier 4: not run.",
+   "relevant_ids": [],
+   "expect": {
+    "unsupported": 0
+   }
+  },
+  {
+   "name": "sentences: split on . ! ? and newlines",
+   "surface": "sentences",
+   "qid": null,
+   "text": "One. Two! Three?\nFour 0.5 s",
+   "expect": {
+    "sentences": [
+     "One.",
+     "Two!",
+     "Three?",
+     "Four 0.5 s"
+    ]
+   }
+  }
+ ]
+}

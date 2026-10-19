@@ -648,6 +648,30 @@
       "text": "The three routes answer under a project prefix like every other (`/p/<name>/api/appmap`, `/p/<name>/api/appmap/element`, `/p/<name>/api/impact`), and an unknown project answers 404 `no such project` on each.",
       "section": "Lattice Studio server: requirements > App map and impact",
       "line": 173
+    },
+    {
+      "id": "R109",
+      "text": "A project whose studio.toml has no `[chat]` table is answered by POST /api/ask exactly as before: a question about the app map's rules by status (\"Which rules are required by the spec but not built yet?\") and a counterfactual (\"What if we removed the notes limit?\") are not routed, and the answer is the model's, here the stub's: `kind` `not_specified`, no citations and `usage.tokens` 0.",
+      "section": "Lattice Studio server: requirements > Chat checks",
+      "line": 177
+    },
+    {
+      "id": "R110",
+      "text": "A `[chat]` table whose `route` or `check` is not `true` or `false`, that has a key other than `route` and `check`, or that sets a key without an `[implementation]` table makes Studio refuse to start (exit 2) and name the key.",
+      "section": "Lattice Studio server: requirements > Chat checks",
+      "line": 178
+    },
+    {
+      "id": "R111",
+      "text": "With `[chat] route = true`, POST /api/ask answers a question that names one map shape (a build status, workflows by route or status, rules by status, a lifecycle, an access cell, a counterfactual) without a model: `usage.tokens` is 0 and the answer has a `map` key (`schema`, `shape`, `keys`); a question that names no shape, two shapes that disagree, or a change id follows the old path.",
+      "section": "Lattice Studio server: requirements > Chat checks",
+      "line": 179
+    },
+    {
+      "id": "R112",
+      "text": "With `[chat]` on, a chat turn that the router answers spawns no process and ends with a `result` whose `routed` is `impact`, `map` or `hypothetical`; with `check = true` no `text` event is `partial`, every text event carries `checked` counts, and the `result` carries their sum in `check`.",
+      "section": "Lattice Studio server: requirements > Chat checks",
+      "line": 180
     }
   ],
   "links": {
@@ -960,6 +984,9 @@
     ],
     "R108": [
       "scenario:app_map_and_impact_answer_under_a_project_prefix"
+    ],
+    "R109": [
+      "scenario:ask_is_not_routed_without_a_chat_table"
     ]
   },
   "unchecked": {
@@ -980,7 +1007,10 @@
     "R89": "the seed's log never holds a checker-targeted or closed cluster; tests/improve/test_analyze.py checks the arithmetic, the class order (no conversion), the ledger and the needs_owner refusal, tests/improve/test_cli.py the CLI run",
     "R93": "the harness puts every scenario's project under one valid workspace manifest, so no scenario sees no manifest or an invalid one; tests/workspace/test_studio_api.py checks both on the real server and the mock, tests/workspace/test_workspace.py each error class, and docs/results/2026-10-12-multi-results.md (MP-3) records a real-server run with and without a manifest",
     "R102": "the guards are checked on a real server over a synthetic repository, not in the seed: the gate has no gate that runs for minutes, and a wrong Host or Origin needs a raw client; tests/studio/test_improve_api.py checks the whole ladder, the lock, the job, the interrupt on close and discard on the real server and the mock, and dogfood/studio_ui_probes.py (P0, P2-P6) checks it against the CLI and the owner's checkout (docs/results/2026-10-15-studio-ui-results.md)",
-    "R103": "rendering is browser-only; tests/studio/test_studio_ui.py checks the navigator entries, the route strings, the words, node --check and the pure functions, and docs/results/2026-10-15-studio-ui-results.md records whether a browser walk on the mock was done"
+    "R103": "rendering is browser-only; tests/studio/test_studio_ui.py checks the navigator entries, the route strings, the words, node --check and the pure functions, and docs/results/2026-10-15-studio-ui-results.md records whether a browser walk on the mock was done",
+    "R110": "starting Studio with a bad [chat] needs a different studio.toml than the seed's and a restart; tests/studio/test_chat_check_api.py checks every refusal and names the key",
+    "R111": "a routed answer needs an [implementation] inventory, which the seed does not have (R104 fixes it as not configured); tests/studio/test_chat_check_api.py checks each shape on the real server and the mock, and dogfood/chat2_probes.py checks them against the map",
+    "R112": "a chat turn needs the claude binary (R25); tests/studio/test_chat_check_session.py checks the routed and the checked turn with a fake binary, and dogfood/chat2_probes.py replays stream fixtures through the session"
   },
   "context": [
     "R1"

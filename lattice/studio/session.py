@@ -84,13 +84,18 @@ from lattice.studio.mcp_intake import CONNECT_ENV, McpIntake
 
 __all__ = [
     "DEFAULT_SESSION_TIMEOUT",
+    "ChatConfig",
+    "ChatConfigError",
+    "ChatHooks",
     "MODE_PROFILES",
     "ModeProfile",
     "SessionError",
     "SessionManager",
     "Transcript",
+    "TurnCheck",
     "build_argv",
     "claude_available",
+    "parse_chat",
     "parse_create",
     "parse_message",
     "tool_label",
@@ -172,6 +177,22 @@ _IMPACT_RULES = (
     "for a drafted change, offer to draft one (change mode), and list what the element touches "
     "as static facts only. Under the read-only modes tier 1 (observe) is refused; say it was "
     "not run."
+)
+# API v1.26: appended to the chat's rules only with `[chat] check = true`. The text is frozen by
+# docs/results/2026-10-18-goto-chat-round2-prereg.md (section 2.2).
+_CHECK_RULES = (
+    "Lattice checks every sentence you write before the owner sees it. A sentence that says "
+    "something fails, failed or breaks is shown only if it carries the id of a tier 1 or tier 2 "
+    "item (t1-..., t2-...) from change_impact's report on the change it is about; Lattice "
+    "withholds or replaces any other. So never describe failures in your own words. For a change, "
+    "list its tier 1 and tier 2 item ids exactly as the tool returns them, and call tier 3 items "
+    "'static: may fail'. For a change that has not been drafted, say that it is not decided and "
+    "offer to draft it. A workflow's recorded status is a capture-time fact: give it with its wf- "
+    "id as 'recorded replay status: <status>'. For rules, workflows, lifecycles, endpoints and "
+    "access, use the status words and ids exactly as the tools return them (implemented_verified, "
+    "implemented_unverified, required_not_implemented, no_element, spec_only, verified, failed, "
+    "unverified, static, observed), and list no id the tools did not return. Quote spec text only "
+    "with its rule id."
 )
 # API v1.13 (spike 4): the chat modes see the owner's connected claude.ai servers, read-only
 _EXTERNAL_RULES = (
@@ -391,6 +412,10 @@ class Transcript:
         self._msg_id = ""
         self._turn_texts = 0
         self._anon = 0
+        self._tool_names: dict[str, str] = {}
+        self._tc: TurnCheck | None = None  # API v1.26: the claim checker of the running turn
+        self._raw_seen: set[tuple[str, str]] = set()
+        self.report_routed = False  # API v1.26: `result.routed` is reported (`[chat] route`)
 
     # -- the log
     def _add(self, event: dict[str, Any]) -> dict[str, Any]:
@@ -425,6 +450,48 @@ class Transcript:
             self.turns += 1
             self._turn_texts = 0
             self._add({"type": "user", "text": text, "selected": list(selected)})
+
+    def begin_check(self, tc: TurnCheck | None) -> None:
+        """API v1.26: check every text block of the coming turn before it is shown (`tc`), or
+        None: the unchanged path."""
+        with self.lock:
+            self._tc = tc
+            self._raw_seen = set()
+
+    def routed_turn(self, text: str, kind: str, tc: TurnCheck | None) -> None:
+        """API v1.26: a turn Lattice answered itself (no process): the user message is already in
+        the log; adds the text, the result and ``status idle``."""
+        with self.lock:
+            self.state = "running"  # the turn is over before any poll can see it
+            counts = None
+            if tc is not None:
+                text, _ = tc.block(text)
+                tail = tc.finish()
+                if tail:
+                    text = (text.rstrip("\n") + "\n\n" if text.strip() else "") + tail
+                counts = tc.total()
+            ev: dict[str, Any] = {"type": "text", "text": text, "partial": False, "message_id": ""}
+            if counts is not None:
+                ev["checked"] = counts
+            self._add(ev)
+            result: dict[str, Any] = {
+                "type": "result",
+                "ok": True,
+                "text": text,
+                "cost_usd": 0.0,
+                "duration_ms": 0,
+                "input_tokens": 0,
+                "output_tokens": 0,
+                "cache_read_input_tokens": 0,
+                "cache_creation_input_tokens": 0,
+                "num_turns": 0,
+                "claude_session_id": self.claude_session_id,
+                "routed": kind,
+            }
+            if tc is not None:
+                result["check"] = tc.total()
+            self._add(result)
+            self.set_state("idle")
 
     def set_state(self, state: str) -> None:
         with self.lock:
@@ -463,6 +530,8 @@ class Transcript:
         if et == "message_start":
             self._msg_id = str((ev.get("message") or {}).get("id") or "")
             return
+        if self._tc is not None:
+            return  # API v1.26: no text reaches the UI before its check (no partial events)
         idx = int(ev.get("index") or 0)
         key = (self._msg_id, idx)
         if et == "content_block_start":
@@ -496,13 +565,17 @@ class Transcript:
             if not isinstance(block, dict):
                 continue
             if block.get("type") == "text":
-                self._final_text(mid, str(block.get("text") or ""))
+                if self._tc is not None:
+                    self._checked_text(mid, str(block.get("text") or ""))
+                else:
+                    self._final_text(mid, str(block.get("text") or ""))
             elif block.get("type") == "tool_use":
                 tid = str(block.get("id") or "")
                 if tid in self._tool_ids:
                     continue
                 self._tool_ids.add(tid)
                 name = str(block.get("name") or "")
+                self._tool_names[tid] = name
                 inp = block.get("input") if isinstance(block.get("input"), dict) else {}
                 self._add(
                     {
@@ -513,6 +586,20 @@ class Transcript:
                         "input_summary": _input_summary(name, inp),
                     }
                 )
+
+    def _checked_text(self, mid: str, raw: str) -> None:
+        """API v1.26: one finished text block, checked, shown once (never the raw text)."""
+        tc = self._tc
+        if not raw or tc is None or (mid, raw) in self._raw_seen:
+            return
+        self._raw_seen.add((mid, raw))
+        shown, counts = tc.block(raw)
+        if not shown.strip():
+            return
+        self._anon += 1
+        self._text_events[(mid, 1000 + self._anon)] = self._add(
+            {"type": "text", "text": shown, "partial": False, "message_id": mid, "checked": counts}
+        )
 
     def _final_text(self, mid: str, text: str) -> None:
         if not text:
@@ -535,6 +622,9 @@ class Transcript:
             return
         for block in content:
             if isinstance(block, dict) and block.get("type") == "tool_result":
+                tid = str(block.get("tool_use_id") or "")
+                if self._tc is not None and self._tool_names.get(tid, "").endswith("change_impact"):
+                    self._tc.add_tool_result(_content_text(block.get("content")))
                 self._add(
                     {
                         "type": "tool_result",
@@ -556,7 +646,26 @@ class Transcript:
                  "kind": error_kind(text)}
             )  # fmt: skip
         elif not any(e["type"] == "text" for e in self.events[self._last_user_index() :]) and text:
-            self._add({"type": "text", "text": text, "partial": False, "message_id": ""})
+            if self._tc is not None:
+                if all(text != r for _, r in self._raw_seen):
+                    self._checked_text("", text)
+            else:
+                self._add({"type": "text", "text": text, "partial": False, "message_id": ""})
+        extra: dict[str, Any] = {}
+        tc = self._tc
+        if tc is not None:  # API v1.26: the turn's tail (E1, E3, footer), then the checked result
+            if not is_error:
+                tail = tc.finish()
+                if tail:
+                    self._add(
+                        {"type": "text", "text": tail, "partial": False, "message_id": "",
+                         "checked": tc.total()}
+                    )  # fmt: skip
+                text = "\n\n".join([*tc.shown, tail] if tail else tc.shown)
+            extra = {"routed": None, "check": tc.total()}
+            self._tc = None
+        elif self.report_routed:
+            extra = {"routed": None}
         usage = rec.get("usage") if isinstance(rec.get("usage"), dict) else {}
         cost = rec.get("total_cost_usd")
         cost = float(cost) if isinstance(cost, int | float) else 0.0
@@ -574,6 +683,7 @@ class Transcript:
                 "cache_creation_input_tokens": int(usage.get("cache_creation_input_tokens") or 0),
                 "num_turns": int(rec.get("num_turns") or 0),
                 "claude_session_id": self.claude_session_id,
+                **extra,
             }
         )
 
@@ -602,6 +712,97 @@ class Transcript:
                 ),
                 "cost_usd_total": round(self.cost_total, 6),
             }
+
+
+# ---- the claim checker of one turn (API v1.26) ------------------------------------------------
+
+
+class TurnCheck:
+    """The claim checker of one chat turn: checks each text block (``block``), keeps this turn's
+    ``change_impact`` results in memory, and appends the turn's tail once (``finish``: E1, E3 and
+    the footer). Pure; nothing is written."""
+
+    def __init__(self, ctx: Any) -> None:
+        from lattice.spec import claim_check as cc  # noqa: PLC0415
+
+        self._cc = cc
+        self.ctx = ctx
+        self.counts = cc.new_counts()
+        self.claims = 0
+        self.ids = 0
+        self.shown: list[str] = []
+
+    def add_tool_result(self, text: str) -> None:
+        self.ctx.add_tool_result(text)
+
+    def block(self, raw: str) -> tuple[str, dict[str, int]]:
+        res = self._cc.check_block(raw, self.ctx)
+        self.counts = self._cc.merge_counts(self.counts, res.counts)
+        self.claims += res.withheld_claims
+        self.ids += res.withheld_ids
+        if res.text.strip():
+            self.shown.append(res.text)
+        return res.text, dict(res.counts)
+
+    def finish(self) -> str:
+        tail, appended = self._cc.tail(
+            self.ctx,
+            "\n\n".join(self.shown),
+            withheld_claims=self.claims,
+            withheld_ids=self.ids,
+        )
+        self.counts["appended"] += appended
+        self.claims = self.ids = 0
+        return tail
+
+    def total(self) -> dict[str, int]:
+        return dict(self.counts)
+
+
+class ChatConfigError(ValueError):
+    """A bad ``[chat]`` table: Studio refuses to start and names the key."""
+
+
+@dataclass(frozen=True)
+class ChatConfig:
+    """``[chat]`` (API v1.26): ``route`` (model-free map router) and ``check`` (claim checker and
+    its prompt paragraph), both default false; absent, every answer is byte-identical."""
+
+    route: bool = False
+    check: bool = False
+
+
+def parse_chat(table: Any, has_implementation: bool) -> ChatConfig:
+    """The ``[chat]`` table as :class:`ChatConfig`; raises :class:`ChatConfigError` naming the key
+    of a bad value. Both keys need ``[implementation]`` (the map and the digest read it)."""
+    if table is None:
+        return ChatConfig()
+    if not isinstance(table, dict):
+        raise ChatConfigError("studio.toml: [chat] must be a table")
+    for key in table:
+        if key not in ("route", "check"):
+            raise ChatConfigError(f"studio.toml: [chat] has no key {key!r} (route, check)")
+    flags = {}
+    for key in ("route", "check"):
+        v = table.get(key, False)
+        if not isinstance(v, bool):
+            raise ChatConfigError(f"studio.toml: [chat] {key} must be true or false")
+        if v and not has_implementation:
+            raise ChatConfigError(f"studio.toml: [chat] {key} needs an [implementation] table")
+        flags[key] = v
+    return ChatConfig(**flags)
+
+
+@dataclass
+class ChatHooks:
+    """What ``[chat]`` switches on in the session path (API v1.26). `context(question, selected,
+    change)` returns a fresh :class:`lattice.spec.claim_check.CheckContext`; `pre_route(question,
+    selected)` returns ``(markdown, kind)`` of a model-free answer, or None."""
+
+    route: bool = False
+    check: bool = False
+    context: Callable[[str, Sequence[str], str | None], Any] | None = None
+    pre_route: Callable[[str, Sequence[str]], tuple[str, str] | None] | None = None
 
 
 # ---- argv -------------------------------------------------------------------------------------
@@ -661,7 +862,11 @@ def notes_tools(project: Path, mode: str) -> tuple[str, ...]:
 
 
 def system_prompt(
-    mode: str, project: Path, selected: Sequence[str] = (), change: str | None = None
+    mode: str,
+    project: Path,
+    selected: Sequence[str] = (),
+    change: str | None = None,
+    check: bool = False,
 ) -> str:
     parts = [_BASE_RULES, MODE_PROFILES[mode].prompt]
     if mode in ("ask", "explain", "change"):
@@ -672,6 +877,8 @@ def system_prompt(
             parts.append(_NOTES_RULES)
         if impact_tools(project, mode):
             parts.append(_IMPACT_RULES)
+        if check:  # API v1.26: only with `[chat] check = true`
+            parts.append(_CHECK_RULES)
     if change:
         parts.append(f"The open change is {change}.")
     rules = project_rules(project)
@@ -824,8 +1031,10 @@ class SessionManager:
         studio_url: str | None = None,
         mcp: McpIntake | None = None,
         extra_servers: Mapping[str, Any] | None = None,
+        chat: ChatHooks | None = None,
     ) -> None:
         self.project = Path(project).resolve()
+        self.chat = chat  # API v1.26: `[chat]` (None: every turn exactly as before)
         # API v1.13: the connected servers' read tools per mode (None: lattice tools only)
         self.mcp = mcp
         self.extra_servers = dict(extra_servers or {})  # tests and probes only
@@ -855,6 +1064,7 @@ class SessionManager:
             write_configs(tmp, mode, self.project, self.python, self.studio_url,
                           self.extra_servers)  # fmt: skip
             self.sessions[sid] = Session(sid, mode, self.project, change, tmp)
+            self.sessions[sid].transcript.report_routed = bool(self.chat and self.chat.route)
         return self._summary(self.sessions[sid])
 
     def _get(self, sid: str) -> Session:
@@ -891,6 +1101,20 @@ class SessionManager:
         with s.lock:
             if s.running:
                 raise SessionError(409, "a turn is already running in this session")
+            chat = self.chat
+            if chat is not None and chat.route and chat.pre_route is not None:
+                routed = chat.pre_route(text, selected)  # API v1.26: no process, no model
+                if routed is not None:
+                    s.interrupted = s.timed_out = False
+                    s.transcript.add_user(text, selected)
+                    tc = (
+                        TurnCheck(chat.context(text, selected, s.change))
+                        if chat.check and chat.context is not None
+                        else None
+                    )
+                    s.transcript.begin_check(None)
+                    s.transcript.routed_turn(routed[0], routed[1], tc)
+                    return {"turn": s.transcript.turns}
             if not self.available():
                 raise SessionError(
                     HTTP_UNAVAILABLE, f"the claude binary ({self.claude_bin}) was not found"
@@ -898,9 +1122,14 @@ class SessionManager:
             s.interrupted = s.timed_out = False
             s.transcript.add_user(text, selected)
             s.transcript.set_state("starting")
+            checking = chat is not None and chat.check and chat.context is not None
+            tc = TurnCheck(chat.context(text, selected, s.change)) if checking and chat else None
+            s.transcript.begin_check(tc)
             resume = s.transcript.claude_session_id
             turn = s.transcript.turns
-            prompt = system_prompt(s.mode, s.project, selected, s.change)
+            prompt = system_prompt(
+                s.mode, s.project, selected, s.change, **({"check": True} if tc else {})
+            )
             # API v1.23 (rationale / glossary) and v1.25 (change_impact): extra allowed tools
             notes = (*notes_tools(s.project, s.mode), *impact_tools(s.project, s.mode))
 

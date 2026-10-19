@@ -364,3 +364,5 @@
   .view-impact .ip-tier1-grid { grid-template-columns: minmax(0, 1fr); }
   .view-impact .ip-fields { grid-template-columns: minmax(0, 1fr); }
 }
+/* API v1.26: the badge under a text Lattice checked before showing it (words, not colour alone) */
+.sess-checked { margin: var(--space-1) 0 0; overflow-wrap: anywhere; }

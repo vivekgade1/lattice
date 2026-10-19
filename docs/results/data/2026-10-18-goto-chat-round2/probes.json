@@ -1,0 +1,889 @@
+{
+ "seconds": 186.3,
+ "records": {
+  "changes": {
+   "c1": {
+    "status": "ready",
+    "byte_equal": false
+   },
+   "c2": {
+    "status": "ready",
+    "byte_equal": false
+   },
+   "c3": {
+    "status": "ready",
+    "byte_equal": false
+   },
+   "c4": {
+    "status": "ready",
+    "byte_equal": false
+   },
+   "c5": {
+    "status": "ready",
+    "byte_equal": false
+   },
+   "c6": {
+    "status": "ready",
+    "byte_equal": false
+   }
+  },
+  "reports": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/fc2-build/p/reports-r1"
+ },
+ "setup_notes": [
+  "S: studio.toml go_src rewritten to the clone",
+  "S-root2: studio.toml go_src rewritten to the clone",
+  "S4: studio.toml go_src rewritten to the clone"
+ ],
+ "probes": [
+  {
+   "id": "PC1",
+   "probe": "the checker's flagged units equal the frozen scorer's claims (plus the may/might/could ones) on round-1 answers, the scorer self-test's claims cases and the builder's fixtures; the patterns are the scorer's",
+   "ran": true,
+   "predicted": "equal",
+   "observed": {
+    "patterns_equal": true,
+    "round1_answers": 44,
+    "round1_exceptions": [],
+    "selftest_claims_cases": 27,
+    "builder_fixtures": 40,
+    "differences": []
+   },
+   "pass": true
+  },
+  {
+   "id": "PC2",
+   "probe": "fixed point: the frozen scorer counts 0 claims on every checker output; check(check(x)) == check(x); every fixed sentence (footers, rule quotes, workflow rows, element lines, the lifecycle line) is a fixed point with no unhedged failure word",
+   "ran": true,
+   "predicted": "0; idempotent",
+   "observed": {
+    "outputs": 84,
+    "claims": [],
+    "not_idempotent": [],
+    "fixed_sentences": 542,
+    "not_fixed_points": []
+   },
+   "pass": true
+  },
+  {
+   "id": "PC3",
+   "probe": "offline replay of round 1: round-1 agent answers (the N questions on S4) through the checker, scored by the frozen scorer",
+   "ran": true,
+   "predicted": "literal 0, lenient 0; correct 33-37/44; I compliance 12/12; damage 0",
+   "observed": {
+    "n": 44,
+    "correct_before": 27,
+    "correct_after": 37,
+    "claims_before": 67,
+    "claims_after": 0,
+    "lenient_after": 0,
+    "i_compliance": 12,
+    "damage": [],
+    "by_set_n_before_after": {
+     "M_rules": [
+      5,
+      5,
+      5
+     ],
+     "M_workflows": [
+      5,
+      1,
+      1
+     ],
+     "M_machines": [
+      3,
+      3,
+      3
+     ],
+     "M_access": [
+      5,
+      4,
+      4
+     ],
+     "N_not_built": [
+      4,
+      2,
+      2
+     ],
+     "I_impact": [
+      12,
+      8,
+      12
+     ],
+     "H_hypothetical": [
+      6,
+      0,
+      6
+     ],
+     "C_control": [
+      4,
+      4,
+      4
+     ]
+    },
+    "misses_after": {
+     "M-W1": [
+      "id_set:0"
+     ],
+     "M-W2": [
+      "id_set:0"
+     ],
+     "M-W4": [
+      "id_set:0"
+     ],
+     "M-W5": [
+      "all:DELETE /v1/habits/{}"
+     ],
+     "M-A5": [
+      "any:1"
+     ],
+     "N-2": [
+      "route_set"
+     ],
+     "N-3": [
+      "id_set:0"
+     ]
+    }
+   },
+   "pass": true
+  },
+  {
+   "id": "PC4",
+   "probe": "disposition fixtures: >= 3 per D0-D7 and E1-E3, each asserting the exact output bytes",
+   "ran": true,
+   "predicted": "all",
+   "observed": {
+    "fixtures": {
+     "D0": 3,
+     "D1": 4,
+     "D2": 3,
+     "D3": 4,
+     "D4": 3,
+     "D5": 3,
+     "D6": 3,
+     "D7": 3,
+     "E1": 4,
+     "E2": 3,
+     "E3": 3
+    },
+    "pytest": "88 passed in 0.11s"
+   },
+   "pass": true
+  },
+  {
+   "id": "PR2",
+   "probe": "router on round 1's questions: every routed answer correct under the frozen scorer's agent checks and unchanged by the checker; 0 C routed; I and H routing as F's",
+   "ran": true,
+   "predicted": "routed share of M+N 40-80% (p); precision 100%; 0 C routed",
+   "observed": {
+    "routed": 17,
+    "of_M_N": 22,
+    "share": 0.77,
+    "routed_wrong": [],
+    "c_routed": [],
+    "i_h_changed": [],
+    "not_routed": [
+     "M-R3",
+     "M-R4",
+     "M-R5",
+     "M-W3",
+     "M-W5"
+    ],
+    "rows": [
+     {
+      "id": "M-R1",
+      "routed": "map",
+      "correct": true,
+      "claims": 0,
+      "unchanged_by_checker": true
+     },
+     {
+      "id": "M-R2",
+      "routed": "map",
+      "correct": true,
+      "claims": 0,
+      "unchanged_by_checker": true
+     },
+     {
+      "id": "M-R3",
+      "routed": null
+     },
+     {
+      "id": "M-R4",
+      "routed": null
+     },
+     {
+      "id": "M-R5",
+      "routed": null
+     },
+     {
+      "id": "M-W1",
+      "routed": "map",
+      "correct": true,
+      "claims": 0,
+      "unchanged_by_checker": true
+     },
+     {
+      "id": "M-W2",
+      "routed": "map",
+      "correct": true,
+      "claims": 0,
+      "unchanged_by_checker": true
+     },
+     {
+      "id": "M-W3",
+      "routed": null
+     },
+     {
+      "id": "M-W4",
+      "routed": "map",
+      "correct": true,
+      "claims": 0,
+      "unchanged_by_checker": true
+     },
+     {
+      "id": "M-W5",
+      "routed": null
+     },
+     {
+      "id": "M-M1",
+      "routed": "map",
+      "correct": true,
+      "claims": 0,
+      "unchanged_by_checker": true
+     },
+     {
+      "id": "M-M2",
+      "routed": "map",
+      "correct": true,
+      "claims": 0,
+      "unchanged_by_checker": true
+     },
+     {
+      "id": "M-M3",
+      "routed": "map",
+      "correct": true,
+      "claims": 0,
+      "unchanged_by_checker": true
+     },
+     {
+      "id": "M-A1",
+      "routed": "map",
+      "correct": true,
+      "claims": 0,
+      "unchanged_by_checker": true
+     },
+     {
+      "id": "M-A2",
+      "routed": "map",
+      "correct": true,
+      "claims": 0,
+      "unchanged_by_checker": true
+     },
+     {
+      "id": "M-A3",
+      "routed": "map",
+      "correct": true,
+      "claims": 0,
+      "unchanged_by_checker": true
+     },
+     {
+      "id": "M-A4",
+      "routed": "map",
+      "correct": true,
+      "claims": 0,
+      "unchanged_by_checker": true
+     },
+     {
+      "id": "M-A5",
+      "routed": "map",
+      "correct": true,
+      "claims": 0,
+      "unchanged_by_checker": true
+     },
+     {
+      "id": "N-1",
+      "routed": "map",
+      "correct": true,
+      "claims": 0,
+      "unchanged_by_checker": true
+     },
+     {
+      "id": "N-2",
+      "routed": "map",
+      "correct": true,
+      "claims": 0,
+      "unchanged_by_checker": true
+     },
+     {
+      "id": "N-3",
+      "routed": "map",
+      "correct": true,
+      "claims": 0,
+      "unchanged_by_checker": true
+     },
+     {
+      "id": "N-4",
+      "routed": "map",
+      "correct": true,
+      "claims": 0,
+      "unchanged_by_checker": true
+     }
+    ]
+   },
+   "pass": true
+  },
+  {
+   "id": "PS2",
+   "probe": "session with a fake claude replaying stream-json (round-1 answers plus planted violations): check mode emits 0 partial text events; every text block, also before a tool call, is checked; result.check and routed are reported; routed turns spawn 0 processes",
+   "ran": true,
+   "predicted": "as stated",
+   "observed": {
+    "fixtures": {
+     "r1-H-1": {
+      "partial_events": 0,
+      "texts_without_checked": 0,
+      "raw_block_in_events": false,
+      "result_has_check": true,
+      "result_text_is_shown": true,
+      "event_types": [
+       "user",
+       "status",
+       "status",
+       "text",
+       "tool_use",
+       "tool_result",
+       "text",
+       "text",
+       "result",
+       "status"
+      ],
+      "check_vs_expected": [
+       {
+        "kept": 21,
+        "withheld": 2
+       },
+       {
+        "kept": 21,
+        "withheld": 2
+       }
+      ],
+      "claims": [],
+      "ok": true
+     },
+     "r1-I-c4-1": {
+      "partial_events": 0,
+      "texts_without_checked": 0,
+      "raw_block_in_events": false,
+      "result_has_check": true,
+      "result_text_is_shown": true,
+      "event_types": [
+       "user",
+       "status",
+       "status",
+       "text",
+       "tool_use",
+       "tool_result",
+       "text",
+       "text",
+       "result",
+       "status"
+      ],
+      "check_vs_expected": [
+       {
+        "kept": 16,
+        "labelled": 1,
+        "replaced_item": 1,
+        "withheld": 1,
+        "speculative_hedge": 1
+       },
+       {
+        "kept": 16,
+        "labelled": 1,
+        "replaced_item": 1,
+        "withheld": 1,
+        "speculative_hedge": 1
+       }
+      ],
+      "claims": [],
+      "ok": true
+     },
+     "r1-M-W3": {
+      "partial_events": 0,
+      "texts_without_checked": 0,
+      "raw_block_in_events": false,
+      "result_has_check": true,
+      "result_text_is_shown": true,
+      "event_types": [
+       "user",
+       "status",
+       "status",
+       "text",
+       "tool_use",
+       "tool_result",
+       "text",
+       "result",
+       "status"
+      ],
+      "check_vs_expected": [
+       {
+        "kept": 14,
+        "replaced_replay": 1
+       },
+       {
+        "kept": 14,
+        "replaced_replay": 1
+       }
+      ],
+      "claims": [],
+      "ok": true
+     },
+     "r1-M-M1": {
+      "partial_events": 0,
+      "texts_without_checked": 0,
+      "raw_block_in_events": false,
+      "result_has_check": true,
+      "result_text_is_shown": true,
+      "event_types": [
+       "user",
+       "status",
+       "status",
+       "text",
+       "tool_use",
+       "tool_result",
+       "text",
+       "text",
+       "result",
+       "status"
+      ],
+      "check_vs_expected": [
+       {
+        "kept": 15,
+        "replaced_quote": 3,
+        "withheld": 1
+       },
+       {
+        "kept": 15,
+        "replaced_quote": 3,
+        "withheld": 1
+       }
+      ],
+      "claims": [],
+      "ok": true
+     },
+     "r1-C-1": {
+      "partial_events": 0,
+      "texts_without_checked": 0,
+      "raw_block_in_events": false,
+      "result_has_check": true,
+      "result_text_is_shown": true,
+      "event_types": [
+       "user",
+       "status",
+       "status",
+       "text",
+       "tool_use",
+       "tool_result",
+       "text",
+       "text",
+       "result",
+       "status"
+      ],
+      "check_vs_expected": [
+       {
+        "kept": 9,
+        "withheld": 1
+       },
+       {
+        "kept": 9,
+        "withheld": 1
+       }
+      ],
+      "claims": [],
+      "ok": true
+     },
+     "r1-H-5": {
+      "partial_events": 0,
+      "texts_without_checked": 0,
+      "raw_block_in_events": false,
+      "result_has_check": true,
+      "result_text_is_shown": true,
+      "event_types": [
+       "user",
+       "status",
+       "status",
+       "text",
+       "tool_use",
+       "tool_result",
+       "text",
+       "result",
+       "status"
+      ],
+      "check_vs_expected": [
+       {
+        "kept": 11,
+        "replaced_quote": 7,
+        "withheld": 3
+       },
+       {
+        "kept": 11,
+        "replaced_quote": 7,
+        "withheld": 3
+       }
+      ],
+      "claims": [],
+      "ok": true
+     },
+     "planted-pre-tool": {
+      "partial_events": 0,
+      "texts_without_checked": 0,
+      "raw_block_in_events": false,
+      "result_has_check": true,
+      "result_text_is_shown": true,
+      "event_types": [
+       "user",
+       "status",
+       "status",
+       "tool_use",
+       "tool_result",
+       "text",
+       "result",
+       "status"
+      ],
+      "check_vs_expected": [
+       {
+        "withheld": 2
+       },
+       {
+        "withheld": 2
+       }
+      ],
+      "claims": [],
+      "ok": true
+     },
+     "planted-single": {
+      "partial_events": 0,
+      "texts_without_checked": 0,
+      "raw_block_in_events": false,
+      "result_has_check": true,
+      "result_text_is_shown": true,
+      "event_types": [
+       "user",
+       "status",
+       "status",
+       "text",
+       "result",
+       "status"
+      ],
+      "check_vs_expected": [
+       {
+        "replaced_replay": 1
+       },
+       {
+        "replaced_replay": 1
+       }
+      ],
+      "claims": [],
+      "ok": true
+     }
+    },
+    "routed": {
+     "Which rules are required by the spec but": {
+      "events": [
+       "user",
+       "text",
+       "result",
+       "status"
+      ],
+      "routed": "map",
+      "done": true
+     },
+     "Which workflows failed?": {
+      "events": [
+       "user",
+       "text",
+       "result",
+       "status"
+      ],
+      "routed": "map",
+      "done": true
+     },
+     "What if we raised the habit limit to 100": {
+      "events": [
+       "user",
+       "text",
+       "result",
+       "status"
+      ],
+      "routed": "hypothetical",
+      "done": true
+     }
+    },
+    "fake_claude_calls_during_routed": 0
+   },
+   "pass": true
+  },
+  {
+   "id": "PB2",
+   "probe": "byte-compat with `[chat]` absent against git archive of the base: session argv/settings/prompt, Transcript events, every existing route (real and mock), tools/list, help, protected files, pytest failure ids",
+   "ran": true,
+   "predicted": "identical",
+   "observed": {
+    "session argv, settings, prompt (4 configs) identical to base": true,
+    "session detail": {
+     "identical_to_base": {
+      "impl0-ws0": true,
+      "impl0-ws1": true,
+      "impl1-ws0": true,
+      "impl1-ws1": true
+     },
+     "with_impact": {
+      "impl0-ws0/ask": true,
+      "impl0-ws0/explain": true,
+      "impl0-ws0/change": true,
+      "impl0-ws1/ask": true,
+      "impl0-ws1/explain": true,
+      "impl0-ws1/change": true,
+      "impl1-ws0/ask": true,
+      "impl1-ws0/explain": true,
+      "impl1-ws0/change": true,
+      "impl1-ws1/ask": true,
+      "impl1-ws1/explain": true,
+      "impl1-ws1/change": true
+     }
+    },
+    "protected files: empty diff": true,
+    "existing tests/fixtures changed (added, deleted, path)": [
+     [
+      "1",
+      "1",
+      "tests/studio/test_appmap_api.py"
+     ]
+    ],
+    "existing tests: only the API header assertion changed": true,
+    "Transcript events on 6 stream fixtures: identical": true,
+    "real server: every existing route identical": true,
+    "mock server: every existing route identical": true,
+    "POST /api/ask identical (routed by F, shapes of the map router, free)": true,
+    "mcp tools/list and instructions": {
+     "[implementation] readonly=False": {
+      "identical": true,
+      "tools": 16
+     },
+     "[implementation] readonly=True": {
+      "identical": true,
+      "tools": 14
+     },
+     "[implementation] + [impact] readonly=False": {
+      "identical": true,
+      "tools": 17
+     },
+     "[implementation] + [impact] readonly=True": {
+      "identical": true,
+      "tools": 15
+     }
+    },
+    "lattice --help and spec usage identical": true,
+    "web files that differ": [
+     "css/views.css",
+     "js/chat.js",
+     "js/session.js"
+    ],
+    "web edits (added, deleted)": {
+     "css/views.css": [
+      "2",
+      "0"
+     ],
+     "js/chat.js": [
+      "11",
+      "1"
+     ],
+     "js/session.js": [
+      "5",
+      "2"
+     ]
+    },
+    "web edits are additive in chat.js, session.js, views.css only": true,
+    "pytest: same failure ids as the base (but the HEAD guard)": true,
+    "pytest failure ids only in the new run": [
+     "test_existing_view_files_are_byte_unchanged"
+    ],
+    "pytest failure ids only in the base run": [],
+    "pytest summary (new)": "3 failed, 3610 passed, 5 skipped, 4 deselected, 414 warnings, 29 errors in 961.29s (0:16:01)",
+    "pytest summary (base)": "2 failed, 3472 passed, 5 skipped, 4 deselected, 414 warnings, 29 errors in 972.63s (0:16:12)"
+   },
+   "pass": true
+  },
+  {
+   "id": "PW2",
+   "probe": "no write, no process: snapshots of the project, inventory, state and reports directories around 50 checked answers, 50 routed answers and routed session turns; the claude shim and the fake binary; docker ps -a",
+   "ran": true,
+   "predicted": {
+    "changed": 0,
+    "new": 0,
+    "calls": 0
+   },
+   "observed": {
+    "checked": 50,
+    "routed": 40,
+    "changed/new/gone": {
+     "project": {
+      "changed": 0,
+      "new": 0,
+      "gone": 0
+     },
+     "inventory": {
+      "changed": 0,
+      "new": 0,
+      "gone": 0
+     },
+     "state": {
+      "changed": 0,
+      "new": 0,
+      "gone": 0
+     },
+     "reports": {
+      "changed": 0,
+      "new": 0,
+      "gone": 0
+     }
+    },
+    "first changes": {},
+    "claude calls": 0,
+    "shim grew": false,
+    "new containers": [],
+    "texts": 44,
+    "routing module": "lattice.chatroute/1"
+   },
+   "pass": true
+  },
+  {
+   "id": "PD2",
+   "probe": "determinism: check_text and the router over round-1 questions and answers in 10 processes with random PYTHONHASHSEED and two scratch roots",
+   "ran": true,
+   "predicted": "1 distinct output",
+   "observed": {
+    "runs": 10,
+    "distinct": 1,
+    "digest": "3c233edecc42f9a0"
+   },
+   "pass": true
+  },
+  {
+   "id": "PX2",
+   "probe": "time on S: check_text per answer and the pre-route",
+   "ran": true,
+   "predicted": "0.05-0.4 s; p95 <= 1.0 s; pre-route p50 <= 0.5 s (gate); p50 <= 0.25 s (p)",
+   "observed": {
+    "check_text cold (ctx built per answer) p50/p95 s": [
+     0.038,
+     0.254
+    ],
+    "check_text warm (ctx cached for the turn) p50/p95 s": [
+     0.0,
+     0.001
+    ],
+    "pre-route p50/p95 s": [
+     0.025,
+     0.128
+    ],
+    "n": [
+     40,
+     44
+    ]
+   },
+   "pass": true
+  },
+  {
+   "id": "PU2",
+   "probe": "chat.js badge: node --check, the pure functions under node, the forbidden-word scan of the added lines (a fake-DOM render of a whole transcript is NOT RUN: chat.js's renderer is not exported)",
+   "ran": true,
+   "predicted": "all",
+   "observed": {
+    "node --check chat.js": true,
+    "node --check session.js": true,
+    "pure functions under node": {
+     "words": "Checked by Lattice: 1 withheld, 3 replaced",
+     "nochecked": false,
+     "kinds": [
+      "text",
+      "text",
+      "result"
+     ],
+     "zero": "Checked by Lattice: 0 withheld, 0 replaced"
+    },
+    "badge words": true,
+    "added lines": 18,
+    "forbidden words in added lines": []
+   },
+   "pass": true
+  },
+  {
+   "id": "PAPI2",
+   "probe": "## v1.26 fenced shapes equal the real and the mock answers recursively; header v1.26",
+   "ran": true,
+   "predicted": "all pass",
+   "observed": {
+    "files": [
+     "tests/studio/test_chat_check_api.py::test_the_documented_shapes_are_the_real_ones"
+    ],
+    "summary": "1 passed in 3.34s"
+   },
+   "pass": true
+  },
+  {
+   "id": "PP2",
+   "probe": "the mock uses the same chat_route and claim_check over its fixture; mock equals real key for key",
+   "ran": true,
+   "predicted": "all pass",
+   "observed": {
+    "files": [
+     "tests/studio/test_chat_check_api.py::test_the_mock_answers_key_for_key_what_the_real_server_does"
+    ],
+    "summary": "1 passed in 1.43s"
+   },
+   "pass": true
+  },
+  {
+   "id": "PTEST",
+   "probe": "the new unit, session and API tests",
+   "ran": true,
+   "predicted": "all pass",
+   "observed": {
+    "files": [
+     "tests/spec/test_claim_check.py",
+     "tests/spec/test_chat_route.py",
+     "tests/studio/test_chat_check_session.py",
+     "tests/studio/test_chat_check_api.py"
+    ],
+    "summary": "139 passed in 6.17s"
+   },
+   "pass": true
+  },
+  {
+   "id": "GATE",
+   "probe": "dogfood/studio/check.sh with R109-R112",
+   "ran": true,
+   "predicted": "PASS; 509 + 3-16 cases; 62 + 1-4 scenarios (p)",
+   "observed": {
+    "rc": 0,
+    "verdict": "pass",
+    "cases": 512,
+    "scenarios": 63,
+    "findings": 0,
+    "seconds": 57.8
+   },
+   "pass": true
+  },
+  {
+   "id": "CONTAINERS",
+   "probe": "containers this runner started and left behind",
+   "ran": true,
+   "predicted": 0,
+   "observed": {
+    "before": [],
+    "after": []
+   },
+   "pass": true
+  }
+ ]
+}
