@@ -1,0 +1,2555 @@
+{
+ "author": "separate question-set agent (never read appmap.py or any F implementation)",
+ "changes": {
+  "c1": {
+   "candidate": "candidates/c1_limit",
+   "files_sha256": {
+    "REQUIREMENTS.md": "5a6aaf6a7a70a275c68ed31b9c77d772299ca6e2faf768bd4451540c8ce1fd3e",
+    "spec.py": "ece8a0e2dc3077f32d89061157753227e9cf91f70ac7c1da036ebcdc51b26aa1",
+    "spec.trace.json": "87d2b2181ff2597b526fc6189ceb29564407af8770a8405a788e370db1a8824a"
+   },
+   "input": {
+    "app": {
+     "configured": false,
+     "layers": "ACD"
+    },
+    "base": {
+     "requirements": "dcac6deb3ad3ec4ab7381af040cb86064aae00eb3ed38c05237657156fbad7b1",
+     "spec": "28dfc2e6c6a2aa27168079740d28a94de7f3efcb7cf8234d795d48b7960f5624",
+     "trace": "627a2b3f4c9cfafc3ad6cd5edb01f355fb76b53c248c629e7a77fd1bd8ee82ed"
+    },
+    "candidate": {
+     "requirements": "5a6aaf6a7a70a275c68ed31b9c77d772299ca6e2faf768bd4451540c8ce1fd3e",
+     "spec": "ece8a0e2dc3077f32d89061157753227e9cf91f70ac7c1da036ebcdc51b26aa1",
+     "trace": "87d2b2181ff2597b526fc6189ceb29564407af8770a8405a788e370db1a8824a"
+    },
+    "change": null,
+    "inventory": {
+     "extract_sha256": "d51ef75340d54682a8bd2c3f40220e50c2ef31ae0eab17ef3ca68c9a39f89adc",
+     "stale": false,
+     "workflows_sha256": "af1383dbf5d51f876c61a282f23a2fb60d79f536af7542dfe48387e6f1c573a0"
+    },
+    "kind": "candidate",
+    "notes": []
+   },
+   "kind": "limit change: at most 100 active habits (was 50)",
+   "report": "reports/c1_limit.json",
+   "report_sha256": "ea6369e57ee55edfbcbe8849820aced3330afa2951703af9f1facf7eae57e629",
+   "summary_workflows": {
+    "t1_fail": 0,
+    "t2_fail": 0,
+    "t3_may_fail": 64
+   },
+   "tier1_ids": [],
+   "tier2_ids": [],
+   "tier2_items": [],
+   "tier3_ids": [
+    "t3-00458c0000",
+    "t3-00b2f0e55d",
+    "t3-0160c91cb1",
+    "t3-01c823c707",
+    "t3-04b022c136",
+    "t3-08e2efff20",
+    "t3-0a9870e6e3",
+    "t3-0afab45409",
+    "t3-0b152dcd5c",
+    "t3-0bfc47d4c3",
+    "t3-10d2666624",
+    "t3-1284b78369",
+    "t3-13bbb24223",
+    "t3-19588d8ff9",
+    "t3-1df069828f",
+    "t3-1e67882e89",
+    "t3-1ea141764f",
+    "t3-203a512460",
+    "t3-216fcac682",
+    "t3-229adb0098",
+    "t3-267ddbb55a",
+    "t3-2822b2db8a",
+    "t3-28cff79f35",
+    "t3-298592fcbe",
+    "t3-2ab3ad965a",
+    "t3-30c6285e53",
+    "t3-32849bd96f",
+    "t3-32f0b8c2cd",
+    "t3-3354e359ef",
+    "t3-36449eb26d",
+    "t3-3c76969e95",
+    "t3-3dea6cb43a",
+    "t3-3e4df777b2",
+    "t3-40351a918b",
+    "t3-4056ba3205",
+    "t3-406604d451",
+    "t3-40dc93b4eb",
+    "t3-43607be258",
+    "t3-4362227488",
+    "t3-458c0b1110",
+    "t3-46bd17bf50",
+    "t3-48afad3bff",
+    "t3-49c83cc0f6",
+    "t3-49ebf3780e",
+    "t3-4a4053a9a2",
+    "t3-4d7b8f5fcc",
+    "t3-4f0b813722",
+    "t3-4f84eed631",
+    "t3-51717f62cc",
+    "t3-51b0a7651a",
+    "t3-53c3aa3277",
+    "t3-547584610a",
+    "t3-55175c8369",
+    "t3-568b0b839f",
+    "t3-57656dc341",
+    "t3-58820883c8",
+    "t3-5a0bd3c56c",
+    "t3-5c1660cc5d",
+    "t3-5ced57f179",
+    "t3-5e847fc6d5",
+    "t3-5f3d61a14d",
+    "t3-62a5eb8ad1",
+    "t3-630281ab78",
+    "t3-63a7489217",
+    "t3-646efaf037",
+    "t3-648d89b1a5",
+    "t3-64ba33ec5a",
+    "t3-665e184200",
+    "t3-6a71a029dc",
+    "t3-6df1dec4ed",
+    "t3-702ff47107",
+    "t3-718dd55732",
+    "t3-7285295366",
+    "t3-739898a486",
+    "t3-73cfaab6cd",
+    "t3-74e08d0704",
+    "t3-759c9ea3a4",
+    "t3-7976813830",
+    "t3-7b5eec7d5d",
+    "t3-7be9636e95",
+    "t3-7e85608691",
+    "t3-82407f40a5",
+    "t3-83f8b56cea",
+    "t3-85b2e26d7f",
+    "t3-886174d11d",
+    "t3-88653e9742",
+    "t3-8abe560001",
+    "t3-8d39aef3db",
+    "t3-8d3c362a31",
+    "t3-97c797fb22",
+    "t3-97f5cc0550",
+    "t3-99cf9d0c40",
+    "t3-9cae87c975",
+    "t3-9ccc4dd6a9",
+    "t3-a31e170285",
+    "t3-a3d988a3ca",
+    "t3-a496c92a0f",
+    "t3-a57a9733bb",
+    "t3-a78ca67481",
+    "t3-a93f44b3f9",
+    "t3-ae79351d76",
+    "t3-aee3dcf3fd",
+    "t3-af0545341b",
+    "t3-b456aea78f",
+    "t3-b473e9fc3b",
+    "t3-bb3e50a595",
+    "t3-bbc663cfd1",
+    "t3-bcc4736fa0",
+    "t3-bd1c03efd1",
+    "t3-bf5fc578c6",
+    "t3-c9fc0b5b37",
+    "t3-cfd7bf5160",
+    "t3-d35455b0d8",
+    "t3-d3fc7541ef",
+    "t3-d4743b677a",
+    "t3-d51726ddc6",
+    "t3-d520ef06fb",
+    "t3-d5e488b27e",
+    "t3-d7018cf1e6",
+    "t3-d7472a2cc1",
+    "t3-d8f7863075",
+    "t3-d9bacaeebc",
+    "t3-de1661f810",
+    "t3-def4b8b4ca",
+    "t3-e26b074236",
+    "t3-e2a72491c7",
+    "t3-e3a2e01082",
+    "t3-e4c4033d2d",
+    "t3-e5a5b85365",
+    "t3-e70f544fa7",
+    "t3-ed267aa5ab",
+    "t3-ee391c2726",
+    "t3-eebc122792",
+    "t3-ef1a74934c",
+    "t3-f07f1e0a66",
+    "t3-f3f68bb6ba",
+    "t3-f5a397c85a",
+    "t3-f64b8e8a77",
+    "t3-fca17b980b",
+    "t3-feb5e3f13b",
+    "t3-ffa8cc5617"
+   ],
+   "tiers": {
+    "1": "not_run:not_requested",
+    "2": "run",
+    "3": "run",
+    "4": "not_run:spike_e"
+   }
+  },
+  "c2": {
+   "candidate": "candidates/c2_bound",
+   "files_sha256": {
+    "REQUIREMENTS.md": "c42d2cda4972f4ade0dbf8d64ee0c52411deba207bdf31bb03b57fc366f488b3",
+    "spec.py": "cf84f5094a50b59971028594152508b455a35f1dfda7a381815d04048c792a0c",
+    "spec.trace.json": "4d69485ef7c848f3c6640cc8ff56eac7648b3cbff3a01d3382a1215bcef65f3f"
+   },
+   "input": {
+    "app": {
+     "configured": false,
+     "layers": "ACD"
+    },
+    "base": {
+     "requirements": "dcac6deb3ad3ec4ab7381af040cb86064aae00eb3ed38c05237657156fbad7b1",
+     "spec": "28dfc2e6c6a2aa27168079740d28a94de7f3efcb7cf8234d795d48b7960f5624",
+     "trace": "627a2b3f4c9cfafc3ad6cd5edb01f355fb76b53c248c629e7a77fd1bd8ee82ed"
+    },
+    "candidate": {
+     "requirements": "c42d2cda4972f4ade0dbf8d64ee0c52411deba207bdf31bb03b57fc366f488b3",
+     "spec": "cf84f5094a50b59971028594152508b455a35f1dfda7a381815d04048c792a0c",
+     "trace": "4d69485ef7c848f3c6640cc8ff56eac7648b3cbff3a01d3382a1215bcef65f3f"
+    },
+    "change": null,
+    "inventory": {
+     "extract_sha256": "d51ef75340d54682a8bd2c3f40220e50c2ef31ae0eab17ef3ca68c9a39f89adc",
+     "stale": false,
+     "workflows_sha256": "af1383dbf5d51f876c61a282f23a2fb60d79f536af7542dfe48387e6f1c573a0"
+    },
+    "kind": "candidate",
+    "notes": []
+   },
+   "kind": "request bound: a habit name is 1 to 60 characters (was 100)",
+   "report": "reports/c2_bound.json",
+   "report_sha256": "75e9160a1145abc34f79fcb63ba5b13a81acf653705f04b5b1fb9227bbe07922",
+   "summary_workflows": {
+    "t1_fail": 0,
+    "t2_fail": 0,
+    "t3_may_fail": 64
+   },
+   "tier1_ids": [],
+   "tier2_ids": [],
+   "tier2_items": [],
+   "tier3_ids": [
+    "t3-015a3d2898",
+    "t3-02310f9bf9",
+    "t3-0562701ef2",
+    "t3-066d6f85d7",
+    "t3-06dfb47eba",
+    "t3-0774a63f32",
+    "t3-0874943e65",
+    "t3-10903dfd34",
+    "t3-10cdf1d6b3",
+    "t3-10ff3f7d26",
+    "t3-1303c530c3",
+    "t3-136fd795f5",
+    "t3-1439fd3f5c",
+    "t3-151305d16a",
+    "t3-163205573a",
+    "t3-18b0590c44",
+    "t3-1a8d500a7f",
+    "t3-1b23c9961b",
+    "t3-1c2ed34fa5",
+    "t3-1da0d26cea",
+    "t3-203fd71195",
+    "t3-2ad3a92adc",
+    "t3-2dc416dfdf",
+    "t3-33123ef613",
+    "t3-382a702f13",
+    "t3-3c63fc6b9e",
+    "t3-3f01b47aa3",
+    "t3-438cb8acff",
+    "t3-43901b33f1",
+    "t3-4dda3cc1cf",
+    "t3-50539d0f0b",
+    "t3-5055a8ba58",
+    "t3-51fb5a2925",
+    "t3-558161d35f",
+    "t3-55c37c6912",
+    "t3-5710d8aea8",
+    "t3-58ea834675",
+    "t3-5909bb9fda",
+    "t3-5912fa42f2",
+    "t3-5b6bcbade2",
+    "t3-5c6cbfe685",
+    "t3-5d212bbe2e",
+    "t3-5d8df47b87",
+    "t3-5f3ca56b53",
+    "t3-607e5553f2",
+    "t3-60a8088fcd",
+    "t3-60b9a2a255",
+    "t3-61663c811e",
+    "t3-62bfe40178",
+    "t3-6459247b99",
+    "t3-650ef39b44",
+    "t3-6695abf114",
+    "t3-6983965a6b",
+    "t3-69a39d85d8",
+    "t3-6ad31aeb04",
+    "t3-71e1a80004",
+    "t3-733301a027",
+    "t3-74d2279689",
+    "t3-7629f8163c",
+    "t3-7684f4824c",
+    "t3-7dd0097c65",
+    "t3-7fb4fc469f",
+    "t3-83f04beecb",
+    "t3-844c9703d4",
+    "t3-8472576dee",
+    "t3-85fe1e673c",
+    "t3-864ef98a5d",
+    "t3-8701182362",
+    "t3-8c2b2fba62",
+    "t3-8dc512ad4c",
+    "t3-8fa4ccef71",
+    "t3-9099be53f5",
+    "t3-93a895b435",
+    "t3-99c05b1b3a",
+    "t3-9b304d4e6b",
+    "t3-a2b7300544",
+    "t3-a5555c05b5",
+    "t3-a6f3744a7d",
+    "t3-a714163e73",
+    "t3-aaf87b8fe1",
+    "t3-abe2796747",
+    "t3-b0263c3108",
+    "t3-b03f20bfe1",
+    "t3-b3dbe844fb",
+    "t3-b41853488a",
+    "t3-bbed465fa2",
+    "t3-be7fb98938",
+    "t3-bf19cbfde9",
+    "t3-c3d32fa317",
+    "t3-c52aa742f8",
+    "t3-c840253f4e",
+    "t3-cdab947eae",
+    "t3-d0b371ea66",
+    "t3-d653cb5c2f",
+    "t3-d76f760b2d",
+    "t3-d9bd817a61",
+    "t3-e8de8f40d8",
+    "t3-ea0661fd37",
+    "t3-eca17327a7",
+    "t3-ed968bbff3",
+    "t3-f05ba0e6f9",
+    "t3-f2a84dd08b",
+    "t3-f4d18d9095",
+    "t3-f5951447cf",
+    "t3-f68dcfe818",
+    "t3-f96ec4f90e",
+    "t3-fbfc53670a",
+    "t3-fee1e1e178"
+   ],
+   "tiers": {
+    "1": "not_run:not_requested",
+    "2": "run",
+    "3": "run",
+    "4": "not_run:spike_e"
+   }
+  },
+  "c3": {
+   "candidate": "candidates/c3_invariant",
+   "files_sha256": {
+    "REQUIREMENTS.md": "7b82c62788806ec617162d216a2b98675da982cd348b54a8ef4e8c9ccde042f6",
+    "spec.py": "c81b12986f7e189e034d202ea96428849c1ba79af13f14823b35132720eeecd3",
+    "spec.trace.json": "c9a573f5aa8821a1833841b0d40d050b573326651389f15ab8c27c86d60b6f1d"
+   },
+   "input": {
+    "app": {
+     "configured": false,
+     "layers": "ACD"
+    },
+    "base": {
+     "requirements": "dcac6deb3ad3ec4ab7381af040cb86064aae00eb3ed38c05237657156fbad7b1",
+     "spec": "28dfc2e6c6a2aa27168079740d28a94de7f3efcb7cf8234d795d48b7960f5624",
+     "trace": "627a2b3f4c9cfafc3ad6cd5edb01f355fb76b53c248c629e7a77fd1bd8ee82ed"
+    },
+    "candidate": {
+     "requirements": "7b82c62788806ec617162d216a2b98675da982cd348b54a8ef4e8c9ccde042f6",
+     "spec": "c81b12986f7e189e034d202ea96428849c1ba79af13f14823b35132720eeecd3",
+     "trace": "c9a573f5aa8821a1833841b0d40d050b573326651389f15ab8c27c86d60b6f1d"
+    },
+    "change": null,
+    "inventory": {
+     "extract_sha256": "d51ef75340d54682a8bd2c3f40220e50c2ef31ae0eab17ef3ca68c9a39f89adc",
+     "stale": false,
+     "workflows_sha256": "af1383dbf5d51f876c61a282f23a2fb60d79f536af7542dfe48387e6f1c573a0"
+    },
+    "kind": "candidate",
+    "notes": []
+   },
+   "kind": "new invariant: a nudge's message is never empty",
+   "report": "reports/c3_invariant.json",
+   "report_sha256": "8cfa264a29d4608dcc5b7f4bc07a0afb2ea9f370cc61472a6728b0743e2f6756",
+   "summary_workflows": {
+    "t1_fail": 0,
+    "t2_fail": 0,
+    "t3_may_fail": 7
+   },
+   "tier1_ids": [],
+   "tier2_ids": [],
+   "tier2_items": [],
+   "tier3_ids": [
+    "t3-054e389023",
+    "t3-0ababab104",
+    "t3-0b0e656c49",
+    "t3-0d3d0fb3da",
+    "t3-13daca61fd",
+    "t3-1bc5801043",
+    "t3-1c60310981",
+    "t3-21ed0a7907",
+    "t3-22cf13dc34",
+    "t3-24b4953f35",
+    "t3-24cdf736e8",
+    "t3-29a3a6cf68",
+    "t3-30e248e799",
+    "t3-46b3f0c346",
+    "t3-46b5b60f7a",
+    "t3-479dd60286",
+    "t3-4967f23ecb",
+    "t3-49772b6a24",
+    "t3-4d20915aad",
+    "t3-4d500d3b63",
+    "t3-50fd7dec79",
+    "t3-5afdbd5510",
+    "t3-5cce3ca047",
+    "t3-5e6f6dec4a",
+    "t3-6239c80dce",
+    "t3-62cea07ab6",
+    "t3-67c025dcc3",
+    "t3-6accb62df7",
+    "t3-6c38b9aaea",
+    "t3-6df5633f95",
+    "t3-7086ff7cf8",
+    "t3-7098f66d36",
+    "t3-7a39365b15",
+    "t3-7f89c7aa9a",
+    "t3-817e0e4505",
+    "t3-81cb837d0e",
+    "t3-9085d74d7f",
+    "t3-99597585ba",
+    "t3-a20664b157",
+    "t3-ad92719e68",
+    "t3-b1b5fe4993",
+    "t3-b26c072ec4",
+    "t3-b326a3b588",
+    "t3-bb5661ed02",
+    "t3-cacdf37f2f",
+    "t3-cacf6ec1c6",
+    "t3-ce16b5b6d5",
+    "t3-ebc3157e46",
+    "t3-efd7bcd522",
+    "t3-f347f3a021",
+    "t3-f4b7dae8ad",
+    "t3-fd5d02dbcf",
+    "t3-fe49bdc70c"
+   ],
+   "tiers": {
+    "1": "not_run:not_requested",
+    "2": "run",
+    "3": "run",
+    "4": "not_run:spike_e"
+   }
+  },
+  "c4": {
+   "candidate": "candidates/c4_removed_endpoint",
+   "files_sha256": {
+    "REQUIREMENTS.md": "de79055bb3ed2cf11118557b797718936321a6bee4924dd983b3c8c25aaf7cd6",
+    "spec.py": "b89db3f1eb3175d5f3b9822f1b0a684e6aa4c317ab86a10acb9af5f13b7c09e5",
+    "spec.trace.json": "2653dc22658bd7ad25d5776175829478f162355bdee9782871dd825650bc5cb2"
+   },
+   "input": {
+    "app": {
+     "configured": false,
+     "layers": "ACD"
+    },
+    "base": {
+     "requirements": "dcac6deb3ad3ec4ab7381af040cb86064aae00eb3ed38c05237657156fbad7b1",
+     "spec": "28dfc2e6c6a2aa27168079740d28a94de7f3efcb7cf8234d795d48b7960f5624",
+     "trace": "627a2b3f4c9cfafc3ad6cd5edb01f355fb76b53c248c629e7a77fd1bd8ee82ed"
+    },
+    "candidate": {
+     "requirements": "de79055bb3ed2cf11118557b797718936321a6bee4924dd983b3c8c25aaf7cd6",
+     "spec": "b89db3f1eb3175d5f3b9822f1b0a684e6aa4c317ab86a10acb9af5f13b7c09e5",
+     "trace": "2653dc22658bd7ad25d5776175829478f162355bdee9782871dd825650bc5cb2"
+    },
+    "change": null,
+    "inventory": {
+     "extract_sha256": "d51ef75340d54682a8bd2c3f40220e50c2ef31ae0eab17ef3ca68c9a39f89adc",
+     "stale": false,
+     "workflows_sha256": "af1383dbf5d51f876c61a282f23a2fb60d79f536af7542dfe48387e6f1c573a0"
+    },
+    "kind": "candidate",
+    "notes": []
+   },
+   "kind": "removed endpoint: DELETE /v1/devices/{id} no longer offered (answers 404)",
+   "report": "reports/c4_removed_endpoint.json",
+   "report_sha256": "7939db26e115999c06864a1a61ee9e104ef58c8c6c723c8c11154c1af9a49fa9",
+   "summary_workflows": {
+    "t1_fail": 0,
+    "t2_fail": 1,
+    "t3_may_fail": 2
+   },
+   "tier1_ids": [],
+   "tier2_ids": [
+    "t2-1da637132c",
+    "t2-22fc49acc5"
+   ],
+   "tier2_items": [
+    {
+     "claim": "scenario:deleting_a_device_is_no_longer_offered fails at step <= 2",
+     "id": "t2-22fc49acc5",
+     "kind": "scenario_fails",
+     "target": "scenario:deleting_a_device_is_no_longer_offered"
+    },
+    {
+     "claim": "flow:wf-801d529a0f fails at step 1 after the change",
+     "id": "t2-1da637132c",
+     "kind": "flow_fails_after_change",
+     "target": "flow:wf-801d529a0f"
+    }
+   ],
+   "tier3_ids": [
+    "t3-1213fcfbf6",
+    "t3-13c21bf523",
+    "t3-17bf0aa18a",
+    "t3-1918dee65e",
+    "t3-307dd1ad82",
+    "t3-374bd975c9",
+    "t3-3e404f1da2",
+    "t3-4a6e2d78e2",
+    "t3-595247af0d",
+    "t3-6783886c5e",
+    "t3-92bc046a1c",
+    "t3-9db35a7d05",
+    "t3-9f6d9426e7",
+    "t3-9fe457005e",
+    "t3-a0cdcdebc2",
+    "t3-a5120e3ec4",
+    "t3-a6dd6023ab",
+    "t3-aab3a40f11",
+    "t3-b69759baf2",
+    "t3-cd0d92144e",
+    "t3-d59e4af191"
+   ],
+   "tiers": {
+    "1": "not_run:not_requested",
+    "2": "run",
+    "3": "run",
+    "4": "not_run:spike_e"
+   }
+  },
+  "c5": {
+   "candidate": "candidates/c5_access",
+   "files_sha256": {
+    "REQUIREMENTS.md": "3b614ceeac9869db539f5265383dc8b75e3931395ec667c5653ac6b6d4f9c525",
+    "spec.py": "c502189ec0739602cddd9fd7c3756e40d11ebf5cd2d067a58d46761a8f92ba64",
+    "spec.trace.json": "90e029ad7e5675d69ad2d051d03e90555068ca0e83215da0c0c94da3172864dc"
+   },
+   "input": {
+    "app": {
+     "configured": false,
+     "layers": "ACD"
+    },
+    "base": {
+     "requirements": "dcac6deb3ad3ec4ab7381af040cb86064aae00eb3ed38c05237657156fbad7b1",
+     "spec": "28dfc2e6c6a2aa27168079740d28a94de7f3efcb7cf8234d795d48b7960f5624",
+     "trace": "627a2b3f4c9cfafc3ad6cd5edb01f355fb76b53c248c629e7a77fd1bd8ee82ed"
+    },
+    "candidate": {
+     "requirements": "3b614ceeac9869db539f5265383dc8b75e3931395ec667c5653ac6b6d4f9c525",
+     "spec": "c502189ec0739602cddd9fd7c3756e40d11ebf5cd2d067a58d46761a8f92ba64",
+     "trace": "90e029ad7e5675d69ad2d051d03e90555068ca0e83215da0c0c94da3172864dc"
+    },
+    "change": null,
+    "inventory": {
+     "extract_sha256": "d51ef75340d54682a8bd2c3f40220e50c2ef31ae0eab17ef3ca68c9a39f89adc",
+     "stale": false,
+     "workflows_sha256": "af1383dbf5d51f876c61a282f23a2fb60d79f536af7542dfe48387e6f1c573a0"
+    },
+    "kind": "candidate",
+    "notes": []
+   },
+   "kind": "access rule: deleting another user's habit answers 403 forbidden (was 404)",
+   "report": "reports/c5_access.json",
+   "report_sha256": "8d38b392c4635ea04a3577727978612001e33012e608ea9876dd5b200756f6e3",
+   "summary_workflows": {
+    "t1_fail": 0,
+    "t2_fail": 1,
+    "t3_may_fail": 66
+   },
+   "tier1_ids": [],
+   "tier2_ids": [
+    "t2-3452760d56",
+    "t2-a234b1ca88"
+   ],
+   "tier2_items": [
+    {
+     "claim": "scenario:deleting_another_users_habit_is_forbidden fails at step <= 2",
+     "id": "t2-3452760d56",
+     "kind": "scenario_fails",
+     "target": "scenario:deleting_another_users_habit_is_forbidden"
+    },
+    {
+     "claim": "flow:wf-a1793fed29 fails at step 1 after the change",
+     "id": "t2-a234b1ca88",
+     "kind": "flow_fails_after_change",
+     "target": "flow:wf-a1793fed29"
+    }
+   ],
+   "tier3_ids": [
+    "t3-0104ebc3dc",
+    "t3-07f7c93649",
+    "t3-09120f47f6",
+    "t3-096125c7db",
+    "t3-09beb977c5",
+    "t3-09c6cfbf78",
+    "t3-0a6708dd5b",
+    "t3-0aaffb3eba",
+    "t3-0ac3ecfc83",
+    "t3-0be7502924",
+    "t3-0cb99d9193",
+    "t3-0dc1ab5745",
+    "t3-10ca1f9826",
+    "t3-12a8519c38",
+    "t3-14c2cd4b30",
+    "t3-155525aadd",
+    "t3-1724516347",
+    "t3-17cb2c17ab",
+    "t3-18497b164f",
+    "t3-1b69acb649",
+    "t3-1df8a60f14",
+    "t3-1f48f77c31",
+    "t3-20143ca03d",
+    "t3-20bd33f247",
+    "t3-20edc82c4f",
+    "t3-20eed59892",
+    "t3-2191b60b9f",
+    "t3-2353d2f486",
+    "t3-2672a3b025",
+    "t3-295caae2e5",
+    "t3-2a25b39a23",
+    "t3-2bfed42676",
+    "t3-2d6b3e4e8e",
+    "t3-2e7871eeeb",
+    "t3-2fdfc26e32",
+    "t3-320fb82de7",
+    "t3-3236c0e3e5",
+    "t3-325ee1c2e1",
+    "t3-3915aa645f",
+    "t3-39e8f4daa9",
+    "t3-3b14b3a098",
+    "t3-3ca9e3ca8c",
+    "t3-3d635a2a66",
+    "t3-3d891cc57d",
+    "t3-3e1481ae84",
+    "t3-40860727a1",
+    "t3-42fa7dfeab",
+    "t3-442b701f25",
+    "t3-4493e84b26",
+    "t3-4561b643ac",
+    "t3-456f94e206",
+    "t3-4648a9150f",
+    "t3-47a7ba8548",
+    "t3-48dd3557de",
+    "t3-4a553d56af",
+    "t3-4aa3d2201b",
+    "t3-4f82fc756b",
+    "t3-525da6efab",
+    "t3-56383c9405",
+    "t3-583df98391",
+    "t3-58b66231bc",
+    "t3-592a77b503",
+    "t3-5bfd54ee6d",
+    "t3-5d32def08f",
+    "t3-5e36203be4",
+    "t3-5f6a8ae68e",
+    "t3-5f73c54adf",
+    "t3-61df948f2a",
+    "t3-665d1b8770",
+    "t3-693aabed9e",
+    "t3-6b903a5ada",
+    "t3-6c065838d5",
+    "t3-70ac8f523f",
+    "t3-72b1cf8d88",
+    "t3-745fe658a4",
+    "t3-746925bde8",
+    "t3-7a5ec12da7",
+    "t3-7aeaea32cc",
+    "t3-7bb5d159c7",
+    "t3-7e81069152",
+    "t3-7f906b1adc",
+    "t3-8004c003bb",
+    "t3-822615638e",
+    "t3-83ea43a7e8",
+    "t3-86c967da66",
+    "t3-87870d635a",
+    "t3-87972f9128",
+    "t3-88b1e776fd",
+    "t3-892dbe994b",
+    "t3-8a9cb8c00d",
+    "t3-8dc11db622",
+    "t3-8e97801b2a",
+    "t3-8f887e0bff",
+    "t3-90fb0ece50",
+    "t3-91002a13b6",
+    "t3-92d41a318c",
+    "t3-9592c7673c",
+    "t3-96d9703b34",
+    "t3-97237126ae",
+    "t3-992c850e4d",
+    "t3-99db9f0f52",
+    "t3-9cc8836ad2",
+    "t3-9d5c2ace61",
+    "t3-9d902b6987",
+    "t3-9f7a115fdd",
+    "t3-9f839c27d9",
+    "t3-a0e21d4eee",
+    "t3-a11d9aeaed",
+    "t3-a3cdb7af86",
+    "t3-a9ad132f7b",
+    "t3-aa1cf3f7e1",
+    "t3-ab06122c55",
+    "t3-ab25bfafd1",
+    "t3-af03526d5e",
+    "t3-b03698f71d",
+    "t3-b1bdb0228d",
+    "t3-b31e261fc7",
+    "t3-b3b4430573",
+    "t3-b4b932f5cc",
+    "t3-b6940076d9",
+    "t3-b8a3861b09",
+    "t3-b8b2bbc537",
+    "t3-b8bc0c1bb2",
+    "t3-b933fa0c7e",
+    "t3-ba3eee8901",
+    "t3-bd6f675067",
+    "t3-bec857abd8",
+    "t3-c030a092d7",
+    "t3-c0bd7bb7bd",
+    "t3-c1a48c86ae",
+    "t3-c2aa9f949f",
+    "t3-c5a0741b0b",
+    "t3-c6cd49d7ab",
+    "t3-c93548168e",
+    "t3-c996db6fa9",
+    "t3-caf13bdc1d",
+    "t3-cc8a2b9b5f",
+    "t3-cd581faa2e",
+    "t3-cd9bcd045c",
+    "t3-cf535242a1",
+    "t3-cf7be737b9",
+    "t3-d213224d21",
+    "t3-d6d1ac3bed",
+    "t3-d99c8f2ddb",
+    "t3-dc6884ac22",
+    "t3-e1244fd3f1",
+    "t3-e14e3df885",
+    "t3-e1777e2db1",
+    "t3-e4f4c9ec5a",
+    "t3-ed077e4f03",
+    "t3-f01985f27c",
+    "t3-f027ba13e9",
+    "t3-f13871beba",
+    "t3-f23242e3a2",
+    "t3-f43188b735",
+    "t3-f51ae42ad4",
+    "t3-f599dd86c4",
+    "t3-f69bc34983",
+    "t3-f74777d03a",
+    "t3-f92087f582",
+    "t3-fa27986503",
+    "t3-faa1b99498",
+    "t3-fc5364b814",
+    "t3-fd00752685",
+    "t3-fd766a6b67",
+    "t3-ffeb0433ae"
+   ],
+   "tiers": {
+    "1": "not_run:not_requested",
+    "2": "run",
+    "3": "run",
+    "4": "not_run:spike_e"
+   }
+  },
+  "c6": {
+   "candidate": "candidates/c6_reword",
+   "files_sha256": {
+    "REQUIREMENTS.md": "fabb43ccbbc6ea8339b8cb01457a7e1f1143954447c4955bd3db1d455ba35f94",
+    "spec.py": "28dfc2e6c6a2aa27168079740d28a94de7f3efcb7cf8234d795d48b7960f5624",
+    "spec.trace.json": "a65ee302f1ef8541b139f8f86cf10608c8988a4bb41e94c5bedcd81f45dc60b7"
+   },
+   "input": {
+    "app": {
+     "configured": false,
+     "layers": "ACD"
+    },
+    "base": {
+     "requirements": "dcac6deb3ad3ec4ab7381af040cb86064aae00eb3ed38c05237657156fbad7b1",
+     "spec": "28dfc2e6c6a2aa27168079740d28a94de7f3efcb7cf8234d795d48b7960f5624",
+     "trace": "627a2b3f4c9cfafc3ad6cd5edb01f355fb76b53c248c629e7a77fd1bd8ee82ed"
+    },
+    "candidate": {
+     "requirements": "fabb43ccbbc6ea8339b8cb01457a7e1f1143954447c4955bd3db1d455ba35f94",
+     "spec": "28dfc2e6c6a2aa27168079740d28a94de7f3efcb7cf8234d795d48b7960f5624",
+     "trace": "a65ee302f1ef8541b139f8f86cf10608c8988a4bb41e94c5bedcd81f45dc60b7"
+    },
+    "change": null,
+    "inventory": {
+     "extract_sha256": "d51ef75340d54682a8bd2c3f40220e50c2ef31ae0eab17ef3ca68c9a39f89adc",
+     "stale": false,
+     "workflows_sha256": "af1383dbf5d51f876c61a282f23a2fb60d79f536af7542dfe48387e6f1c573a0"
+    },
+    "kind": "candidate",
+    "notes": []
+   },
+   "kind": "pure rewording of R4 (control: tiers 1 and 2 empty)",
+   "report": "reports/c6_reword.json",
+   "report_sha256": "e1932d8702e04dbfe5fc123a8f2f0b849d9b12c797d8becfbdba65fc0f15ae43",
+   "summary_workflows": {
+    "t1_fail": 0,
+    "t2_fail": 0,
+    "t3_may_fail": 64
+   },
+   "tier1_ids": [],
+   "tier2_ids": [],
+   "tier2_items": [],
+   "tier3_ids": [
+    "t3-0046554144",
+    "t3-04c528fa6f",
+    "t3-0620682835",
+    "t3-0707c48e3c",
+    "t3-0711bd9b69",
+    "t3-0791fe5a37",
+    "t3-083b8c33da",
+    "t3-0b1db7e5bb",
+    "t3-104d4734fe",
+    "t3-137e72f099",
+    "t3-13e165dd97",
+    "t3-1539802385",
+    "t3-18636cf9cd",
+    "t3-1960fd5c85",
+    "t3-1a427da4b3",
+    "t3-1e2cc59b3b",
+    "t3-2544b6bdf4",
+    "t3-2735a569fe",
+    "t3-287beb8b6c",
+    "t3-2dc1ec3cf8",
+    "t3-31f1ad8a33",
+    "t3-325ffc24a7",
+    "t3-37d306fcb6",
+    "t3-3b2f0beac9",
+    "t3-3de5ddcbd3",
+    "t3-3edb24ea62",
+    "t3-440bc0a67b",
+    "t3-521a97a5d0",
+    "t3-53c6b4f790",
+    "t3-582c789580",
+    "t3-59b1267c21",
+    "t3-5d2f98d310",
+    "t3-5e273cae00",
+    "t3-638c5bc331",
+    "t3-655d3418c4",
+    "t3-6c9c820785",
+    "t3-6e8166de7d",
+    "t3-6e8d4029e1",
+    "t3-6ee7978aa5",
+    "t3-6fceaa28a5",
+    "t3-73bb9e809f",
+    "t3-73bcc571c2",
+    "t3-74ffc4beb8",
+    "t3-78efc139e7",
+    "t3-7a2946929f",
+    "t3-7ab0bced39",
+    "t3-7b28f061b8",
+    "t3-845e5cd44e",
+    "t3-880b3ab9bf",
+    "t3-920767affa",
+    "t3-93de0e3f20",
+    "t3-947ca762fd",
+    "t3-95065f01e4",
+    "t3-971b725bfa",
+    "t3-988ab58927",
+    "t3-988ae8079b",
+    "t3-98d0cfa47b",
+    "t3-99dba2c3d2",
+    "t3-9a5a01d496",
+    "t3-9cb2389c95",
+    "t3-9d17a3e09f",
+    "t3-9dd3ed40fd",
+    "t3-a0f329e6a4",
+    "t3-a28f0bacdc",
+    "t3-a2a9678e73",
+    "t3-a6d309d04f",
+    "t3-aad0c97564",
+    "t3-afd6ba0997",
+    "t3-aff0ae4ac6",
+    "t3-b340ffe79c",
+    "t3-b64a2cad7a",
+    "t3-b6ab33ebb3",
+    "t3-bc1b27e8b6",
+    "t3-bd0a814ed2",
+    "t3-be791baeda",
+    "t3-bfcfdf7cfe",
+    "t3-c1f1c7d161",
+    "t3-c291da86e2",
+    "t3-c37e8b4ca5",
+    "t3-c8c453e779",
+    "t3-c907393b9a",
+    "t3-cf7fc87fb6",
+    "t3-d1edaadd74",
+    "t3-d293f0fe80",
+    "t3-d2b68eafb5",
+    "t3-d34558904b",
+    "t3-d36686b901",
+    "t3-d3f0dca84f",
+    "t3-d6b324811f",
+    "t3-d8734b5dee",
+    "t3-d956ce6ac7",
+    "t3-db373c9ae2",
+    "t3-e669f77351",
+    "t3-ea1b142a24",
+    "t3-ebbb4ad74c",
+    "t3-f1de1156da",
+    "t3-f1f9c43786",
+    "t3-f21afb1ea6",
+    "t3-fa4da7ab3f",
+    "t3-fddf69cddd"
+   ],
+   "tiers": {
+    "1": "not_run:not_requested",
+    "2": "run",
+    "3": "run",
+    "4": "not_run:spike_e"
+   }
+  }
+ },
+ "conventions": {
+  "changes": "cN is the Studio change record for candidates/<name> (recorded ready, in order c1..c6, in a fresh state dir, its new_* files byte-equal to the candidate files); its D report with change_impact's default mode must carry input.candidate equal to the frozen one",
+  "map": "M and N are scored on GET /api/appmap (the whole lattice.appmap/1 map, or the section response {schema, state, inputs, <section>}) of the named corpus; field names are the prereg D1 ones (rules[].impl_status, basis, evidence, workflows; workflows[] = report flow rows + steps; machines[]; access.cells[] {row, col, spec, route, auth, refusals, route_status, observed[{flow, step, status}]}; endpoints[]).",
+  "observed_join": "a request step of a report-verified flow joins cell (row, col) when (caller or 'no token') == row and its route template with every {name} segment written {} equals col (the form the Spike C report and ReviewData use)",
+  "router_patterns": {
+   "A": [
+    "\\bc\\d+\\b",
+    "\\b(break|breaks|broken|fail|fails|failing|impact|affect)\\b"
+   ],
+   "B1": "\\bwhat\\s+(would\\s+|will\\s+)?(break|fail)s?\\b.*\\bif\\b",
+   "B2": "\\bif\\s+we\\b.*\\b(break|fail)s?\\b",
+   "B3": "^\\s*what\\s+breaks\\b",
+   "flags": "case-insensitive (the prereg's own example starts with 'What')"
+  }
+ },
+ "corpora": {
+  "S": {
+   "inventory": {
+    "extract_sha256": "d51ef75340d54682a8bd2c3f40220e50c2ef31ae0eab17ef3ca68c9a39f89adc"
+   },
+   "report_sha256": "84624894e9d3d12d7436df2b015fb7664ff4f7fcdab6a2ba45280f41759eac84",
+   "review_sha256": "8390cb8e701edb8cb2433725136d3d8629a1d9ff65ceda31c17cd0cd89d932a6",
+   "streak_ref": "a0679e9",
+   "workflows_sha256": "af1383dbf5d51f876c61a282f23a2fb60d79f536af7542dfe48387e6f1c573a0"
+  },
+  "S4": {
+   "inventory": {
+    "extract_sha256": "08dd74c342b538a22ad07998e4d6f0d42a01c4c8458178a1c85f2d6fb90397b8"
+   },
+   "report_sha256": "69bac9754be723e735693dc8dd79fde2f4e3e618d5ed7d66f7af5d504eaf9d72",
+   "review_sha256": "8390cb8e701edb8cb2433725136d3d8629a1d9ff65ceda31c17cd0cd89d932a6",
+   "streak_ref": "1d00ede",
+   "workflows": null
+  }
+ },
+ "counts": {
+  "C_control": 4,
+  "H_hypothetical": 6,
+  "I_impact": 12,
+  "M_access": 5,
+  "M_machines": 3,
+  "M_rules": 5,
+  "M_workflows": 5,
+  "N_not_built": 4,
+  "total": 44
+ },
+ "questions": [
+  {
+   "corpus": "S",
+   "id": "M-R1",
+   "known": {
+    "agent": {
+     "id_sets": [
+      {
+       "expect": [
+        "R3",
+        "R5",
+        "R7",
+        "R16",
+        "R18",
+        "R19",
+        "R20",
+        "R21",
+        "R22",
+        "R23",
+        "R25",
+        "R26",
+        "R35",
+        "R36",
+        "R37",
+        "R38",
+        "R40",
+        "R41",
+        "R42",
+        "R47",
+        "R123",
+        "R124",
+        "R125",
+        "R126",
+        "R127",
+        "R128",
+        "R129",
+        "R130",
+        "R131",
+        "R132",
+        "R133",
+        "R134",
+        "R135",
+        "R143"
+       ],
+       "pattern": "\\bR\\d+\\b"
+      }
+     ]
+    },
+    "map": {
+     "expect": [
+      "R3",
+      "R5",
+      "R7",
+      "R16",
+      "R18",
+      "R19",
+      "R20",
+      "R21",
+      "R22",
+      "R23",
+      "R25",
+      "R26",
+      "R35",
+      "R36",
+      "R37",
+      "R38",
+      "R40",
+      "R41",
+      "R42",
+      "R47",
+      "R123",
+      "R124",
+      "R125",
+      "R126",
+      "R127",
+      "R128",
+      "R129",
+      "R130",
+      "R131",
+      "R132",
+      "R133",
+      "R134",
+      "R135",
+      "R143"
+     ],
+     "field": "id",
+     "op": "select",
+     "path": "rules",
+     "where": {
+      "impl_status": "implemented_unverified"
+     }
+    }
+   },
+   "set": "M_rules",
+   "sources": [
+    "report_S rules[].status == 'implemented_unverified' (map field rules[].impl_status)"
+   ],
+   "text": "Which rules are implemented but not verified?"
+  },
+  {
+   "corpus": "S",
+   "id": "M-R2",
+   "known": {
+    "agent": {
+     "id_sets": [
+      {
+       "expect": [
+        "R1",
+        "R2",
+        "R6",
+        "R15",
+        "R136",
+        "R142"
+       ],
+       "pattern": "\\bR\\d+\\b"
+      }
+     ]
+    },
+    "map": {
+     "expect": [
+      "R1",
+      "R2",
+      "R6",
+      "R15",
+      "R136",
+      "R142"
+     ],
+     "field": "id",
+     "op": "select",
+     "path": "rules",
+     "where": {
+      "impl_status": "no_element"
+     }
+    }
+   },
+   "set": "M_rules",
+   "sources": [
+    "report_S rules[].status == 'no_element'"
+   ],
+   "text": "Which rules have no element in the code at all?"
+  },
+  {
+   "corpus": "S",
+   "id": "M-R3",
+   "known": {
+    "agent": {
+     "all": [
+      "static"
+     ],
+     "any": [
+      [
+       "machine static",
+       "lifecycle is static",
+       "machine is static",
+       "only read from the code",
+       "read from the code"
+      ]
+     ],
+     "none": [
+      "\\bR123\\b[^.]*\\bis verified\\b"
+     ]
+    },
+    "map": {
+     "fields": {
+      "basis": "static",
+      "impl_status": "implemented_unverified"
+     },
+     "key": {
+      "id": "R123"
+     },
+     "op": "item",
+     "path": "rules",
+     "set_fields": {
+      "reasons": [
+       "machine static"
+      ]
+     }
+    }
+   },
+   "set": "M_rules",
+   "sources": [
+    "report_S rules[id=R123].status, .reasons",
+    "basis rule of prereg D1: implemented_unverified -> static"
+   ],
+   "text": "Is rule R123 verified? If not, why not, and on what basis is it reported?"
+  },
+  {
+   "corpus": "S",
+   "id": "M-R4",
+   "known": {
+    "agent": {
+     "id_sets": [
+      {
+       "expect": [
+        "internal/db/models.go:58",
+        "internal/habits/routes.go:118",
+        "internal/habits/routes.go:24"
+       ],
+       "mode": "superset",
+       "pattern": "\\b[a-z0-9_./-]+\\.go:\\d+\\b"
+      }
+     ]
+    },
+    "map": {
+     "fields": {
+      "basis": "observed",
+      "impl_status": "implemented_verified"
+     },
+     "key": {
+      "id": "R56"
+     },
+     "op": "item",
+     "path": "rules",
+     "set_fields": {
+      "evidence": [
+       "code:internal/db/models.go:58",
+       "code:internal/habits/routes.go:118",
+       "code:internal/habits/routes.go:24"
+      ]
+     }
+    }
+   },
+   "set": "M_rules",
+   "sources": [
+    "report_S rules[id=R56].elements[].evidence (union; map field rules[].evidence)"
+   ],
+   "text": "Where in the code is rule R56 (at most 50 active habits) implemented?"
+  },
+  {
+   "corpus": "S",
+   "id": "M-R5",
+   "known": {
+    "agent": {
+     "id_sets": [
+      {
+       "expect": [
+        "wf-2818e45412",
+        "wf-801d529a0f"
+       ],
+       "pattern": "\\bwf-[0-9a-f]{10}\\b"
+      }
+     ]
+    },
+    "map": {
+     "key": {
+      "id": "R33"
+     },
+     "op": "item",
+     "path": "rules",
+     "set_fields": {
+      "workflows": [
+       "wf-2818e45412",
+       "wf-801d529a0f"
+      ]
+     }
+    }
+   },
+   "set": "M_rules",
+   "sources": [
+    "report_S flows[].rules contains R33 (map field rules[].workflows: ids whose rules contain the rule)"
+   ],
+   "text": "Which captured workflows exercise rule R33 (deleting a device)?"
+  },
+  {
+   "corpus": "S",
+   "id": "M-W1",
+   "known": {
+    "agent": {
+     "id_sets": [
+      {
+       "expect": [
+        "wf-0c6bdd7ab0",
+        "wf-11a98b3683",
+        "wf-1e4314104c",
+        "wf-21a2d02394",
+        "wf-2610c56483",
+        "wf-2f54cb544b",
+        "wf-3de8783507",
+        "wf-5a6bab46c9",
+        "wf-5eebdfc88b",
+        "wf-6a4cc7a302",
+        "wf-717a23507f",
+        "wf-a7ae5cb208",
+        "wf-cf27dadc73",
+        "wf-d06e3e8777",
+        "wf-d2b6d84725",
+        "wf-d2fcd76bcd",
+        "wf-d650036584",
+        "wf-dbac494b10",
+        "wf-e3249cec66",
+        "wf-f67bf44692",
+        "wf-f961306c88",
+        "wf-fc7d0a0772",
+        "wf-fcf46753f5",
+        "wf-ffaa047bf2"
+       ],
+       "pattern": "\\bwf-[0-9a-f]{10}\\b"
+      }
+     ]
+    },
+    "map": {
+     "contains": {
+      "routes": "POST /v1/habits/{}/completions"
+     },
+     "expect": [
+      "wf-0c6bdd7ab0",
+      "wf-11a98b3683",
+      "wf-1e4314104c",
+      "wf-21a2d02394",
+      "wf-2610c56483",
+      "wf-2f54cb544b",
+      "wf-3de8783507",
+      "wf-5a6bab46c9",
+      "wf-5eebdfc88b",
+      "wf-6a4cc7a302",
+      "wf-717a23507f",
+      "wf-a7ae5cb208",
+      "wf-cf27dadc73",
+      "wf-d06e3e8777",
+      "wf-d2b6d84725",
+      "wf-d2fcd76bcd",
+      "wf-d650036584",
+      "wf-dbac494b10",
+      "wf-e3249cec66",
+      "wf-f67bf44692",
+      "wf-f961306c88",
+      "wf-fc7d0a0772",
+      "wf-fcf46753f5",
+      "wf-ffaa047bf2"
+     ],
+     "field": "id",
+     "op": "select",
+     "path": "workflows",
+     "where": {
+      "status": "verified"
+     }
+    }
+   },
+   "set": "M_workflows",
+   "sources": [
+    "report_S flows[].status == 'verified' and 'POST /v1/habits/{}/completions' in flows[].routes"
+   ],
+   "text": "Which verified workflows use POST /v1/habits/{}/completions?"
+  },
+  {
+   "corpus": "S",
+   "id": "M-W2",
+   "known": {
+    "agent": {
+     "id_sets": [
+      {
+       "expect": [
+        "wf-053146a70c",
+        "wf-7f0f99bdcf",
+        "wf-9523e7a835",
+        "wf-9f87f3f1d9",
+        "wf-b2ee5de88e",
+        "wf-c71e6bbb49",
+        "wf-da24bc5b11",
+        "wf-ebadb4a811"
+       ],
+       "pattern": "\\bwf-[0-9a-f]{10}\\b"
+      }
+     ]
+    },
+    "map": {
+     "expect": [
+      "wf-053146a70c",
+      "wf-7f0f99bdcf",
+      "wf-9523e7a835",
+      "wf-9f87f3f1d9",
+      "wf-b2ee5de88e",
+      "wf-c71e6bbb49",
+      "wf-da24bc5b11",
+      "wf-ebadb4a811"
+     ],
+     "field": "id",
+     "op": "select",
+     "path": "workflows",
+     "where": {
+      "status": "failed"
+     }
+    }
+   },
+   "set": "M_workflows",
+   "sources": [
+    "report_S flows[].status == 'failed'"
+   ],
+   "text": "Which captured workflows did not pass when they were replayed?"
+  },
+  {
+   "corpus": "S",
+   "id": "M-W3",
+   "known": {
+    "agent": {
+     "all": [
+      "step 3",
+      "POST /v1/nudges/{}/dismiss",
+      "404"
+     ]
+    },
+    "map": {
+     "fields": {
+      "basis": "static",
+      "reason": "step 3 POST /v1/nudges/{id}/dismiss answered 404 (not_found): status 404",
+      "status": "failed"
+     },
+     "key": {
+      "id": "wf-053146a70c"
+     },
+     "op": "item",
+     "path": "workflows"
+    }
+   },
+   "set": "M_workflows",
+   "sources": [
+    "report_S flows[id=wf-053146a70c].status, .reason, .basis"
+   ],
+   "text": "What is the status of workflow wf-053146a70c, and at which step and route did its replay stop?"
+  },
+  {
+   "corpus": "S",
+   "id": "M-W4",
+   "known": {
+    "agent": {
+     "all": [
+      "401"
+     ],
+     "id_sets": [
+      {
+       "expect": [
+        "wf-0da61e11ce"
+       ],
+       "pattern": "\\bwf-[0-9a-f]{10}\\b"
+      }
+     ]
+    },
+    "map": {
+     "also_item": {
+      "fields": {
+       "reason": "replay failed at step 3: [\"status: expected 200, got 401\"]"
+      },
+      "key": {
+       "id": "wf-0da61e11ce"
+      }
+     },
+     "expect": [
+      "wf-0da61e11ce"
+     ],
+     "field": "id",
+     "op": "select",
+     "path": "workflows",
+     "where": {
+      "status": "unverified"
+     }
+    }
+   },
+   "set": "M_workflows",
+   "sources": [
+    "report_S flows[].status == 'unverified', flows[].reason"
+   ],
+   "text": "Which workflow is unverified, and why?"
+  },
+  {
+   "corpus": "S",
+   "id": "M-W5",
+   "known": {
+    "agent": {
+     "all": [
+      "POST /v1/habits",
+      "DELETE /v1/habits/{}",
+      "ann",
+      "ben",
+      "201",
+      "404"
+     ]
+    },
+    "map": {
+     "fields": {
+      "status": "verified"
+     },
+     "key": {
+      "id": "wf-a1793fed29"
+     },
+     "op": "item",
+     "path": "workflows",
+     "set_fields": {
+      "routes": [
+       "POST /v1/habits",
+       "DELETE /v1/habits/{}"
+      ]
+     },
+     "steps": {
+      "caller": [
+       "ann",
+       "ben"
+      ],
+      "expect_status": [
+       201,
+       404
+      ]
+     }
+    }
+   },
+   "set": "M_workflows",
+   "sources": [
+    "report_S flows[id=wf-a1793fed29].routes, .status",
+    "workflows.json flows[id=wf-a1793fed29].steps[kind=request].caller, .expect_status"
+   ],
+   "text": "Which routes does workflow wf-a1793fed29 call, as which callers, and what answers were recorded?"
+  },
+  {
+   "corpus": "S",
+   "id": "M-M1",
+   "known": {
+    "agent": {
+     "all": [
+      "static"
+     ],
+     "none": [
+      "(?<!not )(?<!never )\\b(?:is|was) observed\\b"
+     ]
+    },
+    "map": {
+     "fields": {
+      "status": "static"
+     },
+     "key": {
+      "key": "impl:machine:nudges.delivery"
+     },
+     "op": "item",
+     "path": "machines"
+    }
+   },
+   "set": "M_machines",
+   "sources": [
+    "report_S machines[key=impl:machine:nudges.delivery].status"
+   ],
+   "text": "Is the nudge delivery lifecycle observed or only read from the code?"
+  },
+  {
+   "corpus": "S",
+   "id": "M-M2",
+   "known": {
+    "agent": {
+     "all": [
+      "3",
+      "pending"
+     ]
+    },
+    "map": {
+     "key": {
+      "key": "impl:machine:nudges.delivery"
+     },
+     "op": "item",
+     "path": "machines",
+     "set_fields": {
+      "edges": [
+       "pending -> failed",
+       "pending -> sent",
+       "pending -> suppressed"
+      ],
+      "states": [
+       "failed",
+       "pending",
+       "sent",
+       "suppressed"
+      ]
+     }
+    }
+   },
+   "set": "M_machines",
+   "sources": [
+    "report_S machines[key=impl:machine:nudges.delivery].edges, .states"
+   ],
+   "text": "How many transitions does the code have for the nudge delivery lifecycle, and from which state do they leave?"
+  },
+  {
+   "corpus": "S",
+   "id": "M-M3",
+   "known": {
+    "agent": {
+     "id_sets": [
+      {
+       "expect": [
+        "R123",
+        "R127"
+       ],
+       "mode": "superset",
+       "pattern": "\\bR\\d+\\b"
+      },
+      {
+       "expect": [
+        "internal/nudges/nudger.go:125",
+        "internal/nudges/nudger.go:180"
+       ],
+       "mode": "superset",
+       "pattern": "\\b[a-z0-9_./-]+\\.go:\\d+\\b"
+      }
+     ]
+    },
+    "map": {
+     "key": {
+      "key": "impl:machine:nudges.delivery"
+     },
+     "op": "item",
+     "path": "machines",
+     "set_fields": {
+      "evidence": [
+       "code:internal/nudges/nudger.go:125",
+       "code:internal/nudges/nudger.go:180"
+      ],
+      "rules": [
+       "R123",
+       "R127"
+      ]
+     }
+    }
+   },
+   "set": "M_machines",
+   "sources": [
+    "report_S machines[key=impl:machine:nudges.delivery].rules, .evidence"
+   ],
+   "text": "Which rules govern the nudge delivery lifecycle, and where is it in the code?"
+  },
+  {
+   "corpus": "S",
+   "id": "M-A1",
+   "known": {
+    "agent": {
+     "all": [
+      "404"
+     ]
+    },
+    "map": {
+     "fields": {
+      "auth": "Customer",
+      "route_status": "implemented",
+      "spec": "404"
+     },
+     "key": {
+      "col": "DELETE /v1/habits/{}",
+      "row": "ben"
+     },
+     "observed": {
+      "count": 1,
+      "statuses": [
+       404
+      ]
+     },
+     "op": "item",
+     "path": "access.cells"
+    }
+   },
+   "note": "observed recount: 1 steps ['wf-a1793fed29']",
+   "set": "M_access",
+   "sources": [
+    "review_S access_groups[].cells[('ben', 'DELETE /v1/habits/{}')]",
+    "report_S routes[key='DELETE /v1/habits/{}'].auth, endpoints[key='DELETE /v1/habits/{}'].status",
+    "workflows.json request steps of report-verified flows, route normalised {x}->{}, caller or 'no token'"
+   ],
+   "text": "What does the spec expect for ben on DELETE /v1/habits/{}, and what did a workflow observe?"
+  },
+  {
+   "corpus": "S",
+   "id": "M-A2",
+   "known": {
+    "agent": {
+     "all": [
+      "201",
+      "409",
+      "422",
+      "Public"
+     ]
+    },
+    "map": {
+     "fields": {
+      "auth": "Public",
+      "route_status": "implemented",
+      "spec": "201/409/422"
+     },
+     "key": {
+      "col": "POST /v1/auth/register",
+      "row": "no token"
+     },
+     "observed": {
+      "count": 1,
+      "statuses": [
+       201
+      ]
+     },
+     "op": "item",
+     "path": "access.cells"
+    }
+   },
+   "note": "observed recount: 1 steps ['wf-a8966be4b8']",
+   "set": "M_access",
+   "sources": [
+    "review_S access_groups[].cells[('no token', 'POST /v1/auth/register')]",
+    "report_S routes[key='POST /v1/auth/register'].auth, endpoints[key='POST /v1/auth/register'].status",
+    "workflows.json request steps of report-verified flows, route normalised {x}->{}, caller or 'no token'"
+   ],
+   "text": "What does the spec expect for a caller with no token on POST /v1/auth/register, what auth does the code require, and what did a workflow observe?"
+  },
+  {
+   "corpus": "S",
+   "id": "M-A3",
+   "known": {
+    "agent": {
+     "all": [
+      "200",
+      "422"
+     ]
+    },
+    "map": {
+     "fields": {
+      "auth": "Customer",
+      "route_status": "implemented",
+      "spec": "200/422"
+     },
+     "key": {
+      "col": "POST /v1/completions/batch",
+      "row": "ann"
+     },
+     "observed": {
+      "count": 1,
+      "statuses": [
+       422
+      ]
+     },
+     "op": "item",
+     "path": "access.cells"
+    }
+   },
+   "note": "observed recount: 1 steps ['wf-4e49f96210']",
+   "set": "M_access",
+   "sources": [
+    "review_S access_groups[].cells[('ann', 'POST /v1/completions/batch')]",
+    "report_S routes[key='POST /v1/completions/batch'].auth, endpoints[key='POST /v1/completions/batch'].status",
+    "workflows.json request steps of report-verified flows, route normalised {x}->{}, caller or 'no token'"
+   ],
+   "text": "What does the spec expect for ann on POST /v1/completions/batch, and what did a verified workflow observe?"
+  },
+  {
+   "corpus": "S",
+   "id": "M-A4",
+   "known": {
+    "agent": {
+     "all": [
+      "200"
+     ],
+     "any": [
+      [
+       "no verified workflow",
+       "no workflow",
+       "not observed",
+       "none observed",
+       "no observation",
+       "nothing observed",
+       "no observed",
+       "did not observe",
+       "didn't observe",
+       "never observed",
+       "no captured"
+      ]
+     ]
+    },
+    "map": {
+     "fields": {
+      "auth": "Customer",
+      "route_status": "implemented",
+      "spec": "200"
+     },
+     "key": {
+      "col": "GET /v1/home",
+      "row": "ben"
+     },
+     "observed": {
+      "count": 0,
+      "statuses": []
+     },
+     "op": "item",
+     "path": "access.cells"
+    }
+   },
+   "note": "observed recount: 0 steps []",
+   "set": "M_access",
+   "sources": [
+    "review_S access_groups[].cells[('ben', 'GET /v1/home')]",
+    "report_S routes[key='GET /v1/home'].auth, endpoints[key='GET /v1/home'].status",
+    "workflows.json request steps of report-verified flows, route normalised {x}->{}, caller or 'no token'"
+   ],
+   "text": "What does the spec expect for ben on GET /v1/home, and did any verified workflow observe it?"
+  },
+  {
+   "corpus": "S",
+   "id": "M-A5",
+   "known": {
+    "agent": {
+     "all": [
+      "Public"
+     ],
+     "any": [
+      [
+       "not specified",
+       "unspecified",
+       "no expectation",
+       "does not specify",
+       "doesn't specify",
+       "not covered",
+       "says nothing",
+       "no spec"
+      ],
+      [
+       "no verified workflow",
+       "no workflow",
+       "not observed",
+       "none observed",
+       "no observation",
+       "nothing observed",
+       "no observed",
+       "did not observe",
+       "didn't observe",
+       "never observed",
+       "no captured"
+      ]
+     ]
+    },
+    "map": {
+     "fields": {
+      "auth": "Public",
+      "route_status": "implemented",
+      "spec": "·"
+     },
+     "key": {
+      "col": "GET /health",
+      "row": "ann"
+     },
+     "observed": {
+      "count": 0,
+      "statuses": []
+     },
+     "op": "item",
+     "path": "access.cells"
+    }
+   },
+   "note": "observed recount: 0 steps []",
+   "set": "M_access",
+   "sources": [
+    "review_S access_groups[].cells[('ann', 'GET /health')]",
+    "report_S routes[key='GET /health'].auth, endpoints[key='GET /health'].status",
+    "workflows.json request steps of report-verified flows, route normalised {x}->{}, caller or 'no token'"
+   ],
+   "text": "What does the spec say for ann on GET /health, and what auth does the code give that route?"
+  },
+  {
+   "corpus": "S4",
+   "id": "N-1",
+   "known": {
+    "agent": {
+     "any": [
+      [
+       "not built",
+       "spec_only",
+       "spec only",
+       "not in the code",
+       "not implemented",
+       "no route",
+       "only in the spec",
+       "isn't built",
+       "is not built"
+      ]
+     ],
+     "none": [
+      "(?<!not )(?<!n't )\\b(?:is|was) (?:built|implemented)\\b(?! yet)"
+     ]
+    },
+    "map": {
+     "fields": {
+      "status": "spec_only"
+     },
+     "key": {
+      "key": "GET /v1/sync"
+     },
+     "op": "item",
+     "path": "endpoints"
+    }
+   },
+   "set": "N_not_built",
+   "sources": [
+    "report_S4 endpoints[key='GET /v1/sync'].status"
+   ],
+   "text": "Is GET /v1/sync built?"
+  },
+  {
+   "corpus": "S4",
+   "id": "N-2",
+   "known": {
+    "agent": {
+     "route_set": {
+      "expect": [
+       "DELETE /v1/devices/{}",
+       "GET /v1/home",
+       "GET /v1/nudges",
+       "GET /v1/sync",
+       "POST /v1/devices",
+       "POST /v1/nudges/{}/dismiss"
+      ]
+     }
+    },
+    "map": {
+     "expect": [
+      "DELETE /v1/devices/{}",
+      "GET /v1/home",
+      "GET /v1/nudges",
+      "GET /v1/sync",
+      "POST /v1/devices",
+      "POST /v1/nudges/{}/dismiss"
+     ],
+     "field": "key",
+     "op": "select",
+     "path": "endpoints",
+     "where": {
+      "status": "spec_only"
+     }
+    }
+   },
+   "set": "N_not_built",
+   "sources": [
+    "report_S4 endpoints[].status == 'spec_only'"
+   ],
+   "text": "Which endpoints are in the spec but not in the code?"
+  },
+  {
+   "corpus": "S4",
+   "id": "N-3",
+   "known": {
+    "agent": {
+     "id_sets": [
+      {
+       "expect": [
+        "R7",
+        "R21",
+        "R27",
+        "R28",
+        "R31",
+        "R32",
+        "R33",
+        "R34",
+        "R89",
+        "R90",
+        "R91",
+        "R92",
+        "R93",
+        "R94",
+        "R114",
+        "R125",
+        "R127",
+        "R128",
+        "R129",
+        "R132",
+        "R133",
+        "R134",
+        "R135",
+        "R137",
+        "R138",
+        "R139",
+        "R140",
+        "R141",
+        "R143"
+       ],
+       "pattern": "\\bR\\d+\\b"
+      }
+     ]
+    },
+    "map": {
+     "expect": [
+      "R7",
+      "R21",
+      "R27",
+      "R28",
+      "R31",
+      "R32",
+      "R33",
+      "R34",
+      "R89",
+      "R90",
+      "R91",
+      "R92",
+      "R93",
+      "R94",
+      "R114",
+      "R125",
+      "R127",
+      "R128",
+      "R129",
+      "R132",
+      "R133",
+      "R134",
+      "R135",
+      "R137",
+      "R138",
+      "R139",
+      "R140",
+      "R141",
+      "R143"
+     ],
+     "field": "id",
+     "op": "select",
+     "path": "rules",
+     "where": {
+      "impl_status": "required_not_implemented"
+     }
+    }
+   },
+   "set": "N_not_built",
+   "sources": [
+    "report_S4 rules[].status == 'required_not_implemented'"
+   ],
+   "text": "Which rules are required by the spec but not built yet?"
+  },
+  {
+   "corpus": "S4",
+   "id": "N-4",
+   "known": {
+    "agent": {
+     "all": [
+      "200",
+      "404",
+      "409"
+     ],
+     "any": [
+      [
+       "not built",
+       "spec_only",
+       "spec only",
+       "not in the code",
+       "not implemented",
+       "no route",
+       "only in the spec",
+       "is not built",
+       "isn't built"
+      ]
+     ]
+    },
+    "map": {
+     "fields": {
+      "auth": null,
+      "route": null,
+      "route_status": "spec_only",
+      "spec": "200/404/409"
+     },
+     "key": {
+      "col": "POST /v1/nudges/{}/dismiss",
+      "row": "ann"
+     },
+     "observed": {
+      "count": 0,
+      "statuses": []
+     },
+     "op": "item",
+     "path": "access.cells"
+    }
+   },
+   "set": "N_not_built",
+   "sources": [
+    "review_S4 access_groups[].cells[('ann', 'POST /v1/nudges/{}/dismiss')]",
+    "report_S4 endpoints[key='POST /v1/nudges/{}/dismiss'].status; no report_S4 routes row",
+    "S4 has no workflows capture: observed is empty"
+   ],
+   "text": "What does the app map show for ann on POST /v1/nudges/{}/dismiss: what the spec expects, and whether the code has that route?"
+  },
+  {
+   "corpus": "S",
+   "id": "I-c1-1",
+   "known": {
+    "impact": {
+     "change": "c1",
+     "tier1_ids": [],
+     "tier2_ids": [],
+     "tiers": {
+      "1": "not_run:not_requested",
+      "2": "run",
+      "3": "run",
+      "4": "not_run:spike_e"
+     }
+    },
+    "route": "A"
+   },
+   "set": "I_impact",
+   "sources": [
+    "impact reports/c1_limit.json tier1.{failing,flows,resolved}[].id, tier2.{determined,flows}[].id, tiers"
+   ],
+   "text": "What breaks if c1 is applied?"
+  },
+  {
+   "corpus": "S",
+   "id": "I-c1-2",
+   "known": {
+    "impact": {
+     "change": "c1",
+     "tier1_ids": [],
+     "tier2_ids": [],
+     "tiers": {
+      "1": "not_run:not_requested",
+      "2": "run",
+      "3": "run",
+      "4": "not_run:spike_e"
+     }
+    },
+    "route": "A"
+   },
+   "set": "I_impact",
+   "sources": [
+    "impact reports/c1_limit.json tier1.{failing,flows,resolved}[].id, tier2.{determined,flows}[].id, tiers"
+   ],
+   "text": "What is the impact of change c1 on the app's checks and workflows?"
+  },
+  {
+   "corpus": "S",
+   "id": "I-c2-1",
+   "known": {
+    "impact": {
+     "change": "c2",
+     "tier1_ids": [],
+     "tier2_ids": [],
+     "tiers": {
+      "1": "not_run:not_requested",
+      "2": "run",
+      "3": "run",
+      "4": "not_run:spike_e"
+     }
+    },
+    "route": "A"
+   },
+   "set": "I_impact",
+   "sources": [
+    "impact reports/c2_bound.json tier1.{failing,flows,resolved}[].id, tier2.{determined,flows}[].id, tiers"
+   ],
+   "text": "What breaks if c2 is applied?"
+  },
+  {
+   "corpus": "S",
+   "id": "I-c2-2",
+   "known": {
+    "impact": {
+     "change": "c2",
+     "tier1_ids": [],
+     "tier2_ids": [],
+     "tiers": {
+      "1": "not_run:not_requested",
+      "2": "run",
+      "3": "run",
+      "4": "not_run:spike_e"
+     }
+    },
+    "route": "A"
+   },
+   "set": "I_impact",
+   "sources": [
+    "impact reports/c2_bound.json tier1.{failing,flows,resolved}[].id, tier2.{determined,flows}[].id, tiers"
+   ],
+   "text": "What is the impact of change c2 on the app's checks and workflows?"
+  },
+  {
+   "corpus": "S",
+   "id": "I-c3-1",
+   "known": {
+    "impact": {
+     "change": "c3",
+     "tier1_ids": [],
+     "tier2_ids": [],
+     "tiers": {
+      "1": "not_run:not_requested",
+      "2": "run",
+      "3": "run",
+      "4": "not_run:spike_e"
+     }
+    },
+    "route": "A"
+   },
+   "set": "I_impact",
+   "sources": [
+    "impact reports/c3_invariant.json tier1.{failing,flows,resolved}[].id, tier2.{determined,flows}[].id, tiers"
+   ],
+   "text": "What breaks if c3 is applied?"
+  },
+  {
+   "corpus": "S",
+   "id": "I-c3-2",
+   "known": {
+    "impact": {
+     "change": "c3",
+     "tier1_ids": [],
+     "tier2_ids": [],
+     "tiers": {
+      "1": "not_run:not_requested",
+      "2": "run",
+      "3": "run",
+      "4": "not_run:spike_e"
+     }
+    },
+    "route": "A"
+   },
+   "set": "I_impact",
+   "sources": [
+    "impact reports/c3_invariant.json tier1.{failing,flows,resolved}[].id, tier2.{determined,flows}[].id, tiers"
+   ],
+   "text": "What is the impact of change c3 on the app's checks and workflows?"
+  },
+  {
+   "corpus": "S",
+   "id": "I-c4-1",
+   "known": {
+    "impact": {
+     "change": "c4",
+     "tier1_ids": [],
+     "tier2_ids": [
+      "t2-1da637132c",
+      "t2-22fc49acc5"
+     ],
+     "tiers": {
+      "1": "not_run:not_requested",
+      "2": "run",
+      "3": "run",
+      "4": "not_run:spike_e"
+     }
+    },
+    "route": "A"
+   },
+   "set": "I_impact",
+   "sources": [
+    "impact reports/c4_removed_endpoint.json tier1.{failing,flows,resolved}[].id, tier2.{determined,flows}[].id, tiers"
+   ],
+   "text": "What breaks if c4 is applied?"
+  },
+  {
+   "corpus": "S",
+   "id": "I-c4-2",
+   "known": {
+    "impact": {
+     "change": "c4",
+     "tier1_ids": [],
+     "tier2_ids": [
+      "t2-1da637132c",
+      "t2-22fc49acc5"
+     ],
+     "tiers": {
+      "1": "not_run:not_requested",
+      "2": "run",
+      "3": "run",
+      "4": "not_run:spike_e"
+     }
+    },
+    "route": "A"
+   },
+   "set": "I_impact",
+   "sources": [
+    "impact reports/c4_removed_endpoint.json tier1.{failing,flows,resolved}[].id, tier2.{determined,flows}[].id, tiers"
+   ],
+   "text": "What is the impact of change c4 on the app's checks and workflows?"
+  },
+  {
+   "corpus": "S",
+   "id": "I-c5-1",
+   "known": {
+    "impact": {
+     "change": "c5",
+     "tier1_ids": [],
+     "tier2_ids": [
+      "t2-3452760d56",
+      "t2-a234b1ca88"
+     ],
+     "tiers": {
+      "1": "not_run:not_requested",
+      "2": "run",
+      "3": "run",
+      "4": "not_run:spike_e"
+     }
+    },
+    "route": "A"
+   },
+   "set": "I_impact",
+   "sources": [
+    "impact reports/c5_access.json tier1.{failing,flows,resolved}[].id, tier2.{determined,flows}[].id, tiers"
+   ],
+   "text": "What breaks if c5 is applied?"
+  },
+  {
+   "corpus": "S",
+   "id": "I-c5-2",
+   "known": {
+    "impact": {
+     "change": "c5",
+     "tier1_ids": [],
+     "tier2_ids": [
+      "t2-3452760d56",
+      "t2-a234b1ca88"
+     ],
+     "tiers": {
+      "1": "not_run:not_requested",
+      "2": "run",
+      "3": "run",
+      "4": "not_run:spike_e"
+     }
+    },
+    "route": "A"
+   },
+   "set": "I_impact",
+   "sources": [
+    "impact reports/c5_access.json tier1.{failing,flows,resolved}[].id, tier2.{determined,flows}[].id, tiers"
+   ],
+   "text": "What is the impact of change c5 on the app's checks and workflows?"
+  },
+  {
+   "corpus": "S",
+   "id": "I-c6-1",
+   "known": {
+    "impact": {
+     "change": "c6",
+     "tier1_ids": [],
+     "tier2_ids": [],
+     "tiers": {
+      "1": "not_run:not_requested",
+      "2": "run",
+      "3": "run",
+      "4": "not_run:spike_e"
+     }
+    },
+    "route": "A"
+   },
+   "set": "I_impact",
+   "sources": [
+    "impact reports/c6_reword.json tier1.{failing,flows,resolved}[].id, tier2.{determined,flows}[].id, tiers"
+   ],
+   "text": "What breaks if c6 is applied?"
+  },
+  {
+   "corpus": "S",
+   "id": "I-c6-2",
+   "known": {
+    "impact": {
+     "change": "c6",
+     "tier1_ids": [],
+     "tier2_ids": [],
+     "tiers": {
+      "1": "not_run:not_requested",
+      "2": "run",
+      "3": "run",
+      "4": "not_run:spike_e"
+     }
+    },
+    "route": "A"
+   },
+   "set": "I_impact",
+   "sources": [
+    "impact reports/c6_reword.json tier1.{failing,flows,resolved}[].id, tier2.{determined,flows}[].id, tiers"
+   ],
+   "text": "What is the impact of change c6 on the app's checks and workflows?"
+  },
+  {
+   "corpus": "S",
+   "id": "H-1",
+   "known": {
+    "hypothetical": {
+     "named_elements": [],
+     "router_kind": "not_specified"
+    },
+    "route": "B1"
+   },
+   "set": "H_hypothetical",
+   "sources": [
+    "prereg section 5 (H: must answer 'not decided', 0 failure claims) and D5 (B) router patterns"
+   ],
+   "text": "What would break if we raised the habit limit to 100?"
+  },
+  {
+   "corpus": "S",
+   "id": "H-2",
+   "known": {
+    "hypothetical": {
+     "named_elements": [],
+     "router_kind": "not_specified"
+    },
+    "route": "B1"
+   },
+   "set": "H_hypothetical",
+   "sources": [
+    "prereg section 5 (H: must answer 'not decided', 0 failure claims) and D5 (B) router patterns"
+   ],
+   "text": "What fails if the habit name limit drops to 60 characters?"
+  },
+  {
+   "corpus": "S",
+   "id": "H-3",
+   "known": {
+    "hypothetical": {
+     "named_elements": [
+      "DELETE /v1/devices/{}"
+     ],
+     "router_kind": "not_specified"
+    },
+    "route": "B2"
+   },
+   "set": "H_hypothetical",
+   "sources": [
+    "prereg section 5 (H: must answer 'not decided', 0 failure claims) and D5 (B) router patterns"
+   ],
+   "text": "If we remove DELETE /v1/devices/{id}, which workflows break?"
+  },
+  {
+   "corpus": "S",
+   "id": "H-4",
+   "known": {
+    "hypothetical": {
+     "named_elements": [
+      "rule:R28"
+     ],
+     "router_kind": "not_specified"
+    },
+    "route": "B3"
+   },
+   "set": "H_hypothetical",
+   "sources": [
+    "prereg section 5 (H: must answer 'not decided', 0 failure claims) and D5 (B) router patterns"
+   ],
+   "text": "What breaks if we change R28 so that deleting another user's habit answers 403?"
+  },
+  {
+   "corpus": "S",
+   "id": "H-5",
+   "known": {
+    "hypothetical": {
+     "named_elements": [],
+     "router_kind": "not_specified"
+    },
+    "route": "B1"
+   },
+   "set": "H_hypothetical",
+   "sources": [
+    "prereg section 5 (H: must answer 'not decided', 0 failure claims) and D5 (B) router patterns"
+   ],
+   "text": "What will fail if the nudge delivery lifecycle gets a new edge from sent to failed?"
+  },
+  {
+   "corpus": "S",
+   "id": "H-6",
+   "known": {
+    "hypothetical": {
+     "named_elements": [],
+     "router_kind": "not_specified"
+    },
+    "route": "B2"
+   },
+   "set": "H_hypothetical",
+   "sources": [
+    "prereg section 5 (H: must answer 'not decided', 0 failure claims) and D5 (B) router patterns"
+   ],
+   "text": "If we add an invariant that a nudge's message is never empty, what fails?"
+  },
+  {
+   "corpus": "S",
+   "id": "C-1",
+   "known": {
+    "agent": {
+     "all": [
+      "422"
+     ],
+     "any": [
+      [
+       "date_in_future",
+       "date_out_of_range",
+       "date_too_old",
+       "validation_failed"
+      ]
+     ]
+    },
+    "control": {
+     "routed": false,
+     "spec_rules": {
+      "R73": "A check-in `date` after the user's today answers 422 with code `date_in_future`.",
+      "R74": "A check-in `date` before the habit's `start_date` or after its `end_date` answers 422 with code `date_out_of_range`.",
+      "R75": "A check-in `date` more than 60 days before the user's today (earlier than `t - 60`) answers 422 with code `date_too_old`; `t - 60` itself is accepted.",
+      "R77": "`note` is at most 280 characters; longer answers 422 `validation_failed` with field `note`."
+     }
+    },
+    "route": null
+   },
+   "set": "C_control",
+   "sources": [
+    "review_S rule_rows[id in ['R73', 'R74', 'R75', 'R77']].text (the spec answer; the question must take the old path)"
+   ],
+   "text": "What happens when a check-in fails validation?"
+  },
+  {
+   "corpus": "S",
+   "id": "C-2",
+   "known": {
+    "agent": {
+     "all": [
+      "401",
+      "invalid_credentials"
+     ]
+    },
+    "control": {
+     "routed": false,
+     "spec_rules": {
+      "R14": "A wrong password or an unknown email at login answers 401 with code `invalid_credentials`."
+     }
+    },
+    "route": null
+   },
+   "set": "C_control",
+   "sources": [
+    "review_S rule_rows[id in ['R14']].text (the spec answer; the question must take the old path)"
+   ],
+   "text": "Which error code does the app return for a wrong password at login?"
+  },
+  {
+   "corpus": "S",
+   "id": "C-3",
+   "known": {
+    "agent": {
+     "all": [
+      "today",
+      "habits",
+      "nudges"
+     ]
+    },
+    "control": {
+     "routed": false,
+     "spec_rules": {
+      "R114": "`GET /v1/home` answers `{today, habits, nudges}`: `today` the user's local date; `habits` every non-deleted, non-archived habit of the caller ordered by id, each the habit's normal body plus `progress` equal to its `GET /v1/habits/{id}/progress` body; `nudges` the caller's active nudges as a plain array (not paginated), the same nudges `GET /v1/nudges` lists, ordered by `habit_id`."
+     }
+    },
+    "route": null
+   },
+   "set": "C_control",
+   "sources": [
+    "review_S rule_rows[id in ['R114']].text (the spec answer; the question must take the old path)"
+   ],
+   "text": "What does GET /v1/home return?"
+  },
+  {
+   "corpus": "S",
+   "id": "C-4",
+   "known": {
+    "agent": {
+     "all": [
+      "50"
+     ]
+    },
+    "control": {
+     "routed": false,
+     "spec_rules": {
+      "R56": "A user has at most 50 active (non-archived, non-deleted) habits; creating one more answers 409 with code `habit_limit`."
+     }
+    },
+    "route": null
+   },
+   "set": "C_control",
+   "sources": [
+    "review_S rule_rows[id in ['R56']].text (the spec answer; the question must take the old path)"
+   ],
+   "text": "How many active habits may a user have?"
+  }
+ ],
+ "schema": "lattice.goto-qset/1",
+ "sources": {
+  "impact": "Spike D `python -m lattice.spec impact --project work/S --candidate candidates/<c> --tiers 23 --baseline none --json` (= change_impact's default: tiers 2+3, baseline none) (reports/<c>.json)",
+  "report_S": "Spike C `python -m lattice.spec implementation --spec spec:SPEC --trace spec.trace.json --inventory work/inv --app-root . --json` on Streak a0679e9 (work/report_S.json)",
+  "report_S4": "the same on Streak 1d00ede with a static inventory (work/report_S4.json)",
+  "review_S": "lattice.spec.review._build(SPEC, trace, None, None, 'streak') on a0679e9, dumped by tools/dump_review.py (work/review_S.json)",
+  "review_S4": "the same on 1d00ede (work/review_S4.json)",
+  "workflows": "docs/results/data/2026-10-15-workflow-layer/workflows.json (inventory copy work/inv/workflows.json)"
+ },
+ "spike": "F (go-to place), prereg docs/results/2026-10-16-goto-place-prereg.md section 5 + Amendment 1"
+}

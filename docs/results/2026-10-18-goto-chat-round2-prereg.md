@@ -522,3 +522,16 @@ through the `claude` CLI, and only in section 7.
   that the new thresholds live only in the wrapper?
 - **Q12.** Approve the thresholds: G3 >= 52/64, compliance >= 11/12, floors H >= 8/10, N >= 4/6, M_workflows >= 6/8, and
   routed precision >= 95%.
+
+## Amendment 1 (orchestrator rulings on section 12, 2026-10-18, before any code)
+Q1: the opt-in `[chat]` table (`route`, `check`, default off, byte-compat when absent) is approved. Q2: the checker is a new module that
+reuses `ask.py` read-only; `ask.py` stays byte-unchanged. Q3: the chat MAY show a workflow's recorded capture-time replay status
+`failed`, labelled as such, because it is an observed fact (as the App map already shows); an unlabelled or inferred failure is
+still withheld. Q4: non-streamed text in check mode is accepted. Q5: routed session turns are not part of the Claude session's
+memory (accepted). Q6: the question-set author is dispatched with 6 NEW candidates and the counts of section 6. Q7: the USD 8
+budget in the order given (gated run, ablation, one-shot, 2 observe questions) while budget remains; the claude CLI only; a usage
+limit is NOT RUN. Q8: the 17-state browser walk runs on the real server after the freeze with the iframe fallback for 375 px, if a
+browser is connected; else NOT RUN. Q9: the next free API version at build time. Q10: no new MCP tool. Q11: the frozen round-1 scorer
+stays byte-unchanged and the new thresholds live only in the wrapper. Q12: the thresholds are approved (G3 >= 52/64, compliance
+>= 11/12, floors H >= 8/10, N >= 4/6, M_workflows >= 6/8, routed precision >= 95%). Step 0 is done: the round-1 frozen files are
+copied into `docs/results/data/2026-10-18-goto-chat-round2/frozen-r1/` and their hashes verified against round 1's `freeze.sha256`.
