@@ -17,9 +17,35 @@ from tests.grpc.fixtures.notes import spec as dev
 
 pytestmark = needs_go
 
+# Round-5 Amendment 2 (E3d, interceptor codes): the only change to the frozen expectations. The
+# auth interceptor of N returns UNAUTHENTICATED, which the extractor now attributes to every rpc it
+# guards. truth.json stays byte-identical (its hash is checked below); the added code is declared
+# here.
+INTERCEPTOR_CODES: dict[str, str] = {
+    f"notes.v1.Notes/{rpc}": "UNAUTHENTICATED"
+    for rpc in (
+        "ArchiveNote",
+        "CreateNote",
+        "DeleteNote",
+        "GetNote",
+        "ListNotes",
+        "PublishNote",
+        "ShareNote",
+        "UpdateNote",
+    )
+}
+
+
+def with_interceptor_codes(truth: dict[str, Any]) -> dict[str, Any]:
+    """``truth`` with the E3d interceptor codes added to the guarded rpcs, nothing else changed."""
+    out = json.loads(json.dumps(truth))
+    for key, code in INTERCEPTOR_CODES.items():
+        out["rpcs"][key]["codes"] = sorted({*out["rpcs"][key]["codes"], code})
+    return out
+
 
 def test_extract_matches_the_truth(n_extract: dict[str, Any], truth: dict[str, Any]) -> None:
-    assert oracle.compare_extract(n_extract, truth) == []
+    assert oracle.compare_extract(n_extract, with_interceptor_codes(truth)) == []
 
 
 def test_truth_counts_follow_the_fixed_shape(truth: dict[str, Any]) -> None:
@@ -50,6 +76,7 @@ def test_model_lists_rpcs_as_routes_and_bindings_on_the_rpc(front_end: Any) -> N
     assert {(x.code, x.kind) for x in cr.raises} == {
         ("INVALID_ARGUMENT", "grpc_status"),
         ("INTERNAL", "grpc_status"),
+        ("UNAUTHENTICATED", "grpc_status"),  # E3d: the auth interceptor's code
     }
 
 

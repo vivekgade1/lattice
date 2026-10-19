@@ -1,0 +1,17 @@
+FAIL     P4-BC                                        {"ast (grpc.py, transport.py, go_grpc.py, workflows.py, outside.py)": "FAIL", "HTTP outputs (round-1/2 emitter) vs BASE": "PASS", "HTTP outputs compared": 73, "extract + RepoModel": "FAIL", "reconcile
+PASS     P4-WIRE                                      {"rpcs": 24, "states equal the truth": 24, "wrong (extract, truth)": {}, "S8 confident-wrong": [], "truth hashed before library code": true}
+PASS     P4-AUTHI                                     {"cases": 7, "cases exact": 7, "Public behind an unread mechanism": [], "truth hashed before library code": true}
+PASS     P4-CODES                                     {"rpcs": 9, "disagreements": 0, "UNKNOWN not in the truth": [], "truth hashed before library code": true}
+PASS     P4-TABLES                                    {"cases": 3, "disagreements": 0, "temp dirs left": [], "writes under the roots": 0}
+PASS     P4-LOGIN                                     {"methods": {"LoginUsername": {"username": "ada", "password": "pw"}, "LoginName": {"name": "ada", "password": "pw"}, "LoginEmail": {"email": "ada", "passcode": "pw"}, "LoginTenant": {"user": "ada", "p
+PASS     P4-DET                                       {"notes": {"identical runs": 10, "of": 10, "leaks": [], "artifacts": ["extract", "flows", "plans", "reconcile"], "ok": true}, "wiring4": {"identical runs": 10, "of": 10, "leaks": [], "artifacts": ["ex
+PASS     P4-NW                                        {"roots": ["N", "T", "sessions", "fx4", "deskd", "kilnworks", "harborline", "heldout4: NOT RUN (the gated stage; this node never looked for it)"], "changed": 0, "new": 0, "claude calls": 0}
+PASS     P4-UNIT                                      {"passed": 91, "seconds": 1.0, "in 40-90 (p)": false}
+PASS     P4-SCORE                                     {"cases": 58, "agree": 58, "in 30-45 (p)": false}
+PASS     P4-PROC                                      {"1 runner byte changed: refused before any metric": true, "2 own entry removed from freeze4: refused": true, "3 crash then re-run with equal bytes: blind": true, "4 re-run with changed bytes: post_ho
+NOT RUN  REG                                          "--reg-before / --reg-after (pytest logs) were not given"
+NOT RUN  PM-S / PM-SG (Arm M)                         "Arm M needs a Streak checkout and a Docker MySQL: out of scope; no docker daemon here"
+NOT RUN  Arm L                                        "the build round is its own node; out of scope"
+NOT RUN  PG-HO4 (HO4-*)                               "the gated held-out stage: a new app by a new author, scored once by the orchestrator after Amendment 3; this node did not look for heldout4"
+frozen files ok before: False after: False
+10 passed, 1 failed, 4 not run, 0 reported

@@ -1,0 +1,48 @@
+{
+ "schema": "lattice.grpc-probes5-row/1",
+ "row": {
+  "id": "PF5-LEAK",
+  "prediction": "0",
+  "pass_rule": "0",
+  "status": "PASS",
+  "observed": {
+   "live processes+bridges after reconcile and flows": 0,
+   "after a forced startup failure (reconcile raises, flows fail)": 0,
+   "reconcile raised": "ProcessStartError",
+   "flows of the broken app": [
+    "failed"
+   ],
+   "stray app or bridge processes in /proc": 0,
+   "containers labelled lattice.owner=w-gr": []
+  },
+  "detail": []
+ },
+ "library_sha256": {
+  "dogfood/grpc_contract4.py": "6666ac9bedc8dfb49edd18177091c40ece5dcf3b149a097e82bdf004a4a04610",
+  "dogfood/grpc_contract5.py": "f71b9e5d1b6b9caf7ccd25d7548121dde74afeaf1ca9a8257c9978178c372681",
+  "dogfood/grpc_flow_scorer.py": "8d896ee0ad1c22fd46ff9f38876c08e8df03b756906f0b40bcaadf0a0446fdd3",
+  "dogfood/grpc_probes.py": "5406bbbea96872396f5b8c58042992fa230b0fbf8440148a3d67f1c7abedfee2",
+  "dogfood/grpc_probes2.py": "0193add7bd620dbf2af90cddf66a8bccca85ba1ade5b06f048bd711c952755fa",
+  "dogfood/grpc_probes3.py": "244e5e688287774daad66198134697c4b67443a8e71316ad4a2df84a97d3a978",
+  "dogfood/grpc_probes4.py": "82aca97b4d508d0537a567914be537b2529cc219a6d9effb630c0d1bfdf1350b",
+  "dogfood/grpc_probes5.py": "ef05f9368a1c96f2a36d4631c10a6a8532422632dffa9e1b77361263355ead40",
+  "dogfood/grpc_scorer3.py": "019db509ded84f48ef95e7bfe7788a949305611a35ab3ae15706303298ea50be",
+  "dogfood/grpc_scorer4.py": "e963747ae1545e68a31b8b740fd259b687a6121a4712667d239287683a2bae90",
+  "dogfood/grpc_scorer5.py": "991cb1dc46623e58d6c457bb5c86277311b32ca6cb7a32f3513eca40ec569ec3",
+  "dogfood/grpc_scorer5_cases.json": "f6afbfd58f06b91aa190bec0e9c9aa1f4e50666a193ea368362ed933741e22e7",
+  "dogfood/grpc_truth5.py": "b08a0759bb49f2ce1c41942cb6f5ee7cc8a4ec9e7d6855c8294608a3440f099b",
+  "lattice/gocheck/src/goextract_grpc.go": "97e7faa108cd5b963ea9386edf56b0cf459800faece1e2ac7a749332657d1f20",
+  "lattice/gocheck/src/goextract_grpc_auth.go": "28b383b1531a333fedaa8b6125b6377c95d17a38e0969588fd865946c412186f",
+  "lattice/gocheck/src/goextract_grpc_codes.go": "3042cf24a2677764854ca3522b23881245ef19e2c306b327b95a514495d84ee2",
+  "lattice/gocheck/src/goextract_proto.go": "d021cb314387f8015934f7227cf720c7445863a5f2e73191fe27c1aa9bdb85f6",
+  "lattice/gocheck/src/goextract_sqlraw.go": "7cf2766a22f955a534828d32fd5cb6e18981be5713767c06fe0bbb508aea8507",
+  "lattice/importer/frontends/go_grpc.py": "1d882e5c8b6fb30b1aa3e202eaf9eba09ed462459ed376281d4737bfcb06579f",
+  "lattice/importer/outside.py": "5d7a5ed767b7060d10c8508c8ee930f5af6b570f8e9f3c4a22f0352a91f74328",
+  "lattice/importer/transport.py": "04979019468e5d4fd9dc33c7d98ef62c32c5ae41fd5211421ec43ca4cca9ae4a",
+  "lattice/importer/workflows.py": "5eba7e8ab6ac62ba8ba4cea31088faab9e149e921a952c6a4837e37b92638098",
+  "lattice/mcp/guard.py": "ba60ca31f3b43cbc6bd50d51421acd860807590d0a68d2a2593081d67505dfb8",
+  "lattice/spec/grpc.py": "a7ceb5cf5f5f89156c046605ef7783e6a8cafe95b459e3c8bfdb28ea21d62549",
+  "lattice/spec/process.py": "047be55e9f421700efab2441525121c8387167fb53edcd5991ebdc4592cdebf1",
+  "lattice/studio/rebuild.py": "3659f41e9e798db83aa24e52add3e7e6c0b7d166c951e66163d3dc8addb688bb"
+ }
+}

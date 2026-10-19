@@ -9,6 +9,7 @@ from typing import Any
 from lattice.spec.grpc import Bridge
 from tests.grpc import oracle
 from tests.grpc.conftest import needs_go
+from tests.grpc.test_extract_notes import with_interceptor_codes
 
 pytestmark = needs_go
 
@@ -70,7 +71,8 @@ def test_validation_bounds_are_exact(
     assert (
         oracle.compare_bounds(t_extract, oracle.load(oracle.PROTOS / "expected_bounds.json")) == []
     )
-    assert oracle.compare_extract(n_extract, truth) == []  # includes N's four bounded fields
+    # includes N's four bounded fields
+    assert oracle.compare_extract(n_extract, with_interceptor_codes(truth)) == []
 
 
 def test_every_proto_construct_outside_the_grammar_is_unread_never_guessed(

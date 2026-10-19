@@ -814,3 +814,12 @@ round cannot pass in full, and the table says so. **NOT RUN, to be run by the or
 MySQL halves of P5-HAPI and P5-REH (pymysql was not importable in the builder's environment), PR4-ALL, the real Arm L run.
 PF5-LEAK failed on a stray `notesapp` binary under Stage A's bridgecache (not Stage B's); the orchestrator removes it and the row is
 re-measured. Accidents disclosed: one mistaken `git stash` popped within seconds; stray `.venv` directories created and removed.
+
+## Amendment 3 (Stage C results and rulings, orchestrator, 2026-10-18, before the freeze)
+Stage C: the three frozen tests' expectations were moved by the node into the tests (a constant `INTERCEPTOR_CODES` and a helper; `truth.json`
+untouched, 8 leaves each `+UNAUTHENTICATED`, nothing removed): accepted. REG passes (the same 31 failing ids on both sides). P5-HAPI (MySQL
+half), P5-REH, PF5-LEAK and Arm L (7/7, 1 round, USD 0.1195) pass. **PR4-ALL FAILS and stays failed:** P4-BC means "identical to its own
+base" and any round that changes the extractor breaks it; it differs on notes (declared), sessions and deskd (undeclared; declared now,
+post hoc, as code-list differences from E3d/E3b) and kilnworks and harborline; the `spec check --help` HTTP difference is not from round 5
+(identical to 978b468, 73/73). P5-BUDGET also stays failed (924 vs 650). Therefore the round cannot pass in full; the held-out and SG stages
+are still run because their result is the information.
