@@ -1,0 +1,369 @@
+{
+ "schema": "lattice.grpc.truth5-probe-flows/1",
+ "app": "tests/grpc/fixtures/harness5/sqlite",
+ "note": "H3 probe flows: each is replayed against the ledger5 app on a fresh database; `replay` is the expected FlowResult.label in the flow's base; strip_links replays without links",
+ "flows": [
+  {
+   "name": "links_needed",
+   "steps": [
+    {
+     "rpc": "ledger.v1.Entries/Create",
+     "as": "ann",
+     "request": {
+      "title": "alpha"
+     },
+     "expect": {
+      "code": "OK"
+     }
+    },
+    {
+     "rpc": "ledger.v1.Entries/Get",
+     "as": "ann",
+     "request": {},
+     "expect": {
+      "code": "OK",
+      "title": "alpha"
+     }
+    }
+   ],
+   "links": [
+    {
+     "from_step": 0,
+     "from_field": "id",
+     "to_step": 1,
+     "to_field": "id"
+    }
+   ],
+   "replay": "ok"
+  },
+  {
+   "name": "links_needed_stripped",
+   "strip_links": true,
+   "steps": [
+    {
+     "rpc": "ledger.v1.Entries/Create",
+     "as": "ann",
+     "request": {
+      "title": "alpha"
+     },
+     "expect": {
+      "code": "OK"
+     }
+    },
+    {
+     "rpc": "ledger.v1.Entries/Get",
+     "as": "ann",
+     "request": {},
+     "expect": {
+      "code": "OK",
+      "title": "alpha"
+     }
+    }
+   ],
+   "links": [
+    {
+     "from_step": 0,
+     "from_field": "id",
+     "to_step": 1,
+     "to_field": "id"
+    }
+   ],
+   "replay": "step 1: code_mismatch (NOT_FOUND vs OK)"
+  },
+  {
+   "name": "link_unresolved",
+   "steps": [
+    {
+     "rpc": "ledger.v1.Entries/Create",
+     "as": "ann",
+     "request": {
+      "title": "alpha"
+     },
+     "expect": {
+      "code": "OK"
+     }
+    },
+    {
+     "rpc": "ledger.v1.Entries/Close",
+     "as": "ann",
+     "request": {},
+     "expect": {
+      "code": "OK"
+     }
+    },
+    {
+     "rpc": "ledger.v1.Entries/Close",
+     "as": "ann",
+     "request": {},
+     "expect": {
+      "code": "FAILED_PRECONDITION"
+     }
+    },
+    {
+     "rpc": "ledger.v1.Entries/Get",
+     "as": "ann",
+     "request": {},
+     "expect": {
+      "code": "OK"
+     }
+    }
+   ],
+   "links": [
+    {
+     "from_step": 0,
+     "from_field": "id",
+     "to_step": 1,
+     "to_field": "id"
+    },
+    {
+     "from_step": 0,
+     "from_field": "id",
+     "to_step": 2,
+     "to_field": "id"
+    },
+    {
+     "from_step": 2,
+     "from_field": "id",
+     "to_step": 3,
+     "to_field": "id"
+    }
+   ],
+   "replay": "step 3: link_unresolved (- vs OK)"
+  },
+  {
+   "name": "list_length",
+   "steps": [
+    {
+     "rpc": "ledger.v1.Entries/List",
+     "as": "ann",
+     "request": {},
+     "expect": {
+      "code": "OK",
+      "entries.#": 1,
+      "entries.0.title": "seed-entry"
+     }
+    }
+   ],
+   "links": [],
+   "replay": "ok"
+  },
+  {
+   "name": "int64_as_string",
+   "steps": [
+    {
+     "rpc": "ledger.v1.Entries/Create",
+     "as": "ann",
+     "request": {
+      "title": "alpha"
+     },
+     "expect": {
+      "code": "OK",
+      "serial": "9007199254740993"
+     }
+    }
+   ],
+   "links": [],
+   "replay": "ok"
+  },
+  {
+   "name": "expect_mismatch",
+   "steps": [
+    {
+     "rpc": "ledger.v1.Entries/Create",
+     "as": "ann",
+     "request": {
+      "title": "alpha"
+     },
+     "expect": {
+      "code": "OK",
+      "state": "CLOSED"
+     }
+    }
+   ],
+   "links": [],
+   "replay": "step 0: expect_mismatch (OK vs OK)"
+  },
+  {
+   "name": "code_mismatch",
+   "steps": [
+    {
+     "rpc": "ledger.v1.Entries/Create",
+     "as": "ann",
+     "request": {
+      "title": ""
+     },
+     "expect": {
+      "code": "OK"
+     }
+    }
+   ],
+   "links": [],
+   "replay": "step 0: code_mismatch (INVALID_ARGUMENT vs OK)"
+  },
+  {
+   "name": "base_one_links",
+   "base": 1,
+   "steps": [
+    {
+     "rpc": "ledger.v1.Entries/Create",
+     "as": "ann",
+     "request": {
+      "title": "alpha"
+     },
+     "expect": {
+      "code": "OK"
+     }
+    },
+    {
+     "rpc": "ledger.v1.Entries/Get",
+     "as": "ann",
+     "request": {},
+     "expect": {
+      "code": "OK",
+      "title": "alpha"
+     }
+    }
+   ],
+   "links": [
+    {
+     "from_step": 1,
+     "from_field": "id",
+     "to_step": 2,
+     "to_field": "id"
+    }
+   ],
+   "replay": "ok"
+  },
+  {
+   "name": "base_one_unresolved",
+   "base": 1,
+   "steps": [
+    {
+     "rpc": "ledger.v1.Entries/Create",
+     "as": "ann",
+     "request": {
+      "title": "alpha"
+     },
+     "expect": {
+      "code": "OK"
+     }
+    },
+    {
+     "rpc": "ledger.v1.Entries/Close",
+     "as": "ann",
+     "request": {},
+     "expect": {
+      "code": "OK"
+     }
+    },
+    {
+     "rpc": "ledger.v1.Entries/Close",
+     "as": "ann",
+     "request": {},
+     "expect": {
+      "code": "FAILED_PRECONDITION"
+     }
+    },
+    {
+     "rpc": "ledger.v1.Entries/Get",
+     "as": "ann",
+     "request": {},
+     "expect": {
+      "code": "OK"
+     }
+    }
+   ],
+   "links": [
+    {
+     "from_step": 1,
+     "from_field": "id",
+     "to_step": 2,
+     "to_field": "id"
+    },
+    {
+     "from_step": 1,
+     "from_field": "id",
+     "to_step": 3,
+     "to_field": "id"
+    },
+    {
+     "from_step": 3,
+     "from_field": "id",
+     "to_step": 4,
+     "to_field": "id"
+    }
+   ],
+   "replay": "step 4: link_unresolved (- vs OK)"
+  },
+  {
+   "name": "deskd_alias_form",
+   "base": 1,
+   "steps": [
+    {
+     "rpc": "ledger.v1.Entries/Create",
+     "as": "ann",
+     "request": {
+      "title": "alpha"
+     },
+     "expect": {
+      "code": "OK"
+     }
+    },
+    {
+     "rpc": "ledger.v1.Entries/Get",
+     "as": "ann",
+     "request": {},
+     "expect": {
+      "code": "OK",
+      "title": "alpha"
+     }
+    }
+   ],
+   "links": [
+    {
+     "step": 2,
+     "field": "id",
+     "from_step": 1,
+     "from_field": "id"
+    }
+   ],
+   "replay": "ok"
+  },
+  {
+   "name": "list_index_in_from_field",
+   "steps": [
+    {
+     "rpc": "ledger.v1.Entries/Create",
+     "as": "ann",
+     "request": {
+      "title": "gamma",
+      "tags": [
+       "delta-tag"
+      ]
+     },
+     "expect": {
+      "code": "OK"
+     }
+    },
+    {
+     "rpc": "ledger.v1.Entries/Create",
+     "as": "ann",
+     "request": {},
+     "expect": {
+      "code": "OK",
+      "title": "delta-tag"
+     }
+    }
+   ],
+   "links": [
+    {
+     "from_step": 0,
+     "from_field": "tags.0",
+     "to_step": 1,
+     "to_field": "title"
+    }
+   ],
+   "replay": "ok"
+  }
+ ]
+}

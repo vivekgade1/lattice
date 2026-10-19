@@ -1,0 +1,9 @@
+('rpcs', 'notes.v1.Notes/ArchiveNote', 'codes') added: ['UNAUTHENTICATED'] removed: []
+('rpcs', 'notes.v1.Notes/CreateNote', 'codes') added: ['UNAUTHENTICATED'] removed: []
+('rpcs', 'notes.v1.Notes/DeleteNote', 'codes') added: ['UNAUTHENTICATED'] removed: []
+('rpcs', 'notes.v1.Notes/GetNote', 'codes') added: ['UNAUTHENTICATED'] removed: []
+('rpcs', 'notes.v1.Notes/ListNotes', 'codes') added: ['UNAUTHENTICATED'] removed: []
+('rpcs', 'notes.v1.Notes/PublishNote', 'codes') added: ['UNAUTHENTICATED'] removed: []
+('rpcs', 'notes.v1.Notes/ShareNote', 'codes') added: ['UNAUTHENTICATED'] removed: []
+('rpcs', 'notes.v1.Notes/UpdateNote', 'codes') added: ['UNAUTHENTICATED'] removed: []
+differing leaves: 8

@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package status5.v1;
+
+option go_package = "example.com/s5icodelit/gen/status5/v1;status5v1";
+
+message Req {
+  string name = 1;
+}
+
+message Rep {
+  string name = 1;
+}
+
+service Open {
+  rpc Hello(Req) returns (Rep);
+}
+
+service Shut {
+  rpc Get(Req) returns (Rep);
+  rpc Del(Req) returns (Rep);
+}

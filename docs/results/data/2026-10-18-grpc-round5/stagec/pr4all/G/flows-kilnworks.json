@@ -1,0 +1,782 @@
+[
+ {
+  "id": "rf-ece55f162b",
+  "kind": "after_delete",
+  "why": "kiln.v1.Pieces/GetPiece reads the pieces row after kiln.v1.Pieces/RemovePiece deleted it",
+  "steps": [
+   {
+    "rpc": "kiln.v1.Pieces/AddPiece",
+    "service": "kiln.v1.Pieces",
+    "method": "AddPiece",
+    "user": "ada",
+    "message": {
+     "project_id": 0,
+     "form": "FORM_MUG"
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "kiln.v1.Pieces/RemovePiece",
+    "service": "kiln.v1.Pieces",
+    "method": "RemovePiece",
+    "user": "ada",
+    "message": {
+     "piece_id": 0
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "kiln.v1.Pieces/GetPiece",
+    "service": "kiln.v1.Pieces",
+    "method": "GetPiece",
+    "user": "ada",
+    "message": {},
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+ },
+ {
+  "id": "rf-69eb47b717",
+  "kind": "owner_chain",
+  "why": "kiln.v1.Pieces/AddPiece adds a pieces row under a projects row it does not own: another user must be refused",
+  "steps": [
+   {
+    "rpc": "kiln.v1.Catalog/ListStudios",
+    "service": "kiln.v1.Catalog",
+    "method": "ListStudios",
+    "user": "ada",
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "kiln.v1.Projects/OpenProject",
+    "service": "kiln.v1.Projects",
+    "method": "OpenProject",
+    "user": "ada",
+    "message": {
+     "studio_slug": "east-wing",
+     "title": "wf-title"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "studio_slug": {
+      "step": 1,
+      "from_field": "slug"
+     }
+    }
+   },
+   {
+    "rpc": "kiln.v1.Pieces/AddPiece",
+    "service": "kiln.v1.Pieces",
+    "method": "AddPiece",
+    "user": "bo",
+    "message": {
+     "project_id": 2,
+     "form": "FORM_MUG"
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {
+     "project_id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   }
+  ],
+  "status": "verified",
+  "reason": null
+ },
+ {
+  "id": "rf-e69bed0631",
+  "kind": "owner_chain",
+  "why": "kiln.v1.Pieces/ApplyGlaze adds a glazings row under a pieces row it does not own: another user must be refused",
+  "steps": [
+   {
+    "rpc": "kiln.v1.Pieces/AddPiece",
+    "service": "kiln.v1.Pieces",
+    "method": "AddPiece",
+    "user": "ada",
+    "message": {
+     "project_id": 0,
+     "form": "FORM_MUG"
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "kiln.v1.Catalog/ListGlazes",
+    "service": "kiln.v1.Catalog",
+    "method": "ListGlazes",
+    "user": null,
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "kiln.v1.Pieces/ApplyGlaze",
+    "service": "kiln.v1.Pieces",
+    "method": "ApplyGlaze",
+    "user": "bo",
+    "message": {
+     "piece_id": 0,
+     "glaze_code": "SIX-ASH",
+     "coats": 0
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {
+     "glaze_code": {
+      "step": 2,
+      "from_field": "code"
+     }
+    }
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+ },
+ {
+  "id": "rf-076642ad81",
+  "kind": "owner_guard",
+  "why": "kiln.v1.Pieces/RemovePiece compares the owner: another user must be refused",
+  "steps": [
+   {
+    "rpc": "kiln.v1.Pieces/AddPiece",
+    "service": "kiln.v1.Pieces",
+    "method": "AddPiece",
+    "user": "ada",
+    "message": {
+     "project_id": 0,
+     "form": "FORM_MUG"
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "kiln.v1.Pieces/RemovePiece",
+    "service": "kiln.v1.Pieces",
+    "method": "RemovePiece",
+    "user": "bo",
+    "message": {
+     "piece_id": 0
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+ },
+ {
+  "id": "rf-1cbb239392",
+  "kind": "owner_guard",
+  "why": "kiln.v1.Pieces/FirePiece compares the owner: another user must be refused",
+  "steps": [
+   {
+    "rpc": "kiln.v1.Pieces/AddPiece",
+    "service": "kiln.v1.Pieces",
+    "method": "AddPiece",
+    "user": "ada",
+    "message": {
+     "project_id": 0,
+     "form": "FORM_MUG"
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "kiln.v1.Pieces/FirePiece",
+    "service": "kiln.v1.Pieces",
+    "method": "FirePiece",
+    "user": "bo",
+    "message": {
+     "piece_id": 0,
+     "rush": false
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+ },
+ {
+  "id": "rf-31b7c993d2",
+  "kind": "owner_guard",
+  "why": "kiln.v1.Pieces/AddPiece compares the owner: another user must be refused",
+  "steps": [
+   {
+    "rpc": "kiln.v1.Catalog/ListStudios",
+    "service": "kiln.v1.Catalog",
+    "method": "ListStudios",
+    "user": "ada",
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "kiln.v1.Projects/OpenProject",
+    "service": "kiln.v1.Projects",
+    "method": "OpenProject",
+    "user": "ada",
+    "message": {
+     "studio_slug": "east-wing",
+     "title": "wf-title"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "studio_slug": {
+      "step": 1,
+      "from_field": "slug"
+     }
+    }
+   },
+   {
+    "rpc": "kiln.v1.Pieces/AddPiece",
+    "service": "kiln.v1.Pieces",
+    "method": "AddPiece",
+    "user": "bo",
+    "message": {
+     "project_id": 2,
+     "form": "FORM_MUG"
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {
+     "project_id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   }
+  ],
+  "status": "verified",
+  "reason": null
+ },
+ {
+  "id": "rf-564da63ccf",
+  "kind": "owner_guard",
+  "why": "kiln.v1.Projects/GetProject compares the owner: another user must be refused",
+  "steps": [
+   {
+    "rpc": "kiln.v1.Catalog/ListStudios",
+    "service": "kiln.v1.Catalog",
+    "method": "ListStudios",
+    "user": "ada",
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "kiln.v1.Projects/OpenProject",
+    "service": "kiln.v1.Projects",
+    "method": "OpenProject",
+    "user": "ada",
+    "message": {
+     "studio_slug": "east-wing",
+     "title": "wf-title"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "studio_slug": {
+      "step": 1,
+      "from_field": "slug"
+     }
+    }
+   },
+   {
+    "rpc": "kiln.v1.Projects/GetProject",
+    "service": "kiln.v1.Projects",
+    "method": "GetProject",
+    "user": "bo",
+    "message": {
+     "id": 2
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {
+     "id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   }
+  ],
+  "status": "verified",
+  "reason": null
+ },
+ {
+  "id": "rf-70db70f48e",
+  "kind": "owner_guard",
+  "why": "kiln.v1.Pieces/GetPiece compares the owner: another user must be refused",
+  "steps": [
+   {
+    "rpc": "kiln.v1.Pieces/AddPiece",
+    "service": "kiln.v1.Pieces",
+    "method": "AddPiece",
+    "user": "ada",
+    "message": {
+     "project_id": 0,
+     "form": "FORM_MUG"
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "kiln.v1.Pieces/GetPiece",
+    "service": "kiln.v1.Pieces",
+    "method": "GetPiece",
+    "user": "bo",
+    "message": {},
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+ },
+ {
+  "id": "rf-9f142dd77a",
+  "kind": "owner_guard",
+  "why": "kiln.v1.Pieces/ApplyGlaze compares the owner: another user must be refused",
+  "steps": [
+   {
+    "rpc": "kiln.v1.Pieces/AddPiece",
+    "service": "kiln.v1.Pieces",
+    "method": "AddPiece",
+    "user": "ada",
+    "message": {
+     "project_id": 0,
+     "form": "FORM_MUG"
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "kiln.v1.Catalog/ListGlazes",
+    "service": "kiln.v1.Catalog",
+    "method": "ListGlazes",
+    "user": null,
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "kiln.v1.Pieces/ApplyGlaze",
+    "service": "kiln.v1.Pieces",
+    "method": "ApplyGlaze",
+    "user": "bo",
+    "message": {
+     "piece_id": 0,
+     "glaze_code": "SIX-ASH",
+     "coats": 0
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {
+     "glaze_code": {
+      "step": 2,
+      "from_field": "code"
+     }
+    }
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+ },
+ {
+  "id": "rf-c422252578",
+  "kind": "owner_guard",
+  "why": "kiln.v1.Projects/ArchiveProject compares the owner: another user must be refused",
+  "steps": [
+   {
+    "rpc": "kiln.v1.Catalog/ListStudios",
+    "service": "kiln.v1.Catalog",
+    "method": "ListStudios",
+    "user": "ada",
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "kiln.v1.Projects/OpenProject",
+    "service": "kiln.v1.Projects",
+    "method": "OpenProject",
+    "user": "ada",
+    "message": {
+     "studio_slug": "east-wing",
+     "title": "wf-title"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "studio_slug": {
+      "step": 1,
+      "from_field": "slug"
+     }
+    }
+   },
+   {
+    "rpc": "kiln.v1.Projects/ArchiveProject",
+    "service": "kiln.v1.Projects",
+    "method": "ArchiveProject",
+    "user": "bo",
+    "message": {
+     "project_id": 2
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {
+     "project_id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   }
+  ],
+  "status": "verified",
+  "reason": null
+ },
+ {
+  "id": "rf-363ae728e5",
+  "kind": "pair",
+  "why": "kiln.v1.Projects/OpenProject creates a projects row; kiln.v1.Projects/ArchiveProject takes its id as project_id",
+  "steps": [
+   {
+    "rpc": "kiln.v1.Catalog/ListStudios",
+    "service": "kiln.v1.Catalog",
+    "method": "ListStudios",
+    "user": "ada",
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "kiln.v1.Projects/OpenProject",
+    "service": "kiln.v1.Projects",
+    "method": "OpenProject",
+    "user": "ada",
+    "message": {
+     "studio_slug": "east-wing",
+     "title": "wf-title"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "studio_slug": {
+      "step": 1,
+      "from_field": "slug"
+     }
+    }
+   },
+   {
+    "rpc": "kiln.v1.Projects/ArchiveProject",
+    "service": "kiln.v1.Projects",
+    "method": "ArchiveProject",
+    "user": "ada",
+    "message": {
+     "project_id": 2
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "project_id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   }
+  ],
+  "status": "verified",
+  "reason": null
+ },
+ {
+  "id": "rf-365377a179",
+  "kind": "pair",
+  "why": "kiln.v1.Pieces/AddPiece creates a pieces row; kiln.v1.Pieces/ApplyGlaze takes its id as piece_id",
+  "steps": [
+   {
+    "rpc": "kiln.v1.Pieces/AddPiece",
+    "service": "kiln.v1.Pieces",
+    "method": "AddPiece",
+    "user": "ada",
+    "message": {
+     "project_id": 0,
+     "form": "FORM_MUG"
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "kiln.v1.Catalog/ListGlazes",
+    "service": "kiln.v1.Catalog",
+    "method": "ListGlazes",
+    "user": null,
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "kiln.v1.Pieces/ApplyGlaze",
+    "service": "kiln.v1.Pieces",
+    "method": "ApplyGlaze",
+    "user": "ada",
+    "message": {
+     "piece_id": 0,
+     "glaze_code": "SIX-ASH",
+     "coats": 0
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {
+     "glaze_code": {
+      "step": 2,
+      "from_field": "code"
+     }
+    }
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+ },
+ {
+  "id": "rf-49ed9cfdc4",
+  "kind": "pair",
+  "why": "kiln.v1.Pieces/AddPiece creates a pieces row; kiln.v1.Pieces/FirePiece takes its id as piece_id",
+  "steps": [
+   {
+    "rpc": "kiln.v1.Pieces/AddPiece",
+    "service": "kiln.v1.Pieces",
+    "method": "AddPiece",
+    "user": "ada",
+    "message": {
+     "project_id": 0,
+     "form": "FORM_MUG"
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "kiln.v1.Pieces/FirePiece",
+    "service": "kiln.v1.Pieces",
+    "method": "FirePiece",
+    "user": "ada",
+    "message": {
+     "piece_id": 0,
+     "rush": false
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+ },
+ {
+  "id": "rf-86a887149e",
+  "kind": "pair",
+  "why": "kiln.v1.Projects/OpenProject creates a projects row; kiln.v1.Pieces/AddPiece takes its id as project_id",
+  "steps": [
+   {
+    "rpc": "kiln.v1.Catalog/ListStudios",
+    "service": "kiln.v1.Catalog",
+    "method": "ListStudios",
+    "user": "ada",
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "kiln.v1.Projects/OpenProject",
+    "service": "kiln.v1.Projects",
+    "method": "OpenProject",
+    "user": "ada",
+    "message": {
+     "studio_slug": "east-wing",
+     "title": "wf-title"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "studio_slug": {
+      "step": 1,
+      "from_field": "slug"
+     }
+    }
+   },
+   {
+    "rpc": "kiln.v1.Pieces/AddPiece",
+    "service": "kiln.v1.Pieces",
+    "method": "AddPiece",
+    "user": "ada",
+    "message": {
+     "project_id": 2,
+     "form": "FORM_MUG"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "project_id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   }
+  ],
+  "status": "verified",
+  "reason": null
+ },
+ {
+  "id": "rf-8ac785f62f",
+  "kind": "pair",
+  "why": "kiln.v1.Projects/OpenProject creates a projects row; kiln.v1.Projects/GetProject takes its id as id",
+  "steps": [
+   {
+    "rpc": "kiln.v1.Catalog/ListStudios",
+    "service": "kiln.v1.Catalog",
+    "method": "ListStudios",
+    "user": "ada",
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "kiln.v1.Projects/OpenProject",
+    "service": "kiln.v1.Projects",
+    "method": "OpenProject",
+    "user": "ada",
+    "message": {
+     "studio_slug": "east-wing",
+     "title": "wf-title"
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "studio_slug": {
+      "step": 1,
+      "from_field": "slug"
+     }
+    }
+   },
+   {
+    "rpc": "kiln.v1.Projects/GetProject",
+    "service": "kiln.v1.Projects",
+    "method": "GetProject",
+    "user": "ada",
+    "message": {
+     "id": 2
+    },
+    "code": "OK",
+    "role": "step",
+    "bound": {
+     "id": {
+      "step": 2,
+      "from_field": "id"
+     }
+    }
+   }
+  ],
+  "status": "verified",
+  "reason": null
+ },
+ {
+  "id": "rf-baf1bcb697",
+  "kind": "pair",
+  "why": "kiln.v1.Pieces/AddPiece creates a pieces row; kiln.v1.Pieces/GetPiece takes its id as piece_id",
+  "steps": [
+   {
+    "rpc": "kiln.v1.Pieces/AddPiece",
+    "service": "kiln.v1.Pieces",
+    "method": "AddPiece",
+    "user": "ada",
+    "message": {
+     "project_id": 0,
+     "form": "FORM_MUG"
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "kiln.v1.Pieces/GetPiece",
+    "service": "kiln.v1.Pieces",
+    "method": "GetPiece",
+    "user": "ada",
+    "message": {},
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+ },
+ {
+  "id": "rf-f7e45551e2",
+  "kind": "pair",
+  "why": "kiln.v1.Pieces/AddPiece creates a pieces row; kiln.v1.Pieces/RemovePiece takes its id as piece_id",
+  "steps": [
+   {
+    "rpc": "kiln.v1.Pieces/AddPiece",
+    "service": "kiln.v1.Pieces",
+    "method": "AddPiece",
+    "user": "ada",
+    "message": {
+     "project_id": 0,
+     "form": "FORM_MUG"
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "kiln.v1.Pieces/RemovePiece",
+    "service": "kiln.v1.Pieces",
+    "method": "RemovePiece",
+    "user": "ada",
+    "message": {
+     "piece_id": 0
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+ }
+]

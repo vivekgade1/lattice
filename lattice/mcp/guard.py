@@ -166,7 +166,9 @@ class Guard:
         """The protected file `resolved` is, or None."""
         k = self._key(resolved)
         for name, p in zip(self.names, self.protected, strict=True):
-            if k == self._key(p):
+            if k == self._key(p) or (  # a path under a protected directory is protected (L1b)
+                os.path.isdir(p) and k.startswith(self._key(p).rstrip(os.sep) + os.sep)
+            ):
                 self.last_project = self.project
                 return name
             try:

@@ -198,7 +198,7 @@ def rpc_routes(data: Mapping[str, Any]) -> tuple[tuple[Route, ...], tuple[Exclud
                     None,
                     c["line"],
                     "grpc_status"
-                    if c["kind"] == "status_error"
+                    if c["kind"] in ("status_error", "interceptor")
                     else ("plain_error" if c["kind"] == "plain_error" else "grpc_unimplemented"),
                     code=c["name"],
                 )

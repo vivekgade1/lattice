@@ -1,0 +1,22 @@
+{
+ "row": {
+  "id": "PR4-ALL",
+  "prediction": "every round-4 PASS row PASS or declared",
+  "pass_rule": "all",
+  "status": "FAIL",
+  "observed": {
+   "source": "docs/results/data/2026-10-18-grpc-round5/stagec/pr4all",
+   "0": {
+    "round-4 PASS rows still PASS": "10/11",
+    "regressed": [
+     "P4-BC"
+    ]
+   },
+   "G": {
+    "round-4 PASS rows still PASS": "7/7",
+    "regressed": []
+   }
+  },
+  "detail": null
+ }
+}

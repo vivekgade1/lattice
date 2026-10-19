@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package audience5.options.v1;
+
+import "google/protobuf/descriptor.proto";
+
+option go_package = "example.com/a5optne/gen/audience5/options/v1;optionsv1";
+
+// Audience says who may call a method before any handler-level check runs.
+enum Audience {
+  AUDIENCE_UNSPECIFIED = 0;
+  AUDIENCE_ANONYMOUS = 1;
+  AUDIENCE_MEMBER = 2;
+  AUDIENCE_STAFF = 3;
+}
+
+extend google.protobuf.MethodOptions {
+  Audience audience = 51101;
+}

@@ -1,0 +1,263 @@
+[
+ {
+  "id": "rf-625c32f987",
+  "kind": "owner_chain",
+  "why": "toolshed.booking.v1.ReservationService/ReturnTool adds a reservation_events row under a reservations row it does not own: another user must be refused",
+  "steps": [
+   {
+    "rpc": "toolshed.booking.v1.ReservationService/CreateReservation",
+    "service": "toolshed.booking.v1.ReservationService",
+    "method": "CreateReservation",
+    "user": "alice",
+    "message": {
+     "asset_tag": "wf-asset_tag",
+     "starts_at": "wf-starts_at",
+     "ends_at": "wf-ends_at",
+     "note": "wf-note",
+     "on_behalf_of": "wf-on_behalf_of"
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "toolshed.booking.v1.ReservationService/ReturnTool",
+    "service": "toolshed.booking.v1.ReservationService",
+    "method": "ReturnTool",
+    "user": "carol",
+    "message": {
+     "reservation_id": 0,
+     "condition_note": "wf-condition_note"
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (toolshed.booking.v1.ReservationService/CreateReservation) answered INVALID_ARGUMENT"
+ },
+ {
+  "id": "rf-c6b5dd52b1",
+  "kind": "owner_chain",
+  "why": "toolshed.booking.v1.ReservationService/CheckOut adds a reservation_events row under a reservations row it does not own: another user must be refused",
+  "steps": [
+   {
+    "rpc": "toolshed.booking.v1.ReservationService/CreateReservation",
+    "service": "toolshed.booking.v1.ReservationService",
+    "method": "CreateReservation",
+    "user": "alice",
+    "message": {
+     "asset_tag": "wf-asset_tag",
+     "starts_at": "wf-starts_at",
+     "ends_at": "wf-ends_at",
+     "note": "wf-note",
+     "on_behalf_of": "wf-on_behalf_of"
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "toolshed.booking.v1.ReservationService/CheckOut",
+    "service": "toolshed.booking.v1.ReservationService",
+    "method": "CheckOut",
+    "user": "carol",
+    "message": {
+     "reservation_id": 0
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (toolshed.booking.v1.ReservationService/CreateReservation) answered INVALID_ARGUMENT"
+ },
+ {
+  "id": "rf-e3dbbea8ca",
+  "kind": "owner_chain",
+  "why": "toolshed.booking.v1.ReservationService/CancelReservation adds a reservation_events row under a reservations row it does not own: another user must be refused",
+  "steps": [
+   {
+    "rpc": "toolshed.booking.v1.ReservationService/CreateReservation",
+    "service": "toolshed.booking.v1.ReservationService",
+    "method": "CreateReservation",
+    "user": "alice",
+    "message": {
+     "asset_tag": "wf-asset_tag",
+     "starts_at": "wf-starts_at",
+     "ends_at": "wf-ends_at",
+     "note": "wf-note",
+     "on_behalf_of": "wf-on_behalf_of"
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "toolshed.booking.v1.ReservationService/CancelReservation",
+    "service": "toolshed.booking.v1.ReservationService",
+    "method": "CancelReservation",
+    "user": "carol",
+    "message": {
+     "reservation_id": 0,
+     "reason": "wf-reason"
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (toolshed.booking.v1.ReservationService/CreateReservation) answered INVALID_ARGUMENT"
+ },
+ {
+  "id": "rf-176cb1a873",
+  "kind": "pair",
+  "why": "toolshed.booking.v1.ReservationService/CreateReservation creates a reservations row; toolshed.booking.v1.ReservationService/CancelReservation takes its id as reservation_id",
+  "steps": [
+   {
+    "rpc": "toolshed.booking.v1.ReservationService/CreateReservation",
+    "service": "toolshed.booking.v1.ReservationService",
+    "method": "CreateReservation",
+    "user": "alice",
+    "message": {
+     "asset_tag": "wf-asset_tag",
+     "starts_at": "wf-starts_at",
+     "ends_at": "wf-ends_at",
+     "note": "wf-note",
+     "on_behalf_of": "wf-on_behalf_of"
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "toolshed.booking.v1.ReservationService/CancelReservation",
+    "service": "toolshed.booking.v1.ReservationService",
+    "method": "CancelReservation",
+    "user": "alice",
+    "message": {
+     "reservation_id": 0,
+     "reason": "wf-reason"
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (toolshed.booking.v1.ReservationService/CreateReservation) answered INVALID_ARGUMENT"
+ },
+ {
+  "id": "rf-39e9708332",
+  "kind": "pair",
+  "why": "toolshed.booking.v1.ReservationService/CreateReservation creates a reservations row; toolshed.booking.v1.ReservationService/ReturnTool takes its id as reservation_id",
+  "steps": [
+   {
+    "rpc": "toolshed.booking.v1.ReservationService/CreateReservation",
+    "service": "toolshed.booking.v1.ReservationService",
+    "method": "CreateReservation",
+    "user": "alice",
+    "message": {
+     "asset_tag": "wf-asset_tag",
+     "starts_at": "wf-starts_at",
+     "ends_at": "wf-ends_at",
+     "note": "wf-note",
+     "on_behalf_of": "wf-on_behalf_of"
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "toolshed.booking.v1.ReservationService/ReturnTool",
+    "service": "toolshed.booking.v1.ReservationService",
+    "method": "ReturnTool",
+    "user": "alice",
+    "message": {
+     "reservation_id": 0,
+     "condition_note": "wf-condition_note"
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (toolshed.booking.v1.ReservationService/CreateReservation) answered INVALID_ARGUMENT"
+ },
+ {
+  "id": "rf-7011d65f17",
+  "kind": "pair",
+  "why": "toolshed.booking.v1.ReservationService/CreateReservation creates a reservations row; toolshed.booking.v1.ReservationService/CheckOut takes its id as reservation_id",
+  "steps": [
+   {
+    "rpc": "toolshed.booking.v1.ReservationService/CreateReservation",
+    "service": "toolshed.booking.v1.ReservationService",
+    "method": "CreateReservation",
+    "user": "alice",
+    "message": {
+     "asset_tag": "wf-asset_tag",
+     "starts_at": "wf-starts_at",
+     "ends_at": "wf-ends_at",
+     "note": "wf-note",
+     "on_behalf_of": "wf-on_behalf_of"
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "toolshed.booking.v1.ReservationService/CheckOut",
+    "service": "toolshed.booking.v1.ReservationService",
+    "method": "CheckOut",
+    "user": "alice",
+    "message": {
+     "reservation_id": 0
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (toolshed.booking.v1.ReservationService/CreateReservation) answered INVALID_ARGUMENT"
+ },
+ {
+  "id": "rf-a0f605fe96",
+  "kind": "pair",
+  "why": "toolshed.booking.v1.ReservationService/CreateReservation creates a reservations row; toolshed.booking.v1.ReservationService/GetReservation takes its id as reservation_id",
+  "steps": [
+   {
+    "rpc": "toolshed.booking.v1.ReservationService/CreateReservation",
+    "service": "toolshed.booking.v1.ReservationService",
+    "method": "CreateReservation",
+    "user": "alice",
+    "message": {
+     "asset_tag": "wf-asset_tag",
+     "starts_at": "wf-starts_at",
+     "ends_at": "wf-ends_at",
+     "note": "wf-note",
+     "on_behalf_of": "wf-on_behalf_of"
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "toolshed.booking.v1.ReservationService/GetReservation",
+    "service": "toolshed.booking.v1.ReservationService",
+    "method": "GetReservation",
+    "user": "alice",
+    "message": {},
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (toolshed.booking.v1.ReservationService/CreateReservation) answered INVALID_ARGUMENT"
+ }
+]

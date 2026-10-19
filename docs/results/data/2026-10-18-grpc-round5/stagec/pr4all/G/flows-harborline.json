@@ -1,0 +1,232 @@
+[
+ {
+  "id": "rf-31d77449b5",
+  "kind": "lifecycle",
+  "why": "bookings: harbor.v1.Bookings/BookBerth",
+  "steps": [],
+  "status": "unbound",
+  "reason": "no_source:berth_code"
+ },
+ {
+  "id": "rf-93d1b868f3",
+  "kind": "owner_chain",
+  "why": "harbor.v1.Yard/OpenWorkOrder adds a work_orders row under a bookings row it does not own: another user must be refused",
+  "steps": [],
+  "status": "unbound",
+  "reason": "no_source:berth_code"
+ },
+ {
+  "id": "rf-1858610f4d",
+  "kind": "pair",
+  "why": "harbor.v1.Bookings/BookBerth creates a bookings row; harbor.v1.Yard/ListWorkOrders takes its id as booking_id",
+  "steps": [],
+  "status": "unbound",
+  "reason": "no_source:berth_code"
+ },
+ {
+  "id": "rf-499385a51e",
+  "kind": "pair",
+  "why": "harbor.v1.Bookings/BookBerth creates a bookings row; harbor.v1.Yard/OpenWorkOrder takes its id as booking_id",
+  "steps": [],
+  "status": "unbound",
+  "reason": "no_source:berth_code"
+ },
+ {
+  "id": "rf-746632bc3a",
+  "kind": "pair",
+  "why": "harbor.v1.Vessels/RegisterVessel creates a vessels row; harbor.v1.Vessels/RenameVessel takes its id as id",
+  "steps": [
+   {
+    "rpc": "harbor.v1.Vessels/RegisterVessel",
+    "service": "harbor.v1.Vessels",
+    "method": "RegisterVessel",
+    "user": "ann",
+    "message": {
+     "hull": "wf-hull",
+     "name": "wf-name",
+     "length_m": 0
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "harbor.v1.Vessels/RenameVessel",
+    "service": "harbor.v1.Vessels",
+    "method": "RenameVessel",
+    "user": "ann",
+    "message": {
+     "id": 0,
+     "name": "wf-name"
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (harbor.v1.Vessels/RegisterVessel) answered INVALID_ARGUMENT"
+ },
+ {
+  "id": "rf-75ccb64005",
+  "kind": "pair",
+  "why": "harbor.v1.Bookings/BookBerth creates a bookings row; harbor.v1.Bookings/CheckIn takes its id as booking_id",
+  "steps": [],
+  "status": "unbound",
+  "reason": "no_source:berth_code"
+ },
+ {
+  "id": "rf-890eef5c40",
+  "kind": "pair",
+  "why": "harbor.v1.Berths/CreateBerth creates a berths row; harbor.v1.Bookings/GetBooking takes its id as id",
+  "steps": [
+   {
+    "rpc": "harbor.v1.Berths/CreateBerth",
+    "service": "harbor.v1.Berths",
+    "method": "CreateBerth",
+    "user": "ann",
+    "message": {
+     "code": "wf-code",
+     "pier": "wf-pier",
+     "length_m": 0,
+     "nightly_cents": 0
+    },
+    "code": "PERMISSION_DENIED",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "harbor.v1.Bookings/GetBooking",
+    "service": "harbor.v1.Bookings",
+    "method": "GetBooking",
+    "user": "ann",
+    "message": {},
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (harbor.v1.Berths/CreateBerth) answered PERMISSION_DENIED"
+ },
+ {
+  "id": "rf-9930f67cb8",
+  "kind": "pair",
+  "why": "harbor.v1.Vessels/RegisterVessel creates a vessels row; harbor.v1.Vessels/GetVessel takes its id as id",
+  "steps": [
+   {
+    "rpc": "harbor.v1.Vessels/RegisterVessel",
+    "service": "harbor.v1.Vessels",
+    "method": "RegisterVessel",
+    "user": "ann",
+    "message": {
+     "hull": "wf-hull",
+     "name": "wf-name",
+     "length_m": 0
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "harbor.v1.Vessels/GetVessel",
+    "service": "harbor.v1.Vessels",
+    "method": "GetVessel",
+    "user": "ann",
+    "message": {},
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (harbor.v1.Vessels/RegisterVessel) answered INVALID_ARGUMENT"
+ },
+ {
+  "id": "rf-b197e3bc50",
+  "kind": "pair",
+  "why": "harbor.v1.Yard/OpenWorkOrder creates a work_orders row; harbor.v1.Yard/CompleteWorkOrder takes its id as id",
+  "steps": [
+   {
+    "rpc": "harbor.v1.Yard/OpenWorkOrder",
+    "service": "harbor.v1.Yard",
+    "method": "OpenWorkOrder",
+    "user": "ann",
+    "message": {
+     "booking_id": 0,
+     "kind": "wf-kind",
+     "note": "wf-note"
+    },
+    "code": "INVALID_ARGUMENT",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "harbor.v1.Yard/CompleteWorkOrder",
+    "service": "harbor.v1.Yard",
+    "method": "CompleteWorkOrder",
+    "user": "ann",
+    "message": {
+     "id": 0
+    },
+    "code": "PERMISSION_DENIED",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (harbor.v1.Yard/OpenWorkOrder) answered INVALID_ARGUMENT"
+ },
+ {
+  "id": "rf-d44fa911b7",
+  "kind": "pair",
+  "why": "harbor.v1.Bookings/BookBerth creates a bookings row; harbor.v1.Bookings/GetBooking takes its id as id",
+  "steps": [],
+  "status": "unbound",
+  "reason": "no_source:berth_code"
+ },
+ {
+  "id": "rf-e1b7ff02a8",
+  "kind": "pair",
+  "why": "harbor.v1.Berths/CreateBerth creates a berths row; harbor.v1.Bookings/CancelBooking takes its id as id",
+  "steps": [
+   {
+    "rpc": "harbor.v1.Berths/CreateBerth",
+    "service": "harbor.v1.Berths",
+    "method": "CreateBerth",
+    "user": "ann",
+    "message": {
+     "code": "wf-code",
+     "pier": "wf-pier",
+     "length_m": 0,
+     "nightly_cents": 0
+    },
+    "code": "PERMISSION_DENIED",
+    "role": "step",
+    "bound": {}
+   },
+   {
+    "rpc": "harbor.v1.Bookings/CancelBooking",
+    "service": "harbor.v1.Bookings",
+    "method": "CancelBooking",
+    "user": "ann",
+    "message": {
+     "id": 0
+    },
+    "code": "NOT_FOUND",
+    "role": "step",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 1 (harbor.v1.Berths/CreateBerth) answered PERMISSION_DENIED"
+ },
+ {
+  "id": "rf-f99fe57657",
+  "kind": "pair",
+  "why": "harbor.v1.Bookings/BookBerth creates a bookings row; harbor.v1.Bookings/CancelBooking takes its id as id",
+  "steps": [],
+  "status": "unbound",
+  "reason": "no_source:berth_code"
+ }
+]

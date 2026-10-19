@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package status5.v1;
+
+option go_package = "example.com/s5main/gen/status5/v1;status5v1";
+
+message Req {
+  string name = 1;
+}
+
+message Rep {
+  string name = 1;
+}
+
+service Lit {
+  rpc Get(Req) returns (Rep);
+  rpc Put(Req) returns (Rep);
+  rpc Del(Req) returns (Rep);
+}
+
+service Fld {
+  rpc Get(Req) returns (Rep);
+  rpc Put(Req) returns (Rep);
+  rpc Del(Req) returns (Rep);
+  rpc Dyn(Req) returns (Rep);
+  rpc Var(Req) returns (Rep);
+}
+
+service Wrp {
+  rpc Get(Req) returns (Rep);
+  rpc Put(Req) returns (Rep);
+}
+
+service Par {
+  rpc Get(Req) returns (Rep);
+  rpc Put(Req) returns (Rep);
+  rpc Del(Req) returns (Rep);
+  rpc Wrap(Req) returns (Rep);
+  rpc Mystery(Req) returns (Rep);
+}
+
+service Det {
+  rpc Get(Req) returns (Rep);
+  rpc Put(Req) returns (Rep);
+  rpc Del(Req) returns (Rep);
+}
+
+service Unt {
+  rpc Get(Req) returns (Rep);
+  rpc Put(Req) returns (Rep);
+}

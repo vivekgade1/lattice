@@ -1,0 +1,176 @@
+[
+ {
+  "id": "rf-0f9bf04698",
+  "kind": "owner_chain",
+  "why": "marina.v1.ReservationService/ConfirmReservation adds a invoices, invoice_lines row under a reservations row it does not own: another user must be refused",
+  "steps": [
+   {
+    "rpc": "marina.v1.BerthService/FindOpenBerths",
+    "service": "marina.v1.BerthService",
+    "method": "FindOpenBerths",
+    "user": "harbormaster",
+    "message": {},
+    "code": "INVALID_ARGUMENT",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "marina.v1.VesselService/ListVessels",
+    "service": "marina.v1.VesselService",
+    "method": "ListVessels",
+    "user": "harbormaster",
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 3: no code from step 1 for berth_code"
+ },
+ {
+  "id": "rf-6deee1b8a7",
+  "kind": "owner_chain",
+  "why": "marina.v1.ReservationService/ExtendStay adds a invoice_lines row under a reservations row it does not own: another user must be refused",
+  "steps": [
+   {
+    "rpc": "marina.v1.BerthService/FindOpenBerths",
+    "service": "marina.v1.BerthService",
+    "method": "FindOpenBerths",
+    "user": "harbormaster",
+    "message": {},
+    "code": "INVALID_ARGUMENT",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "marina.v1.VesselService/ListVessels",
+    "service": "marina.v1.VesselService",
+    "method": "ListVessels",
+    "user": "harbormaster",
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 3: no code from step 1 for berth_code"
+ },
+ {
+  "id": "rf-11b0ccddd2",
+  "kind": "pair",
+  "why": "marina.v1.ReservationService/CreateReservation creates a reservations row; marina.v1.ReservationService/CancelReservation takes its id as reservation_id",
+  "steps": [
+   {
+    "rpc": "marina.v1.BerthService/FindOpenBerths",
+    "service": "marina.v1.BerthService",
+    "method": "FindOpenBerths",
+    "user": "harbormaster",
+    "message": {},
+    "code": "INVALID_ARGUMENT",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "marina.v1.VesselService/ListVessels",
+    "service": "marina.v1.VesselService",
+    "method": "ListVessels",
+    "user": "harbormaster",
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 3: no code from step 1 for berth_code"
+ },
+ {
+  "id": "rf-d9e4991c27",
+  "kind": "pair",
+  "why": "marina.v1.ReservationService/CreateReservation creates a reservations row; marina.v1.ReservationService/ExtendStay takes its id as reservation_id",
+  "steps": [
+   {
+    "rpc": "marina.v1.BerthService/FindOpenBerths",
+    "service": "marina.v1.BerthService",
+    "method": "FindOpenBerths",
+    "user": "harbormaster",
+    "message": {},
+    "code": "INVALID_ARGUMENT",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "marina.v1.VesselService/ListVessels",
+    "service": "marina.v1.VesselService",
+    "method": "ListVessels",
+    "user": "harbormaster",
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 3: no code from step 1 for berth_code"
+ },
+ {
+  "id": "rf-e27167b327",
+  "kind": "pair",
+  "why": "marina.v1.ReservationService/CreateReservation creates a reservations row; marina.v1.ReservationService/GetReservation takes its id as reservation_id",
+  "steps": [
+   {
+    "rpc": "marina.v1.BerthService/FindOpenBerths",
+    "service": "marina.v1.BerthService",
+    "method": "FindOpenBerths",
+    "user": "harbormaster",
+    "message": {},
+    "code": "INVALID_ARGUMENT",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "marina.v1.VesselService/ListVessels",
+    "service": "marina.v1.VesselService",
+    "method": "ListVessels",
+    "user": "harbormaster",
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 3: no code from step 1 for berth_code"
+ },
+ {
+  "id": "rf-e46c053b93",
+  "kind": "pair",
+  "why": "marina.v1.ReservationService/CreateReservation creates a reservations row; marina.v1.ReservationService/ConfirmReservation takes its id as reservation_id",
+  "steps": [
+   {
+    "rpc": "marina.v1.BerthService/FindOpenBerths",
+    "service": "marina.v1.BerthService",
+    "method": "FindOpenBerths",
+    "user": "harbormaster",
+    "message": {},
+    "code": "INVALID_ARGUMENT",
+    "role": "lookup",
+    "bound": {}
+   },
+   {
+    "rpc": "marina.v1.VesselService/ListVessels",
+    "service": "marina.v1.VesselService",
+    "method": "ListVessels",
+    "user": "harbormaster",
+    "message": {},
+    "code": "OK",
+    "role": "lookup",
+    "bound": {}
+   }
+  ],
+  "status": "failed",
+  "reason": "step 3: no code from step 1 for berth_code"
+ }
+]

@@ -1,0 +1,18 @@
+{
+ "row": {
+  "id": "REG",
+  "prediction": "the same failing ids before and after",
+  "pass_rule": "same set",
+  "status": "PASS",
+  "observed": {
+   "before": "2 failed, 3514 passed, 5 skipped, 414 warnings, 29 errors in 988.41s (0:16:28)",
+   "after": "2 failed, 3675 passed, 5 skipped, 414 warnings, 29 errors in 1066.03s (0:17:46)",
+   "failing ids before": 31,
+   "failing ids after": 31
+  },
+  "detail": {
+   "only before": [],
+   "only after": []
+  }
+ }
+}

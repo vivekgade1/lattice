@@ -1,0 +1,92 @@
+{
+ "toolshed.auth.v1.SessionService/Login": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "toolshed.auth.v1.SessionService/Logout": {
+  "code": "OK",
+  "answered": true
+ },
+ "toolshed.auth.v1.SessionService/WhoAmI": {
+  "code": "OK",
+  "answered": true
+ },
+ "toolshed.booking.v1.ReservationService/CreateReservation": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "toolshed.booking.v1.ReservationService/GetReservation": {
+  "code": "NOT_FOUND",
+  "answered": true
+ },
+ "toolshed.booking.v1.ReservationService/ListReservations": {
+  "code": "OK",
+  "answered": true
+ },
+ "toolshed.booking.v1.ReservationService/CancelReservation": {
+  "code": "NOT_FOUND",
+  "answered": true
+ },
+ "toolshed.booking.v1.ReservationService/CheckOut": {
+  "code": "NOT_FOUND",
+  "answered": true
+ },
+ "toolshed.booking.v1.ReservationService/ReturnTool": {
+  "code": "NOT_FOUND",
+  "answered": true
+ },
+ "toolshed.booking.v1.ReservationService/ExtendReservation": {
+  "code": "UNIMPLEMENTED",
+  "answered": false
+ },
+ "toolshed.catalog.v1.EquipmentService/ListTools": {
+  "code": "OK",
+  "answered": true
+ },
+ "toolshed.catalog.v1.EquipmentService/GetTool": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "toolshed.catalog.v1.EquipmentService/CreateTool": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "toolshed.catalog.v1.EquipmentService/RelocateTool": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "toolshed.catalog.v1.EquipmentService/RetireTool": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "toolshed.members.v1.MemberService/GetMember": {
+  "code": "OK",
+  "answered": true
+ },
+ "toolshed.members.v1.MemberService/ListMembers": {
+  "code": "OK",
+  "answered": true
+ },
+ "toolshed.members.v1.MemberService/UpdateMember": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "toolshed.members.v1.MemberService/DeleteAccount": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "toolshed.billing.v1.InvoiceService/GetInvoice": {
+  "code": "UNIMPLEMENTED",
+  "answered": false,
+  "route": false
+ },
+ "toolshed.billing.v1.InvoiceService/ListInvoices": {
+  "code": "UNIMPLEMENTED",
+  "answered": false,
+  "route": false
+ },
+ "(absent)": {
+  "code": "UNIMPLEMENTED",
+  "answered": false
+ }
+}

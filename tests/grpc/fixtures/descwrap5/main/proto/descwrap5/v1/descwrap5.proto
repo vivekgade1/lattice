@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package descwrap5.v1;
+
+option go_package = "example.com/d5main/gen/descwrap5/v1;descwrap5v1";
+
+message Req {
+  string name = 1;
+}
+
+message Rep {
+  string name = 1;
+}
+
+service Ptr {
+  rpc Get(Req) returns (Rep);
+  rpc Put(Req) returns (Rep);
+}
+
+service Copy {
+  rpc Get(Req) returns (Rep);
+  rpc Put(Req) returns (Rep);
+}
+
+service Template {
+  rpc Get(Req) returns (Rep);
+  rpc Put(Req) returns (Rep);
+}
+
+service Alias {
+  rpc Get(Req) returns (Rep);
+  rpc Put(Req) returns (Rep);
+}
+
+service Absent {
+  rpc Get(Req) returns (Rep);
+  rpc Put(Req) returns (Rep);
+}

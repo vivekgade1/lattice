@@ -1,0 +1,129 @@
+{
+ "marina.v1.AccessService/Login": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "marina.v1.AccessService/WhoAmI": {
+  "code": "OK",
+  "answered": true
+ },
+ "marina.v1.AccessService/Logout": {
+  "code": "OK",
+  "answered": true
+ },
+ "marina.v1.AccessService/ListAccounts": {
+  "code": "OK",
+  "answered": true
+ },
+ "marina.v1.BerthService/ListPiers": {
+  "code": "OK",
+  "answered": true
+ },
+ "marina.v1.BerthService/ListBerths": {
+  "code": "OK",
+  "answered": true
+ },
+ "marina.v1.BerthService/GetBerth": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "marina.v1.BerthService/FindOpenBerths": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "marina.v1.BerthService/SetBerthStatus": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "marina.v1.BerthService/SetBerthRate": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "marina.v1.BerthService/ReserveBlock": {
+  "code": "UNIMPLEMENTED",
+  "answered": false
+ },
+ "marina.v1.ReservationService/CreateReservation": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "marina.v1.ReservationService/ConfirmReservation": {
+  "code": "NOT_FOUND",
+  "answered": true
+ },
+ "marina.v1.ReservationService/CancelReservation": {
+  "code": "NOT_FOUND",
+  "answered": true
+ },
+ "marina.v1.ReservationService/ExtendStay": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "marina.v1.ReservationService/GetReservation": {
+  "code": "NOT_FOUND",
+  "answered": true
+ },
+ "marina.v1.ReservationService/ListReservations": {
+  "code": "OK",
+  "answered": true
+ },
+ "marina.v1.VesselService/RegisterVessel": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "marina.v1.VesselService/GetVessel": {
+  "code": "NOT_FOUND",
+  "answered": true
+ },
+ "marina.v1.VesselService/ListVessels": {
+  "code": "OK",
+  "answered": true
+ },
+ "marina.v1.VesselService/UpdateVessel": {
+  "code": "NOT_FOUND",
+  "answered": true
+ },
+ "marina.v1.VesselService/RetireVessel": {
+  "code": "NOT_FOUND",
+  "answered": true
+ },
+ "marina.v1.BillingService/GetInvoice": {
+  "code": "NOT_FOUND",
+  "answered": true,
+  "route": false
+ },
+ "marina.v1.BillingService/ListInvoices": {
+  "code": "OK",
+  "answered": true,
+  "route": false
+ },
+ "marina.v1.BillingService/PayInvoice": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true,
+  "route": false
+ },
+ "marina.v1.BillingService/VoidInvoice": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true,
+  "route": false
+ },
+ "marina.v1.BillingService/AddCharge": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true,
+  "route": false
+ },
+ "marina.v1.BillingService/ExportLedger": {
+  "code": "UNIMPLEMENTED",
+  "answered": false,
+  "route": false
+ },
+ "marina.v1.ForecastService/GetForecast": {
+  "code": "UNIMPLEMENTED",
+  "answered": false,
+  "route": false
+ },
+ "(absent)": {
+  "code": "UNIMPLEMENTED",
+  "answered": false
+ }
+}
