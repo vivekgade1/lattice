@@ -878,3 +878,20 @@ $PY -m ruff check <changed .py>; $PY -m ruff format --check <created .py>; dotne
     `docs/results/data/` with only their truth in `tests/`?
 18. **Q18 Where to build.** B1 alone, then B2, B3, B4 and R each in their own worktree from `np-dotnet` (four in parallel), merged by the
     orchestrator before the freeze?
+
+## Amendment 1 (orchestrator rulings on section 13, 2026-10-18, before any code)
+Q1: yes: the build starts only after Go round 3 (G3) is merged into `next-phases`; `np-dotnet` is rebased onto that tip first. Q2: accepted
+(`lattice.dnextract/1` with the goextract key set plus one `dotnet` key, and the `extract_source.py` dispatch; Go bytes unchanged).
+Q3: yes to both (D1 on MySQL 8.4 plus an environment-selected SQLite provider; H1 on SQLite, MySQL optional). Q4: the author's choice
+for D1 (Pomelo 9.0.0 or Oracle `MySql.EntityFrameworkCore` 10.0.9), both recognised. Q5: yes: A1 on opus through the `claude` CLI with a
+turn cap, A2/W0/W on sonnet; A1 may run the fixed `check.sh` (scenario names and pass/fail only); the CLI's list estimate is reported; no
+API key. Q6: if A1 cannot reach the acceptance in its rounds, D1 is accepted as development data with its failing list frozen. Q7: skip
+D2. Q8: yes, build `dnapp` (<= 450 lines of C#). Q9: build DN805 only if G3's K8 passed; else gated with the reason. Q10: yes, unfreeze
+`check.py` (<= 40 lines) and `__main__.py` (<= 8) so `lattice check` runs layer A on a .NET runtime (equal support is the owner's
+goal). Q11: harness-side translation only. Q12: an approved real-agent build of a toy .NET spec with a USD 5 cap through the `claude`
+CLI (a usage limit is NOT RUN). Q13: read `MapIdentityApi`/`IdentityDbContext` from a fixed table in round 1. Q14: accepted (G3's S4
+values). Q15: confirmed (one throwaway `mysql:8.4` container per run, label `lattice.owner`, removed after). Q16: DN1 merges into
+`next-phases` after the orchestrator's independent re-run; a partial merge of passing stages is acceptable with the failures stated.
+Q17: D1 and H1 are archived as tarballs under `docs/results/data/` with only their truth under `tests/` (no `bin/`/`obj/` in the
+repository). Q18: yes: B1 alone, then B2, B3, B4 and R each in their own worktree from `np-dotnet`, merged by the orchestrator before
+the freeze.
