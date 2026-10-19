@@ -1,0 +1,13 @@
+--- a/internal/api/books.go
++++ b/internal/api/books.go
+@@ -42,10 +42,6 @@
+ 		fail(c, http.StatusInternalServerError, "could not load the shelf")
+ 		return
+ 	}
+-	if shelf.UserID != userID(c) {
+-		fail(c, http.StatusForbidden, "shelf belongs to another user")
+-		return
+-	}
+ 	var in bookInput
+ 	if err := c.ShouldBindJSON(&in); err != nil || strings.TrimSpace(in.Title) == "" || strings.TrimSpace(in.Author) == "" {
+ 		fail(c, http.StatusUnprocessableEntity, "title and author are required (1 to 120 characters each)")

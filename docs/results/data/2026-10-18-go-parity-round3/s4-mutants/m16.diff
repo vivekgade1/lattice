@@ -1,0 +1,11 @@
+--- a/internal/api/shelves.go
++++ b/internal/api/shelves.go
+@@ -19,7 +19,7 @@
+ 
+ func (s *Server) listShelves(c *gin.Context) {
+ 	shelves := []models.Shelf{}
+-	if err := s.db.Where("user_id = ?", userID(c)).Order("id").Find(&shelves).Error; err != nil {
++	if err := s.db.Order("id").Find(&shelves).Error; err != nil {
+ 		fail(c, http.StatusInternalServerError, "could not load the shelves")
+ 		return
+ 	}

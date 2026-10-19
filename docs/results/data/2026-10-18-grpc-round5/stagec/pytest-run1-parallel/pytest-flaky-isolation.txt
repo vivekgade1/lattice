@@ -1,0 +1,6 @@
+-- before
+...                                                                      [100%]
+3 passed in 3.82s
+-- after
+...                                                                      [100%]
+3 passed in 2.29s

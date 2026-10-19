@@ -1622,11 +1622,17 @@ function citesEl(targets) {
   );
 }
 
+/** "Checked by Lattice: k withheld, m replaced" (v1.26), from the counts of a checked text. */
+export function checkedWords(c) {
+  const replaced = Object.keys(c || {}).filter((k) => k.startsWith("replaced_")).reduce((n, k) => n + (c[k] || 0), 0);
+  return `Checked by Lattice: ${(c && c.withheld) || 0} withheld, ${replaced} replaced`;
+}
+
 /** Bring one thread item's <li> up to date. The signature keeps an unchanged item
  *  (an open tool card, a mounted change card) untouched between polls. */
 function updateItem(li, it, c, isLast) {
   const sig = it.kind === "tool" ? `${it.result ? it.result.ok + it.result.summary : ""}|${it.stopped}`
-    : it.kind === "text" ? `${it.partial}|${it.text}`
+    : it.kind === "text" ? `${it.partial}|${it.text}${it.checked ? `|${checkedWords(it.checked)}` : ""}`
     : it.kind === "error" ? `${isLast}|${c.busy}`
     : it.kind === "user" ? `${it.pending}|${it.text}`
     : "1";
@@ -1637,6 +1643,10 @@ function updateItem(li, it, c, isLast) {
   } else if (it.kind === "text") {
     const el = h("div", { class: ["msg", "msg-bot", "sess-text", it.partial && "is-partial"] }, markdownEl(it.text));
     li.replaceChildren(el);
+    if (it.checked && !it.partial) {
+      // v1.26: Lattice checked this text before showing it; a text badge, never colour alone
+      li.append(h("p", { class: "muted tiny sess-checked" }, checkedWords(it.checked)));
+    }
     if (!it.partial && !li._announced) {
       li._announced = true;
       els.live.textContent = it.text;

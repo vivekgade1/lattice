@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package audience5.v1;
+
+import "audience5/options/v1/access.proto";
+
+option go_package = "example.com/a5optne/gen/audience5/v1;audience5v1";
+
+message Req {
+  string name = 1;
+}
+
+message Rep {
+  string name = 1;
+}
+
+service Hall {
+  rpc Members(Req) returns (Rep) {
+    option (audience5.options.v1.audience) = AUDIENCE_MEMBER;
+  }
+  rpc Lobby(Req) returns (Rep);
+}

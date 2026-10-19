@@ -1,0 +1,1255 @@
+{
+ "schema": "lattice.grpc-probes5/1",
+ "arm": "0",
+ "self_test": false,
+ "library_sha256": {
+  "dogfood/grpc_contract4.py": "6666ac9bedc8dfb49edd18177091c40ece5dcf3b149a097e82bdf004a4a04610",
+  "dogfood/grpc_contract5.py": "f71b9e5d1b6b9caf7ccd25d7548121dde74afeaf1ca9a8257c9978178c372681",
+  "dogfood/grpc_flow_scorer.py": "8d896ee0ad1c22fd46ff9f38876c08e8df03b756906f0b40bcaadf0a0446fdd3",
+  "dogfood/grpc_probes.py": "5406bbbea96872396f5b8c58042992fa230b0fbf8440148a3d67f1c7abedfee2",
+  "dogfood/grpc_probes2.py": "0193add7bd620dbf2af90cddf66a8bccca85ba1ade5b06f048bd711c952755fa",
+  "dogfood/grpc_probes3.py": "244e5e688287774daad66198134697c4b67443a8e71316ad4a2df84a97d3a978",
+  "dogfood/grpc_probes4.py": "82aca97b4d508d0537a567914be537b2529cc219a6d9effb630c0d1bfdf1350b",
+  "dogfood/grpc_probes5.py": "ef05f9368a1c96f2a36d4631c10a6a8532422632dffa9e1b77361263355ead40",
+  "dogfood/grpc_scorer3.py": "019db509ded84f48ef95e7bfe7788a949305611a35ab3ae15706303298ea50be",
+  "dogfood/grpc_scorer4.py": "e963747ae1545e68a31b8b740fd259b687a6121a4712667d239287683a2bae90",
+  "dogfood/grpc_scorer5.py": "991cb1dc46623e58d6c457bb5c86277311b32ca6cb7a32f3513eca40ec569ec3",
+  "dogfood/grpc_scorer5_cases.json": "f6afbfd58f06b91aa190bec0e9c9aa1f4e50666a193ea368362ed933741e22e7",
+  "dogfood/grpc_truth5.py": "b08a0759bb49f2ce1c41942cb6f5ee7cc8a4ec9e7d6855c8294608a3440f099b",
+  "lattice/gocheck/src/goextract_grpc.go": "97e7faa108cd5b963ea9386edf56b0cf459800faece1e2ac7a749332657d1f20",
+  "lattice/gocheck/src/goextract_grpc_auth.go": "28b383b1531a333fedaa8b6125b6377c95d17a38e0969588fd865946c412186f",
+  "lattice/gocheck/src/goextract_grpc_codes.go": "3042cf24a2677764854ca3522b23881245ef19e2c306b327b95a514495d84ee2",
+  "lattice/gocheck/src/goextract_proto.go": "d021cb314387f8015934f7227cf720c7445863a5f2e73191fe27c1aa9bdb85f6",
+  "lattice/gocheck/src/goextract_sqlraw.go": "7cf2766a22f955a534828d32fd5cb6e18981be5713767c06fe0bbb508aea8507",
+  "lattice/importer/frontends/go_grpc.py": "1d882e5c8b6fb30b1aa3e202eaf9eba09ed462459ed376281d4737bfcb06579f",
+  "lattice/importer/outside.py": "5d7a5ed767b7060d10c8508c8ee930f5af6b570f8e9f3c4a22f0352a91f74328",
+  "lattice/importer/transport.py": "04979019468e5d4fd9dc33c7d98ef62c32c5ae41fd5211421ec43ca4cca9ae4a",
+  "lattice/importer/workflows.py": "5eba7e8ab6ac62ba8ba4cea31088faab9e149e921a952c6a4837e37b92638098",
+  "lattice/mcp/guard.py": "ba60ca31f3b43cbc6bd50d51421acd860807590d0a68d2a2593081d67505dfb8",
+  "lattice/spec/grpc.py": "a7ceb5cf5f5f89156c046605ef7783e6a8cafe95b459e3c8bfdb28ea21d62549",
+  "lattice/spec/process.py": "047be55e9f421700efab2441525121c8387167fb53edcd5991ebdc4592cdebf1",
+  "lattice/studio/rebuild.py": "3659f41e9e798db83aa24e52add3e7e6c0b7d166c951e66163d3dc8addb688bb"
+ },
+ "frozen_before": {
+  "named_frozen": {
+   "lattice/importer/workflows.py": {
+    "base": "5eba7e8ab6ac62ba",
+    "now": "5eba7e8ab6ac62ba",
+    "same": true
+   },
+   "lattice/importer/transport.py": {
+    "base": "04979019468e5d4f",
+    "now": "04979019468e5d4f",
+    "same": true
+   },
+   "lattice/spec/process.py": {
+    "base": "047be55e9f421700",
+    "now": "047be55e9f421700",
+    "same": true
+   },
+   "lattice/importer/outside.py": {
+    "base": "5d7a5ed767b7060d",
+    "now": "5d7a5ed767b7060d",
+    "same": true
+   },
+   "dogfood/grpc_contract4.py": {
+    "base": "6666ac9bedc8dfb4",
+    "now": "6666ac9bedc8dfb4",
+    "same": true
+   },
+   "dogfood/grpc_flow_scorer.py": {
+    "base": "8d896ee0ad1c22fd",
+    "now": "8d896ee0ad1c22fd",
+    "same": true
+   },
+   "dogfood/grpc_probes.py": {
+    "base": "5406bbbea9687239",
+    "now": "5406bbbea9687239",
+    "same": true
+   },
+   "dogfood/grpc_probes2.py": {
+    "base": "0193add7bd620dbf",
+    "now": "0193add7bd620dbf",
+    "same": true
+   },
+   "dogfood/grpc_probes3.py": {
+    "base": "244e5e688287774d",
+    "now": "244e5e688287774d",
+    "same": true
+   },
+   "dogfood/grpc_probes4.py": {
+    "base": "82aca97b4d508d05",
+    "now": "82aca97b4d508d05",
+    "same": true
+   },
+   "dogfood/grpc_scorer3.py": {
+    "base": "019db509ded84f48",
+    "now": "019db509ded84f48",
+    "same": true
+   },
+   "dogfood/grpc_scorer4.py": {
+    "base": "e963747ae1545e68",
+    "now": "e963747ae1545e68",
+    "same": true
+   }
+  },
+  "frozen_files_changed": [],
+  "unexpected_untracked": [],
+  "tracked_changed_vs_base": [
+   "dogfood/grpc_contract5.py",
+   "dogfood/grpc_probes5.py",
+   "dogfood/grpc_scorer5.py",
+   "dogfood/grpc_scorer5_cases.json",
+   "dogfood/grpc_truth5.py",
+   "lattice/gocheck/src/goextract_grpc.go",
+   "lattice/gocheck/src/goextract_proto.go",
+   "lattice/importer/frontends/go_grpc.py",
+   "lattice/mcp/guard.py",
+   "lattice/spec/grpc.py",
+   "lattice/studio/rebuild.py",
+   "tests/grpc/fixtures/harness5/mysql/buf.gen.yaml",
+   "tests/grpc/fixtures/harness5/mysql/buf.yaml",
+   "tests/grpc/fixtures/harness5/mysql/cmd/ledgerd/main.go",
+   "tests/grpc/fixtures/harness5/mysql/freeze.sha256",
+   "tests/grpc/fixtures/harness5/mysql/gen/ledger/v1/ledger.pb.go",
+   "tests/grpc/fixtures/harness5/mysql/gen/ledger/v1/ledger_grpc.pb.go",
+   "tests/grpc/fixtures/harness5/mysql/go.mod",
+   "tests/grpc/fixtures/harness5/mysql/go.sum",
+   "tests/grpc/fixtures/harness5/mysql/harness.py",
+   "tests/grpc/fixtures/harness5/mysql/internal/serve/accounts.go",
+   "tests/grpc/fixtures/harness5/mysql/internal/serve/entries.go",
+   "tests/grpc/fixtures/harness5/mysql/internal/serve/gate.go",
+   "tests/grpc/fixtures/harness5/mysql/internal/store/store.go",
+   "tests/grpc/fixtures/harness5/mysql/proto/ledger/v1/ledger.proto",
+   "tests/grpc/fixtures/harness5/mysql/spec.py",
+   "tests/grpc/fixtures/harness5/mysql/studio.toml",
+   "tests/grpc/fixtures/harness5/mysql/truth.json",
+   "tests/grpc/fixtures/harness5/sqlite/buf.gen.yaml",
+   "tests/grpc/fixtures/harness5/sqlite/buf.yaml",
+   "tests/grpc/fixtures/harness5/sqlite/cmd/ledgerd/main.go",
+   "tests/grpc/fixtures/harness5/sqlite/freeze.sha256",
+   "tests/grpc/fixtures/harness5/sqlite/gen/ledger/v1/ledger.pb.go",
+   "tests/grpc/fixtures/harness5/sqlite/gen/ledger/v1/ledger_grpc.pb.go",
+   "tests/grpc/fixtures/harness5/sqlite/go.mod",
+   "tests/grpc/fixtures/harness5/sqlite/go.sum",
+   "tests/grpc/fixtures/harness5/sqlite/harness.py",
+   "tests/grpc/fixtures/harness5/sqlite/internal/serve/accounts.go",
+   "tests/grpc/fixtures/harness5/sqlite/internal/serve/entries.go",
+   "tests/grpc/fixtures/harness5/sqlite/internal/serve/gate.go",
+   "tests/grpc/fixtures/harness5/sqlite/internal/store/store.go",
+   "tests/grpc/fixtures/harness5/sqlite/proto/ledger/v1/ledger.proto",
+   "tests/grpc/fixtures/harness5/sqlite/studio.toml",
+   "tests/grpc/fixtures/harness5/sqlite/truth.json",
+   "tests/grpc/fixtures/toybuild5/.gitignore",
+   "tests/grpc/fixtures/toybuild5/CONTEXT.md",
+   "tests/grpc/fixtures/toybuild5/REQUIREMENTS.md",
+   "tests/grpc/fixtures/toybuild5/buf.gen.yaml",
+   "tests/grpc/fixtures/toybuild5/buf.yaml",
+   "tests/grpc/fixtures/toybuild5/check.sh",
+   "tests/grpc/fixtures/toybuild5/generate.sh",
+   "tests/grpc/fixtures/toybuild5/go.mod",
+   "tests/grpc/fixtures/toybuild5/go.sum",
+   "tests/grpc/fixtures/toybuild5/harness.py",
+   "tests/grpc/fixtures/toybuild5/main.go",
+   "tests/grpc/fixtures/toybuild5/proto/toy/v1/shelf.proto",
+   "tests/grpc/fixtures/toybuild5/pyproject.toml",
+   "tests/grpc/fixtures/toybuild5/shelf.go",
+   "tests/grpc/fixtures/toybuild5/spec.py",
+   "tests/grpc/fixtures/toybuild5/spec.trace.json",
+   "tests/grpc/fixtures/toybuild5/studio.toml",
+   "tests/grpc/fixtures/truth5/probe-flows.json",
+   "tests/grpc/test_ledger5.py",
+   "tests/grpc/test_truth5.py"
+  ],
+  "staged": [],
+  "budgets": {
+   "lattice/spec/grpc.py": {
+    "insertions+deletions": 6,
+    "budget": 6,
+    "ok": true
+   },
+   "lattice/importer/frontends/go_grpc.py": {
+    "insertions+deletions": 2,
+    "budget": 20,
+    "ok": true
+   },
+   "lattice/studio/rebuild.py": {
+    "insertions+deletions": 82,
+    "budget": 90,
+    "ok": true
+   },
+   "lattice/mcp/guard.py": {
+    "insertions+deletions": 4,
+    "budget": 30,
+    "ok": true
+   },
+   "lattice/gocheck/src/goextract_proto.go": {
+    "insertions+deletions": 34,
+    "budget": 40,
+    "ok": true
+   },
+   "goextract_grpc*.go (3 files, total, vs S0)": {
+    "insertions+deletions": 924,
+    "budget": 650,
+    "ok": false
+   },
+   "goextract_sqlraw.go": {
+    "lines": 248,
+    "budget": 300,
+    "ok": true
+   },
+   "cap goextract_grpc.go": {
+    "lines": 1138,
+    "budget": 1200,
+    "ok": true
+   },
+   "cap goextract_grpc_auth.go": {
+    "lines": 1006,
+    "budget": 1200,
+    "ok": true
+   },
+   "cap goextract_grpc_codes.go": {
+    "lines": 1010,
+    "budget": 1200,
+    "ok": true
+   }
+  },
+  "deskd_freeze_ok": true,
+  "deskd_files_changed": [],
+  "kilnworks_freeze_ok": true,
+  "kilnworks_files_changed": [],
+  "harborline_freeze_ok": true,
+  "harborline_files_changed": [],
+  "dev_truth_hashes_changed": [],
+  "ok": false
+ },
+ "frozen_after": {
+  "named_frozen": {
+   "lattice/importer/workflows.py": {
+    "base": "5eba7e8ab6ac62ba",
+    "now": "5eba7e8ab6ac62ba",
+    "same": true
+   },
+   "lattice/importer/transport.py": {
+    "base": "04979019468e5d4f",
+    "now": "04979019468e5d4f",
+    "same": true
+   },
+   "lattice/spec/process.py": {
+    "base": "047be55e9f421700",
+    "now": "047be55e9f421700",
+    "same": true
+   },
+   "lattice/importer/outside.py": {
+    "base": "5d7a5ed767b7060d",
+    "now": "5d7a5ed767b7060d",
+    "same": true
+   },
+   "dogfood/grpc_contract4.py": {
+    "base": "6666ac9bedc8dfb4",
+    "now": "6666ac9bedc8dfb4",
+    "same": true
+   },
+   "dogfood/grpc_flow_scorer.py": {
+    "base": "8d896ee0ad1c22fd",
+    "now": "8d896ee0ad1c22fd",
+    "same": true
+   },
+   "dogfood/grpc_probes.py": {
+    "base": "5406bbbea9687239",
+    "now": "5406bbbea9687239",
+    "same": true
+   },
+   "dogfood/grpc_probes2.py": {
+    "base": "0193add7bd620dbf",
+    "now": "0193add7bd620dbf",
+    "same": true
+   },
+   "dogfood/grpc_probes3.py": {
+    "base": "244e5e688287774d",
+    "now": "244e5e688287774d",
+    "same": true
+   },
+   "dogfood/grpc_probes4.py": {
+    "base": "82aca97b4d508d05",
+    "now": "82aca97b4d508d05",
+    "same": true
+   },
+   "dogfood/grpc_scorer3.py": {
+    "base": "019db509ded84f48",
+    "now": "019db509ded84f48",
+    "same": true
+   },
+   "dogfood/grpc_scorer4.py": {
+    "base": "e963747ae1545e68",
+    "now": "e963747ae1545e68",
+    "same": true
+   }
+  },
+  "frozen_files_changed": [],
+  "unexpected_untracked": [],
+  "tracked_changed_vs_base": [
+   "dogfood/grpc_contract5.py",
+   "dogfood/grpc_probes5.py",
+   "dogfood/grpc_scorer5.py",
+   "dogfood/grpc_scorer5_cases.json",
+   "dogfood/grpc_truth5.py",
+   "lattice/gocheck/src/goextract_grpc.go",
+   "lattice/gocheck/src/goextract_proto.go",
+   "lattice/importer/frontends/go_grpc.py",
+   "lattice/mcp/guard.py",
+   "lattice/spec/grpc.py",
+   "lattice/studio/rebuild.py",
+   "tests/grpc/fixtures/harness5/mysql/buf.gen.yaml",
+   "tests/grpc/fixtures/harness5/mysql/buf.yaml",
+   "tests/grpc/fixtures/harness5/mysql/cmd/ledgerd/main.go",
+   "tests/grpc/fixtures/harness5/mysql/freeze.sha256",
+   "tests/grpc/fixtures/harness5/mysql/gen/ledger/v1/ledger.pb.go",
+   "tests/grpc/fixtures/harness5/mysql/gen/ledger/v1/ledger_grpc.pb.go",
+   "tests/grpc/fixtures/harness5/mysql/go.mod",
+   "tests/grpc/fixtures/harness5/mysql/go.sum",
+   "tests/grpc/fixtures/harness5/mysql/harness.py",
+   "tests/grpc/fixtures/harness5/mysql/internal/serve/accounts.go",
+   "tests/grpc/fixtures/harness5/mysql/internal/serve/entries.go",
+   "tests/grpc/fixtures/harness5/mysql/internal/serve/gate.go",
+   "tests/grpc/fixtures/harness5/mysql/internal/store/store.go",
+   "tests/grpc/fixtures/harness5/mysql/proto/ledger/v1/ledger.proto",
+   "tests/grpc/fixtures/harness5/mysql/spec.py",
+   "tests/grpc/fixtures/harness5/mysql/studio.toml",
+   "tests/grpc/fixtures/harness5/mysql/truth.json",
+   "tests/grpc/fixtures/harness5/sqlite/buf.gen.yaml",
+   "tests/grpc/fixtures/harness5/sqlite/buf.yaml",
+   "tests/grpc/fixtures/harness5/sqlite/cmd/ledgerd/main.go",
+   "tests/grpc/fixtures/harness5/sqlite/freeze.sha256",
+   "tests/grpc/fixtures/harness5/sqlite/gen/ledger/v1/ledger.pb.go",
+   "tests/grpc/fixtures/harness5/sqlite/gen/ledger/v1/ledger_grpc.pb.go",
+   "tests/grpc/fixtures/harness5/sqlite/go.mod",
+   "tests/grpc/fixtures/harness5/sqlite/go.sum",
+   "tests/grpc/fixtures/harness5/sqlite/harness.py",
+   "tests/grpc/fixtures/harness5/sqlite/internal/serve/accounts.go",
+   "tests/grpc/fixtures/harness5/sqlite/internal/serve/entries.go",
+   "tests/grpc/fixtures/harness5/sqlite/internal/serve/gate.go",
+   "tests/grpc/fixtures/harness5/sqlite/internal/store/store.go",
+   "tests/grpc/fixtures/harness5/sqlite/proto/ledger/v1/ledger.proto",
+   "tests/grpc/fixtures/harness5/sqlite/studio.toml",
+   "tests/grpc/fixtures/harness5/sqlite/truth.json",
+   "tests/grpc/fixtures/toybuild5/.gitignore",
+   "tests/grpc/fixtures/toybuild5/CONTEXT.md",
+   "tests/grpc/fixtures/toybuild5/REQUIREMENTS.md",
+   "tests/grpc/fixtures/toybuild5/buf.gen.yaml",
+   "tests/grpc/fixtures/toybuild5/buf.yaml",
+   "tests/grpc/fixtures/toybuild5/check.sh",
+   "tests/grpc/fixtures/toybuild5/generate.sh",
+   "tests/grpc/fixtures/toybuild5/go.mod",
+   "tests/grpc/fixtures/toybuild5/go.sum",
+   "tests/grpc/fixtures/toybuild5/harness.py",
+   "tests/grpc/fixtures/toybuild5/main.go",
+   "tests/grpc/fixtures/toybuild5/proto/toy/v1/shelf.proto",
+   "tests/grpc/fixtures/toybuild5/pyproject.toml",
+   "tests/grpc/fixtures/toybuild5/shelf.go",
+   "tests/grpc/fixtures/toybuild5/spec.py",
+   "tests/grpc/fixtures/toybuild5/spec.trace.json",
+   "tests/grpc/fixtures/toybuild5/studio.toml",
+   "tests/grpc/fixtures/truth5/probe-flows.json",
+   "tests/grpc/test_ledger5.py",
+   "tests/grpc/test_truth5.py"
+  ],
+  "staged": [],
+  "budgets": {
+   "lattice/spec/grpc.py": {
+    "insertions+deletions": 6,
+    "budget": 6,
+    "ok": true
+   },
+   "lattice/importer/frontends/go_grpc.py": {
+    "insertions+deletions": 2,
+    "budget": 20,
+    "ok": true
+   },
+   "lattice/studio/rebuild.py": {
+    "insertions+deletions": 82,
+    "budget": 90,
+    "ok": true
+   },
+   "lattice/mcp/guard.py": {
+    "insertions+deletions": 4,
+    "budget": 30,
+    "ok": true
+   },
+   "lattice/gocheck/src/goextract_proto.go": {
+    "insertions+deletions": 34,
+    "budget": 40,
+    "ok": true
+   },
+   "goextract_grpc*.go (3 files, total, vs S0)": {
+    "insertions+deletions": 924,
+    "budget": 650,
+    "ok": false
+   },
+   "goextract_sqlraw.go": {
+    "lines": 248,
+    "budget": 300,
+    "ok": true
+   },
+   "cap goextract_grpc.go": {
+    "lines": 1138,
+    "budget": 1200,
+    "ok": true
+   },
+   "cap goextract_grpc_auth.go": {
+    "lines": 1006,
+    "budget": 1200,
+    "ok": true
+   },
+   "cap goextract_grpc_codes.go": {
+    "lines": 1010,
+    "budget": 1200,
+    "ok": true
+   }
+  },
+  "deskd_freeze_ok": true,
+  "deskd_files_changed": [],
+  "kilnworks_freeze_ok": true,
+  "kilnworks_files_changed": [],
+  "harborline_freeze_ok": true,
+  "harborline_files_changed": [],
+  "dev_truth_hashes_changed": [],
+  "ok": false
+ },
+ "probes": [
+  {
+   "id": "P5-SPLIT",
+   "prediction": "identical decls; extract byte-identical on 7 corpora + all fixtures",
+   "pass_rule": "exact",
+   "status": "PASS",
+   "observed": {
+    "decls at BASE": 80,
+    "decls at S0": 80,
+    "gofmt -l": [],
+    "multiset equal": true,
+    "extract targets": 53,
+    "extract differ": []
+   },
+   "detail": {
+    "decls only at BASE": [],
+    "decls only at S0": []
+   }
+  },
+  {
+   "id": "P5-BC",
+   "prediction": "HTTP 73/73 identical; declared gRPC differences only (p)",
+   "pass_rule": "all",
+   "status": "FAIL",
+   "observed": {
+    "ast (grpc.py at the H1b sites only; frozen files)": "PASS",
+    "HTTP outputs vs BASE": "PASS",
+    "HTTP outputs compared": 73,
+    "extract + RepoModel": "FAIL",
+    "reconcile bytes on N and sessions": {
+     "n": true,
+     "sessions": true
+    },
+    "flows/plans/extract/reconcile on N and flows/plans/extract on deskd": {
+     "n": {
+      "extract": false,
+      "flows": true,
+      "plans": true,
+      "reconcile": true
+     },
+     "desk": {
+      "extract": false,
+      "flows": true,
+      "plans": true,
+      "reconcile": true
+     }
+    },
+    "HTTP workflow tests": {
+     "passed": 69
+    }
+   },
+   "detail": {
+    "ast": [],
+    "http": [],
+    "ext": [
+     "deskd:extract",
+     "deskd:model",
+     "harborline:extract",
+     "harborline:model",
+     "kilnworks:extract",
+     "kilnworks:model",
+     "notes:extract",
+     "notes:model",
+     "sessions:extract",
+     "sessions:model",
+     "toolshed:extract",
+     "toolshed:model"
+    ]
+   }
+  },
+  {
+   "id": "P5-HAPI",
+   "prediction": "3/3 named; both fixtures all ok",
+   "pass_rule": "exact",
+   "status": "NOT RUN",
+   "observed": {
+    "sqlite fixture": {
+     "exit": 0,
+     "lines": 14,
+     "not ok": []
+    },
+    "failure classes": {
+     "RUNTIME is the driver": {
+      "exit": 1,
+      "named line": "RUNTIME is AuthDriver",
+      "ok": true
+     },
+     "build_db returns None": {
+      "exit": 1,
+      "named line": "build_db returned NoneType",
+      "ok": true
+     },
+     "positional AuthDriver.rpc": {
+      "exit": 1,
+      "named line": "import TypeError: AuthDriver.rpc() takes 4 positional arguments but 7 were given",
+      "ok": true
+     }
+    },
+    "mysql fixture": "NOT RUN: pymysql is not importable (run with a driver environment)"
+   },
+   "detail": null
+  },
+  {
+   "id": "P5-CODE",
+   "prediction": "all mapped, 6 refused",
+   "pass_rule": "exact",
+   "status": "PASS",
+   "observed": {
+    "mapped": 70,
+    "refused": 6,
+    "disagreements": 0
+   },
+   "detail": []
+  },
+  {
+   "id": "P5-LINKS",
+   "prediction": "every flow as its fixture truth states",
+   "pass_rule": "exact",
+   "status": "PASS",
+   "observed": {
+    "harness5/sqlite truth flows": {
+     "create_get_close": "ok",
+     "two_creates_then_list": "ok",
+     "bob_reads_anns_entry": "ok",
+     "gate_and_validation": "ok"
+    },
+    "probe flows": {
+     "links_needed": {
+      "got": "ok",
+      "want": "ok"
+     },
+     "links_needed_stripped": {
+      "got": "step 1: code_mismatch (NOT_FOUND vs OK)",
+      "want": "step 1: code_mismatch (NOT_FOUND vs OK)"
+     },
+     "link_unresolved": {
+      "got": "step 3: link_unresolved (- vs OK)",
+      "want": "step 3: link_unresolved (- vs OK)"
+     },
+     "list_length": {
+      "got": "ok",
+      "want": "ok"
+     },
+     "int64_as_string": {
+      "got": "ok",
+      "want": "ok"
+     },
+     "expect_mismatch": {
+      "got": "step 0: expect_mismatch (OK vs OK)",
+      "want": "step 0: expect_mismatch (OK vs OK)"
+     },
+     "code_mismatch": {
+      "got": "step 0: code_mismatch (INVALID_ARGUMENT vs OK)",
+      "want": "step 0: code_mismatch (INVALID_ARGUMENT vs OK)"
+     },
+     "base_one_links": {
+      "got": "ok",
+      "want": "ok"
+     },
+     "base_one_unresolved": {
+      "got": "step 4: link_unresolved (- vs OK)",
+      "want": "step 4: link_unresolved (- vs OK)"
+     },
+     "deskd_alias_form": {
+      "got": "ok",
+      "want": "ok"
+     },
+     "list_index_in_from_field": {
+      "got": "ok",
+      "want": "ok"
+     }
+    },
+    "deskd (links file, 1-based alias)": {
+     "ticket_lifecycle": [
+      true,
+      true
+     ],
+     "owner_isolation": [
+      true,
+      true
+     ],
+     "delete_then_gone": [
+      true,
+      true
+     ],
+     "reopen_limit": [
+      true,
+      true
+     ],
+     "public_and_anonymous": [
+      true,
+      true
+     ],
+     "sign_up_and_in": [
+      true,
+      true
+     ],
+     "unserved_and_bounds": [
+      true,
+      true
+     ]
+    },
+    "toolshed truth /4 (0-based)": {
+     "reserve_then_cancel_own_booking": "ok",
+     "reservation_owner_check_and_bypass": "ok",
+     "desk_checkout_and_return": "ok",
+     "logout_revokes_named_session": "ok",
+     "delete_account_cascades": "ok",
+     "admin_promotes_member_to_staff": "ok",
+     "staff_books_on_behalf_of_member": "ok",
+     "admin_tool_lifecycle": "ok",
+     "unserved_methods_answer_unimplemented": "ok",
+     "anonymous_browse_but_not_book": "ok"
+    }
+   },
+   "detail": null
+  },
+  {
+   "id": "P5-LEDGER",
+   "prediction": "5/5",
+   "pass_rule": "5/5",
+   "status": "PASS",
+   "observed": {
+    "1 two --out on one target: index 2 after a crash": true,
+    "2 a third run is refused": true,
+    "3 a preflight refusal consumes no run": true,
+    "4 a tampered line breaks the chain and nothing is appended": true,
+    "5 --process-test refuses the real ledger": true
+   },
+   "detail": null
+  },
+  {
+   "id": "P5-DESC",
+   "prediction": "each state/code as truth",
+   "pass_rule": "exact; 0 S8",
+   "status": "PASS",
+   "observed": {
+    "family": "descwrap5",
+    "rpc facts compared": 28,
+    "disagreements": 0,
+    "S8 confident-wrong": [],
+    "truth hashed before library code": true
+   },
+   "detail": []
+  },
+  {
+   "id": "P5-BOPT",
+   "prediction": "exact states",
+   "pass_rule": "exact; 0 S8",
+   "status": "PASS",
+   "observed": {
+    "family": "builderopt5",
+    "rpc facts compared": 14,
+    "disagreements": 0,
+    "S8 confident-wrong": [],
+    "truth hashed before library code": true
+   },
+   "detail": []
+  },
+  {
+   "id": "P5-STATUS",
+   "prediction": "exact codes, untraced unread, 0 UNKNOWN extras",
+   "pass_rule": "exact",
+   "status": "PASS",
+   "observed": {
+    "family": "status5",
+    "rpc facts compared": 26,
+    "disagreements": 0,
+    "S8 confident-wrong": [],
+    "truth hashed before library code": true
+   },
+   "detail": []
+  },
+  {
+   "id": "P5-ICODE",
+   "prediction": "literal gate code on gated rpcs only; unclear gate adds none",
+   "pass_rule": "exact",
+   "status": "PASS",
+   "observed": {
+    "family": "status5",
+    "rpc facts compared": 6,
+    "disagreements": 0,
+    "S8 confident-wrong": [],
+    "truth hashed before library code": true
+   },
+   "detail": []
+  },
+  {
+   "id": "P5-AUD",
+   "prediction": "exact; 0 Member behind an unenumerated bypass",
+   "pass_rule": "exact; 0 S8",
+   "status": "PASS",
+   "observed": {
+    "family": "audience5",
+    "rpc facts compared": 12,
+    "disagreements": 0,
+    "S8 confident-wrong": [],
+    "truth hashed before library code": true
+   },
+   "detail": []
+  },
+  {
+   "id": "P5-SQL",
+   "prediction": "exact tables/writes",
+   "pass_rule": "exact",
+   "status": "PASS",
+   "observed": {
+    "family": "sqlraw5",
+    "rpc facts compared": 17,
+    "disagreements": 0,
+    "S8 confident-wrong": [],
+    "truth hashed before library code": true
+   },
+   "detail": []
+  },
+  {
+   "id": "P5-PROT",
+   "prediction": "L1/L1b unit fixtures: directory unchanged, file changed, file added (removed), ignored file kept, guard denies a path under it",
+   "pass_rule": "5/5",
+   "status": "PASS",
+   "observed": {
+    "passed": 5,
+    "deselected": 4,
+    "selected by": "prot",
+    "wanted": 5
+   },
+   "detail": []
+  },
+  {
+   "id": "P5-GEN",
+   "prediction": "L2: generate before the gates; a failing generate is a named gate failure; no [grpc] byte-identical",
+   "pass_rule": "3/3",
+   "status": "PASS",
+   "observed": {
+    "passed": 3,
+    "deselected": 5,
+    "selected by": "gen",
+    "wanted": 3
+   },
+   "detail": []
+  },
+  {
+   "id": "P5-BRIEF",
+   "prediction": "L3: brief and scope brief name the protos and the generator; protos implicitly protected",
+   "pass_rule": "exact",
+   "status": "PASS",
+   "observed": {
+    "passed": 1,
+    "deselected": 7,
+    "selected by": "brief",
+    "wanted": 1
+   },
+   "detail": []
+  },
+  {
+   "id": "P5-REH",
+   "prediction": "every row valued or NOT SUPPORTED, 0 crashes",
+   "pass_rule": "0 crashes",
+   "status": "NOT RUN",
+   "observed": {
+    "toolshed as delivered (dev row, post hoc)": {
+     "exit": 1,
+     "rows": {
+      "HO5-RPC": "PASS",
+      "HO5-SAFE": "PASS",
+      "HO5-CODES": "PASS",
+      "HO5-AUTH": "PASS",
+      "HO5-TABLES": "PASS",
+      "HO5-REC": "PASS",
+      "HO5-FLOWS": "FAIL",
+      "HO5-SQLT": "REPORTED",
+      "HO5-DET": "PASS",
+      "HO5-NW": "PASS"
+     },
+     "missing": [],
+     "crashed": []
+    },
+    "truth-/5 fixture app harness5/sqlite": {
+     "exit": 0,
+     "rows": {
+      "HO5-RPC": "PASS",
+      "HO5-SAFE": "PASS",
+      "HO5-CODES": "PASS",
+      "HO5-AUTH": "PASS",
+      "HO5-TABLES": "PASS",
+      "HO5-REC": "PASS",
+      "HO5-FLOWS": "PASS",
+      "HO5-SQLT": "REPORTED",
+      "HO5-DET": "PASS",
+      "HO5-NW": "PASS"
+     },
+     "missing": [],
+     "crashed": []
+    },
+    "harness5/mysql": "SG rehearsal NOT RUN: pymysql is not importable (run with a driver environment)"
+   },
+   "detail": null
+  },
+  {
+   "id": "P5-ARMS",
+   "prediction": "true",
+   "pass_rule": "true",
+   "status": "PASS",
+   "observed": {
+    "arms": [
+     "0",
+     "G",
+     "H5",
+     "L",
+     "M",
+     "SG"
+    ],
+    "stubs": []
+   },
+   "detail": []
+  },
+  {
+   "id": "P5-DET",
+   "prediction": "identical (p)",
+   "pass_rule": "10/10",
+   "status": "PASS",
+   "observed": {
+    "round-4 set": {
+     "notes": {
+      "identical runs": 10,
+      "of": 10,
+      "leaks": [],
+      "artifacts": [
+       "extract",
+       "flows",
+       "plans",
+       "reconcile"
+      ],
+      "ok": true
+     },
+     "wiring4": {
+      "identical runs": 10,
+      "of": 10,
+      "leaks": [],
+      "artifacts": [
+       "extract",
+       "model",
+       "plans"
+      ],
+      "ok": true
+     },
+     "authwire4": {
+      "identical runs": 10,
+      "of": 10,
+      "leaks": [],
+      "artifacts": [
+       "extract",
+       "model",
+       "plans"
+      ],
+      "ok": true
+     },
+     "codes4": {
+      "identical runs": 10,
+      "of": 10,
+      "leaks": [],
+      "artifacts": [
+       "extract",
+       "model",
+       "plans"
+      ],
+      "ok": true
+     },
+     "tables4": {
+      "identical runs": 10,
+      "of": 10,
+      "leaks": [],
+      "artifacts": [
+       "extract",
+       "model",
+       "plans"
+      ],
+      "ok": true
+     },
+     "deskd": {
+      "identical runs": 10,
+      "of": 10,
+      "leaks": [],
+      "artifacts": [
+       "extract",
+       "flows",
+       "plans",
+       "reconcile"
+      ],
+      "ok": true
+     },
+     "kilnworks": {
+      "identical runs": 10,
+      "of": 10,
+      "leaks": [],
+      "artifacts": [
+       "describe",
+       "extract",
+       "flows",
+       "model",
+       "plans",
+       "reconcile"
+      ],
+      "ok": true
+     },
+     "harborline": {
+      "identical runs": 10,
+      "of": 10,
+      "leaks": [],
+      "artifacts": [
+       "describe",
+       "extract",
+       "flows",
+       "model",
+       "plans",
+       "reconcile"
+      ],
+      "ok": true
+     },
+     "roots": 2
+    },
+    "descwrap5": {
+     "identical runs": 10,
+     "of": 10,
+     "leaks": [],
+     "artifacts": [
+      "extract",
+      "model",
+      "plans"
+     ],
+     "ok": true
+    },
+    "builderopt5": {
+     "identical runs": 10,
+     "of": 10,
+     "leaks": [],
+     "artifacts": [
+      "extract",
+      "model",
+      "plans"
+     ],
+     "ok": true
+    },
+    "status5": {
+     "identical runs": 10,
+     "of": 10,
+     "leaks": [],
+     "artifacts": [
+      "extract",
+      "model",
+      "plans"
+     ],
+     "ok": true
+    },
+    "audience5": {
+     "identical runs": 10,
+     "of": 10,
+     "leaks": [],
+     "artifacts": [
+      "extract",
+      "model",
+      "plans"
+     ],
+     "ok": true
+    },
+    "sqlraw5": {
+     "identical runs": 10,
+     "of": 10,
+     "leaks": [],
+     "artifacts": [
+      "extract",
+      "model",
+      "plans"
+     ],
+     "ok": true
+    },
+    "toolshed": {
+     "identical runs": 10,
+     "of": 10,
+     "leaks": [],
+     "artifacts": [
+      "describe",
+      "extract",
+      "flows",
+      "model",
+      "plans",
+      "reconcile"
+     ],
+     "ok": true
+    },
+    "roots": 2
+   },
+   "detail": null
+  },
+  {
+   "id": "P5-NW",
+   "prediction": "0, 0, 0",
+   "pass_rule": "all 0",
+   "status": "PASS",
+   "observed": {
+    "round-4 set": {
+     "roots": [
+      "N",
+      "T",
+      "sessions",
+      "fx4",
+      "deskd",
+      "kilnworks",
+      "harborline",
+      "heldout4: NOT RUN (the gated stage; this node never looked for it)"
+     ],
+     "changed": 0,
+     "new": 0,
+     "claude calls": 0
+    },
+    "roots": [
+     "fixtures",
+     "streak",
+     "toolshed"
+    ],
+    "changed": 0,
+    "new": 0,
+    "claude calls": 0
+   },
+   "detail": []
+  },
+  {
+   "id": "P5-UNIT",
+   "prediction": "60-140 tests (rounds 3-4 overshot their ranges)",
+   "pass_rule": "all green, >= 50",
+   "status": "PASS",
+   "observed": {
+    "passed": 161,
+    "seconds": 66.8,
+    "files": [
+     "tests/grpc/test_split5.py",
+     "tests/grpc/test_descwrap5.py",
+     "tests/grpc/test_builderopt5.py",
+     "tests/grpc/test_status5.py",
+     "tests/grpc/test_audience5.py",
+     "tests/grpc/test_sqlraw5.py",
+     "tests/grpc/test_truth5.py",
+     "tests/grpc/test_ledger5.py",
+     "tests/studio/test_rebuild_grpc5.py",
+     "tests/mcp/test_guard_dirs5.py"
+    ],
+    "missing files": [],
+    "in 60-140 (p)": false
+   },
+   "detail": []
+  },
+  {
+   "id": "P5-SCORE",
+   "prediction": "78-110 cases (p)",
+   "pass_rule": "100%, >= 78",
+   "status": "PASS",
+   "observed": {
+    "cases": 88,
+    "agree": 88,
+    "in 78-110 (p)": true
+   },
+   "detail": []
+  },
+  {
+   "id": "P5-PROC",
+   "prediction": "7/7",
+   "pass_rule": "7/7",
+   "status": "PASS",
+   "observed": {
+    "1 runner byte changed: refused before any metric, no run consumed": true,
+    "2 own entry removed from freeze5: refused": true,
+    "3 crash then re-run with equal bytes: blind": true,
+    "4 re-run with changed bytes: post_hoc": true,
+    "5 a third run: refused": true,
+    "6 a broken chain: refused, nothing appended": true,
+    "7 a symlinked app: refused_preflight, no run consumed": true
+   },
+   "detail": null
+  },
+  {
+   "id": "P5-FROZEN",
+   "prediction": "empty diff of every frozen file; only 'may change' and 'creates' touched",
+   "pass_rule": "exact",
+   "status": "PASS",
+   "observed": {
+    "frozen_files_changed": [],
+    "unexpected_untracked": [],
+    "staged": [],
+    "dev_truth_hashes_changed": []
+   },
+   "detail": {
+    "lattice/importer/workflows.py": {
+     "base": "5eba7e8ab6ac62ba",
+     "now": "5eba7e8ab6ac62ba",
+     "same": true
+    },
+    "lattice/importer/transport.py": {
+     "base": "04979019468e5d4f",
+     "now": "04979019468e5d4f",
+     "same": true
+    },
+    "lattice/spec/process.py": {
+     "base": "047be55e9f421700",
+     "now": "047be55e9f421700",
+     "same": true
+    },
+    "lattice/importer/outside.py": {
+     "base": "5d7a5ed767b7060d",
+     "now": "5d7a5ed767b7060d",
+     "same": true
+    },
+    "dogfood/grpc_contract4.py": {
+     "base": "6666ac9bedc8dfb4",
+     "now": "6666ac9bedc8dfb4",
+     "same": true
+    },
+    "dogfood/grpc_flow_scorer.py": {
+     "base": "8d896ee0ad1c22fd",
+     "now": "8d896ee0ad1c22fd",
+     "same": true
+    },
+    "dogfood/grpc_probes.py": {
+     "base": "5406bbbea9687239",
+     "now": "5406bbbea9687239",
+     "same": true
+    },
+    "dogfood/grpc_probes2.py": {
+     "base": "0193add7bd620dbf",
+     "now": "0193add7bd620dbf",
+     "same": true
+    },
+    "dogfood/grpc_probes3.py": {
+     "base": "244e5e688287774d",
+     "now": "244e5e688287774d",
+     "same": true
+    },
+    "dogfood/grpc_probes4.py": {
+     "base": "82aca97b4d508d05",
+     "now": "82aca97b4d508d05",
+     "same": true
+    },
+    "dogfood/grpc_scorer3.py": {
+     "base": "019db509ded84f48",
+     "now": "019db509ded84f48",
+     "same": true
+    },
+    "dogfood/grpc_scorer4.py": {
+     "base": "e963747ae1545e68",
+     "now": "e963747ae1545e68",
+     "same": true
+    }
+   }
+  },
+  {
+   "id": "P5-BUDGET",
+   "prediction": "all within (P about 0.55)",
+   "pass_rule": "all",
+   "status": "FAIL",
+   "observed": {
+    "budgets": {
+     "lattice/spec/grpc.py": {
+      "insertions+deletions": 6,
+      "budget": 6,
+      "ok": true
+     },
+     "lattice/importer/frontends/go_grpc.py": {
+      "insertions+deletions": 2,
+      "budget": 20,
+      "ok": true
+     },
+     "lattice/studio/rebuild.py": {
+      "insertions+deletions": 82,
+      "budget": 90,
+      "ok": true
+     },
+     "lattice/mcp/guard.py": {
+      "insertions+deletions": 4,
+      "budget": 30,
+      "ok": true
+     },
+     "lattice/gocheck/src/goextract_proto.go": {
+      "insertions+deletions": 34,
+      "budget": 40,
+      "ok": true
+     },
+     "goextract_grpc*.go (3 files, total, vs S0)": {
+      "insertions+deletions": 924,
+      "budget": 650,
+      "ok": false
+     },
+     "goextract_sqlraw.go": {
+      "lines": 248,
+      "budget": 300,
+      "ok": true
+     },
+     "cap goextract_grpc.go": {
+      "lines": 1138,
+      "budget": 1200,
+      "ok": true
+     },
+     "cap goextract_grpc_auth.go": {
+      "lines": 1006,
+      "budget": 1200,
+      "ok": true
+     },
+     "cap goextract_grpc_codes.go": {
+      "lines": 1010,
+      "budget": 1200,
+      "ok": true
+     }
+    },
+    "go budgets measured against": "S0"
+   },
+   "detail": {}
+  },
+  {
+   "id": "REG",
+   "prediction": "the same failing ids before and after",
+   "pass_rule": "same set",
+   "status": "FAIL",
+   "observed": {
+    "before": "2 failed, 3514 passed, 5 skipped, 414 warnings, 29 errors in 1054.43s (0:17:34)",
+    "after": "5 failed, 3672 passed, 5 skipped, 414 warnings, 29 errors in 1072.52s (0:17:52)",
+    "failing ids before": 31,
+    "failing ids after": 34
+   },
+   "detail": {
+    "only before": [],
+    "only after": [
+     "tests/grpc/test_extract_notes.py::test_extract_matches_the_truth",
+     "tests/grpc/test_extract_notes.py::test_model_lists_rpcs_as_routes_and_bindings_on_the_rpc",
+     "tests/grpc/test_proto_reader.py::test_validation_bounds_are_exact"
+    ]
+   }
+  }
+ ]
+}

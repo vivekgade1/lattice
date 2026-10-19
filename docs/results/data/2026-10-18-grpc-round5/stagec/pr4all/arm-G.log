@@ -1,0 +1,27 @@
+PASS     PR4-N                                        {"implemented answered": "10/10", "bytes equal round 1": true, "extra keys": []}
+PASS     PR4-DESK                                     {"S5 coverage": 1.0, "S5 agreement": 1.0, "S5 by class": {"absent": "1/1", "implemented": "17/17", "not_registered": "1/1", "unimplemented": "1/1"}, "denominator": 20, "Reports/Backlog from the librar
+PASS     PR4-SESS                                     {"codes equal the truth (alone)": true, "login_failed": 0, "disagreed": ["sessions.v1.Sessions/DeleteMe", "sessions.v1.Sessions/Secret", "sessions.v1.Sessions/SignOut", "sessions.v1.Sessions/Stub"], "
+PASS     PF4-N                                        {"recovered": 17, "recovered_by_status": {"verified": 17, "unverified": 0, "failed": 0, "unbound": 0}, "verified": 17, "verified_but_failing": 0, "failing_codes": {}, "unbound_reasons": {}, "in 15-20 
+PASS     PF4-DESK                                     {"recovered": 41, "recovered_by_status": {"verified": 20, "unverified": 0, "failed": 21, "unbound": 0}, "verified": 20, "verified_but_failing": 0, "edge_recall": {"num": 21, "den": 34, "bound": 0.3, "
+PASS     PF4-LEAK                                     {"live processes+bridges after reconcile and flows": 0, "after a forced startup failure (reconcile raises, flows fail)": 0, "reconcile raised": "ProcessStartError", "flows of the broken app": ["failed
+NOT RUN  PR3-ALL                                      "--pr3all-from (round 3's runner outputs, run un-nested) was not given"
+REPORTED PD4-KILN/RPC (post hoc, tuned-on, never gated) {"recall": 1.0, "precision": 1.0, "truth rpcs": 20, "extracted rpcs": 20, "matched": 20, "truth states": {"implemented": 16, "not_registered": 2, "streaming": 1, "unimplemented": 1}, "streaming report
+REPORTED PD4-KILN/SAFE (post hoc, tuned-on, never gated) {"confident-wrong": 0, "checked": 20, "round 3 strict": null, "would_pass": true}
+REPORTED PD4-KILN/CODES (post hoc, tuned-on, never gated) {"recall": 1.0, "precision": 0.7018, "truth": 40, "extracted": 57, "matched": 40, "unknown_extras": ["kiln.v1.Pieces/ApplyGlaze:UNKNOWN", "kiln.v1.Pieces/RemovePiece:UNKNOWN"], "unread_rpcs": [], "rou
+REPORTED PD4-KILN/AUTH (post hoc, tuned-on, never gated) {"denominator": 17, "unclear": 0, "unclear_share": 0.0, "reason": "", "wrong": [], "round 3 strict": "0 wrong, unclear 17/17", "would_pass": true}
+REPORTED PD4-KILN/TABLES (post hoc, tuned-on, never gated) {"recall": 1.0, "precision": 1.0, "truth": 7, "extracted": 7, "tables_source": "go", "round 3 strict": "1.0", "would_pass": true}
+REPORTED PD4-KILN/REC (post hoc, tuned-on, never gated) {"S5 coverage": 1.0, "S5 agreement": 1.0, "S5 by class": {"absent": "1/1", "implemented": "16/16", "not_registered": "2/2", "unimplemented": "1/1"}, "S5 reason": "", "supplementary_calls": 0, "S6": "n
+REPORTED PD4-KILN/FLOWS (post hoc, tuned-on, never gated) {"truth_flows": 9, "truth_flows_passing": 9, "truth_edges_total": 33, "recovered": 17, "recovered_by_status": {"verified": 7, "unverified": 0, "failed": 10, "unbound": 0}, "recovered_by_kind_status": 
+REPORTED PD4-HARBOR/RPC (post hoc, tuned-on, never gated) {"recall": 1.0, "precision": 1.0, "truth rpcs": 25, "extracted rpcs": 25, "matched": 25, "truth states": {"implemented": 21, "not_registered": 2, "streaming": 1, "unimplemented": 1}, "streaming report
+REPORTED PD4-HARBOR/SAFE (post hoc, tuned-on, never gated) {"confident-wrong": 0, "checked": 25, "round 3 strict": null, "would_pass": true}
+REPORTED PD4-HARBOR/CODES (post hoc, tuned-on, never gated) {"recall": 0.7037, "precision": 0.5, "truth": 54, "extracted": 76, "matched": 38, "unknown_extras": [], "unread_rpcs": ["harbor.v1.Berths/CreateBerth", "harbor.v1.Bookings/BookBerth", "harbor.v1.Booki
+REPORTED PD4-HARBOR/AUTH (post hoc, tuned-on, never gated) {"denominator": 22, "unclear": 2, "unclear_share": 0.0909, "reason": "", "wrong": [], "round 3 strict": "0 wrong, unclear 22/22", "would_pass": true}
+REPORTED PD4-HARBOR/TABLES (post hoc, tuned-on, never gated) {"recall": 1.0, "precision": 1.0, "truth": 7, "extracted": 7, "tables_source": "harness_db", "round 3 strict": "0 of 7", "would_pass": true}
+REPORTED PD4-HARBOR/REC (post hoc, tuned-on, never gated) {"S5 coverage": 1.0, "S5 agreement": 1.0, "S5 by class": {"absent": "1/1", "implemented": "21/21", "not_registered": "2/2", "unimplemented": "1/1"}, "S5 reason": "", "supplementary_calls": 0, "S6": "e
+REPORTED PD4-HARBOR/FLOWS (post hoc, tuned-on, never gated) {"truth_flows": 8, "truth_flows_passing": 8, "truth_edges_total": 23, "recovered": 12, "recovered_by_status": {"verified": 0, "unverified": 0, "failed": 5, "unbound": 7}, "recovered_by_kind_status": {
+PASS     PX4                                          {"extract on harborline (s)": 0.02, "reconcile on deskd (s)": 1.48, "flows on deskd (s)": 3.6, "D5.2 on the harness fixture (s)": 0.01}
+NOT RUN  PM-S / PM-SG (Arm M)                         "Arm M needs a Streak checkout and a Docker MySQL: out of scope; no docker daemon here"
+NOT RUN  Arm L                                        "the build round is its own node; out of scope"
+NOT RUN  PG-HO4 (HO4-*)                               "the gated held-out stage: a new app by a new author, scored once by the orchestrator after Amendment 3; this node did not look for heldout4"
+frozen files ok before: False after: False
+7 passed, 0 failed, 4 not run, 14 reported

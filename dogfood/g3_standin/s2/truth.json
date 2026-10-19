@@ -1,0 +1,258 @@
+{
+ "schema": "lattice.g3truth/1",
+ "stand_in_for": "S4 (the held-out Go app); this is S2 (tests/spec/goginapp) with its truth in S4's schema, for the runner self-test only",
+ "package": "goginapp",
+ "harness": "tests.spec.gogin_harness",
+ "routes": [
+  {
+   "method": "GET",
+   "path": "/health",
+   "auth": "Public",
+   "file": "api/api.go",
+   "line": 30
+  },
+  {
+   "method": "POST",
+   "path": "/login",
+   "auth": "Public",
+   "file": "api/api.go",
+   "line": 31
+  },
+  {
+   "method": "GET",
+   "path": "/configs",
+   "auth": "Member",
+   "file": "api/api.go",
+   "line": 34
+  },
+  {
+   "method": "POST",
+   "path": "/configs/:cid/runs",
+   "auth": "Member",
+   "file": "api/api.go",
+   "line": 35
+  },
+  {
+   "method": "GET",
+   "path": "/runs",
+   "auth": "Member",
+   "file": "api/api.go",
+   "line": 36
+  },
+  {
+   "method": "GET",
+   "path": "/runs/:rid",
+   "auth": "Member",
+   "file": "api/api.go",
+   "line": 37
+  },
+  {
+   "method": "POST",
+   "path": "/runs/:rid/cancel",
+   "auth": "Member",
+   "file": "api/api.go",
+   "line": 38
+  }
+ ],
+ "tables": [
+  {
+   "struct": "User",
+   "table": "users",
+   "columns": [
+    {
+     "name": "id",
+     "json": "id",
+     "private": false
+    },
+    {
+     "name": "name",
+     "json": "name",
+     "private": false
+    },
+    {
+     "name": "password",
+     "json": "-",
+     "private": true
+    },
+    {
+     "name": "token",
+     "json": "-",
+     "private": true
+    }
+   ]
+  },
+  {
+   "struct": "Config",
+   "table": "configs",
+   "columns": [
+    {
+     "name": "id",
+     "json": "id",
+     "private": false
+    },
+    {
+     "name": "name",
+     "json": "name",
+     "private": false
+    }
+   ]
+  },
+  {
+   "struct": "Run",
+   "table": "runs",
+   "columns": [
+    {
+     "name": "id",
+     "json": "id",
+     "private": false
+    },
+    {
+     "name": "config_id",
+     "json": "config_id",
+     "private": false
+    },
+    {
+     "name": "user_id",
+     "json": "user_id",
+     "private": false
+    },
+    {
+     "name": "status",
+     "json": "status",
+     "private": false
+    }
+   ]
+  }
+ ],
+ "owners": {
+  "Run": "user_id"
+ },
+ "owner_via": {},
+ "machines": {
+  "Run.status": {
+   "initial": "queued",
+   "edges": [
+    [
+     "queued",
+     "cancelled"
+    ]
+   ]
+  }
+ },
+ "refusals": [
+  {
+   "route": "POST /login",
+   "status": 422,
+   "detail": "bad body",
+   "cause": "invalid",
+   "file": "api/api.go",
+   "line": 59
+  },
+  {
+   "route": "POST /login",
+   "status": 401,
+   "detail": "Incorrect username or password",
+   "cause": "auth",
+   "file": "api/api.go",
+   "line": 64
+  },
+  {
+   "route": "GET /configs",
+   "status": 401,
+   "detail": "Not authenticated",
+   "cause": "auth",
+   "file": "api/api.go",
+   "line": 81
+  },
+  {
+   "route": "POST /configs/:cid/runs",
+   "status": 422,
+   "detail": "bad id",
+   "cause": "invalid",
+   "file": "api/api.go",
+   "line": 109
+  },
+  {
+   "route": "POST /configs/:cid/runs",
+   "status": 404,
+   "detail": "Not found",
+   "cause": "not_found",
+   "file": "api/api.go",
+   "line": 114
+  },
+  {
+   "route": "POST /configs/:cid/runs",
+   "status": 409,
+   "detail": "already live",
+   "cause": "conflict",
+   "file": "api/api.go",
+   "line": 122
+  },
+  {
+   "route": "GET /runs",
+   "status": 422,
+   "detail": "bad limit",
+   "cause": "invalid",
+   "file": "api/api.go",
+   "line": 143
+  },
+  {
+   "route": "GET /runs/:rid",
+   "status": 422,
+   "detail": "bad id",
+   "cause": "invalid",
+   "file": "api/api.go",
+   "line": 160
+  },
+  {
+   "route": "GET /runs/:rid",
+   "status": 404,
+   "detail": "Not found",
+   "cause": "not_owned",
+   "file": "api/api.go",
+   "line": 166
+  },
+  {
+   "route": "POST /runs/:rid/cancel",
+   "status": 422,
+   "detail": "bad id",
+   "cause": "invalid",
+   "file": "api/api.go",
+   "line": 177
+  },
+  {
+   "route": "POST /runs/:rid/cancel",
+   "status": 404,
+   "detail": "Not found",
+   "cause": "not_owned",
+   "file": "api/api.go",
+   "line": 183
+  },
+  {
+   "route": "POST /runs/:rid/cancel",
+   "status": 409,
+   "detail": "already final",
+   "cause": "conflict",
+   "file": "api/api.go",
+   "line": 187
+  }
+ ],
+ "bind_status": 422,
+ "login": {
+  "path": "/login",
+  "fields": [
+   "username",
+   "password"
+  ]
+ },
+ "seed_users": [
+  {
+   "name": "ann",
+   "role": "Member"
+  },
+  {
+   "name": "ben",
+   "role": "Member"
+  }
+ ]
+}

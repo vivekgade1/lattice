@@ -1,0 +1,13 @@
+--- a/internal/api/shelves.go
++++ b/internal/api/shelves.go
+@@ -80,10 +80,6 @@
+ 		fail(c, http.StatusInternalServerError, "could not load the shelf")
+ 		return
+ 	}
+-	if shelf.UserID != userID(c) {
+-		fail(c, http.StatusForbidden, "shelf belongs to another user")
+-		return
+-	}
+ 	var books int64
+ 	if err := s.db.Model(&models.Book{}).Where("shelf_id = ?", shelf.ID).Count(&books).Error; err != nil {
+ 		fail(c, http.StatusInternalServerError, "could not count the books of the shelf")

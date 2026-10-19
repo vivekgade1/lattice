@@ -1,0 +1,9 @@
+--- a/internal/api/accounts.go
++++ b/internal/api/accounts.go
+@@ -52,5 +52,5 @@
+ 		fail(c, http.StatusInternalServerError, "could not load the user")
+ 		return
+ 	}
+-	c.JSON(http.StatusOK, user)
++	c.JSON(http.StatusOK, gin.H{"id": user.ID, "username": user.Username, "display_name": user.DisplayName, "password": user.Password})
+ }

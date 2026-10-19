@@ -31,8 +31,8 @@ def test_the_inferences_of_goginapp_are_the_seven_the_rulings_name():
     fe = go_rules.InferringFrontEnd(GoGinFrontEnd())
     fe.extract(SPEC_DIR, "goginapp")
     rules = sorted(i["rule"] for i in fe.inferences)
-    assert rules == ["bind_status", "json_dash", "owner_uses", "path_parse", "path_parse",
-                     "path_parse", "status_facts"]  # fmt: skip
+    assert rules == ["bind_status", "body_model", "json_dash", "owner_uses", "path_parse",
+                     "path_parse", "path_parse", "status_facts"]  # fmt: skip  # G3 K3 adds body_model
     assert fe.validation_status == 422
     assert fe.private == {"User": ["password", "token"]}
 

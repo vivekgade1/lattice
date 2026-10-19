@@ -1,0 +1,54 @@
+{
+  "schema": "lattice.gopolicy/1",
+  "policy": {
+    "tables": {
+      "Book": {
+        "sql": "books"
+      },
+      "Note": {
+        "sql": "notes"
+      },
+      "Shelf": {
+        "sql": "shelfs"
+      },
+      "User": {
+        "sql": "users"
+      }
+    },
+    "users_table": "User",
+    "owners": {
+      "Note": "user_id",
+      "Shelf": "user_id"
+    },
+    "owner_via": {},
+    "private": {
+      "User": [
+        "password"
+      ]
+    },
+    "machines": {},
+    "admin_routes": [],
+    "open_routes": [],
+    "admin_role": "Admin",
+    "helper_depth": 3,
+    "rules": []
+  },
+  "baseline": [
+    "GO801|GET /books/:id|Shelf",
+    "GO801|PATCH /books/:id|Shelf",
+    "GO801|POST /books/:id/finish|Shelf",
+    "GO801|POST /books/:id/notes|Shelf",
+    "GO801|POST /books/:id/start|Shelf"
+  ],
+  "dropped_machines": [
+    {
+      "table": "Book",
+      "column": "status",
+      "values": [
+        "queued",
+        "reading",
+        "finished"
+      ]
+    }
+  ]
+}

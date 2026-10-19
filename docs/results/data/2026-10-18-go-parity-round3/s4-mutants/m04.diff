@@ -1,0 +1,13 @@
+--- a/internal/api/notes.go
++++ b/internal/api/notes.go
+@@ -87,10 +87,6 @@
+ 		fail(c, http.StatusInternalServerError, "could not load the note")
+ 		return
+ 	}
+-	if note.UserID != userID(c) {
+-		fail(c, http.StatusForbidden, "note belongs to another user")
+-		return
+-	}
+ 	if err := s.db.Delete(&note).Error; err != nil {
+ 		fail(c, http.StatusInternalServerError, "could not delete the note")
+ 		return

@@ -817,6 +817,8 @@ class RulesImport:
     # Go only (go_rules): the owner columns inferred from the extract, layer A's derived policy
     inferences: list[dict[str, Any]] = field(default_factory=list)
     go_policy: dict[str, Any] | None = None
+    not_run: str = ""  # K4: "not_run:server_dialect" (and its dialect) for a server database
+    dialect: str = ""
 
     def rules_dict(self) -> dict[str, Any]:
         data = self.rules.to_dict()
@@ -854,6 +856,8 @@ class RulesImport:
             },  # fmt: skip
         )
         data["notes"] = list(data.get("notes", [])) + self.notes
+        if self.not_run:  # K4: layer R did not run (no items, no corrections, no proposals)
+            data.update(status=self.not_run, dialect=self.dialect)
         if self.inferences:  # Go only, and only when something was inferred
             data["inferences"] = self.inferences
         return data
@@ -954,6 +958,9 @@ def import_rules(
     if fe.name == "gin":  # E3, E5: the profile states the bind status and the private columns
         go_rules.patch_profile(result, fe.private, fe.validation_status)
     timing["extract"] = clock() - t0
+    if fe.name == "gin" and (server := go_rules.server_dialect(root, package)):  # K4
+        spec = candidate_spec(result, users={})
+        return _skip_server(result, spec, fe, root, package, factory_name, server, timing)
     ctx = result.context
     api = result.lattice_profile.api
     seeder = Seeder(result.model, ctx.inputs.tables, ctx.inputs.auth, ctx.inputs.insert_hook,
@@ -1028,7 +1035,7 @@ def import_rules(
         go_policy = None
         if fe.name == "gin":
             t5 = clock()
-            go_policy = _go_policy(root, package, inferences)
+            go_policy = _go_policy(root, package, inferences, fixed)
             timing["go_policy"] = clock() - t5
         timing["total"] = clock() - t0
         return RulesImport(
@@ -1053,12 +1060,26 @@ def import_rules(
         seeder.close()
 
 
-def _go_policy(root: Path, package: str, inferences: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+def _skip_server(result: Any, spec: Spec, fe: Any, root: Path, package: str, factory_name: str,
+                 server: str, timing: dict[str, float]) -> RulesImport:  # fmt: skip
+    """K4: an app on a server database: no Seeder, no app, no layer R, no mining (a SQLite seed
+    cannot start it, and R diffs whole SQLite tables); contracts, inferences, layer A's policy."""
+    inferences = list(getattr(fe, "inferences", ()))
+    return RulesImport(result, spec, spec, RuleResult(), [], [],
+                       _excluded(result.model, fe, root, package, {}), fe.name, factory_name,
+                       None, timing, inferences=inferences,
+                       go_policy=_go_policy(root, package, inferences, spec),
+                       not_run="not_run:server_dialect", dialect=server,
+                       notes=[f"layer R was not run: the app's database is {server}"])  # fmt: skip
+
+
+def _go_policy(root: Path, package: str, inferences: Sequence[Mapping[str, Any]],
+               spec: Spec | None = None) -> dict[str, Any]:  # fmt: skip
     """``go_policy.json`` (Go only): layer A's policy derived from the app
     (:func:`lattice.gocheck.derive.derive_go_policy`) with its baseline, and the state
     machines the derivation drops (a machine is a decision: the app's own writes are not a
     spec)."""
-    from lattice.gocheck.derive import derive_go_policy, policy_extract
+    from lattice.gocheck.derive import derive_go_policy, policy_extract, undeclared_tables
 
     module_dir = Path(root) / package
     extract = policy_extract(module_dir)
@@ -1070,7 +1091,7 @@ def _go_policy(root: Path, package: str, inferences: Sequence[Mapping[str, Any]]
         values = dropped.setdefault((w["model"], w["column"]), [])
         if w["value"] not in values:
             values.append(w["value"])
-    return {
+    out = {
         "schema": "lattice.gopolicy/1",
         "policy": policy.to_json(),
         "baseline": sorted(policy.baseline),
@@ -1078,6 +1099,9 @@ def _go_policy(root: Path, package: str, inferences: Sequence[Mapping[str, Any]]
             {"table": t, "column": c, "values": v} for (t, c), v in sorted(dropped.items())
         ],
     }
+    if spec is not None and (gone := undeclared_tables(spec, module_dir, policy)):  # K6
+        out["undeclared_tables"] = gone
+    return out
 
 
 FILE_FIELDS = ("ImageField", "FileField", "UploadFile", "FileStorage", "File")
@@ -1330,12 +1354,18 @@ def write_rules(r: RulesImport, out: Path | str, *, package: str) -> Path:
     }
     if r.go_policy is not None:
         extra["go_policy.json"] = json.dumps(r.go_policy, indent=2) + "\n"
-    return write_import(close, out, repo_root=r.result.context.root, package=package,
-                        app_factory=r.app_factory, rules=r.rules_dict(),
-                        extra_files=extra)  # fmt: skip
+    written = write_import(close, out, repo_root=r.result.context.root, package=package,
+                           app_factory=r.app_factory, rules=r.rules_dict(),
+                           extra_files=extra)  # fmt: skip
+    if r.not_run:  # K4: the report's first line says why there is no rule layer
+        md = Path(written) / "report.md"
+        md.write_text(f"{r.notes[0]} (`{r.not_run}`).\n\n" + md.read_text())
+    return written
 
 
 def summary_line(out: Path, r: RulesImport) -> str:
+    if r.not_run:
+        return f"{out}: {r.framework}, layer R not run ({r.not_run}, {r.dialect})"
     s = r.rules.summary
     items = ", ".join(f"{n} {v}" for v, n in s["items"].items())
     return (

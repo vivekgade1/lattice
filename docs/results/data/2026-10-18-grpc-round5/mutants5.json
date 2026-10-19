@@ -1,0 +1,4259 @@
+{
+ "schema": "lattice.grpc-mutants5/1",
+ "control": {
+  "probe5 p5-hapi": {
+   "returncode": 1,
+   "summary": "NOT RUN P5-HAPI {\"sqlite fixture\": {\"exit\": 0, \"lines\": 14, \"not ok\": []}, \"failure classes\": {\"RUNTIME is the driver\": {\"exit\": 1, \"named line\": \"RUNTIME is AuthDriver\", \"ok\": true}, \"build_db returns None\": {\"exit\": 1, \"named line\": \"build_db returned NoneType\", \"ok\": true}, \"positional AuthDriver",
+   "seconds": 15.0,
+   "failed": [
+    "NOT RUN"
+   ]
+  },
+  "probe5 p5-bc-ast": {
+   "returncode": 0,
+   "summary": "PASS P5-BC-AST {\"H1b sites found\": 3, \"differences\": 0}",
+   "seconds": 0.1,
+   "failed": [
+    "PASS"
+   ]
+  },
+  "pytest tests/grpc/test_truth5.py": {
+   "returncode": 0,
+   "summary": "72 passed in 62.72s (0:01:02)",
+   "seconds": 62.9,
+   "failed": []
+  },
+  "probe5 p5-code": {
+   "returncode": 0,
+   "summary": "PASS P5-CODE {\"mapped\": 70, \"refused\": 6, \"disagreements\": 0}",
+   "seconds": 0.1,
+   "failed": [
+    "PASS"
+   ]
+  },
+  "probe5 p5-links": {
+   "returncode": 0,
+   "summary": "PASS P5-LINKS {\"harness5/sqlite truth flows\": {\"create_get_close\": \"ok\", \"two_creates_then_list\": \"ok\", \"bob_reads_anns_entry\": \"ok\", \"gate_and_validation\": \"ok\"}, \"probe flows\": {\"links_needed\": {\"got\": \"ok\", \"want\": \"ok\"}, \"links_needed_stripped\": {\"got\": \"step 1: code_mismatch (NOT_FOUND vs OK)\",",
+   "seconds": 38.5,
+   "failed": [
+    "PASS"
+   ]
+  },
+  "probe5 p5-ledger": {
+   "returncode": 0,
+   "summary": "PASS P5-LEDGER {\"1 two --out on one target: index 2 after a crash\": true, \"2 a third run is refused\": true, \"3 a preflight refusal consumes no run\": true, \"4 a tampered line breaks the chain and nothing is appended\": true, \"5 --process-test refuses the real ledger\": true}",
+   "seconds": 0.2,
+   "failed": [
+    "PASS"
+   ]
+  },
+  "pytest tests/grpc/test_ledger5.py": {
+   "returncode": 0,
+   "summary": "16 passed in 1.67s",
+   "seconds": 1.8,
+   "failed": []
+  },
+  "probe5 p5-proc": {
+   "returncode": 0,
+   "summary": "PASS P5-PROC {\"1 runner byte changed: refused before any metric, no run consumed\": true, \"2 own entry removed from freeze5: refused\": true, \"3 crash then re-run with equal bytes: blind\": true, \"4 re-run with changed bytes: post_hoc\": true, \"5 a third run: refused\": true, \"6 a broken chain: refused, ",
+   "seconds": 1.0,
+   "failed": [
+    "PASS"
+   ]
+  },
+  "probe5 p5-desc": {
+   "returncode": 0,
+   "summary": "PASS P5-DESC {\"family\": \"descwrap5\", \"rpc facts compared\": 28, \"disagreements\": 0, \"S8 confident-wrong\": [], \"truth hashed before library code\": true}",
+   "seconds": 0.2,
+   "failed": [
+    "PASS"
+   ]
+  },
+  "pytest tests/grpc/test_descwrap5.py": {
+   "returncode": 0,
+   "summary": "13 passed in 0.16s",
+   "seconds": 0.3,
+   "failed": []
+  },
+  "probe5 p5-status": {
+   "returncode": 0,
+   "summary": "PASS P5-STATUS {\"family\": \"status5\", \"rpc facts compared\": 26, \"disagreements\": 0, \"S8 confident-wrong\": [], \"truth hashed before library code\": true}",
+   "seconds": 0.2,
+   "failed": [
+    "PASS"
+   ]
+  },
+  "probe5 p5-bopt": {
+   "returncode": 0,
+   "summary": "PASS P5-BOPT {\"family\": \"builderopt5\", \"rpc facts compared\": 14, \"disagreements\": 0, \"S8 confident-wrong\": [], \"truth hashed before library code\": true}",
+   "seconds": 0.2,
+   "failed": [
+    "PASS"
+   ]
+  },
+  "pytest tests/grpc/test_builderopt5.py": {
+   "returncode": 0,
+   "summary": "8 passed in 0.14s",
+   "seconds": 0.3,
+   "failed": []
+  },
+  "pytest tests/grpc/test_status5.py": {
+   "returncode": 0,
+   "summary": "15 passed in 0.15s",
+   "seconds": 0.3,
+   "failed": []
+  },
+  "probe5 p5-aud": {
+   "returncode": 0,
+   "summary": "PASS P5-AUD {\"family\": \"audience5\", \"rpc facts compared\": 12, \"disagreements\": 0, \"S8 confident-wrong\": [], \"truth hashed before library code\": true}",
+   "seconds": 0.2,
+   "failed": [
+    "PASS"
+   ]
+  },
+  "pytest tests/grpc/test_audience5.py": {
+   "returncode": 0,
+   "summary": "15 passed in 0.16s",
+   "seconds": 0.3,
+   "failed": []
+  },
+  "probe5 p5-sql": {
+   "returncode": 0,
+   "summary": "PASS P5-SQL {\"family\": \"sqlraw5\", \"rpc facts compared\": 17, \"disagreements\": 0, \"S8 confident-wrong\": [], \"truth hashed before library code\": true}",
+   "seconds": 0.2,
+   "failed": [
+    "PASS"
+   ]
+  },
+  "pytest tests/grpc/test_sqlraw5.py": {
+   "returncode": 0,
+   "summary": "8 passed in 0.14s",
+   "seconds": 0.3,
+   "failed": []
+  },
+  "probe5 p5-prot": {
+   "returncode": 0,
+   "summary": "PASS P5-PROT {\"passed\": 5, \"deselected\": 4, \"selected by\": \"prot\", \"wanted\": 5}",
+   "seconds": 1.6,
+   "failed": [
+    "PASS"
+   ]
+  },
+  "pytest tests/studio/test_rebuild_grpc5.py": {
+   "returncode": 0,
+   "summary": "8 passed in 3.09s",
+   "seconds": 3.2,
+   "failed": []
+  },
+  "pytest tests/mcp/test_guard_dirs5.py": {
+   "returncode": 0,
+   "summary": "1 passed in 0.05s",
+   "seconds": 0.2,
+   "failed": []
+  },
+  "probe5 p5-gen": {
+   "returncode": 0,
+   "summary": "PASS P5-GEN {\"passed\": 3, \"deselected\": 5, \"selected by\": \"gen\", \"wanted\": 3}",
+   "seconds": 2.4,
+   "failed": [
+    "PASS"
+   ]
+  },
+  "probe5 p5-brief": {
+   "returncode": 0,
+   "summary": "PASS P5-BRIEF {\"passed\": 1, \"deselected\": 7, \"selected by\": \"brief\", \"wanted\": 1}",
+   "seconds": 1.0,
+   "failed": [
+    "PASS"
+   ]
+  },
+  "probe5 p5-score": {
+   "returncode": 0,
+   "summary": "PASS P5-SCORE {\"cases\": 88, \"agree\": 88, \"in 78-110 (p)\": true}",
+   "seconds": 0.1,
+   "failed": [
+    "PASS"
+   ]
+  },
+  "probe4 p4-wire": {
+   "returncode": 0,
+   "summary": "PASS P4-WIRE {\"rpcs\": 24, \"states equal the truth\": 24, \"wrong (extract, truth)\": {}, \"S8 confident-wrong\": [], \"truth hashed before library code\": true}",
+   "seconds": 0.2,
+   "failed": []
+  },
+  "pytest tests/grpc/test_wiring4.py": {
+   "returncode": 0,
+   "summary": "20 passed in 0.22s",
+   "seconds": 0.4,
+   "failed": []
+  },
+  "probe4 p4-authi": {
+   "returncode": 0,
+   "summary": "PASS P4-AUTHI {\"cases\": 7, \"cases exact\": 7, \"Public behind an unread mechanism\": [], \"truth hashed before library code\": true}",
+   "seconds": 0.2,
+   "failed": []
+  },
+  "pytest tests/grpc/test_auth4.py": {
+   "returncode": 0,
+   "summary": "27 passed in 0.21s",
+   "seconds": 0.3,
+   "failed": []
+  },
+  "probe4 p4-codes": {
+   "returncode": 0,
+   "summary": "PASS P4-CODES {\"rpcs\": 9, \"disagreements\": 0, \"UNKNOWN not in the truth\": [], \"truth hashed before library code\": true}",
+   "seconds": 0.2,
+   "failed": []
+  },
+  "pytest tests/grpc/test_codes4.py": {
+   "returncode": 0,
+   "summary": "19 passed in 0.20s",
+   "seconds": 0.3,
+   "failed": []
+  },
+  "probe4 p4-bc-ext": {
+   "returncode": 1,
+   "summary": "FAIL P4-BC-EXT {\"compared\": 12, \"differ\": [\"deskd:extract\", \"deskd:model\", \"harborline:extract\", \"harborline:model\", \"kilnworks:extract\", \"kilnworks:model\", \"notes:extract\", \"notes:model\", \"sessions:e",
+   "seconds": 1.3,
+   "failed": []
+  },
+  "probe4 p4-tables": {
+   "returncode": 0,
+   "summary": "PASS P4-TABLES {\"cases\": 3, \"disagreements\": 0, \"temp dirs left\": [], \"writes under the roots\": 0}",
+   "seconds": 0.2,
+   "failed": []
+  },
+  "pytest tests/grpc/test_tables4.py": {
+   "returncode": 0,
+   "summary": "10 passed in 0.22s",
+   "seconds": 0.4,
+   "failed": []
+  },
+  "probe4 p4-login": {
+   "returncode": 0,
+   "summary": "PASS P4-LOGIN {\"methods\": {\"LoginUsername\": {\"username\": \"ada\", \"password\": \"pw\"}, \"LoginName\": {\"name\": \"ada\", \"password\": \"pw\"}, \"LoginEmail\": {\"email\": \"ada\", \"passcode\": \"pw\"}, \"LoginTenant\": {\"us",
+   "seconds": 0.4,
+   "failed": []
+  },
+  "pytest tests/grpc/test_login4.py": {
+   "returncode": 0,
+   "summary": "15 passed in 0.42s",
+   "seconds": 0.6,
+   "failed": []
+  },
+  "probe4 p4-score": {
+   "returncode": 0,
+   "summary": "PASS P4-SCORE {\"cases\": 58, \"agree\": 58, \"in 30-45 (p)\": false}",
+   "seconds": 0.1,
+   "failed": []
+  },
+  "probe4 p4-proc": {
+   "returncode": 0,
+   "summary": "PASS P4-PROC {\"1 runner byte changed: refused before any metric\": true, \"2 own entry removed from freeze4: refused\": true, \"3 crash then re-run with equal bytes: blind\": true, \"4 re-run with changed b",
+   "seconds": 0.6,
+   "failed": []
+  },
+  "pytest tests/grpc/test_wiring3.py": {
+   "returncode": 0,
+   "summary": "32 passed in 0.24s",
+   "seconds": 0.4,
+   "failed": []
+  },
+  "pytest tests/grpc/test_auth3.py": {
+   "returncode": 0,
+   "summary": "29 passed in 0.20s",
+   "seconds": 0.3,
+   "failed": []
+  },
+  "probe4 pr4-desk": {
+   "returncode": 0,
+   "summary": "PASS PR3-DESK (dev) {\"S5 coverage\": 1.0, \"S5 agreement\": 1.0, \"S5 by class\": {\"absent\": \"1/1\", \"implemented\": \"17/17\", \"not_registered\": \"1/1\", \"unimplemented\": \"1/1\"}, \"denominator\": 20, \"Reports/Bac",
+   "seconds": 0.4,
+   "failed": []
+  },
+  "pytest tests/grpc/test_reconcile3.py": {
+   "returncode": 0,
+   "summary": "12 passed in 0.28s",
+   "seconds": 0.4,
+   "failed": []
+  },
+  "probe pr2-sess": {
+   "returncode": 0,
+   "summary": "PASS PR2-SESS {\"round 1 (control, cea85fc library)\": {\"Login\": {\"code\": \"INVALID_ARGUMENT\", \"answered\": true}, \"SignOut\": {\"code\": \"OK\", \"answered\": true}, \"DeleteMe\": {\"code\": \"UNAUTHENTICATED\", \"ans",
+   "seconds": 2.3,
+   "failed": []
+  },
+  "pytest tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py": {
+   "returncode": 0,
+   "summary": "59 passed in 7.24s",
+   "seconds": 7.4,
+   "failed": []
+  },
+  "probe pr2-order": {
+   "returncode": 0,
+   "summary": "PASS PR2-ORDER {\"N\": {\"disagreed\": []}, \"sessions\": {\"disagreed\": [\"sessions.v1.Sessions/DeleteMe\", \"sessions.v1.Sessions/Secret\", \"sessions.v1.Sessions/SignOut\", \"sessions.v1.Sessions/Stub\"], \"all is",
+   "seconds": 0.7,
+   "failed": []
+  },
+  "probe pf2-desk": {
+   "returncode": 0,
+   "summary": "PASS PF2-DESK (dev, tuned-on) {\"recovered\": 41, \"recovered_by_status\": {\"verified\": 20, \"unverified\": 0, \"failed\": 21, \"unbound\": 0}, \"verified\": 20, \"verified_but_failing\": 0, \"edge_recall\": {\"num\": ",
+   "seconds": 4.9,
+   "failed": []
+  },
+  "probe pf2-n": {
+   "returncode": 0,
+   "summary": "PASS PF2-N {\"recovered\": 17, \"recovered_by_status\": {\"verified\": 17, \"unverified\": 0, \"failed\": 0, \"unbound\": 0}, \"verified\": 17, \"verified_but_failing\": 0, \"failing_codes\": {}, \"unbound_reasons\": {},",
+   "seconds": 3.2,
+   "failed": []
+  },
+  "probe pf2-replay": {
+   "returncode": 0,
+   "summary": "PASS PF2-REPLAY {\"N\": {\"verified\": 17, \"replays\": 3, \"failing per replay\": [0, 0, 0]}, \"deskd\": \"NOT RUN: no --deskd\"}",
+   "seconds": 4.7,
+   "failed": []
+  },
+  "probe p2-score": {
+   "returncode": 0,
+   "summary": "PASS P2-SCORE {\"cases\": 37, \"agree\": 37}",
+   "seconds": 0.1,
+   "failed": []
+  },
+  "pytest tests/importer/test_workflows.py": {
+   "returncode": 0,
+   "summary": "69 passed in 2.22s",
+   "seconds": 2.4,
+   "failed": []
+  }
+ },
+ "killed": 101,
+ "of": 101,
+ "mutants": [
+  {
+   "id": "GH5-1",
+   "round": "5",
+   "mutant": "contract check prints a generic error for a build_db that returns None",
+   "killer": "P5-HAPI",
+   "checks": [
+    {
+     "check": "p5-hapi",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 15.2,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-HAPI {\"sqlite fixture\": {\"exit\": 0, \"lines\": 14, \"not ok\": []}, \"failure classes\": {\"RUNTIME is the driver\": {\"exit\": 1, \"named line\": \"RUNTIME is AuthDriver\", \"ok\": true}, \"build_db returns None\": {\"exit\": 1, \"named line\": null, \"ok\": false}, \"positional AuthDriver.rpc\": {\"exit\": 1, \"named ",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-hapi"
+   ]
+  },
+  {
+   "id": "GH5-2",
+   "round": "5",
+   "mutant": "H1b off: a build_db that returns None is not 'the path I was given' (make_app(None))",
+   "killer": "P5-BC-AST (the three H1b sites), P5-BC",
+   "checks": [
+    {
+     "check": "p5-bc-ast",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.1,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-BC-AST {\"H1b sites found\": 0, \"differences\": 1}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_truth5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 72.2,
+     "failed": [
+      "tests/grpc/test_truth5.py::test_h1b_a_build_db_answering_none_means_the_path_it_was_given"
+     ],
+     "summary": "1 failed, 71 passed in 72.07s (0:01:12)",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-bc-ast",
+    "pytest:tests/grpc/test_truth5.py"
+   ]
+  },
+  {
+   "id": "GN5-1",
+   "round": "5",
+   "mutant": "H2: the grpc-go String() names are no longer in the table (the round-4 .upper() path)",
+   "killer": "P5-CODE, P5-LINKS",
+   "checks": [
+    {
+     "check": "p5-code",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.1,
+     "failed": [],
+     "summary": "grpc_truth5.TruthError: unknown gRPC code 'InvalidArgument' at ?",
+     "differs_from_control": true
+    },
+    {
+     "check": "p5-links",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 24.0,
+     "failed": [],
+     "summary": "grpc_truth5.TruthError: unknown gRPC code 'InvalidArgument' at $.rpcs[0].codes[1]",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_truth5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 62.7,
+     "failed": [
+      "tests/grpc/test_truth5.py::test_h2_every_spelling_of_the_17_rows_maps[11-OUT_OF_RANGE-OutOfRange]",
+      "tests/grpc/test_truth5.py::test_h2_every_spelling_of_the_17_rows_maps[15-DATA_LOSS-DataLoss]",
+      "tests/grpc/test_truth5.py::test_h2_every_spelling_of_the_17_rows_maps[3-INVALID_ARGUMENT-InvalidArgument]",
+      "tests/grpc/test_truth5.py::test_h2_every_spelling_of_the_17_rows_maps[4-DEADLINE_EXCEEDED-DeadlineExceeded]",
+      "tests/grpc/test_truth5.py::test_h2_every_spelling_of_the_17_rows_maps[5-NOT_FOUND-NotFound]",
+      "tests/grpc/test_truth5.py::test_h2_every_spelling_of_the_17_rows_maps[6-ALREADY_EXISTS-AlreadyExists]",
+      "tests/grpc/test_truth5.py::test_h2_every_spelling_of_the_17_rows_maps[7-PERMISSION_DENIED-PermissionDenied]",
+      "tests/grpc/test_truth5.py::test_h2_every_spelling_of_the_17_rows_maps[8-RESOURCE_EXHAUSTED-ResourceExhausted]",
+      "tests/grpc/test_truth5.py::test_h2_every_spelling_of_the_17_rows_maps[9-FAILED_PRECONDITION-FailedPrecondition]",
+      "tests/grpc/test_truth5.py::test_h2_is_applied_to_every_code_the_chain_reads",
+      "tests/grpc/test_truth5.py::test_strict_reader_refuses_a_v4_document_and_the_dev_reader_reads_it"
+     ],
+     "summary": "11 failed, 61 passed in 62.50s (0:01:02)",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-code",
+    "probe5:p5-links",
+    "pytest:tests/grpc/test_truth5.py"
+   ]
+  },
+  {
+   "id": "GN5-2",
+   "round": "5",
+   "mutant": "H2: Canceled is not mapped to CANCELLED",
+   "killer": "P5-CODE",
+   "checks": [
+    {
+     "check": "p5-code",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.1,
+     "failed": [],
+     "summary": "grpc_truth5.TruthError: unknown gRPC code 'CANCELED' at ?",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_truth5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 62.3,
+     "failed": [
+      "tests/grpc/test_truth5.py::test_h2_the_two_cancel_spellings"
+     ],
+     "summary": "1 failed, 71 passed in 62.17s (0:01:02)",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-code",
+    "pytest:tests/grpc/test_truth5.py"
+   ]
+  },
+  {
+   "id": "GN5-3",
+   "round": "5",
+   "mutant": "H2: an unknown name is passed through instead of refused",
+   "killer": "P5-CODE",
+   "checks": [
+    {
+     "check": "p5-code",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.1,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-CODE {\"mapped\": 70, \"refused\": 0, \"disagreements\": 6}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_truth5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 68.1,
+     "failed": [
+      "tests/grpc/test_truth5.py::test_contract_check_names_a_failing_flow_step_and_a_bad_code",
+      "tests/grpc/test_truth5.py::test_h2_a_refused_code_is_named_before_anything_else",
+      "tests/grpc/test_truth5.py::test_h2_refuses_with_the_json_path[",
+      "tests/grpc/test_truth5.py::test_h2_refuses_with_the_json_path[-1]",
+      "tests/grpc/test_truth5.py::test_h2_refuses_with_the_json_path[01]",
+      "tests/grpc/test_truth5.py::test_h2_refuses_with_the_json_path[1.0]",
+      "tests/grpc/test_truth5.py::test_h2_refuses_with_the_json_path[17]",
+      "tests/grpc/test_truth5.py::test_h2_refuses_with_the_json_path[FAILEDPRECONDITION]",
+      "tests/grpc/test_truth5.py::test_h2_refuses_with_the_json_path[None]",
+      "tests/grpc/test_truth5.py::test_h2_refuses_with_the_json_path[NotAFound]",
+      "tests/grpc/test_truth5.py::test_h2_refuses_with_the_json_path[True]",
+      "tests/grpc/test_truth5.py::test_h2_refuses_with_the_json_path[]",
+      "tests/grpc/test_truth5.py::test_h2_refuses_with_the_json_path[failedPrecondition]"
+     ],
+     "summary": "13 failed, 59 passed in 67.94s (0:01:07)",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-code",
+    "pytest:tests/grpc/test_truth5.py"
+   ]
+  },
+  {
+   "id": "GK5-L1",
+   "round": "5",
+   "mutant": "H3: the replay ignores links",
+   "killer": "P5-LINKS",
+   "checks": [
+    {
+     "check": "p5-links",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 38.3,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-LINKS {\"harness5/sqlite truth flows\": {\"create_get_close\": \"step 1: code_mismatch (NOT_FOUND vs OK)\", \"two_creates_then_list\": \"step 2: code_mismatch (NOT_FOUND vs OK)\", \"bob_reads_anns_entry\": \"step 1: code_mismatch (NOT_FOUND vs OK)\", \"gate_and_validation\": \"ok\"}, \"probe flows\": {\"links_ne",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_truth5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 59.2,
+     "failed": [
+      "tests/grpc/test_truth5.py::test_a_flow_that_passes_only_with_links",
+      "tests/grpc/test_truth5.py::test_contract_check_names_a_failing_flow_step_and_a_bad_code",
+      "tests/grpc/test_truth5.py::test_contract_check_prints_one_ok_line_per_fact",
+      "tests/grpc/test_truth5.py::test_every_flow_of_the_fixture_app_replays_with_links_applied",
+      "tests/grpc/test_truth5.py::test_probe_flows_are_labelled_as_the_fixture_states[base_one_links]",
+      "tests/grpc/test_truth5.py::test_probe_flows_are_labelled_as_the_fixture_states[base_one_unresolved]",
+      "tests/grpc/test_truth5.py::test_probe_flows_are_labelled_as_the_fixture_states[deskd_alias_form]",
+      "tests/grpc/test_truth5.py::test_probe_flows_are_labelled_as_the_fixture_states[link_unresolved]",
+      "tests/grpc/test_truth5.py::test_probe_flows_are_labelled_as_the_fixture_states[links_needed]",
+      "tests/grpc/test_truth5.py::test_probe_flows_are_labelled_as_the_fixture_states[list_index_in_from_field]",
+      "tests/grpc/test_truth5.py::test_recorded_steps_are_library_rpc_steps_with_the_links_substituted"
+     ],
+     "summary": "11 failed, 61 passed in 59.01s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-links",
+    "pytest:tests/grpc/test_truth5.py"
+   ]
+  },
+  {
+   "id": "GK5-L2",
+   "round": "5",
+   "mutant": "H3: the replay ignores conventions.step_index_base",
+   "killer": "P5-LINKS",
+   "checks": [
+    {
+     "check": "p5-links",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.3,
+     "failed": [],
+     "summary": "grpc_truth5.TruthError: flows[0].links[0]: link from step -1 to step 0 is outside the flow or not forward",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_truth5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 24.2,
+     "failed": [
+      "tests/grpc/test_truth5.py::test_a_flow_that_passes_only_with_links",
+      "tests/grpc/test_truth5.py::test_contract_check_names_a_failing_flow_step_and_a_bad_code",
+      "tests/grpc/test_truth5.py::test_contract_check_prints_one_ok_line_per_fact",
+      "tests/grpc/test_truth5.py::test_every_flow_of_the_fixture_app_replays_with_links_applied",
+      "tests/grpc/test_truth5.py::test_links_in_either_index_base_and_the_deskd_alias",
+      "tests/grpc/test_truth5.py::test_load_truth_reads_the_fixture",
+      "tests/grpc/test_truth5.py::test_probe_flows_are_labelled_as_the_fixture_states[link_unresolved]",
+      "tests/grpc/test_truth5.py::test_probe_flows_are_labelled_as_the_fixture_states[links_needed]",
+      "tests/grpc/test_truth5.py::test_probe_flows_are_labelled_as_the_fixture_states[list_index_in_from_field]",
+      "tests/grpc/test_truth5.py::test_recorded_steps_are_library_rpc_steps_with_the_links_substituted",
+      "tests/grpc/test_truth5.py::test_schema_errors_name_the_first_problem[<lambda>-duplicate",
+      "tests/grpc/test_truth5.py::test_strict_reader_refuses_a_v4_document_and_the_dev_reader_reads_it"
+     ],
+     "summary": "12 failed, 60 passed in 24.01s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-links",
+    "pytest:tests/grpc/test_truth5.py"
+   ]
+  },
+  {
+   "id": "GK5-L3",
+   "round": "5",
+   "mutant": "H3: the replay checks the code only, not the dotted expect paths",
+   "killer": "P5-LINKS",
+   "checks": [
+    {
+     "check": "p5-links",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 36.9,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-LINKS {\"harness5/sqlite truth flows\": {\"create_get_close\": \"ok\", \"two_creates_then_list\": \"ok\", \"bob_reads_anns_entry\": \"ok\", \"gate_and_validation\": \"ok\"}, \"probe flows\": {\"links_needed\": {\"got\": \"ok\", \"want\": \"ok\"}, \"links_needed_stripped\": {\"got\": \"step 1: code_mismatch (NOT_FOUND vs OK)\",",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_truth5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 60.6,
+     "failed": [
+      "tests/grpc/test_truth5.py::test_contract_check_names_a_failing_flow_step_and_a_bad_code",
+      "tests/grpc/test_truth5.py::test_probe_flows_are_labelled_as_the_fixture_states[expect_mismatch]"
+     ],
+     "summary": "2 failed, 70 passed in 60.42s (0:01:00)",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-links",
+    "pytest:tests/grpc/test_truth5.py"
+   ]
+  },
+  {
+   "id": "GK5-L4",
+   "round": "5",
+   "mutant": "H3: a missing from_field sends an empty field instead of link_unresolved",
+   "killer": "P5-LINKS",
+   "checks": [
+    {
+     "check": "p5-links",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 37.0,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-LINKS {\"harness5/sqlite truth flows\": {\"create_get_close\": \"ok\", \"two_creates_then_list\": \"ok\", \"bob_reads_anns_entry\": \"ok\", \"gate_and_validation\": \"ok\"}, \"probe flows\": {\"links_needed\": {\"got\": \"ok\", \"want\": \"ok\"}, \"links_needed_stripped\": {\"got\": \"step 1: code_mismatch (NOT_FOUND vs OK)\",",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_truth5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 62.4,
+     "failed": [
+      "tests/grpc/test_truth5.py::test_probe_flows_are_labelled_as_the_fixture_states[base_one_unresolved]",
+      "tests/grpc/test_truth5.py::test_probe_flows_are_labelled_as_the_fixture_states[link_unresolved]"
+     ],
+     "summary": "2 failed, 70 passed in 62.24s (0:01:02)",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-links",
+    "pytest:tests/grpc/test_truth5.py"
+   ]
+  },
+  {
+   "id": "GL5-1",
+   "round": "5",
+   "mutant": "H4: the ledger counts runs per --out (round 4)",
+   "killer": "P5-LEDGER",
+   "checks": [
+    {
+     "check": "p5-ledger",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.2,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-LEDGER {\"1 two --out on one target: index 2 after a crash\": true, \"2 a third run is refused\": false, \"3 a preflight refusal consumes no run\": true, \"4 a tampered line breaks the chain and nothing is appended\": true, \"5 --process-test refuses the real ledger\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_ledger5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 1.6,
+     "failed": [
+      "tests/grpc/test_ledger5.py::test_p5_code_p5_score_p5_arms_pass",
+      "tests/grpc/test_ledger5.py::test_p5_ledger_five_of_five",
+      "tests/grpc/test_ledger5.py::test_the_run_index_counts_started_lines_of_a_target_whatever_the_out_or_runner_hash"
+     ],
+     "summary": "3 failed, 13 passed in 1.47s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-ledger",
+    "pytest:tests/grpc/test_ledger5.py"
+   ]
+  },
+  {
+   "id": "GL5-2",
+   "round": "5",
+   "mutant": "H4: the hash chain is not verified",
+   "killer": "P5-LEDGER, P5-PROC",
+   "checks": [
+    {
+     "check": "p5-ledger",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.2,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-LEDGER {\"1 two --out on one target: index 2 after a crash\": true, \"2 a third run is refused\": true, \"3 a preflight refusal consumes no run\": true, \"4 a tampered line breaks the chain and nothing is appended\": false, \"5 --process-test refuses the real ledger\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "p5-proc",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 1.1,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-PROC {\"1 runner byte changed: refused before any metric, no run consumed\": true, \"2 own entry removed from freeze5: refused\": true, \"3 crash then re-run with equal bytes: blind\": true, \"4 re-run with changed bytes: post_hoc\": true, \"5 a third run: refused\": true, \"6 a broken chain: refused, ",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_ledger5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 1.6,
+     "failed": [
+      "tests/grpc/test_ledger5.py::test_a_broken_chain_labels_post_hoc_with_its_reason",
+      "tests/grpc/test_ledger5.py::test_a_tampered_line_breaks_the_chain_and_blocks_appends",
+      "tests/grpc/test_ledger5.py::test_p5_code_p5_score_p5_arms_pass",
+      "tests/grpc/test_ledger5.py::test_p5_ledger_five_of_five",
+      "tests/grpc/test_ledger5.py::test_p5_proc_seven_of_seven"
+     ],
+     "summary": "5 failed, 11 passed in 1.48s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-ledger",
+    "probe5:p5-proc",
+    "pytest:tests/grpc/test_ledger5.py"
+   ]
+  },
+  {
+   "id": "GL5-3",
+   "round": "5",
+   "mutant": "H4: a preflight refusal consumes a run",
+   "killer": "P5-LEDGER",
+   "checks": [
+    {
+     "check": "p5-ledger",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.2,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-LEDGER {\"1 two --out on one target: index 2 after a crash\": true, \"2 a third run is refused\": true, \"3 a preflight refusal consumes no run\": false, \"4 a tampered line breaks the chain and nothing is appended\": true, \"5 --process-test refuses the real ledger\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_ledger5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 1.6,
+     "failed": [
+      "tests/grpc/test_ledger5.py::test_a_refused_preflight_consumes_no_run",
+      "tests/grpc/test_ledger5.py::test_p5_code_p5_score_p5_arms_pass",
+      "tests/grpc/test_ledger5.py::test_p5_ledger_five_of_five"
+     ],
+     "summary": "3 failed, 13 passed in 1.44s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-ledger",
+    "pytest:tests/grpc/test_ledger5.py"
+   ]
+  },
+  {
+   "id": "GL5-4",
+   "round": "5",
+   "mutant": "H5: a symlinked app is accepted",
+   "killer": "P5-PROC",
+   "checks": [
+    {
+     "check": "p5-proc",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 1.1,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-PROC {\"1 runner byte changed: refused before any metric, no run consumed\": true, \"2 own entry removed from freeze5: refused\": true, \"3 crash then re-run with equal bytes: blind\": true, \"4 re-run with changed bytes: post_hoc\": true, \"5 a third run: refused\": true, \"6 a broken chain: refused, ",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_ledger5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 1.6,
+     "failed": [
+      "tests/grpc/test_ledger5.py::test_p5_proc_seven_of_seven"
+     ],
+     "summary": "1 failed, 15 passed in 1.43s",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_truth5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 62.8,
+     "failed": [
+      "tests/grpc/test_truth5.py::test_layout_refuses_a_symlinked_app_and_a_symlink_in_the_tree"
+     ],
+     "summary": "1 failed, 71 passed in 62.63s (0:01:02)",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-proc",
+    "pytest:tests/grpc/test_ledger5.py",
+    "pytest:tests/grpc/test_truth5.py"
+   ]
+  },
+  {
+   "id": "GW5-1",
+   "round": "5",
+   "mutant": "E1 off: a descriptor returned by a function is not read",
+   "killer": "P5-DESC",
+   "checks": [
+    {
+     "check": "p5-desc",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.5,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-DESC {\"family\": \"descwrap5\", \"rpc facts compared\": 28, \"disagreements\": 23, \"S8 confident-wrong\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_descwrap5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.3,
+     "failed": [
+      "tests/grpc/test_descwrap5.py::test_e1_1_the_copy_registers_under_its_assigned_name_and_the_template_does_not",
+      "tests/grpc/test_descwrap5.py::test_e1_2_a_name_read_at_run_time_is_never_the_originals",
+      "tests/grpc/test_descwrap5.py::test_e1_3_a_methods_literal_serves_only_its_methods",
+      "tests/grpc/test_descwrap5.py::test_e1_3_methods_built_otherwise_are_unread_with_a_reason",
+      "tests/grpc/test_descwrap5.py::test_e1_3_methods_rebuilt_by_range_keep_the_generated_set",
+      "tests/grpc/test_descwrap5.py::test_e1_4_the_wrapper_translates_its_service_only",
+      "tests/grpc/test_descwrap5.py::test_every_listed_fact_equals_the_truth[main]",
+      "tests/grpc/test_descwrap5.py::test_every_listed_fact_equals_the_truth[methods]",
+      "tests/grpc/test_descwrap5.py::test_every_listed_fact_equals_the_truth[wrapper]"
+     ],
+     "summary": "9 failed, 4 passed in 0.19s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-desc",
+    "pytest:tests/grpc/test_descwrap5.py"
+   ]
+  },
+  {
+   "id": "GW5-2",
+   "round": "5",
+   "mutant": "E1.2: a ServiceName that is not a literal is taken as the original's",
+   "killer": "P5-DESC",
+   "checks": [
+    {
+     "check": "p5-desc",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.5,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-DESC {\"family\": \"descwrap5\", \"rpc facts compared\": 28, \"disagreements\": 4, \"S8 confident-wrong\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_descwrap5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.3,
+     "failed": [
+      "tests/grpc/test_descwrap5.py::test_e1_2_a_name_read_at_run_time_is_never_the_originals",
+      "tests/grpc/test_descwrap5.py::test_every_listed_fact_equals_the_truth[namedyn]"
+     ],
+     "summary": "2 failed, 11 passed in 0.18s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-desc",
+    "pytest:tests/grpc/test_descwrap5.py"
+   ]
+  },
+  {
+   "id": "GW5-3",
+   "round": "5",
+   "mutant": "E1.3: a Methods literal is ignored (the original set is kept)",
+   "killer": "P5-DESC (S8)",
+   "checks": [
+    {
+     "check": "p5-desc",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.3,
+     "failed": [],
+     "summary": "./goextract_grpc.go:19:2: \"slices\" imported and not used",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_descwrap5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.5,
+     "failed": [
+      "tests/grpc/test_descwrap5.py::test_a_package_error_file_without_functions_is_still_read",
+      "tests/grpc/test_descwrap5.py::test_e1_1_the_copy_registers_under_its_assigned_name_and_the_template_does_not",
+      "tests/grpc/test_descwrap5.py::test_e1_2_a_name_read_at_run_time_is_never_the_originals",
+      "tests/grpc/test_descwrap5.py::test_e1_3_a_methods_literal_serves_only_its_methods",
+      "tests/grpc/test_descwrap5.py::test_e1_3_methods_built_otherwise_are_unread_with_a_reason",
+      "tests/grpc/test_descwrap5.py::test_e1_3_methods_rebuilt_by_range_keep_the_generated_set",
+      "tests/grpc/test_descwrap5.py::test_e1_4_the_wrapper_translates_its_service_only",
+      "tests/grpc/test_descwrap5.py::test_every_listed_fact_equals_the_truth[main]",
+      "tests/grpc/test_descwrap5.py::test_every_listed_fact_equals_the_truth[methods]",
+      "tests/grpc/test_descwrap5.py::test_every_listed_fact_equals_the_truth[namedyn]",
+      "tests/grpc/test_descwrap5.py::test_every_listed_fact_equals_the_truth[wrapper]",
+      "tests/grpc/test_descwrap5.py::test_no_confident_wrong_state_against_the_truth"
+     ],
+     "summary": "1 passed, 12 errors in 0.31s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-desc",
+    "pytest:tests/grpc/test_descwrap5.py"
+   ]
+  },
+  {
+   "id": "GW5-4",
+   "round": "5",
+   "mutant": "E1.4: the wrapper's translation is not applied",
+   "killer": "P5-DESC",
+   "checks": [
+    {
+     "check": "p5-desc",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.5,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-DESC {\"family\": \"descwrap5\", \"rpc facts compared\": 28, \"disagreements\": 2, \"S8 confident-wrong\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "p5-status",
+     "kind": "probe5",
+     "returncode": 0,
+     "seconds": 0.2,
+     "failed": [
+      "PASS"
+     ],
+     "summary": "PASS P5-STATUS {\"family\": \"status5\", \"rpc facts compared\": 26, \"disagreements\": 0, \"S8 confident-wrong\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": false
+    },
+    {
+     "check": "tests/grpc/test_descwrap5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.3,
+     "failed": [
+      "tests/grpc/test_descwrap5.py::test_e1_4_the_wrapper_translates_its_service_only",
+      "tests/grpc/test_descwrap5.py::test_every_listed_fact_equals_the_truth[wrapper]"
+     ],
+     "summary": "2 failed, 11 passed in 0.18s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-desc",
+    "pytest:tests/grpc/test_descwrap5.py"
+   ]
+  },
+  {
+   "id": "GW5-5",
+   "round": "5",
+   "mutant": "E2 off: a registration in a builder loop is not read from the option calls",
+   "killer": "P5-BOPT",
+   "checks": [
+    {
+     "check": "p5-bopt",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-BOPT {\"family\": \"builderopt5\", \"rpc facts compared\": 14, \"disagreements\": 12, \"S8 confident-wrong\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_builderopt5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.3,
+     "failed": [
+      "tests/grpc/test_builderopt5.py::test_e2_an_option_nobody_ranges_over_registers_nothing",
+      "tests/grpc/test_builderopt5.py::test_e2_an_unresolvable_stored_entry_keeps_the_module_wide_safety_rule",
+      "tests/grpc/test_builderopt5.py::test_e2_each_option_call_site_is_one_registration",
+      "tests/grpc/test_builderopt5.py::test_e2_the_impl_of_each_entry_is_read_from_its_own_call",
+      "tests/grpc/test_builderopt5.py::test_every_listed_fact_equals_the_truth[main]",
+      "tests/grpc/test_builderopt5.py::test_every_listed_fact_equals_the_truth[unres]"
+     ],
+     "summary": "6 failed, 2 passed in 0.18s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-bopt",
+    "pytest:tests/grpc/test_builderopt5.py"
+   ]
+  },
+  {
+   "id": "GW5-6",
+   "round": "5",
+   "mutant": "E2 resolves only the first option call site",
+   "killer": "P5-BOPT",
+   "checks": [
+    {
+     "check": "p5-bopt",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-BOPT {\"family\": \"builderopt5\", \"rpc facts compared\": 14, \"disagreements\": 7, \"S8 confident-wrong\": [\"main:One/Get\", \"main:One/Put\"], \"truth hashed before library code\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_builderopt5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.3,
+     "failed": [
+      "tests/grpc/test_builderopt5.py::test_e2_an_unresolvable_stored_entry_keeps_the_module_wide_safety_rule",
+      "tests/grpc/test_builderopt5.py::test_e2_each_option_call_site_is_one_registration",
+      "tests/grpc/test_builderopt5.py::test_e2_no_service_is_called_not_registered_while_a_registration_is_unresolved",
+      "tests/grpc/test_builderopt5.py::test_e2_the_impl_of_each_entry_is_read_from_its_own_call",
+      "tests/grpc/test_builderopt5.py::test_every_listed_fact_equals_the_truth[main]",
+      "tests/grpc/test_builderopt5.py::test_every_listed_fact_equals_the_truth[unres]"
+     ],
+     "summary": "6 failed, 2 passed in 0.17s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-bopt",
+    "pytest:tests/grpc/test_builderopt5.py"
+   ]
+  },
+  {
+   "id": "GW5-7",
+   "round": "5",
+   "mutant": "E2 registers from an option no builder ranges over",
+   "killer": "P5-BOPT (negative, S8)",
+   "checks": [
+    {
+     "check": "p5-bopt",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-BOPT {\"family\": \"builderopt5\", \"rpc facts compared\": 14, \"disagreements\": 2, \"S8 confident-wrong\": [\"main:Parked/Get\", \"main:Parked/Put\"], \"truth hashed before library code\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_builderopt5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.3,
+     "failed": [
+      "tests/grpc/test_builderopt5.py::test_e2_an_option_nobody_ranges_over_registers_nothing",
+      "tests/grpc/test_builderopt5.py::test_e2_each_option_call_site_is_one_registration",
+      "tests/grpc/test_builderopt5.py::test_every_listed_fact_equals_the_truth[main]"
+     ],
+     "summary": "3 failed, 5 passed in 0.17s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-bopt",
+    "pytest:tests/grpc/test_builderopt5.py"
+   ]
+  },
+  {
+   "id": "GK5-1",
+   "round": "5",
+   "mutant": "E3a off: a GRPCStatus() error type is not read",
+   "killer": "P5-STATUS",
+   "checks": [
+    {
+     "check": "p5-status",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.5,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-STATUS {\"family\": \"status5\", \"rpc facts compared\": 26, \"disagreements\": 10, \"S8 confident-wrong\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_status5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.3,
+     "failed": [
+      "tests/grpc/test_status5.py::test_e3a_a_field_code_is_read_at_each_construction_site_not_unioned",
+      "tests/grpc/test_status5.py::test_e3a_a_field_code_that_is_not_a_literal_is_unread_not_unknown",
+      "tests/grpc/test_status5.py::test_e3a_percent_w_keeps_the_wrapped_status",
+      "tests/grpc/test_status5.py::test_e3a_the_code_is_the_literal_of_grpcstatus",
+      "tests/grpc/test_status5.py::test_every_listed_fact_equals_the_truth[main]"
+     ],
+     "summary": "5 failed, 10 passed in 0.17s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-status",
+    "pytest:tests/grpc/test_status5.py"
+   ]
+  },
+  {
+   "id": "GK5-2",
+   "round": "5",
+   "mutant": "E3a: a field code is the union over all construction sites, not the return site's",
+   "killer": "P5-STATUS",
+   "checks": [
+    {
+     "check": "p5-status",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.5,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-STATUS {\"family\": \"status5\", \"rpc facts compared\": 26, \"disagreements\": 6, \"S8 confident-wrong\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_status5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_status5.py::test_e3a_a_field_code_is_read_at_each_construction_site_not_unioned",
+      "tests/grpc/test_status5.py::test_e3a_a_field_code_that_is_not_a_literal_is_unread_not_unknown",
+      "tests/grpc/test_status5.py::test_e3a_percent_w_keeps_the_wrapped_status",
+      "tests/grpc/test_status5.py::test_every_listed_fact_equals_the_truth[main]"
+     ],
+     "summary": "4 failed, 11 passed in 0.19s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-status",
+    "pytest:tests/grpc/test_status5.py"
+   ]
+  },
+  {
+   "id": "GK5-3",
+   "round": "5",
+   "mutant": "E3b off: a code taken as a parameter is not bound at the call",
+   "killer": "P5-STATUS",
+   "checks": [
+    {
+     "check": "p5-status",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-STATUS {\"family\": \"status5\", \"rpc facts compared\": 26, \"disagreements\": 5, \"S8 confident-wrong\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_status5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.3,
+     "failed": [
+      "tests/grpc/test_status5.py::test_e3b_a_parameter_code_is_taken_from_each_call_site",
+      "tests/grpc/test_status5.py::test_e3c_withdetails_reads_the_code_of_the_status_it_wraps",
+      "tests/grpc/test_status5.py::test_every_listed_fact_equals_the_truth[main]"
+     ],
+     "summary": "3 failed, 12 passed in 0.18s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-status",
+    "pytest:tests/grpc/test_status5.py"
+   ]
+  },
+  {
+   "id": "GK5-4",
+   "round": "5",
+   "mutant": "E3c: the WithDetails chain is not read through",
+   "killer": "P5-STATUS",
+   "checks": [
+    {
+     "check": "p5-status",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.5,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-STATUS {\"family\": \"status5\", \"rpc facts compared\": 26, \"disagreements\": 3, \"S8 confident-wrong\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_status5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.3,
+     "failed": [
+      "tests/grpc/test_status5.py::test_e3c_withdetails_reads_the_code_of_the_status_it_wraps",
+      "tests/grpc/test_status5.py::test_every_listed_fact_equals_the_truth[main]"
+     ],
+     "summary": "2 failed, 13 passed in 0.18s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-status",
+    "pytest:tests/grpc/test_status5.py"
+   ]
+  },
+  {
+   "id": "GK5-5",
+   "round": "5",
+   "mutant": "E3d adds the gate's code to the Public rpcs too",
+   "killer": "P5-ICODE",
+   "checks": [
+    {
+     "check": "p5-status",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-STATUS {\"family\": \"status5\", \"rpc facts compared\": 26, \"disagreements\": 1, \"S8 confident-wrong\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_status5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.3,
+     "failed": [
+      "tests/grpc/test_status5.py::test_every_listed_fact_equals_the_truth[icodelit]",
+      "tests/grpc/test_status5.py::test_icode_the_gate_code_goes_to_the_gated_rpcs_with_the_gates_site"
+     ],
+     "summary": "2 failed, 13 passed in 0.18s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-status",
+    "pytest:tests/grpc/test_status5.py"
+   ]
+  },
+  {
+   "id": "GK5-6",
+   "round": "5",
+   "mutant": "E3d adds codes from an unclear interceptor",
+   "killer": "P5-ICODE",
+   "checks": [
+    {
+     "check": "p5-status",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.5,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-STATUS {\"family\": \"status5\", \"rpc facts compared\": 26, \"disagreements\": 3, \"S8 confident-wrong\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_status5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.3,
+     "failed": [
+      "tests/grpc/test_status5.py::test_every_listed_fact_equals_the_truth[icodeunclear]",
+      "tests/grpc/test_status5.py::test_icode_an_unclear_gate_adds_no_code"
+     ],
+     "summary": "2 failed, 13 passed in 0.17s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-status",
+    "pytest:tests/grpc/test_status5.py"
+   ]
+  },
+  {
+   "id": "GA5-1",
+   "round": "5",
+   "mutant": "E4a off: the method name's other uses are not checked (the round-4 empty allowlist)",
+   "killer": "P5-AUD (S8)",
+   "checks": [
+    {
+     "check": "p5-aud",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.5,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-AUD {\"family\": \"audience5\", \"rpc facts compared\": 12, \"disagreements\": 2, \"S8 confident-wrong\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_audience5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_audience5.py::test_e4a_a_method_handed_to_a_helper_that_decides_is_never_member",
+      "tests/grpc/test_audience5.py::test_e4a_no_member_stands_behind_an_unenumerated_bypass",
+      "tests/grpc/test_audience5.py::test_every_listed_fact_equals_the_truth[skipflow]"
+     ],
+     "summary": "3 failed, 12 passed in 0.20s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-aud",
+    "pytest:tests/grpc/test_audience5.py"
+   ]
+  },
+  {
+   "id": "GA5-2",
+   "round": "5",
+   "mutant": "E4b off: an option gate is read as unclear for every rpc",
+   "killer": "P5-AUD",
+   "checks": [
+    {
+     "check": "p5-aud",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.5,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-AUD {\"family\": \"audience5\", \"rpc facts compared\": 12, \"disagreements\": 5, \"S8 confident-wrong\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_audience5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.3,
+     "failed": [
+      "tests/grpc/test_audience5.py::test_e4b_a_not_equal_gate_inverts_and_the_zero_value_decides_the_absent_option",
+      "tests/grpc/test_audience5.py::test_e4b_an_absent_option_is_the_zero_value_never_the_public_one",
+      "tests/grpc/test_audience5.py::test_e4b_an_option_the_reader_could_not_record_is_unclear_for_that_rpc_only",
+      "tests/grpc/test_audience5.py::test_e4b_the_option_gate_is_recorded_with_the_extension_and_the_enum_value",
+      "tests/grpc/test_audience5.py::test_every_listed_fact_equals_the_truth[opt]",
+      "tests/grpc/test_audience5.py::test_every_listed_fact_equals_the_truth[optne]"
+     ],
+     "summary": "6 failed, 9 passed in 0.19s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-aud",
+    "pytest:tests/grpc/test_audience5.py"
+   ]
+  },
+  {
+   "id": "GA5-3",
+   "round": "5",
+   "mutant": "E4b: an absent option is treated as the public value",
+   "killer": "P5-AUD (wrong Public)",
+   "checks": [
+    {
+     "check": "p5-aud",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.5,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-AUD {\"family\": \"audience5\", \"rpc facts compared\": 12, \"disagreements\": 2, \"S8 confident-wrong\": [\"opt:Door/Info\", \"optne:Hall/Lobby\"], \"truth hashed before library code\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_audience5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_audience5.py::test_e4b_a_not_equal_gate_inverts_and_the_zero_value_decides_the_absent_option",
+      "tests/grpc/test_audience5.py::test_e4b_an_absent_option_is_the_zero_value_never_the_public_one",
+      "tests/grpc/test_audience5.py::test_every_listed_fact_equals_the_truth[opt]",
+      "tests/grpc/test_audience5.py::test_every_listed_fact_equals_the_truth[optne]"
+     ],
+     "summary": "4 failed, 11 passed in 0.19s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-aud",
+    "pytest:tests/grpc/test_audience5.py"
+   ]
+  },
+  {
+   "id": "GA5-4",
+   "round": "5",
+   "mutant": "E4c: a custom option is recorded on every rpc parsed before it in the service",
+   "killer": "P5-AUD",
+   "checks": [
+    {
+     "check": "p5-aud",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.5,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-AUD {\"family\": \"audience5\", \"rpc facts compared\": 12, \"disagreements\": 3, \"S8 confident-wrong\": [\"opt:Door/Login\"], \"truth hashed before library code\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_audience5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.3,
+     "failed": [
+      "tests/grpc/test_audience5.py::test_e4b_an_option_the_reader_could_not_record_is_unclear_for_that_rpc_only",
+      "tests/grpc/test_audience5.py::test_e4c_only_the_rpcs_own_scalar_option_is_recorded",
+      "tests/grpc/test_audience5.py::test_every_listed_fact_equals_the_truth[opt]"
+     ],
+     "summary": "3 failed, 12 passed in 0.19s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-aud",
+    "pytest:tests/grpc/test_audience5.py"
+   ]
+  },
+  {
+   "id": "GS5-1",
+   "round": "5",
+   "mutant": "E5 off: database/sql statements are not read",
+   "killer": "P5-SQL",
+   "checks": [
+    {
+     "check": "p5-sql",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-SQL {\"family\": \"sqlraw5\", \"rpc facts compared\": 17, \"disagreements\": 24, \"S8 confident-wrong\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_sqlraw5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.3,
+     "failed": [
+      "tests/grpc/test_sqlraw5.py::test_e5_a_statement_that_is_not_a_literal_is_unread_and_names_no_table",
+      "tests/grpc/test_sqlraw5.py::test_e5_a_store_reached_through_an_interface_reads_the_built_implementer_only",
+      "tests/grpc/test_sqlraw5.py::test_e5_cte_names_and_ddl_are_no_tables",
+      "tests/grpc/test_sqlraw5.py::test_e5_the_writes_have_the_shape_the_flow_rules_consume",
+      "tests/grpc/test_sqlraw5.py::test_e5_upserts_in_three_spellings_are_save",
+      "tests/grpc/test_sqlraw5.py::test_every_listed_fact_equals_the_truth[main]"
+     ],
+     "summary": "6 failed, 2 passed in 0.17s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-sql",
+    "pytest:tests/grpc/test_sqlraw5.py"
+   ]
+  },
+  {
+   "id": "GS5-2",
+   "round": "5",
+   "mutant": "E5.2: a %s table is read as a literal",
+   "killer": "P5-SQL",
+   "checks": [
+    {
+     "check": "p5-sql",
+     "kind": "probe5",
+     "returncode": 0,
+     "seconds": 0.5,
+     "failed": [
+      "PASS"
+     ],
+     "summary": "PASS P5-SQL {\"family\": \"sqlraw5\", \"rpc facts compared\": 17, \"disagreements\": 0, \"S8 confident-wrong\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": false
+    },
+    {
+     "check": "tests/grpc/test_sqlraw5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.3,
+     "failed": [
+      "tests/grpc/test_sqlraw5.py::test_e5_a_statement_that_is_not_a_literal_is_unread_and_names_no_table"
+     ],
+     "summary": "1 failed, 7 passed in 0.16s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "pytest:tests/grpc/test_sqlraw5.py"
+   ]
+  },
+  {
+   "id": "GS5-3",
+   "round": "5",
+   "mutant": "E5.3: an UPDATE is classed create",
+   "killer": "P5-SQL",
+   "checks": [
+    {
+     "check": "p5-sql",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-SQL {\"family\": \"sqlraw5\", \"rpc facts compared\": 17, \"disagreements\": 2, \"S8 confident-wrong\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_sqlraw5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.3,
+     "failed": [
+      "tests/grpc/test_sqlraw5.py::test_e5_the_writes_have_the_shape_the_flow_rules_consume",
+      "tests/grpc/test_sqlraw5.py::test_every_listed_fact_equals_the_truth[main]"
+     ],
+     "summary": "2 failed, 6 passed in 0.16s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-sql",
+    "pytest:tests/grpc/test_sqlraw5.py"
+   ]
+  },
+  {
+   "id": "GS5-4",
+   "round": "5",
+   "mutant": "E5.4: the HTTP walk reads the SQL statements too",
+   "killer": "P5-BC (HTTP bytes), unit test_e5_4",
+   "checks": [
+    {
+     "check": "p5-bc-ast",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.1,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-BC-AST {\"H1b sites found\": 3, \"differences\": 1}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_sqlraw5.py",
+     "kind": "pytest",
+     "returncode": 0,
+     "seconds": 0.6,
+     "failed": [],
+     "summary": "8 passed in 0.43s",
+     "differs_from_control": false
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-bc-ast"
+   ]
+  },
+  {
+   "id": "GR5-1",
+   "round": "5",
+   "mutant": "L1 off: a protected directory is compared as a file",
+   "killer": "P5-PROT",
+   "checks": [
+    {
+     "check": "p5-prot",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 1.4,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-PROT {\"failed\": 4, \"passed\": 1, \"deselected\": 4, \"selected by\": \"prot\", \"wanted\": 5}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/studio/test_rebuild_grpc5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 3.2,
+     "failed": [
+      "tests/studio/test_rebuild_grpc5.py::test_prot_directory_unchanged_reports_no_edit",
+      "tests/studio/test_rebuild_grpc5.py::test_prot_file_added_under_directory_is_removed_and_counted",
+      "tests/studio/test_rebuild_grpc5.py::test_prot_file_changed_under_directory_is_named_and_restored",
+      "tests/studio/test_rebuild_grpc5.py::test_prot_ignored_file_under_directory_is_kept"
+     ],
+     "summary": "4 failed, 4 passed in 3.07s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-prot",
+    "pytest:tests/studio/test_rebuild_grpc5.py"
+   ]
+  },
+  {
+   "id": "GR5-2",
+   "round": "5",
+   "mutant": "L1: a file added under a protected directory is kept",
+   "killer": "P5-PROT",
+   "checks": [
+    {
+     "check": "p5-prot",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 1.7,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-PROT {\"failed\": 1, \"passed\": 4, \"deselected\": 4, \"selected by\": \"prot\", \"wanted\": 5}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/studio/test_rebuild_grpc5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 3.5,
+     "failed": [
+      "tests/studio/test_rebuild_grpc5.py::test_prot_file_added_under_directory_is_removed_and_counted"
+     ],
+     "summary": "1 failed, 7 passed in 3.28s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-prot",
+    "pytest:tests/studio/test_rebuild_grpc5.py"
+   ]
+  },
+  {
+   "id": "GR5-3",
+   "round": "5",
+   "mutant": "L1b off: the guard does not protect a path under a protected directory",
+   "killer": "P5-PROT",
+   "checks": [
+    {
+     "check": "p5-prot",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 1.8,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-PROT {\"failed\": 1, \"passed\": 4, \"deselected\": 4, \"selected by\": \"prot\", \"wanted\": 5}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/mcp/test_guard_dirs5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.2,
+     "failed": [
+      "tests/mcp/test_guard_dirs5.py::test_prot_guard_denies_a_path_under_a_protected_directory"
+     ],
+     "summary": "1 failed in 0.09s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-prot",
+    "pytest:tests/mcp/test_guard_dirs5.py"
+   ]
+  },
+  {
+   "id": "GR5-4",
+   "round": "5",
+   "mutant": "L2: generate runs after the gates, not before",
+   "killer": "P5-GEN",
+   "checks": [
+    {
+     "check": "p5-gen",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 2.6,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-GEN {\"failed\": 1, \"passed\": 2, \"deselected\": 5, \"selected by\": \"gen\", \"wanted\": 3}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/studio/test_rebuild_grpc5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 3.5,
+     "failed": [
+      "tests/studio/test_rebuild_grpc5.py::test_generate_runs_after_the_round_and_before_the_gates"
+     ],
+     "summary": "1 failed, 7 passed in 3.35s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-gen",
+    "pytest:tests/studio/test_rebuild_grpc5.py"
+   ]
+  },
+  {
+   "id": "GR5-5",
+   "round": "5",
+   "mutant": "L3: the brief omits the protos",
+   "killer": "P5-BRIEF",
+   "checks": [
+    {
+     "check": "p5-brief",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.9,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-BRIEF {\"failed\": 1, \"deselected\": 7, \"selected by\": \"brief\", \"wanted\": 1}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/studio/test_rebuild_grpc5.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 3.4,
+     "failed": [
+      "tests/studio/test_rebuild_grpc5.py::test_brief_names_the_contract_files_and_the_stub_command"
+     ],
+     "summary": "1 failed, 7 passed in 3.23s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-brief",
+    "pytest:tests/studio/test_rebuild_grpc5.py"
+   ]
+  },
+  {
+   "id": "GP5-1",
+   "round": "5",
+   "mutant": "S10'/S12: the run index is taken from the runner's output, not the ledger",
+   "killer": "P5-SCORE, P5-PROC",
+   "checks": [
+    {
+     "check": "p5-score",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.1,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-SCORE {\"cases\": 88, \"agree\": 86, \"in 78-110 (p)\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "p5-proc",
+     "kind": "probe5",
+     "returncode": 0,
+     "seconds": 1.1,
+     "failed": [
+      "PASS"
+     ],
+     "summary": "PASS P5-PROC {\"1 runner byte changed: refused before any metric, no run consumed\": true, \"2 own entry removed from freeze5: refused\": true, \"3 crash then re-run with equal bytes: blind\": true, \"4 re-run with changed bytes: post_hoc\": true, \"5 a third run: refused\": true, \"6 a broken chain: refused, ",
+     "differs_from_control": false
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-score"
+   ]
+  },
+  {
+   "id": "GW4-1",
+   "round": "4",
+   "mutant": "D1.1 off: a register call with a parameter descriptor/impl is not resolved at call sites",
+   "killer": "P4-WIRE, P4-UNIT",
+   "checks": [
+    {
+     "check": "p4-wire",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [],
+     "summary": "FAIL P4-WIRE {\"rpcs\": 24, \"states equal the truth\": 16, \"wrong (extract, truth)\": {\"main:wiring4.v1.Gen/Get\": [\"unread\", \"implemented\"], \"main:wiring4.v1.Gen/Put\": [\"unread\", \"unimplemented\"], \"main:w",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_wiring4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_wiring4.py::test_d1_1_a_helper_with_parameter_descriptor_and_impl_registers_each_call_site",
+      "tests/grpc/test_wiring4.py::test_d1_1_an_explicit_instantiation_of_the_helper_is_a_call_site",
+      "tests/grpc/test_wiring4.py::test_d1_1_the_descriptor_variable_and_the_impl_expression_are_followed",
+      "tests/grpc/test_wiring4.py::test_d1_2_an_options_applying_constructor_is_followed_to_its_concrete_type",
+      "tests/grpc/test_wiring4.py::test_d1_3_an_unreferenced_unresolvable_call_is_dead_not_unread",
+      "tests/grpc/test_wiring4.py::test_d1_4_an_implementer_nothing_builds_is_not_reached",
+      "tests/grpc/test_wiring4.py::test_every_state_equals_the_truth[main]"
+     ],
+     "summary": "7 failed, 13 passed in 0.29s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-wire",
+    "pytest:tests/grpc/test_wiring4.py"
+   ]
+  },
+  {
+   "id": "GW4-2",
+   "round": "4",
+   "mutant": "D1.1 resolves only the first call site of a helper",
+   "killer": "P4-WIRE (second service)",
+   "checks": [
+    {
+     "check": "p4-wire",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [],
+     "summary": "FAIL P4-WIRE {\"rpcs\": 24, \"states equal the truth\": 22, \"wrong (extract, truth)\": {\"main:wiring4.v1.Twin/Get\": [\"not_registered\", \"implemented\"], \"main:wiring4.v1.Twin/Put\": [\"not_registered\", \"implem",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_wiring4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_wiring4.py::test_d1_1_a_helper_with_parameter_descriptor_and_impl_registers_each_call_site",
+      "tests/grpc/test_wiring4.py::test_d1_1_the_descriptor_variable_and_the_impl_expression_are_followed",
+      "tests/grpc/test_wiring4.py::test_every_state_equals_the_truth[main]"
+     ],
+     "summary": "3 failed, 17 passed in 0.25s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-wire",
+    "pytest:tests/grpc/test_wiring4.py"
+   ]
+  },
+  {
+   "id": "GW4-3",
+   "round": "4",
+   "mutant": "D1.2 off: an options-applying constructor returning an interface is not followed",
+   "killer": "P4-WIRE",
+   "checks": [
+    {
+     "check": "p4-wire",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [],
+     "summary": "FAIL P4-WIRE {\"rpcs\": 24, \"states equal the truth\": 20, \"wrong (extract, truth)\": {\"main:wiring4.v1.Gen/Get\": [\"unread\", \"implemented\"], \"main:wiring4.v1.Gen/Put\": [\"unread\", \"unimplemented\"], \"main:w",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_wiring4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_wiring4.py::test_d1_1_the_descriptor_variable_and_the_impl_expression_are_followed",
+      "tests/grpc/test_wiring4.py::test_d1_2_an_options_applying_constructor_is_followed_to_its_concrete_type",
+      "tests/grpc/test_wiring4.py::test_d1_3_an_unreferenced_unresolvable_call_is_dead_not_unread",
+      "tests/grpc/test_wiring4.py::test_every_state_equals_the_truth[main]"
+     ],
+     "summary": "4 failed, 16 passed in 0.29s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "D1.2 is realised by round 3's constructor rule (implType follows the one concrete type a local is built as); the mutant is round 3's GW6 expressed for the options-applying shape",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-wire",
+    "pytest:tests/grpc/test_wiring4.py"
+   ]
+  },
+  {
+   "id": "GW4-4",
+   "round": "4",
+   "mutant": "D1.3 off: an unresolved registration does not block not_registered (round-3 behaviour)",
+   "killer": "P4-WIRE (S8), P4-UNIT",
+   "checks": [
+    {
+     "check": "p4-wire",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [],
+     "summary": "FAIL P4-WIRE {\"rpcs\": 24, \"states equal the truth\": 16, \"wrong (extract, truth)\": {\"unres:wiring4.v1.Mystery/Get\": [\"not_registered\", \"unread\"], \"unres:wiring4.v1.Mystery/Put\": [\"not_registered\", \"unr",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_wiring4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_wiring4.py::test_d1_1_a_helper_reached_only_as_a_value_is_unresolved_not_not_registered",
+      "tests/grpc/test_wiring4.py::test_d1_3_an_unresolved_registration_makes_every_unregistered_service_unread",
+      "tests/grpc/test_wiring4.py::test_d1_3_changes_round_3s_wiring_fixture_by_design",
+      "tests/grpc/test_wiring4.py::test_d1_3_no_rpc_is_not_registered_beside_an_unresolved_registration[unres]",
+      "tests/grpc/test_wiring4.py::test_d1_3_no_rpc_is_not_registered_beside_an_unresolved_registration[varlost]",
+      "tests/grpc/test_wiring4.py::test_every_state_equals_the_truth[unres]",
+      "tests/grpc/test_wiring4.py::test_every_state_equals_the_truth[varlost]",
+      "tests/grpc/test_wiring4.py::test_round3_deviation_8_7_a_variable_read_only_by_unreached_code_is_unread"
+     ],
+     "summary": "8 failed, 12 passed in 0.26s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-wire",
+    "pytest:tests/grpc/test_wiring4.py"
+   ]
+  },
+  {
+   "id": "GW4-5",
+   "round": "4",
+   "mutant": "D1.3 too broad: an unreferenced function's unresolved call also blocks not_registered",
+   "killer": "P4-WIRE (dead case)",
+   "checks": [
+    {
+     "check": "p4-wire",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [],
+     "summary": "FAIL P4-WIRE {\"rpcs\": 24, \"states equal the truth\": 20, \"wrong (extract, truth)\": {\"main:wiring4.v1.Ghost/Get\": [\"unread\", \"not_registered\"], \"main:wiring4.v1.Ghost/Put\": [\"unread\", \"not_registered\"],",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_wiring4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_wiring4.py::test_d1_3_an_unreferenced_unresolvable_call_is_dead_not_unread",
+      "tests/grpc/test_wiring4.py::test_d1_4_an_implementer_nothing_builds_is_not_reached",
+      "tests/grpc/test_wiring4.py::test_every_state_equals_the_truth[main]"
+     ],
+     "summary": "3 failed, 17 passed in 0.25s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-wire",
+    "pytest:tests/grpc/test_wiring4.py"
+   ]
+  },
+  {
+   "id": "GW4-6",
+   "round": "4",
+   "mutant": "round-3 deviation 8.7 left: a package var read only by unreached code is not counted",
+   "killer": "P4-WIRE",
+   "checks": [
+    {
+     "check": "p4-wire",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [],
+     "summary": "FAIL P4-WIRE {\"rpcs\": 24, \"states equal the truth\": 20, \"wrong (extract, truth)\": {\"varlost:wiring4.v1.Held/Get\": [\"not_registered\", \"unread\"], \"varlost:wiring4.v1.Held/Put\": [\"not_registered\", \"unrea",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_wiring4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_wiring4.py::test_d1_3_no_rpc_is_not_registered_beside_an_unresolved_registration[varlost]",
+      "tests/grpc/test_wiring4.py::test_every_state_equals_the_truth[varlost]",
+      "tests/grpc/test_wiring4.py::test_round3_deviation_8_7_a_variable_read_only_by_unreached_code_is_unread"
+     ],
+     "summary": "3 failed, 17 passed in 0.25s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-wire",
+    "pytest:tests/grpc/test_wiring4.py"
+   ]
+  },
+  {
+   "id": "GW4-7",
+   "round": "4",
+   "mutant": "D1.4 off: interface method calls unresolved",
+   "killer": "P4-WIRE (init registry)",
+   "checks": [
+    {
+     "check": "p4-wire",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [],
+     "summary": "FAIL P4-WIRE {\"rpcs\": 24, \"states equal the truth\": 18, \"wrong (extract, truth)\": {\"main:wiring4.v1.RegB/Get\": [\"unread\", \"implemented\"], \"main:wiring4.v1.RegB/Put\": [\"unread\", \"implemented\"], \"main:w",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_wiring4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_wiring4.py::test_d1_3_an_unreferenced_unresolvable_call_is_dead_not_unread",
+      "tests/grpc/test_wiring4.py::test_d1_4_a_method_called_on_an_interface_reaches_only_built_implementers",
+      "tests/grpc/test_wiring4.py::test_d1_4_an_implementer_nothing_builds_is_not_reached",
+      "tests/grpc/test_wiring4.py::test_d1_4_an_init_registry_of_interface_values_is_followed",
+      "tests/grpc/test_wiring4.py::test_every_state_equals_the_truth[main]"
+     ],
+     "summary": "5 failed, 15 passed in 0.26s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-wire",
+    "pytest:tests/grpc/test_wiring4.py"
+   ]
+  },
+  {
+   "id": "GW4-8",
+   "round": "4",
+   "mutant": "D1.4 too broad: implementers never instantiated also reached",
+   "killer": "P4-WIRE (negative)",
+   "checks": [
+    {
+     "check": "p4-wire",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [],
+     "summary": "FAIL P4-WIRE {\"rpcs\": 24, \"states equal the truth\": 22, \"wrong (extract, truth)\": {\"main:wiring4.v1.Ghost/Get\": [\"implemented\", \"not_registered\"], \"main:wiring4.v1.Ghost/Put\": [\"implemented\", \"not_reg",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_wiring4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.5,
+     "failed": [
+      "tests/grpc/test_wiring4.py::test_d1_3_an_unreferenced_unresolvable_call_is_dead_not_unread",
+      "tests/grpc/test_wiring4.py::test_d1_3_changes_round_3s_wiring_fixture_by_design",
+      "tests/grpc/test_wiring4.py::test_d1_4_a_method_called_on_an_interface_reaches_only_built_implementers",
+      "tests/grpc/test_wiring4.py::test_d1_4_an_implementer_nothing_builds_is_not_reached",
+      "tests/grpc/test_wiring4.py::test_d1_4_an_init_registry_of_interface_values_is_followed",
+      "tests/grpc/test_wiring4.py::test_every_state_equals_the_truth[main]"
+     ],
+     "summary": "6 failed, 14 passed in 0.33s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-wire",
+    "pytest:tests/grpc/test_wiring4.py"
+   ]
+  },
+  {
+   "id": "GU4-1",
+   "round": "4",
+   "mutant": "D2.1 off: method-value interceptors unresolved",
+   "killer": "P4-AUTHI",
+   "checks": [
+    {
+     "check": "p4-authi",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.5,
+     "failed": [],
+     "summary": "FAIL P4-AUTHI {\"cases\": 7, \"cases exact\": 3, \"Public behind an unread mechanism\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_auth4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_auth4.py::test_d2_1_a_method_value_is_the_methods_interceptor",
+      "tests/grpc/test_auth4.py::test_d2_4_a_builder_chain_adds_exact_entries",
+      "tests/grpc/test_auth4.py::test_d2_4_a_field_tested_with_has_prefix_holds_prefixes",
+      "tests/grpc/test_auth4.py::test_d2_4_a_prefix_looking_entry_compared_with_equality_is_exact",
+      "tests/grpc/test_auth4.py::test_d2_4_a_second_policy_value_does_not_leak_into_the_gates_allowlist",
+      "tests/grpc/test_auth4.py::test_the_auth_of_each_rpc_equals_the_truth[builder]",
+      "tests/grpc/test_auth4.py::test_the_auth_of_each_rpc_equals_the_truth[exactprefix]",
+      "tests/grpc/test_auth4.py::test_the_auth_of_each_rpc_equals_the_truth[mval]",
+      "tests/grpc/test_auth4.py::test_the_auth_of_each_rpc_equals_the_truth[prefix]",
+      "tests/grpc/test_auth4.py::test_the_interceptor_kinds_equal_the_truth[builder]",
+      "tests/grpc/test_auth4.py::test_the_interceptor_kinds_equal_the_truth[exactprefix]",
+      "tests/grpc/test_auth4.py::test_the_interceptor_kinds_equal_the_truth[mval]",
+      "tests/grpc/test_auth4.py::test_the_interceptor_kinds_equal_the_truth[prefix]"
+     ],
+     "summary": "13 failed, 14 passed in 0.24s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "'\\tcase *ast.Ident, *ast.SelectorExpr:\\n\\t\\tr': text is in goextract_grpc_auth.go",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-authi",
+    "pytest:tests/grpc/test_auth4.py"
+   ]
+  },
+  {
+   "id": "GU4-2",
+   "round": "4",
+   "mutant": "D2.2 off: option-field flow not followed",
+   "killer": "P4-AUTHI",
+   "checks": [
+    {
+     "check": "p4-authi",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.5,
+     "failed": [],
+     "summary": "FAIL P4-AUTHI {\"cases\": 7, \"cases exact\": 6, \"Public behind an unread mechanism\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_auth4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_auth4.py::test_d2_2_options_reach_the_chain_through_a_config_field",
+      "tests/grpc/test_auth4.py::test_the_auth_of_each_rpc_equals_the_truth[optfield]",
+      "tests/grpc/test_auth4.py::test_the_interceptor_kinds_equal_the_truth[optfield]"
+     ],
+     "summary": "3 failed, 24 passed in 0.23s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "'ok && depth < 4 {\\n\\t\\t\\tif ti :=': text is in goextract_grpc_auth.go",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-authi",
+    "pytest:tests/grpc/test_auth4.py"
+   ]
+  },
+  {
+   "id": "GU4-3",
+   "round": "4",
+   "mutant": "D2.3 off: the standard health constants are not literal",
+   "killer": "P4-AUTHI",
+   "checks": [
+    {
+     "check": "p4-authi",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.5,
+     "failed": [],
+     "summary": "FAIL P4-AUTHI {\"cases\": 7, \"cases exact\": 6, \"Public behind an unread mechanism\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_auth4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_auth4.py::test_d2_3_generated_and_health_constants_are_literal_entries",
+      "tests/grpc/test_auth4.py::test_d2_3_the_health_methods_are_not_rpcs_of_the_module",
+      "tests/grpc/test_auth4.py::test_the_auth_of_each_rpc_equals_the_truth[consts]",
+      "tests/grpc/test_auth4.py::test_the_interceptor_kinds_equal_the_truth[consts]"
+     ],
+     "summary": "4 failed, 23 passed in 0.23s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "'\\t\\ts, ok := healthStr[v.Sel.Name]\\n\\t\\tretur': text is in goextract_grpc_auth.go",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-authi",
+    "pytest:tests/grpc/test_auth4.py"
+   ]
+  },
+  {
+   "id": "GU4-4",
+   "round": "4",
+   "mutant": "D2.4: a prefix assumed without HasPrefix evidence",
+   "killer": "P4-AUTHI (wrong Public)",
+   "checks": [
+    {
+     "check": "p4-authi",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.5,
+     "failed": [],
+     "summary": "FAIL P4-AUTHI {\"cases\": 7, \"cases exact\": 6, \"Public behind an unread mechanism\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_auth4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_auth4.py::test_d2_4_a_builder_chain_adds_exact_entries",
+      "tests/grpc/test_auth4.py::test_d2_4_a_field_tested_with_has_prefix_holds_prefixes",
+      "tests/grpc/test_auth4.py::test_d2_4_a_prefix_looking_entry_compared_with_equality_is_exact",
+      "tests/grpc/test_auth4.py::test_d2_4_a_second_policy_value_does_not_leak_into_the_gates_allowlist",
+      "tests/grpc/test_auth4.py::test_the_auth_of_each_rpc_equals_the_truth[exactprefix]"
+     ],
+     "summary": "5 failed, 22 passed in 0.23s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "'func (g *gx) prefixField(field string) (': text is in goextract_grpc_auth.go",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-authi",
+    "pytest:tests/grpc/test_auth4.py"
+   ]
+  },
+  {
+   "id": "GU4-5",
+   "round": "4",
+   "mutant": "D2.4: prefix entries matched exactly even with HasPrefix",
+   "killer": "P4-AUTHI",
+   "checks": [
+    {
+     "check": "p4-authi",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.5,
+     "failed": [],
+     "summary": "FAIL P4-AUTHI {\"cases\": 7, \"cases exact\": 6, \"Public behind an unread mechanism\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_auth4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_auth4.py::test_d2_4_a_field_tested_with_has_prefix_holds_prefixes",
+      "tests/grpc/test_auth4.py::test_the_auth_of_each_rpc_equals_the_truth[prefix]"
+     ],
+     "summary": "2 failed, 25 passed in 0.24s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "'func (g *gx) prefixField(field string) (': text is in goextract_grpc_auth.go",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-authi",
+    "pytest:tests/grpc/test_auth4.py"
+   ]
+  },
+  {
+   "id": "GU4-6",
+   "round": "4",
+   "mutant": "D2.4: an unresolvable builder argument dropped (allowlist treated as literal)",
+   "killer": "P4-AUTHI (Public behind unread)",
+   "checks": [
+    {
+     "check": "p4-authi",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.5,
+     "failed": [],
+     "summary": "FAIL P4-AUTHI {\"cases\": 7, \"cases exact\": 6, \"Public behind an unread mechanism\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_auth4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_auth4.py::test_d2_4_an_unresolvable_builder_argument_leaves_the_gate_unread",
+      "tests/grpc/test_auth4.py::test_the_auth_of_each_rpc_equals_the_truth[unresolved]",
+      "tests/grpc/test_auth4.py::test_the_interceptor_kinds_equal_the_truth[unresolved]"
+     ],
+     "summary": "3 failed, 24 passed in 0.23s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "'s, ok := g.strOf(e.fn.File, e, a)\\n\\t\\t\\t\\t\\tg': text is in goextract_grpc_auth.go",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-authi",
+    "pytest:tests/grpc/test_auth4.py"
+   ]
+  },
+  {
+   "id": "GK4-1",
+   "round": "4",
+   "mutant": "D3.1 off: interceptor sentinel tables not read",
+   "killer": "P4-CODES",
+   "checks": [
+    {
+     "check": "p4-codes",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [],
+     "summary": "FAIL P4-CODES {\"rpcs\": 9, \"disagreements\": 4, \"UNKNOWN not in the truth\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_codes4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_codes4.py::test_d3_1_a_map_table_a_wrapped_sentinel_and_a_switch_are_read",
+      "tests/grpc/test_codes4.py::test_d3_1_a_sentinel_missing_without_a_literal_default_is_unread",
+      "tests/grpc/test_codes4.py::test_the_codes_of_each_handler_equal_the_truth[nodefault]",
+      "tests/grpc/test_codes4.py::test_the_codes_of_each_handler_equal_the_truth[tbl]",
+      "tests/grpc/test_codes4.py::test_unread_is_where_the_truth_says_it_is[nodefault]"
+     ],
+     "summary": "5 failed, 14 passed in 0.23s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "'; len(t.code) > 0 && len(res.codes) == 1': text is in goextract_grpc_codes.go",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-codes",
+    "pytest:tests/grpc/test_codes4.py"
+   ]
+  },
+  {
+   "id": "GK4-2",
+   "round": "4",
+   "mutant": "D3.1: %w wrapping not followed",
+   "killer": "P4-CODES",
+   "checks": [
+    {
+     "check": "p4-codes",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.2,
+     "failed": [],
+     "summary": "./goextract_grpc_codes.go:350:7: declared and not used: nm",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_codes4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.9,
+     "failed": [
+      "tests/grpc/test_codes4.py::test_a_status_error_sentinel_is_not_rewritten_by_the_table",
+      "tests/grpc/test_codes4.py::test_a_table_driven_translator_is_no_auth_gate",
+      "tests/grpc/test_codes4.py::test_d3_1_a_map_table_a_wrapped_sentinel_and_a_switch_are_read",
+      "tests/grpc/test_codes4.py::test_d3_1_a_sentinel_missing_from_the_table_takes_the_literal_default",
+      "tests/grpc/test_codes4.py::test_d3_1_a_sentinel_missing_without_a_literal_default_is_unread",
+      "tests/grpc/test_codes4.py::test_d3_2_a_parameter_key_is_the_union_over_the_calls_and_a_constant_key_is_one",
+      "tests/grpc/test_codes4.py::test_d3_3_a_plain_error_beside_a_translator_takes_its_literal_default",
+      "tests/grpc/test_codes4.py::test_d3_3_a_plain_error_beside_a_translator_without_a_default_is_unread",
+      "tests/grpc/test_codes4.py::test_d3_3_no_untraced_error_is_an_unknown_placeholder[keys]",
+      "tests/grpc/test_codes4.py::test_d3_3_no_untraced_error_is_an_unknown_placeholder[nodefault]",
+      "tests/grpc/test_codes4.py::test_d3_3_no_untraced_error_is_an_unknown_placeholder[tbl]",
+      "tests/grpc/test_codes4.py::test_the_codes_of_each_handler_equal_the_truth[keys]",
+      "tests/grpc/test_codes4.py::test_the_codes_of_each_handler_equal_the_truth[nodefault]",
+      "tests/grpc/test_codes4.py::test_the_codes_of_each_handler_equal_the_truth[tbl]",
+      "tests/grpc/test_codes4.py::test_unread_is_where_the_truth_says_it_is[keys]",
+      "tests/grpc/test_codes4.py::test_unread_is_where_the_truth_says_it_is[nodefault]",
+      "tests/grpc/test_codes4.py::test_unread_is_where_the_truth_says_it_is[tbl]",
+      "tests/grpc/test_codes4.py::test_without_a_translation_a_sentinel_stays_a_plain_error_as_in_round_3"
+     ],
+     "summary": "4 failed, 1 passed, 14 errors in 0.70s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "re-expressed: the anchor carries E3a's `|| g.statusType(e, a) != nil` clause",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-codes",
+    "pytest:tests/grpc/test_codes4.py"
+   ]
+  },
+  {
+   "id": "GK4-3",
+   "round": "4",
+   "mutant": "D3.2 off: constant-key map lookups not read",
+   "killer": "P4-CODES",
+   "checks": [
+    {
+     "check": "p4-codes",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [],
+     "summary": "FAIL P4-CODES {\"rpcs\": 9, \"disagreements\": 2, \"UNKNOWN not in the truth\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_codes4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_codes4.py::test_d3_2_a_parameter_key_is_the_union_over_the_calls_and_a_constant_key_is_one",
+      "tests/grpc/test_codes4.py::test_the_codes_of_each_handler_equal_the_truth[keys]",
+      "tests/grpc/test_codes4.py::test_unread_is_where_the_truth_says_it_is[keys]"
+     ],
+     "summary": "3 failed, 16 passed in 0.22s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "'ok && lit(ix.X) != nil {': text is in goextract_grpc_codes.go",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-codes",
+    "pytest:tests/grpc/test_codes4.py"
+   ]
+  },
+  {
+   "id": "GK4-4",
+   "round": "4",
+   "mutant": "D3.3 off: the UNKNOWN placeholder kept for a plain error beside a translator",
+   "killer": "P4-CODES",
+   "checks": [
+    {
+     "check": "p4-codes",
+     "kind": "probe4",
+     "returncode": 0,
+     "seconds": 0.4,
+     "failed": [],
+     "summary": "PASS P4-CODES {\"rpcs\": 9, \"disagreements\": 0, \"UNKNOWN not in the truth\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": false
+    },
+    {
+     "check": "tests/grpc/test_codes4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_codes4.py::test_d3_3_a_plain_error_beside_a_translator_without_a_default_is_unread"
+     ],
+     "summary": "1 failed, 18 passed in 0.22s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "re-expressed after the first run: the first text (evalSentinel's unread branch) is an equivalent mutant, because translated() turns any plain error beside a translator into unread; the mutant now removes that step. Killed by the named unit tests, not by P4-CODES (its fixtures hold no plain error beside a translator); 'out.addUnread(xUnread{File: c.File, Line': text is in goextract_grpc_codes.go",
+   "result": "KILLED",
+   "killed_by": [
+    "pytest:tests/grpc/test_codes4.py"
+   ]
+  },
+  {
+   "id": "GT4-1",
+   "round": "4",
+   "mutant": "D5: harness-db tables override non-empty Go tables",
+   "killer": "P4-BC, P4-TABLES",
+   "checks": [
+    {
+     "check": "p4-bc-ext",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 1.5,
+     "failed": [],
+     "summary": "FAIL P4-BC-EXT {\"compared\": 12, \"differ\": [\"deskd:extract\", \"deskd:model\", \"harborline:extract\", \"harborline:model\", \"kilnworks:extract\", \"kilnworks:model\", \"notes:extract\", \"notes:model\", \"sessions:e",
+     "differs_from_control": false
+    },
+    {
+     "check": "p4-tables",
+     "kind": "probe4",
+     "returncode": 0,
+     "seconds": 0.4,
+     "failed": [],
+     "summary": "PASS P4-TABLES {\"cases\": 3, \"disagreements\": 0, \"temp dirs left\": [], \"writes under the roots\": 0}",
+     "differs_from_control": false
+    },
+    {
+     "check": "tests/grpc/test_tables4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_tables4.py::test_go_tables_win_the_harness_is_not_run"
+     ],
+     "summary": "1 failed, 9 passed in 0.24s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "pytest:tests/grpc/test_tables4.py"
+   ]
+  },
+  {
+   "id": "GT4-2",
+   "round": "4",
+   "mutant": "D5.2 builds the database under the target root",
+   "killer": "P4-TABLES, P4-NW",
+   "checks": [
+    {
+     "check": "p4-tables",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [],
+     "summary": "FAIL P4-TABLES {\"cases\": 3, \"disagreements\": 2, \"temp dirs left\": [], \"writes under the roots\": 0}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_tables4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_tables4.py::test_ddl_only_in_the_harness_is_read_from_its_database",
+      "tests/grpc/test_tables4.py::test_the_columns_carry_keys_types_and_foreign_keys",
+      "tests/grpc/test_tables4.py::test_the_harness_is_looked_for_in_the_module_directory_not_the_extract_root",
+      "tests/grpc/test_tables4.py::test_the_model_carries_the_harness_tables",
+      "tests/grpc/test_tables4.py::test_the_temporary_database_is_removed_and_nothing_is_written_under_the_root"
+     ],
+     "summary": "5 failed, 5 passed in 0.24s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-tables",
+    "pytest:tests/grpc/test_tables4.py"
+   ]
+  },
+  {
+   "id": "GL4-1",
+   "round": "4",
+   "mutant": "D6 off: the default username_field='name' / password_field='password' restored",
+   "killer": "P4-LOGIN",
+   "checks": [
+    {
+     "check": "p4-login",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.3,
+     "failed": [],
+     "summary": "FAIL P4-LOGIN {\"methods\": {\"LoginUsername\": {\"name\": \"ada\", \"password\": \"pw\"}, \"LoginName\": {\"name\": \"ada\", \"password\": \"pw\"}, \"LoginEmail\": {\"name\": \"ada\", \"password\": \"pw\"}, \"LoginTenant\": {\"name\": ",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_login4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.5,
+     "failed": [
+      "tests/grpc/test_login4.py::test_a_non_string_field_is_not_a_credential",
+      "tests/grpc/test_login4.py::test_a_rpc_the_proto_does_not_declare_is_ambiguous_not_a_crash",
+      "tests/grpc/test_login4.py::test_no_single_answer_is_login_fields_ambiguous[LoginAmbiguous]",
+      "tests/grpc/test_login4.py::test_no_single_answer_is_login_fields_ambiguous[LoginTwoPass]",
+      "tests/grpc/test_login4.py::test_one_explicit_field_leaves_the_other_to_discovery",
+      "tests/grpc/test_login4.py::test_the_fields_are_read_from_the_login_message[LoginEmail]",
+      "tests/grpc/test_login4.py::test_the_fields_are_read_from_the_login_message[LoginTenant]",
+      "tests/grpc/test_login4.py::test_the_fields_are_read_from_the_login_message[LoginUsername]"
+     ],
+     "summary": "8 failed, 7 passed in 0.32s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-login",
+    "pytest:tests/grpc/test_login4.py"
+   ]
+  },
+  {
+   "id": "GL4-2",
+   "round": "4",
+   "mutant": "D6.2: an ambiguous message picks the first string fields",
+   "killer": "P4-LOGIN",
+   "checks": [
+    {
+     "check": "p4-login",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [],
+     "summary": "FAIL P4-LOGIN {\"methods\": {\"LoginUsername\": {\"username\": \"ada\", \"password\": \"pw\"}, \"LoginName\": {\"name\": \"ada\", \"password\": \"pw\"}, \"LoginEmail\": {\"email\": \"ada\", \"passcode\": \"pw\"}, \"LoginTenant\": {\"us",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_login4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.6,
+     "failed": [
+      "tests/grpc/test_login4.py::test_no_single_answer_is_login_fields_ambiguous[LoginAmbiguous]",
+      "tests/grpc/test_login4.py::test_no_single_answer_is_login_fields_ambiguous[LoginTwoPass]"
+     ],
+     "summary": "2 failed, 13 passed in 0.46s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-login",
+    "pytest:tests/grpc/test_login4.py"
+   ]
+  },
+  {
+   "id": "GL4-3",
+   "round": "4",
+   "mutant": "D6.1: discovery overrides an explicit field",
+   "killer": "P4-LOGIN, P4-BC",
+   "checks": [
+    {
+     "check": "p4-login",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [],
+     "summary": "FAIL P4-LOGIN {\"methods\": {\"LoginUsername\": {\"username\": \"ada\", \"password\": \"pw\"}, \"LoginName\": {\"name\": \"ada\", \"password\": \"pw\"}, \"LoginEmail\": {\"email\": \"ada\", \"passcode\": \"pw\"}, \"LoginTenant\": {\"us",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_login4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.7,
+     "failed": [
+      "tests/grpc/test_login4.py::test_an_explicit_field_wins_over_discovery",
+      "tests/grpc/test_login4.py::test_both_fields_explicit_never_describe",
+      "tests/grpc/test_login4.py::test_one_explicit_field_leaves_the_other_to_discovery"
+     ],
+     "summary": "3 failed, 12 passed in 0.50s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-login",
+    "pytest:tests/grpc/test_login4.py"
+   ]
+  },
+  {
+   "id": "GS4-1",
+   "round": "4",
+   "mutant": "scorer S10: a runner hash mismatch still labelled blind",
+   "killer": "P4-SCORE, P4-PROC",
+   "checks": [
+    {
+     "check": "p4-score",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.1,
+     "failed": [],
+     "summary": "FAIL P4-SCORE {\"cases\": 58, \"agree\": 56, \"in 30-45 (p)\": false}",
+     "differs_from_control": true
+    },
+    {
+     "check": "p4-proc",
+     "kind": "probe4",
+     "returncode": 0,
+     "seconds": 0.6,
+     "failed": [],
+     "summary": "PASS P4-PROC {\"1 runner byte changed: refused before any metric\": true, \"2 own entry removed from freeze4: refused\": true, \"3 crash then re-run with equal bytes: blind\": true, \"4 re-run with changed b",
+     "differs_from_control": false
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-score"
+   ]
+  },
+  {
+   "id": "GS4-2",
+   "round": "4",
+   "mutant": "scorer S8: not_registered vs implemented is not counted",
+   "killer": "P4-SCORE",
+   "checks": [
+    {
+     "check": "p4-score",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.1,
+     "failed": [],
+     "summary": "FAIL P4-SCORE {\"cases\": 58, \"agree\": 56, \"in 30-45 (p)\": false}",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-score"
+   ]
+  },
+  {
+   "id": "GS4-3",
+   "round": "4",
+   "mutant": "runner: its own entry excluded from its freeze check (round 3's fix 2)",
+   "killer": "P4-PROC",
+   "checks": [
+    {
+     "check": "p4-proc",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.6,
+     "failed": [],
+     "summary": "FAIL P4-PROC {\"1 runner byte changed: refused before any metric\": true, \"2 own entry removed from freeze4: refused\": false, \"3 crash then re-run with equal bytes: blind\": true, \"4 re-run with changed ",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-proc"
+   ]
+  },
+  {
+   "id": "GW1",
+   "round": "4",
+   "mutant": "R1 off: package-level initializers are not walked",
+   "killer": "P3-WIRE, P3-UNIT",
+   "checks": [
+    {
+     "check": "p4-wire",
+     "kind": "probe4",
+     "returncode": 0,
+     "seconds": 0.4,
+     "failed": [],
+     "summary": "PASS P4-WIRE {\"rpcs\": 24, \"states equal the truth\": 24, \"wrong (extract, truth)\": {}, \"S8 confident-wrong\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": false
+    },
+    {
+     "check": "tests/grpc/test_wiring3.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_wiring3.py::test_d1_0_the_gateway_walk_is_not_widened",
+      "tests/grpc/test_wiring3.py::test_every_state_equals_the_truth[Alpha]",
+      "tests/grpc/test_wiring3.py::test_every_state_equals_the_truth[Beta]",
+      "tests/grpc/test_wiring3.py::test_every_state_equals_the_truth[Delta]",
+      "tests/grpc/test_wiring3.py::test_every_state_equals_the_truth[Gamma]",
+      "tests/grpc/test_wiring3.py::test_r1_a_function_named_in_a_package_level_map_is_reached",
+      "tests/grpc/test_wiring3.py::test_r1_a_literal_in_a_package_level_slice_is_reached",
+      "tests/grpc/test_wiring3.py::test_r1_a_variable_a_wired_function_reads_is_reached",
+      "tests/grpc/test_wiring3.py::test_r3_a_helper_on_a_registrar_parameter_or_field_counts",
+      "tests/grpc/test_wiring3.py::test_r4_a_constructor_returning_the_interface_is_followed",
+      "tests/grpc/test_wiring3.py::test_r4_methods_are_the_impls_full_set",
+      "tests/grpc/test_wiring3.py::test_r5_a_descriptor_held_in_a_package_variable_is_followed",
+      "tests/grpc/test_wiring3.py::test_r6_a_referenced_but_unreached_registration_is_unread_not_not_registered",
+      "tests/grpc/test_wiring3.py::test_r6_the_excluded_entries_keep_todays_shape",
+      "tests/grpc/test_wiring3.py::test_unread_and_unregistered_rpcs_are_not_routes"
+     ],
+     "summary": "15 failed, 17 passed in 0.29s",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_wiring4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_wiring4.py::test_d1_3_changes_round_3s_wiring_fixture_by_design"
+     ],
+     "summary": "1 failed, 19 passed in 0.24s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "re-expressed: useVar is now a one-line wrapper over varFunc",
+   "result": "KILLED",
+   "killed_by": [
+    "pytest:tests/grpc/test_wiring3.py",
+    "pytest:tests/grpc/test_wiring4.py"
+   ]
+  },
+  {
+   "id": "GW2",
+   "round": "4",
+   "mutant": "R2 off: a function named as a value in a walked initializer is not followed",
+   "killer": "P3-WIRE",
+   "checks": [
+    {
+     "check": "p4-wire",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.5,
+     "failed": [],
+     "summary": "FAIL P4-WIRE {\"rpcs\": 24, \"states equal the truth\": 18, \"wrong (extract, truth)\": {\"main:wiring4.v1.Reg/Get\": [\"unread\", \"implemented\"], \"main:wiring4.v1.Reg/Put\": [\"unread\", \"implemented\"], \"main:wir",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_wiring3.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_wiring3.py::test_d1_0_the_gateway_walk_is_not_widened",
+      "tests/grpc/test_wiring3.py::test_every_state_equals_the_truth[Beta]",
+      "tests/grpc/test_wiring3.py::test_every_state_equals_the_truth[Delta]",
+      "tests/grpc/test_wiring3.py::test_every_state_equals_the_truth[Gamma]",
+      "tests/grpc/test_wiring3.py::test_r1_a_function_named_in_a_package_level_map_is_reached",
+      "tests/grpc/test_wiring3.py::test_r1_a_literal_in_a_package_level_slice_is_reached",
+      "tests/grpc/test_wiring3.py::test_r3_a_helper_on_a_registrar_parameter_or_field_counts",
+      "tests/grpc/test_wiring3.py::test_r4_a_constructor_returning_the_interface_is_followed",
+      "tests/grpc/test_wiring3.py::test_r4_methods_are_the_impls_full_set",
+      "tests/grpc/test_wiring3.py::test_r5_a_descriptor_held_in_a_package_variable_is_followed",
+      "tests/grpc/test_wiring3.py::test_r6_a_referenced_but_unreached_registration_is_unread_not_not_registered",
+      "tests/grpc/test_wiring3.py::test_r6_the_excluded_entries_keep_todays_shape",
+      "tests/grpc/test_wiring3.py::test_unread_and_unregistered_rpcs_are_not_routes"
+     ],
+     "summary": "13 failed, 19 passed in 0.28s",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_wiring4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_wiring4.py::test_d1_3_an_unreferenced_unresolvable_call_is_dead_not_unread",
+      "tests/grpc/test_wiring4.py::test_d1_4_an_implementer_nothing_builds_is_not_reached",
+      "tests/grpc/test_wiring4.py::test_d1_4_an_init_registry_of_interface_values_is_followed",
+      "tests/grpc/test_wiring4.py::test_every_state_equals_the_truth[main]"
+     ],
+     "summary": "4 failed, 16 passed in 0.25s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "D1.2 has no code of its own (the HTTP walker's value rule, applied to a walked initializer, realizes it): the mutant removes that rule",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-wire",
+    "pytest:tests/grpc/test_wiring3.py",
+    "pytest:tests/grpc/test_wiring4.py"
+   ]
+  },
+  {
+   "id": "GW3",
+   "round": "4",
+   "mutant": "R2 takes only the first element of a ranged literal",
+   "killer": "P3-WIRE (the second element's service)",
+   "checks": [
+    {
+     "check": "p4-wire",
+     "kind": "probe4",
+     "returncode": 0,
+     "seconds": 0.4,
+     "failed": [],
+     "summary": "PASS P4-WIRE {\"rpcs\": 24, \"states equal the truth\": 24, \"wrong (extract, truth)\": {}, \"S8 confident-wrong\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": false
+    },
+    {
+     "check": "tests/grpc/test_wiring3.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.5,
+     "failed": [
+      "tests/grpc/test_wiring3.py::test_d1_0_the_gateway_walk_is_not_widened",
+      "tests/grpc/test_wiring3.py::test_every_state_equals_the_truth[Beta]",
+      "tests/grpc/test_wiring3.py::test_every_state_equals_the_truth[Gamma]",
+      "tests/grpc/test_wiring3.py::test_r1_a_literal_in_a_package_level_slice_is_reached",
+      "tests/grpc/test_wiring3.py::test_r3_a_helper_on_a_registrar_parameter_or_field_counts",
+      "tests/grpc/test_wiring3.py::test_r4_a_constructor_returning_the_interface_is_followed",
+      "tests/grpc/test_wiring3.py::test_r4_methods_are_the_impls_full_set",
+      "tests/grpc/test_wiring3.py::test_r6_a_referenced_but_unreached_registration_is_unread_not_not_registered",
+      "tests/grpc/test_wiring3.py::test_r6_the_excluded_entries_keep_todays_shape",
+      "tests/grpc/test_wiring3.py::test_unread_and_unregistered_rpcs_are_not_routes"
+     ],
+     "summary": "10 failed, 22 passed in 0.29s",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_wiring4.py",
+     "kind": "pytest",
+     "returncode": 0,
+     "seconds": 0.4,
+     "failed": [],
+     "summary": "20 passed in 0.24s",
+     "differs_from_control": false
+    }
+   ],
+   "note": "re-expressed over the walked initializer, where the elements of a ranged literal are read",
+   "result": "KILLED",
+   "killed_by": [
+    "pytest:tests/grpc/test_wiring3.py"
+   ]
+  },
+  {
+   "id": "GW4",
+   "round": "4",
+   "mutant": "R3 off: a registration on a grpc.ServiceRegistrar parameter is ignored",
+   "killer": "P3-WIRE",
+   "checks": [
+    {
+     "check": "p4-wire",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [],
+     "summary": "FAIL P4-WIRE {\"rpcs\": 24, \"states equal the truth\": 16, \"wrong (extract, truth)\": {\"main:wiring4.v1.Reg/Get\": [\"not_registered\", \"implemented\"], \"main:wiring4.v1.Reg/Put\": [\"not_registered\", \"implemen",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_wiring3.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.5,
+     "failed": [
+      "tests/grpc/test_wiring3.py::test_d1_0_the_gateway_walk_is_not_widened",
+      "tests/grpc/test_wiring3.py::test_every_state_equals_the_truth[Alpha]",
+      "tests/grpc/test_wiring3.py::test_every_state_equals_the_truth[Beta]",
+      "tests/grpc/test_wiring3.py::test_every_state_equals_the_truth[Dead]",
+      "tests/grpc/test_wiring3.py::test_every_state_equals_the_truth[Epsilon]",
+      "tests/grpc/test_wiring3.py::test_every_state_equals_the_truth[Gamma]",
+      "tests/grpc/test_wiring3.py::test_every_state_equals_the_truth[Gone]",
+      "tests/grpc/test_wiring3.py::test_every_state_equals_the_truth[Never]",
+      "tests/grpc/test_wiring3.py::test_every_state_equals_the_truth[Opaque]",
+      "tests/grpc/test_wiring3.py::test_every_state_equals_the_truth[Zeta]",
+      "tests/grpc/test_wiring3.py::test_r1_a_literal_in_a_package_level_slice_is_reached",
+      "tests/grpc/test_wiring3.py::test_r1_a_variable_a_wired_function_reads_is_reached",
+      "tests/grpc/test_wiring3.py::test_r3_a_helper_on_a_registrar_parameter_or_field_counts",
+      "tests/grpc/test_wiring3.py::test_r4_a_constructor_returning_the_interface_is_followed",
+      "tests/grpc/test_wiring3.py::test_r4_methods_are_the_impls_full_set",
+      "tests/grpc/test_wiring3.py::test_r6_a_method_used_through_an_interface_is_unread",
+      "tests/grpc/test_wiring3.py::test_r6_a_referenced_but_unreached_registration_is_unread_not_not_registered",
+      "tests/grpc/test_wiring3.py::test_r6_dead_and_test_only_registrations_are_unread_beside_an_unresolved_one",
+      "tests/grpc/test_wiring3.py::test_r6_the_excluded_entries_keep_todays_shape",
+      "tests/grpc/test_wiring3.py::test_unread_and_unregistered_rpcs_are_not_routes",
+      "tests/grpc/test_wiring3.py::test_without_a_main_every_function_counts_as_wired"
+     ],
+     "summary": "21 failed, 11 passed in 0.32s",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_wiring4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_wiring4.py::test_d1_3_an_unreferenced_unresolvable_call_is_dead_not_unread",
+      "tests/grpc/test_wiring4.py::test_d1_3_changes_round_3s_wiring_fixture_by_design",
+      "tests/grpc/test_wiring4.py::test_d1_3_no_rpc_is_not_registered_beside_an_unresolved_registration[varlost]",
+      "tests/grpc/test_wiring4.py::test_d1_4_a_blank_imported_package_init_is_wired",
+      "tests/grpc/test_wiring4.py::test_d1_4_a_method_called_on_an_interface_reaches_only_built_implementers",
+      "tests/grpc/test_wiring4.py::test_d1_4_an_init_registry_of_interface_values_is_followed",
+      "tests/grpc/test_wiring4.py::test_every_state_equals_the_truth[main]",
+      "tests/grpc/test_wiring4.py::test_every_state_equals_the_truth[varlost]",
+      "tests/grpc/test_wiring4.py::test_round3_deviation_8_7_a_variable_read_only_by_unreached_code_is_unread"
+     ],
+     "summary": "9 failed, 11 passed in 0.28s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "the extractor matches Register calls by name, so R3 is not a filter; the mutant adds the filter the rule rules out",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-wire",
+    "pytest:tests/grpc/test_wiring3.py",
+    "pytest:tests/grpc/test_wiring4.py"
+   ]
+  },
+  {
+   "id": "GW5",
+   "round": "4",
+   "mutant": "R4: methods promoted from an embedded struct are missing from the impl's method set",
+   "killer": "P3-WIRE (unimplemented instead of implemented)",
+   "checks": [
+    {
+     "check": "p4-wire",
+     "kind": "probe4",
+     "returncode": 0,
+     "seconds": 0.5,
+     "failed": [],
+     "summary": "PASS P4-WIRE {\"rpcs\": 24, \"states equal the truth\": 24, \"wrong (extract, truth)\": {}, \"S8 confident-wrong\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": false
+    },
+    {
+     "check": "tests/grpc/test_wiring3.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_wiring3.py::test_every_state_equals_the_truth[Delta]",
+      "tests/grpc/test_wiring3.py::test_r1_a_function_named_in_a_package_level_map_is_reached",
+      "tests/grpc/test_wiring3.py::test_r4_methods_are_the_impls_full_set"
+     ],
+     "summary": "3 failed, 29 passed in 0.28s",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_wiring4.py",
+     "kind": "pytest",
+     "returncode": 0,
+     "seconds": 0.4,
+     "failed": [],
+     "summary": "20 passed in 0.24s",
+     "differs_from_control": false
+    }
+   ],
+   "note": "re-expressed: value-receiver methods were already in MethodOf's set, so the mutant cuts the promotion depth",
+   "result": "KILLED",
+   "killed_by": [
+    "pytest:tests/grpc/test_wiring3.py"
+   ]
+  },
+  {
+   "id": "GW6",
+   "round": "4",
+   "mutant": "R4: a constructor returning an interface is not followed",
+   "killer": "P3-WIRE",
+   "checks": [
+    {
+     "check": "p4-wire",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [],
+     "summary": "FAIL P4-WIRE {\"rpcs\": 24, \"states equal the truth\": 20, \"wrong (extract, truth)\": {\"main:wiring4.v1.Gen/Get\": [\"unread\", \"implemented\"], \"main:wiring4.v1.Gen/Put\": [\"unread\", \"unimplemented\"], \"main:w",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_wiring3.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 2.3,
+     "failed": [
+      "tests/grpc/test_wiring3.py::test_every_state_equals_the_truth[Gamma]",
+      "tests/grpc/test_wiring3.py::test_r3_a_helper_on_a_registrar_parameter_or_field_counts",
+      "tests/grpc/test_wiring3.py::test_r4_a_constructor_returning_the_interface_is_followed",
+      "tests/grpc/test_wiring3.py::test_r4_a_constructor_with_one_concrete_type_is_followed"
+     ],
+     "summary": "4 failed, 28 passed in 2.19s",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_wiring4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_wiring4.py::test_d1_1_the_descriptor_variable_and_the_impl_expression_are_followed",
+      "tests/grpc/test_wiring4.py::test_d1_2_an_options_applying_constructor_is_followed_to_its_concrete_type",
+      "tests/grpc/test_wiring4.py::test_d1_3_an_unreferenced_unresolvable_call_is_dead_not_unread",
+      "tests/grpc/test_wiring4.py::test_every_state_equals_the_truth[main]"
+     ],
+     "summary": "4 failed, 16 passed in 0.25s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-wire",
+    "pytest:tests/grpc/test_wiring3.py",
+    "pytest:tests/grpc/test_wiring4.py"
+   ]
+  },
+  {
+   "id": "GW7",
+   "round": "4",
+   "mutant": "R5 off: a descriptor held in a variable is not followed",
+   "killer": "P3-WIRE",
+   "checks": [
+    {
+     "check": "p4-wire",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [],
+     "summary": "FAIL P4-WIRE {\"rpcs\": 24, \"states equal the truth\": 18, \"wrong (extract, truth)\": {\"main:wiring4.v1.Gen/Get\": [\"unread\", \"implemented\"], \"main:wiring4.v1.Gen/Put\": [\"unread\", \"unimplemented\"], \"main:w",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_wiring3.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_wiring3.py::test_every_state_equals_the_truth[Delta]",
+      "tests/grpc/test_wiring3.py::test_r1_a_function_named_in_a_package_level_map_is_reached",
+      "tests/grpc/test_wiring3.py::test_r4_methods_are_the_impls_full_set",
+      "tests/grpc/test_wiring3.py::test_r5_a_descriptor_held_in_a_package_variable_is_followed",
+      "tests/grpc/test_wiring3.py::test_r6_a_referenced_but_unreached_registration_is_unread_not_not_registered"
+     ],
+     "summary": "5 failed, 27 passed in 0.27s",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_wiring4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_wiring4.py::test_d1_1_a_helper_with_parameter_descriptor_and_impl_registers_each_call_site",
+      "tests/grpc/test_wiring4.py::test_d1_1_the_descriptor_variable_and_the_impl_expression_are_followed",
+      "tests/grpc/test_wiring4.py::test_d1_2_an_options_applying_constructor_is_followed_to_its_concrete_type",
+      "tests/grpc/test_wiring4.py::test_d1_3_an_unreferenced_unresolvable_call_is_dead_not_unread",
+      "tests/grpc/test_wiring4.py::test_d1_4_an_implementer_nothing_builds_is_not_reached",
+      "tests/grpc/test_wiring4.py::test_every_state_equals_the_truth[main]"
+     ],
+     "summary": "6 failed, 14 passed in 0.25s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-wire",
+    "pytest:tests/grpc/test_wiring3.py",
+    "pytest:tests/grpc/test_wiring4.py"
+   ]
+  },
+  {
+   "id": "GW8",
+   "round": "4",
+   "mutant": "R6 off: a referenced registration the walk cannot reach is reported not_registered",
+   "killer": "P3-WIRE (opaque case), P3-UNIT",
+   "checks": [
+    {
+     "check": "p4-wire",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [],
+     "summary": "FAIL P4-WIRE {\"rpcs\": 24, \"states equal the truth\": 20, \"wrong (extract, truth)\": {\"varlost:wiring4.v1.Held/Get\": [\"not_registered\", \"unread\"], \"varlost:wiring4.v1.Held/Put\": [\"not_registered\", \"unrea",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_wiring3.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_wiring3.py::test_every_state_equals_the_truth[Dead]",
+      "tests/grpc/test_wiring3.py::test_every_state_equals_the_truth[Gone]",
+      "tests/grpc/test_wiring3.py::test_every_state_equals_the_truth[Never]",
+      "tests/grpc/test_wiring3.py::test_every_state_equals_the_truth[Opaque]",
+      "tests/grpc/test_wiring3.py::test_r6_a_method_used_through_an_interface_is_unread",
+      "tests/grpc/test_wiring3.py::test_r6_a_referenced_but_unreached_registration_is_unread_not_not_registered",
+      "tests/grpc/test_wiring3.py::test_r6_dead_and_test_only_registrations_are_unread_beside_an_unresolved_one"
+     ],
+     "summary": "7 failed, 25 passed in 0.27s",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_wiring4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_wiring4.py::test_d1_3_changes_round_3s_wiring_fixture_by_design",
+      "tests/grpc/test_wiring4.py::test_d1_3_no_rpc_is_not_registered_beside_an_unresolved_registration[varlost]",
+      "tests/grpc/test_wiring4.py::test_every_state_equals_the_truth[varlost]",
+      "tests/grpc/test_wiring4.py::test_round3_deviation_8_7_a_variable_read_only_by_unreached_code_is_unread"
+     ],
+     "summary": "4 failed, 16 passed in 0.25s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "re-expressed: the reference test moved into the per-registration loop (r.lost)",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-wire",
+    "pytest:tests/grpc/test_wiring3.py",
+    "pytest:tests/grpc/test_wiring4.py"
+   ]
+  },
+  {
+   "id": "GW9",
+   "round": "4",
+   "mutant": "R6 too broad: an unreferenced Register function counts as referenced",
+   "killer": "P3-WIRE (dead case)",
+   "checks": [
+    {
+     "check": "p4-wire",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [],
+     "summary": "FAIL P4-WIRE {\"rpcs\": 24, \"states equal the truth\": 20, \"wrong (extract, truth)\": {\"main:wiring4.v1.Ghost/Get\": [\"unread\", \"not_registered\"], \"main:wiring4.v1.Ghost/Put\": [\"unread\", \"not_registered\"],",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_wiring3.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_wiring3.py::test_r6_a_referenced_but_unreached_registration_is_unread_not_not_registered"
+     ],
+     "summary": "1 failed, 31 passed in 0.27s",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_wiring4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_wiring4.py::test_d1_3_an_unreferenced_unresolvable_call_is_dead_not_unread",
+      "tests/grpc/test_wiring4.py::test_d1_4_an_implementer_nothing_builds_is_not_reached",
+      "tests/grpc/test_wiring4.py::test_every_state_equals_the_truth[main]"
+     ],
+     "summary": "3 failed, 17 passed in 0.25s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "re-expressed over r.lost",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-wire",
+    "pytest:tests/grpc/test_wiring3.py",
+    "pytest:tests/grpc/test_wiring4.py"
+   ]
+  },
+  {
+   "id": "GW10",
+   "round": "4",
+   "mutant": "a _test.go reference counts as wiring",
+   "killer": "P3-WIRE (test-only case)",
+   "checks": [
+    {
+     "check": "p4-wire",
+     "kind": "probe4",
+     "returncode": 0,
+     "seconds": 0.4,
+     "failed": [],
+     "summary": "PASS P4-WIRE {\"rpcs\": 24, \"states equal the truth\": 24, \"wrong (extract, truth)\": {}, \"S8 confident-wrong\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": false
+    },
+    {
+     "check": "tests/grpc/test_wiring3.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_wiring3.py::test_r6_a_referenced_but_unreached_registration_is_unread_not_not_registered"
+     ],
+     "summary": "1 failed, 31 passed in 0.27s",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_wiring4.py",
+     "kind": "pytest",
+     "returncode": 0,
+     "seconds": 0.4,
+     "failed": [],
+     "summary": "20 passed in 0.25s",
+     "differs_from_control": false
+    }
+   ],
+   "note": "load.go never reads _test.go files, so the mutant (made on the scratch copy only) lets the loader read them",
+   "result": "KILLED",
+   "killed_by": [
+    "pytest:tests/grpc/test_wiring3.py"
+   ]
+  },
+  {
+   "id": "GW11",
+   "round": "4",
+   "mutant": "the gRPC walk is merged into g.wired (HTTP and gateway reachability change)",
+   "killer": "P3-BC",
+   "checks": [
+    {
+     "check": "p4-bc-ext",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 1.4,
+     "failed": [],
+     "summary": "FAIL P4-BC-EXT {\"compared\": 12, \"differ\": [\"deskd:extract\", \"deskd:model\", \"harborline:extract\", \"harborline:model\", \"kilnworks:extract\", \"kilnworks:model\", \"notes:extract\", \"notes:model\", \"sessions:e",
+     "differs_from_control": false
+    },
+    {
+     "check": "p4-wire",
+     "kind": "probe4",
+     "returncode": 0,
+     "seconds": 0.4,
+     "failed": [],
+     "summary": "PASS P4-WIRE {\"rpcs\": 24, \"states equal the truth\": 24, \"wrong (extract, truth)\": {}, \"S8 confident-wrong\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": false
+    },
+    {
+     "check": "tests/grpc/test_wiring3.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_wiring3.py::test_d1_0_the_gateway_walk_is_not_widened"
+     ],
+     "summary": "1 failed, 31 passed in 0.26s",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_wiring4.py",
+     "kind": "pytest",
+     "returncode": 0,
+     "seconds": 0.4,
+     "failed": [],
+     "summary": "20 passed in 0.24s",
+     "differs_from_control": false
+    }
+   ],
+   "note": "re-expressed after the extended walk loop",
+   "result": "KILLED",
+   "killed_by": [
+    "pytest:tests/grpc/test_wiring3.py"
+   ]
+  },
+  {
+   "id": "GU1",
+   "round": "4",
+   "mutant": "D2 off: an interceptor that was not read decides nothing (round 2: Public)",
+   "killer": "P3-AUTHU",
+   "checks": [
+    {
+     "check": "p4-authi",
+     "kind": "probe4",
+     "returncode": 0,
+     "seconds": 0.5,
+     "failed": [],
+     "summary": "PASS P4-AUTHI {\"cases\": 7, \"cases exact\": 7, \"Public behind an unread mechanism\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": false
+    },
+    {
+     "check": "tests/grpc/test_auth3.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.3,
+     "failed": [
+      "tests/grpc/test_auth3.py::test_d2_1_an_unclear_rpc_carries_the_unread_item",
+      "tests/grpc/test_auth3.py::test_d2_1_the_unknown_reason_names_the_first_untraced_way_out",
+      "tests/grpc/test_auth3.py::test_d2_2_a_literal_gate_beside_an_unread_one_decides_only_what_it_refuses",
+      "tests/grpc/test_auth3.py::test_the_auth_of_each_rpc_equals_the_truth[gate_unknown]",
+      "tests/grpc/test_auth3.py::test_the_auth_of_each_rpc_equals_the_truth[mixed]",
+      "tests/grpc/test_auth3.py::test_the_interceptor_kinds_equal_the_truth[gate_unknown]",
+      "tests/grpc/test_auth3.py::test_the_interceptor_kinds_equal_the_truth[mixed]"
+     ],
+     "summary": "7 failed, 22 passed in 0.20s",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_auth4.py",
+     "kind": "pytest",
+     "returncode": 0,
+     "seconds": 0.4,
+     "failed": [],
+     "summary": "27 passed in 0.22s",
+     "differs_from_control": false
+    }
+   ],
+   "note": "'\\t\\tif why := g.untracedReturn(fn, es, run': text is in goextract_grpc_auth.go",
+   "result": "KILLED",
+   "killed_by": [
+    "pytest:tests/grpc/test_auth3.py"
+   ]
+  },
+  {
+   "id": "GU2",
+   "round": "4",
+   "mutant": "every other interceptor is auth_unknown (the benign check is skipped)",
+   "killer": "P3-AUTHU (logger, recover cases)",
+   "checks": [
+    {
+     "check": "p4-authi",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.5,
+     "failed": [],
+     "summary": "FAIL P4-AUTHI {\"cases\": 7, \"cases exact\": 6, \"Public behind an unread mechanism\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_auth3.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_auth3.py::test_d2_1_a_logger_and_a_recover_are_benign",
+      "tests/grpc/test_auth3.py::test_d2_1_the_unknown_reason_names_the_first_untraced_way_out",
+      "tests/grpc/test_auth3.py::test_d2_2_public_needs_an_allowlist_or_no_interceptor_that_may_refuse",
+      "tests/grpc/test_auth3.py::test_d2_3_a_sentinel_returned_through_a_value_receiver_method_is_traced",
+      "tests/grpc/test_auth3.py::test_the_auth_of_each_rpc_equals_the_truth[gate_traced]",
+      "tests/grpc/test_auth3.py::test_the_auth_of_each_rpc_equals_the_truth[literal_logger]",
+      "tests/grpc/test_auth3.py::test_the_auth_of_each_rpc_equals_the_truth[logger]",
+      "tests/grpc/test_auth3.py::test_the_auth_of_each_rpc_equals_the_truth[recover]",
+      "tests/grpc/test_auth3.py::test_the_interceptor_kinds_equal_the_truth[gate_traced]",
+      "tests/grpc/test_auth3.py::test_the_interceptor_kinds_equal_the_truth[literal_logger]",
+      "tests/grpc/test_auth3.py::test_the_interceptor_kinds_equal_the_truth[logger]",
+      "tests/grpc/test_auth3.py::test_the_interceptor_kinds_equal_the_truth[recover]"
+     ],
+     "summary": "12 failed, 17 passed in 0.21s",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_auth4.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_auth4.py::test_d2_2_options_reach_the_chain_through_a_config_field",
+      "tests/grpc/test_auth4.py::test_the_auth_of_each_rpc_equals_the_truth[optfield]",
+      "tests/grpc/test_auth4.py::test_the_interceptor_kinds_equal_the_truth[optfield]"
+     ],
+     "summary": "3 failed, 24 passed in 0.23s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "'\\t\\tif why := g.untracedReturn(fn, es, run': text is in goextract_grpc_auth.go",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-authi",
+    "pytest:tests/grpc/test_auth3.py",
+    "pytest:tests/grpc/test_auth4.py"
+   ]
+  },
+  {
+   "id": "GU3",
+   "round": "4",
+   "mutant": "an untraced `return nil, err` counts as benign",
+   "killer": "P3-AUTHU",
+   "checks": [
+    {
+     "check": "p4-authi",
+     "kind": "probe4",
+     "returncode": 0,
+     "seconds": 0.5,
+     "failed": [],
+     "summary": "PASS P4-AUTHI {\"cases\": 7, \"cases exact\": 7, \"Public behind an unread mechanism\": [], \"truth hashed before library code\": true}",
+     "differs_from_control": false
+    },
+    {
+     "check": "tests/grpc/test_auth3.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.3,
+     "failed": [
+      "tests/grpc/test_auth3.py::test_d2_1_an_unclear_rpc_carries_the_unread_item",
+      "tests/grpc/test_auth3.py::test_d2_1_the_unknown_reason_names_the_first_untraced_way_out",
+      "tests/grpc/test_auth3.py::test_d2_2_a_literal_gate_beside_an_unread_one_decides_only_what_it_refuses",
+      "tests/grpc/test_auth3.py::test_the_auth_of_each_rpc_equals_the_truth[gate_unknown]",
+      "tests/grpc/test_auth3.py::test_the_auth_of_each_rpc_equals_the_truth[mixed]",
+      "tests/grpc/test_auth3.py::test_the_interceptor_kinds_equal_the_truth[gate_unknown]",
+      "tests/grpc/test_auth3.py::test_the_interceptor_kinds_equal_the_truth[mixed]"
+     ],
+     "summary": "7 failed, 22 passed in 0.21s",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_auth4.py",
+     "kind": "pytest",
+     "returncode": 0,
+     "seconds": 0.3,
+     "failed": [],
+     "summary": "27 passed in 0.21s",
+     "differs_from_control": false
+    }
+   ],
+   "note": "'\\t\\tif len(r.unread) > 0 {\\n\\t\\t\\treturn fmt.S': text is in goextract_grpc_codes.go",
+   "result": "KILLED",
+   "killed_by": [
+    "pytest:tests/grpc/test_auth3.py"
+   ]
+  },
+  {
+   "id": "GC1",
+   "round": "4",
+   "mutant": "reconcile_with iterates model.routes only (round 2)",
+   "killer": "PR3-DESK, P3-UNIT",
+   "checks": [
+    {
+     "check": "pr4-desk",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.7,
+     "failed": [],
+     "summary": "FAIL PR3-DESK (dev) {\"S5 coverage\": 0.95, \"S5 agreement\": 1.0, \"S5 by class\": {\"absent\": \"1/1\", \"implemented\": \"17/17\", \"unimplemented\": \"1/1\"}, \"denominator\": 20, \"Reports/Backlog from the library\": ",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_reconcile3.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_reconcile3.py::test_d3_1_a_contract_rpc_that_is_not_a_route_is_called",
+      "tests/grpc/test_reconcile3.py::test_d3_1_a_non_route_gets_its_own_fresh_login_each_call",
+      "tests/grpc/test_reconcile3.py::test_d3_1_a_refused_non_route_is_listed_in_auth_refused",
+      "tests/grpc/test_reconcile3.py::test_d3_1_an_order_dependent_non_route_is_settled_isolated",
+      "tests/grpc/test_reconcile3.py::test_d3_1_the_calls_are_sorted_by_service_and_method_then_reversed",
+      "tests/grpc/test_reconcile3.py::test_d3_1_the_contract_is_described_from_the_transports_protos",
+      "tests/grpc/test_reconcile3.py::test_d3_2_a_route_has_no_route_key_and_a_non_route_has_only_that_one_added"
+     ],
+     "summary": "7 failed, 5 passed in 0.30s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:pr4-desk",
+    "pytest:tests/grpc/test_reconcile3.py"
+   ]
+  },
+  {
+   "id": "GC2",
+   "round": "4",
+   "mutant": "non-route rpcs are called without a fresh login (RC1 off for them)",
+   "killer": "P3-UNIT",
+   "checks": [
+    {
+     "check": "tests/grpc/test_reconcile3.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 0.4,
+     "failed": [
+      "tests/grpc/test_reconcile3.py::test_d3_1_a_contract_rpc_that_is_not_a_route_is_called",
+      "tests/grpc/test_reconcile3.py::test_d3_1_a_non_route_gets_its_own_fresh_login_each_call",
+      "tests/grpc/test_reconcile3.py::test_d3_1_a_refused_non_route_is_listed_in_auth_refused",
+      "tests/grpc/test_reconcile3.py::test_d3_1_an_order_dependent_non_route_is_settled_isolated"
+     ],
+     "summary": "4 failed, 8 passed in 0.30s",
+     "differs_from_control": true
+    },
+    {
+     "check": "pr4-desk",
+     "kind": "probe4",
+     "returncode": 0,
+     "seconds": 0.7,
+     "failed": [],
+     "summary": "PASS PR3-DESK (dev) {\"S5 coverage\": 1.0, \"S5 agreement\": 1.0, \"S5 by class\": {\"absent\": \"1/1\", \"implemented\": \"17/17\", \"not_registered\": \"1/1\", \"unimplemented\": \"1/1\"}, \"denominator\": 20, \"Reports/Bac",
+     "differs_from_control": false
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "pytest:tests/grpc/test_reconcile3.py"
+   ]
+  },
+  {
+   "id": "GS1",
+   "round": "4",
+   "mutant": "scorer S5: supplementary calls are ignored",
+   "killer": "P3-SCORE",
+   "checks": [
+    {
+     "check": "p4-score",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.1,
+     "failed": [],
+     "summary": "FAIL P4-SCORE {\"cases\": 58, \"agree\": 57, \"in 30-45 (p)\": false}",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-score"
+   ]
+  },
+  {
+   "id": "GS2",
+   "round": "4",
+   "mutant": "scorer S7: an all-unclear AUTH passes",
+   "killer": "P3-SCORE",
+   "checks": [
+    {
+     "check": "p4-score",
+     "kind": "probe4",
+     "returncode": 1,
+     "seconds": 0.1,
+     "failed": [],
+     "summary": "FAIL P4-SCORE {\"cases\": 58, \"agree\": 55, \"in 30-45 (p)\": false}",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe4:p4-score"
+   ]
+  },
+  {
+   "id": "GR1",
+   "round": "4",
+   "mutant": "reconcile reuses one token (round 1's behaviour)",
+   "killer": "PR2-SESS, PR2-DESK",
+   "checks": [
+    {
+     "check": "pr2-sess",
+     "kind": "probe",
+     "returncode": 1,
+     "seconds": 2.4,
+     "failed": [],
+     "summary": "FAIL PR2-SESS {\"round 1 (control, cea85fc library)\": {\"Login\": {\"code\": \"INVALID_ARGUMENT\", \"answered\": true}, \"SignOut\": {\"code\": \"OK\", \"answered\": true}, \"DeleteMe\": {\"code\": \"UNAUTHENTICATED\", \"ans",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 6.8,
+     "failed": [
+      "tests/grpc/test_reconcile2.py::test_rc1_every_non_public_call_is_preceded_by_its_own_login",
+      "tests/grpc/test_reconcile2.py::test_rc3_a_disagreement_is_rerun_alone_on_a_fresh_database_and_process",
+      "tests/grpc/test_reconcile2.py::test_sessions_reconcile_equals_the_truth_alone"
+     ],
+     "summary": "3 failed, 56 passed in 6.64s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe:pr2-sess",
+    "pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py"
+   ]
+  },
+  {
+   "id": "GR2",
+   "round": "4",
+   "mutant": "a fresh token per service, not per call",
+   "killer": "PR2-SESS",
+   "checks": [
+    {
+     "check": "pr2-sess",
+     "kind": "probe",
+     "returncode": 1,
+     "seconds": 1.2,
+     "failed": [],
+     "summary": "FAIL PR2-SESS {\"round 1 (control, cea85fc library)\": {\"Login\": {\"code\": \"INVALID_ARGUMENT\", \"answered\": true}, \"SignOut\": {\"code\": \"OK\", \"answered\": true}, \"DeleteMe\": {\"code\": \"UNAUTHENTICATED\", \"ans",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 6.0,
+     "failed": [
+      "tests/grpc/test_reconcile2.py::test_rc1_every_non_public_call_is_preceded_by_its_own_login",
+      "tests/grpc/test_reconcile2.py::test_rc3_a_disagreement_is_rerun_alone_on_a_fresh_database_and_process",
+      "tests/grpc/test_reconcile2.py::test_sessions_reconcile_equals_the_truth_alone"
+     ],
+     "summary": "3 failed, 56 passed in 5.86s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe:pr2-sess",
+    "pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py"
+   ]
+  },
+  {
+   "id": "GR3",
+   "round": "4",
+   "mutant": "the reverse pass is skipped (RC2 off)",
+   "killer": "PR2-ORDER (sessions), P2-UNIT",
+   "checks": [
+    {
+     "check": "pr2-order",
+     "kind": "probe",
+     "returncode": 0,
+     "seconds": 0.9,
+     "failed": [],
+     "summary": "PASS PR2-ORDER {\"N\": {\"disagreed\": []}, \"sessions\": {\"disagreed\": [\"sessions.v1.Sessions/Secret\", \"sessions.v1.Sessions/SignOut\", \"sessions.v1.Sessions/Stub\"], \"all isolated\": true, \"final codes equal",
+     "differs_from_control": false
+    },
+    {
+     "check": "tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 6.2,
+     "failed": [
+      "tests/grpc/test_reconcile2.py::test_rc1_every_non_public_call_is_preceded_by_its_own_login",
+      "tests/grpc/test_reconcile2.py::test_rc2_forward_is_sorted_and_reverse_is_its_reverse",
+      "tests/grpc/test_reconcile2.py::test_rc3_a_disagreement_is_rerun_alone_on_a_fresh_database_and_process"
+     ],
+     "summary": "3 failed, 56 passed in 6.01s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py"
+   ]
+  },
+  {
+   "id": "GR4",
+   "round": "4",
+   "mutant": "a disagreement is reported without the isolated rerun (RC3 off)",
+   "killer": "PR2-ORDER, P2-UNIT",
+   "checks": [
+    {
+     "check": "pr2-order",
+     "kind": "probe",
+     "returncode": 1,
+     "seconds": 0.7,
+     "failed": [],
+     "summary": "FAIL PR2-ORDER {\"N\": {\"disagreed\": []}, \"sessions\": {\"disagreed\": [\"sessions.v1.Sessions/DeleteMe\", \"sessions.v1.Sessions/Secret\", \"sessions.v1.Sessions/SignOut\", \"sessions.v1.Sessions/Stub\"], \"all is",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 5.8,
+     "failed": [
+      "tests/grpc/test_reconcile2.py::test_rc1_a_failed_login_is_not_an_answer",
+      "tests/grpc/test_reconcile2.py::test_rc3_a_disagreement_is_rerun_alone_on_a_fresh_database_and_process",
+      "tests/grpc/test_reconcile2.py::test_sessions_reconcile_equals_the_truth_alone"
+     ],
+     "summary": "3 failed, 56 passed in 5.66s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe:pr2-order",
+    "pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py"
+   ]
+  },
+  {
+   "id": "GR5",
+   "round": "4",
+   "mutant": "a failed login is recorded as UNAUTHENTICATED answered:true",
+   "killer": "P2-UNIT",
+   "checks": [
+    {
+     "check": "tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 6.3,
+     "failed": [
+      "tests/grpc/test_reconcile2.py::test_rc1_a_failed_login_is_not_an_answer",
+      "tests/grpc/test_reconcile2.py::test_rc3_a_disagreement_is_rerun_alone_on_a_fresh_database_and_process",
+      "tests/grpc/test_reconcile2.py::test_sessions_reconcile_equals_the_truth_alone"
+     ],
+     "summary": "3 failed, 56 passed in 6.08s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py"
+   ]
+  },
+  {
+   "id": "GR6",
+   "round": "4",
+   "mutant": "the contract's order instead of the sorted order in the forward pass",
+   "killer": "P2-DET (order key in output), P2-UNIT",
+   "checks": [
+    {
+     "check": "tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 7.8,
+     "failed": [
+      "tests/grpc/test_reconcile2.py::test_rc2_forward_is_sorted_and_reverse_is_its_reverse"
+     ],
+     "summary": "1 failed, 58 passed in 7.61s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py"
+   ]
+  },
+  {
+   "id": "GR7",
+   "round": "4",
+   "mutant": "F2 off: natural keys filled by example_value (round 1)",
+   "killer": "PF2-DESK",
+   "checks": [
+    {
+     "check": "pf2-desk",
+     "kind": "probe",
+     "returncode": 1,
+     "seconds": 2.9,
+     "failed": [],
+     "summary": "FAIL PF2-DESK (dev, tuned-on) {\"recovered\": 39, \"recovered_by_status\": {\"verified\": 0, \"unverified\": 0, \"failed\": 39, \"unbound\": 0}, \"verified\": 0, \"verified_but_failing\": 0, \"edge_recall\": {\"num\": 0,",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 6.5,
+     "failed": [
+      "tests/grpc/test_flows2.py::test_f2_a_lookup_that_is_not_ok_is_no_source",
+      "tests/grpc/test_flows2.py::test_f2_natural_fields",
+      "tests/grpc/test_flows2.py::test_f2a_an_earlier_step_that_answers_the_column_is_the_source",
+      "tests/grpc/test_flows2.py::test_f2b_a_lookup_step_is_inserted_before_the_step_that_needs_it",
+      "tests/grpc/test_flows2.py::test_f2c_no_source_makes_the_plan_unbound",
+      "tests/grpc/test_flows2.py::test_plan_ids_are_unique_stable_and_see_the_binding"
+     ],
+     "summary": "6 failed, 53 passed in 6.31s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe:pf2-desk",
+    "pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py"
+   ]
+  },
+  {
+   "id": "GR8",
+   "round": "4",
+   "mutant": "F3 off: bool -> true (round 1)",
+   "killer": "PF2-DESK",
+   "checks": [
+    {
+     "check": "pf2-desk",
+     "kind": "probe",
+     "returncode": 0,
+     "seconds": 5.4,
+     "failed": [],
+     "summary": "PASS PF2-DESK (dev, tuned-on) {\"recovered\": 41, \"recovered_by_status\": {\"verified\": 19, \"unverified\": 0, \"failed\": 22, \"unbound\": 0}, \"verified\": 19, \"verified_but_failing\": 0, \"edge_recall\": {\"num\": ",
+     "differs_from_control": false
+    },
+    {
+     "check": "tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 6.4,
+     "failed": [
+      "tests/grpc/test_flows2.py::test_f3_a_writing_rpcs_message_has_no_privileged_value",
+      "tests/grpc/test_flows2.py::test_f3_example_values"
+     ],
+     "summary": "2 failed, 57 passed in 6.23s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py"
+   ]
+  },
+  {
+   "id": "GR9",
+   "round": "4",
+   "mutant": "F1 binds an id to a field of another table",
+   "killer": "P2-UNIT, PF2-N",
+   "checks": [
+    {
+     "check": "pf2-n",
+     "kind": "probe",
+     "returncode": 0,
+     "seconds": 3.4,
+     "failed": [],
+     "summary": "PASS PF2-N {\"recovered\": 17, \"recovered_by_status\": {\"verified\": 17, \"unverified\": 0, \"failed\": 0, \"unbound\": 0}, \"verified\": 17, \"verified_but_failing\": 0, \"failing_codes\": {}, \"unbound_reasons\": {},",
+     "differs_from_control": false
+    },
+    {
+     "check": "tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 6.3,
+     "failed": [
+      "tests/grpc/test_flows2.py::test_f1_never_binds_an_id_to_another_tables_field"
+     ],
+     "summary": "1 failed, 58 passed in 6.15s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py"
+   ]
+  },
+  {
+   "id": "GR10",
+   "round": "4",
+   "mutant": "the lookup picks the first element, unsorted",
+   "killer": "P2-DET",
+   "checks": [
+    {
+     "check": "tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 6.5,
+     "failed": [
+      "tests/grpc/test_flows2.py::test_f2_the_value_is_the_smallest_column_value_whatever_the_order"
+     ],
+     "summary": "1 failed, 58 passed in 6.35s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py"
+   ]
+  },
+  {
+   "id": "GR11",
+   "round": "4",
+   "mutant": "owner_guard / owner_chain verify on UNAUTHENTICATED",
+   "killer": "P2-UNIT, PF2-DESK",
+   "checks": [
+    {
+     "check": "pf2-desk",
+     "kind": "probe",
+     "returncode": 0,
+     "seconds": 5.1,
+     "failed": [],
+     "summary": "PASS PF2-DESK (dev, tuned-on) {\"recovered\": 41, \"recovered_by_status\": {\"verified\": 20, \"unverified\": 0, \"failed\": 21, \"unbound\": 0}, \"verified\": 20, \"verified_but_failing\": 0, \"edge_recall\": {\"num\": ",
+     "differs_from_control": false
+    },
+    {
+     "check": "tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 6.2,
+     "failed": [
+      "tests/grpc/test_flows2.py::test_d3_a_step_is_ok_only_as_its_intent_says[owner_chain-refuse-UNAUTHENTICATED-False]",
+      "tests/grpc/test_flows2.py::test_d3_a_step_is_ok_only_as_its_intent_says[owner_guard-refuse-UNAUTHENTICATED-False]"
+     ],
+     "summary": "2 failed, 57 passed in 6.02s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py"
+   ]
+  },
+  {
+   "id": "GR12",
+   "round": "4",
+   "mutant": "verified is set from the live run without the layer-D replay",
+   "killer": "PF2-REPLAY, P2-UNIT",
+   "checks": [
+    {
+     "check": "pf2-replay",
+     "kind": "probe",
+     "returncode": 0,
+     "seconds": 4.2,
+     "failed": [],
+     "summary": "PASS PF2-REPLAY {\"N\": {\"verified\": 17, \"replays\": 3, \"failing per replay\": [0, 0, 0]}, \"deskd\": \"NOT RUN: no --deskd\"}",
+     "differs_from_control": false
+    },
+    {
+     "check": "tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 4.7,
+     "failed": [
+      "tests/grpc/test_flows2.py::test_d3_a_flow_the_replay_disagrees_with_is_not_verified"
+     ],
+     "summary": "1 failed, 58 passed in 4.54s",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py"
+   ]
+  },
+  {
+   "id": "GR13",
+   "round": "4",
+   "mutant": "a fault code on a refuse step is counted as a refusal",
+   "killer": "P2-UNIT, PF2-N",
+   "checks": [
+    {
+     "check": "tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py",
+     "kind": "pytest",
+     "returncode": 1,
+     "seconds": 6.5,
+     "failed": [
+      "tests/grpc/test_flows2.py::test_d3_a_step_is_ok_only_as_its_intent_says[owner_chain-refuse-DATA_LOSS-False]",
+      "tests/grpc/test_flows2.py::test_d3_a_step_is_ok_only_as_its_intent_says[pair-refuse-INTERNAL-False]",
+      "tests/grpc/test_flows2.py::test_d3_a_step_is_ok_only_as_its_intent_says[pair-refuse-UNKNOWN-False]"
+     ],
+     "summary": "3 failed, 56 passed in 6.36s",
+     "differs_from_control": true
+    },
+    {
+     "check": "pf2-n",
+     "kind": "probe",
+     "returncode": 0,
+     "seconds": 3.2,
+     "failed": [],
+     "summary": "PASS PF2-N {\"recovered\": 17, \"recovered_by_status\": {\"verified\": 17, \"unverified\": 0, \"failed\": 0, \"unbound\": 0}, \"verified\": 17, \"verified_but_failing\": 0, \"failing_codes\": {}, \"unbound_reasons\": {},",
+     "differs_from_control": false
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "pytest:tests/grpc/test_reconcile2.py tests/grpc/test_flows2.py"
+   ]
+  },
+  {
+   "id": "GR14",
+   "round": "4",
+   "mutant": "scorer: verified == 0 passes (round 1's rule)",
+   "killer": "P2-SCORE",
+   "checks": [
+    {
+     "check": "p2-score",
+     "kind": "probe",
+     "returncode": 1,
+     "seconds": 0.1,
+     "failed": [],
+     "summary": "FAIL P2-SCORE {\"cases\": 37, \"agree\": 35}",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe:p2-score"
+   ]
+  },
+  {
+   "id": "GR15",
+   "round": "4",
+   "mutant": "scorer: an empty denominator scores 1.0",
+   "killer": "P2-SCORE",
+   "checks": [
+    {
+     "check": "p2-score",
+     "kind": "probe",
+     "returncode": 1,
+     "seconds": 0.1,
+     "failed": [],
+     "summary": "FAIL P2-SCORE {\"cases\": 37, \"agree\": 33}",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe:p2-score"
+   ]
+  },
+  {
+   "id": "GR16",
+   "round": "4",
+   "mutant": "scorer: edge matching ignores the consumer's code",
+   "killer": "P2-SCORE",
+   "checks": [
+    {
+     "check": "p2-score",
+     "kind": "probe",
+     "returncode": 1,
+     "seconds": 0.1,
+     "failed": [],
+     "summary": "FAIL P2-SCORE {\"cases\": 37, \"agree\": 36}",
+     "differs_from_control": true
+    }
+   ],
+   "note": "",
+   "result": "KILLED",
+   "killed_by": [
+    "probe:p2-score"
+   ]
+  },
+  {
+   "id": "GR17",
+   "round": "4",
+   "mutant": "the HTTP workflow path touched (the rpc helper's summary shape in the HTTP summary)",
+   "killer": "P2-BC",
+   "checks": [
+    {
+     "check": "p5-bc-ast",
+     "kind": "probe5",
+     "returncode": 1,
+     "seconds": 0.1,
+     "failed": [
+      "FAIL"
+     ],
+     "summary": "FAIL P5-BC-AST {\"H1b sites found\": 3, \"differences\": 1}",
+     "differs_from_control": true
+    },
+    {
+     "check": "tests/importer/test_workflows.py",
+     "kind": "pytest",
+     "returncode": 0,
+     "seconds": 2.6,
+     "failed": [],
+     "summary": "69 passed in 2.46s",
+     "differs_from_control": false
+    }
+   ],
+   "note": "re-expressed: round 4's p4-bc-ast is red at round-5 code in the control (grpc.py carries H1b) and cannot see the mutant; P5-BC-AST (workflows.py byte-identical to BASE) takes its place",
+   "result": "KILLED",
+   "killed_by": [
+    "probe5:p5-bc-ast"
+   ]
+  }
+ ]
+}

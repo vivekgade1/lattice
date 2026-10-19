@@ -274,6 +274,7 @@ func (g *gx) scanOwner(ci *closureInfo, v *gxVisit, b *Func, e *Env) {
 				tbl = rooted[name][0]
 			}
 		}
+		n0 := len(ci.owners)
 		for _, l := range links {
 			args := l.call.Args
 			condAt := -1
@@ -319,6 +320,9 @@ func (g *gx) scanOwner(ci *closureInfo, v *gxVisit, b *Func, e *Env) {
 					}
 				}
 			}
+		}
+		if g.policy && v.entry == nil {
+			g.linkRaise(ci, b, stack, n0)
 		}
 	})
 	// a model literal, a field assignment, a field comparison
@@ -517,6 +521,9 @@ func (g *gx) scanMisc(ci *closureInfo, v *gxVisit, b *Func, e *Env) {
 				}
 			}
 		}
+		if path, ok := m.importOf(e, sel.X); ok && plainCompares[path+"."+name] && ci.bcrypt == nil && ci.plainPw == nil {
+			g.plainPassword(ci, v, b, e, call.Pos(), call.Args)
+		}
 		if path, ok := m.importOf(e, sel.X); ok && strings.Contains(path, "bcrypt") && name == "CompareHashAndPassword" && len(call.Args) >= 1 && ci.bcrypt == nil {
 			ast.Inspect(call.Args[0], func(n ast.Node) bool {
 				if ci.bcrypt != nil {
@@ -542,6 +549,10 @@ func (g *gx) scanMisc(ci *closureInfo, v *gxVisit, b *Func, e *Env) {
 		case *ast.BasicLit:
 			if str, ok := stringLit(s); ok && strings.Contains(strings.ToLower(str), "bearer") {
 				ci.bearer = true
+			}
+		case *ast.BinaryExpr:
+			if (s.Op == token.EQL || s.Op == token.NEQ) && ci.bcrypt == nil && ci.plainPw == nil {
+				g.plainPassword(ci, v, b, e, s.Pos(), []ast.Expr{s.X, s.Y})
 			}
 		case *ast.CompositeLit:
 			if s.Type != nil {
@@ -927,4 +938,40 @@ func (g *gx) mainRoot(top *Func) string {
 		}
 	}
 	return qual(path[len(path)-1])
+}
+
+// plainCompares are the standard-library comparisons an app that stores a password as
+// typed (no hash) checks a login with; `==` / `!=` are read the same way.
+var plainCompares = map[string]bool{
+	"crypto/subtle.ConstantTimeCompare": true,
+	"crypto/hmac.Equal":                 true,
+	"bytes.Equal":                       true,
+	"strings.EqualFold":                 true,
+}
+
+// plainPassword records, as the login's credential check, a comparison one of whose
+// operands reads a password column of a table row (`user.Password`, `[]byte(users[0].Password)`).
+// A hash compare (bcrypt) wins: this is read only when there is none.
+func (g *gx) plainPassword(ci *closureInfo, v *gxVisit, b *Func, e *Env, pos token.Pos, operands []ast.Expr) {
+	m := g.m
+	for _, x := range operands {
+		ast.Inspect(x, func(n ast.Node) bool {
+			if ci.plainPw != nil {
+				return false
+			}
+			s, ok := n.(*ast.SelectorExpr)
+			if !ok {
+				return true
+			}
+			t := g.tables[m.Infer(e, s.X).deref().rowTypeAny()]
+			if t == nil {
+				return true
+			}
+			if col := t.fieldCols[s.Sel.Name]; col != "" && passwordRE.MatchString(col) {
+				_, line := g.at(v, b, pos)
+				ci.plainPw = &bcryptUse{table: t.Struct, column: col, line: line}
+			}
+			return true
+		})
+	}
 }

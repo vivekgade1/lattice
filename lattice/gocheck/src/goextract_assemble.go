@@ -88,6 +88,21 @@ type routeRec struct {
 	out     *xRoute
 }
 
+// hasPlainLogin reports whether the route's closure compares a stored password column as
+// typed (no hash) AND its request body carries a password field: both are read before the
+// route is named a login, as a plain comparison alone is a weaker sign than a hash check.
+func (r *routeRec) hasPlainLogin() bool {
+	if r.closure == nil || r.closure.plainPw == nil {
+		return false
+	}
+	for _, p := range r.out.Params {
+		if p.Source == "body" && passwordRE.MatchString(p.Name) {
+			return true
+		}
+	}
+	return false
+}
+
 var usernameRE = regexp.MustCompile(`(?i)^(email|e_?mail|user_?name|username|login|user|identifier|handle|account)$`)
 var passwordRE = regexp.MustCompile(`(?i)pass|pwd|secret`)
 
@@ -565,7 +580,7 @@ func (g *gx) buildAuth() {
 	}
 	var logins []*routeRec
 	for _, rec := range g.routeList {
-		if rec.out.Auth == "Public" && rec.out.Method == "POST" && rec.closure != nil && rec.closure.bcrypt != nil {
+		if rec.out.Auth == "Public" && rec.out.Method == "POST" && rec.closure != nil && (rec.closure.bcrypt != nil || rec.hasPlainLogin()) {
 			logins = append(logins, rec)
 		}
 	}
@@ -577,10 +592,14 @@ func (g *gx) buildAuth() {
 		l := logins[0]
 		p := l.out.PathTemplate
 		a.LoginPath = &p
-		col := l.closure.bcrypt.column
+		cred := l.closure.bcrypt
+		if cred == nil {
+			cred = l.closure.plainPw
+		}
+		col := cred.column
 		a.PasswordColumn = &col
 		if a.UsersTable == nil {
-			t := l.closure.bcrypt.table
+			t := cred.table
 			a.UsersTable = &t
 		}
 		if l.closure.encoding != "" {

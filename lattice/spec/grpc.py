@@ -550,7 +550,7 @@ def reconcile_with(
     absent: dict[str, Any] = {}
     extra: set[str] = set()  # unary contract rpcs that are not routes (D3.1)
     with tempfile.TemporaryDirectory(prefix="lattice-grpc-reconcile-") as tmp:
-        db = build_db(Path(tmp) / "reconcile.db")
+        db = build_db(p := Path(tmp) / "reconcile.db") or p
         app = _with_protos(make_app(db), protos, proto_paths)
         try:
             with runtime.open(app) as transport:
@@ -592,7 +592,7 @@ def reconcile_with(
     for key in disagreed:
         s, m, pub = by_key[key]
         with tempfile.TemporaryDirectory(prefix="lattice-grpc-reconcile-") as tmp:
-            db = build_db(Path(tmp) / "isolated.db")
+            db = build_db(p := Path(tmp) / "isolated.db") or p
             app = _with_protos(make_app(db), protos, proto_paths)
             try:
                 with runtime.open(app) as transport:
@@ -674,7 +674,7 @@ def run_rpc_flows(
         """Execute ``steps`` (``RpcPlanStep``s) on a fresh database; the recorded steps and the
         reason the run stopped early (None: ran to the end)."""
         with tempfile.TemporaryDirectory(prefix="lattice-rpcflow-") as tmp:
-            db = build_db(Path(tmp) / "flow.db")
+            db = build_db(p := Path(tmp) / "flow.db") or p
             app = make_app(db)
             recorded: list[dict[str, Any]] = []
             ids: dict[int, tuple[Any, str]] = {}

@@ -1,0 +1,149 @@
+{
+ "answers": {
+  "R2-MR1": {
+   "text": "R6, R15, R136, R140, R142\n\nThe digest's 'Not checked' notes name these five rules as wholly unchecked. R12, R16, R22, R29, R43, R44, R93 and R126 are only partly unchecked, so they are left out.",
+   "status": "ok",
+   "routed": false
+  },
+  "R2-MR2": {
+   "text": "The map shows R140 as implemented_verified, even though the spec has no check for it.\n\nThe spec lists R140 as unchecked because the PushSender stub records nothing, so the silent clear push is not observable. The implementation map still reports [impl:rule:R140] as implemented_verified. The dismiss route carrying it is registered in code at internal/nudges/routes.go:17 with its handler at line 57. The basis is weaker than the label suggests, since the clear push itself cannot be observed.",
+   "status": "ok",
+   "routed": false
+  },
+  "R2-MR4": {
+   "text": "Only seen in the code: R126's implementation is unverified, with no verified flow.\n\nThe implementation status for R126 is \"implemented_unverified (no verified flow)\", so no replayed flow confirmed it by observation. The nudger service is an element of the spec, but that does not make the code's behavior observed.",
+   "status": "ok",
+   "routed": false
+  },
+  "R2-MR5": {
+   "text": "R1 and R2\n\nOnly rules R1 and R2 are listed with the status \"context\"; every other rule is marked checked or unchecked.",
+   "status": "ok",
+   "routed": false
+  },
+  "R2-MR6": {
+   "text": "141\n\nThe digest lists rules R1 to R148. Two are labelled context (R1, R2) and five are labelled unchecked (R6, R15, R136, R140, R142), so 148 - 2 - 5 = 141 are checked. This is my own count from the status labels; the digest gives no total.",
+   "status": "ok",
+   "routed": false
+  },
+  "R2-MW3": {
+   "text": "wf-3de8783507 and wf-b2acc9eac6\n\nExactly two flows in the flow index have kind after_delete: wf-3de8783507 (create habit, add a completion, delete the completion, read completions) and wf-b2acc9eac6 (create habit, delete habit, read completions, which answers 404). Both are verified.",
+   "status": "ok",
+   "routed": false
+  },
+  "R2-MW6": {
+   "text": "In order, the flow groups are: create habits, completions habits, update habits, delete completions, delete habits. That is probably POST /v1/habits, POST /v1/habits/{}/completions, PATCH /v1/habits/{}, DELETE /v1/habits/{}/completions/{}, then DELETE /v1/habits/{}. The digest does not list the individual steps, callers or statuses.\n\nThe flow index names wf-e3249cec66 as a verified lifecycle flow with this sequence of operation groups. Its numbered steps are not in the digest I was shown, so the exact methods, paths and statuses are inferred from the group names and the route list.",
+   "status": "ok",
+   "routed": false
+  },
+  "R2-MW7": {
+   "text": "wf-bd46b71ee2 and wf-de433cd704\n\nTwo flows in the index are named 'create habits > read progress (inferred name)'. wf-bd46b71ee2 is an owner_guard flow and wf-de433cd704 is a pair flow, and both are verified. The other progress flows have different names, for example 'create habits > update habits > read progress'.",
+   "status": "ok",
+   "routed": false
+  },
+  "R2-MW8": {
+   "text": "wf-053146a70c, wf-6a4cc7a302, wf-9f87f3f1d9, wf-c71e6bbb49\n\nThese four flows all end with a POST /v1/nudges/{}/dismiss step. In the replays none of them dismisses a nudge: three answer 404 and the ben flow answers None.",
+   "status": "ok",
+   "routed": false
+  },
+  "R2-MM2": {
+   "text": "4 states; every transition leaves from pending\n\nLifecycle `impl:machine:nudges.delivery` (basis: static; its states are code facts; whether anything fails is not decided): states failed, pending, sent, suppressed, edges (3) pending -> failed (spec, code), pending -> sent (spec, code), pending -> suppressed (spec, code) The implemented machine lists the same states and moves.",
+   "status": "ok",
+   "routed": false
+  },
+  "R2-MM4": {
+   "text": "R123 and R127\n\nThe implemented machine nudges.delivery lists rules R123 and R127. The spec rules R123 and R127 both concern the delivery of nudges. The machine is read statically from the code, with no verified flow.",
+   "status": "ok",
+   "routed": false
+  },
+  "R2-MA4": {
+   "text": "Spec cell: 200/404/409. Code auth: Customer, registered at internal/nudges/routes.go:17. Observed status in the verified replay: 404.\n\nThe grid cell for ann allows 200, 404 or 409 on dismiss. The route is registered with Customer auth. The verified flow wf-6a4cc7a302 replays ann dismissing a nudge and observes 404, which is inside the cell's allowed set.",
+   "status": "ok",
+   "routed": false
+  },
+  "R2-MA5": {
+   "text": "Specified for ann on GET /v1/habits/{}/history: 200, 409, 422. Workflow `wf-fcf46753f5` (create habits > completions habits > read history): recorded replay status verified at capture time; what any change does to it is not decided.\nWorkflow `wf-09db39abfe` (create habits > read history): recorded replay status verified at capture time; what any change does to it is not decided.\nWorkflow `wf-21a2d02394` (create habits > completions habits > delete completions > read history): recorded replay status verified at capture time; what any change does to it is not decided.\nWorkflow `wf-9ead6d0f00` (create habits > update habits > read history): recorded replay status verified at capture time; what any change does to it is not decided.\nWorkflow `wf-52994a9544` (create habits > delete habits > read history): recorded replay status verified at capture time; what any change does to it is not decided.\nWorkflow `wf-ebadb4a811` (create habits > delete habits > read history): recorded replay status failed at capture time, step 2 (GET /v1/habits/{}/history) answered 404, expected 404; what any change does to it is not decided.\n(1 more workflows; their recorded status is a capture-time fact; what any change does to them is not decided.) 409 and 422 appear in no shown flow.\n\nThe access cell for ann lists 200/409/422, and rule R148 ties the 409 to habit_not_started. The shown flows only exercise 200 and, after the habit is deleted, 404, which the ann cell does not list.",
+   "status": "ok",
+   "routed": false
+  },
+  "R2-N1": {
+   "text": "Six endpoints: DELETE /v1/devices/{}, GET /v1/home, GET /v1/nudges, GET /v1/sync, POST /v1/devices, POST /v1/nudges/{}/dismiss\n\nThe implemented-app section marks these six routes as spec_only: the spec names them but the code registers no such route. All other spec routes have registered handlers.",
+   "status": "ok",
+   "routed": false
+  },
+  "R2-N3": {
+   "text": "The digest has no \"not_built_yet\" tag, so no count or list can be given.\n\nThe digest's implementation statuses are implemented_unverified, required_not_implemented, no_element and spec_only, and none of them is called \"not_built_yet\". Without a definition for that tag, mapping it to one of these statuses would be a guess.",
+   "status": "ok",
+   "routed": false
+  },
+  "R2-N4": {
+   "text": "No. The code does not register POST /v1/nudges/{}/dismiss, so R138 is not implemented.\n\nThe digest marks R138 as required_not_implemented, missing both GET /v1/nudges and POST /v1/nudges/{}/dismiss. The spec expects ann's dismiss to answer 200, but the code registers no such route (spec_only).",
+   "status": "ok",
+   "routed": false
+  },
+  "R2-N5": {
+   "text": "6 spec-only endpoints; yes, POST /v1/devices is one of them\n\nThe implemented-app section lists six routes as spec_only: DELETE /v1/devices/{}, GET /v1/home, GET /v1/nudges, GET /v1/sync, POST /v1/devices and POST /v1/nudges/{}/dismiss. The spec names them (e.g. R31 for POST /v1/devices) but the code registers no such route.",
+   "status": "ok",
+   "routed": false
+  },
+  "R2-N6": {
+   "text": "No. R7 is only partly implemented: the code lacks the routes DELETE /v1/devices/{} and POST /v1/nudges/{}/dismiss that the rule covers.\n\nThe implementation status for R7 is required_not_implemented, because two of the routes it applies to are not registered in the code (they are spec_only). The routes that are registered have no verified flow.",
+   "status": "ok",
+   "routed": false
+  },
+  "R2-I1f": {
+   "text": "The digest does not define anything called \"c1\", so its consequences for the flows and scenarios cannot be determined.\n\nNo element in the digest (rules, cells, invariants, scenarios, flows, notes) is named or labelled \"c1\". The relevant-flows section also matched nothing for this question, so there is nothing to tie it to.\n\nLattice record (c1): Tier 1 (observed): not run here; Tier 2 (determined): 2; Tier 3 (static, may fail): 42 locations, 64 workflows; Tier 4: not run.\n- `t2-1bd497dc68` (tier 2, determined, c1): flow:wf-6c2282fd50 fails at step 2 after the change\n- `t2-bb0f6eb361` (tier 2, determined, c1): scenario:habit_deleted_through_the_api_answers_gone fails at step <= 3",
+   "status": "ok",
+   "routed": false
+  },
+  "R2-I2f": {
+   "text": "The digest does not define \"c2\", so I cannot say which code or flows it touches.\n\nNo element in the digest (rules, scenarios, cells, invariants, routes or flows) is named or labelled \"c2\". Without knowing what change c2 is, the affected code locations and recorded flows cannot be determined from the digest.",
+   "status": "ok",
+   "routed": false
+  },
+  "R2-I3f": {
+   "text": "The digest has no element called c3, so I can't say which code locations it reaches.\n\nNo user, caller, scenario, flow, rule or route in the digest is named c3, so there is nothing to trace to code locations. Workflow `wf-053146a70c` (create habits > completions habits > read home > dismiss nudges): recorded replay status failed at capture time, step 3 (POST /v1/nudges/{}/dismiss) answered 404, expected 404; what any change does to it is not decided.\nWorkflow `wf-7f0f99bdcf` (create habits > create batch): recorded replay status failed at capture time, step 1 (POST /v1/completions/batch) answered 422, expected 422; what any change does to it is not decided.\nWorkflow `wf-9523e7a835` (create habits > create batch): recorded replay status failed at capture time, step 1 (POST /v1/completions/batch) answered 422, expected 422; what any change does to it is not decided. Nothing in the digest says a workflow is 'determined to stop passing' either. If c3 is meant to be a flow, scenario or caller, please give its exact name.",
+   "status": "ok",
+   "routed": false
+  },
+  "R2-I4f": {
+   "text": "The digest does not define anything called \"c4\", so I cannot say what it changes downstream.\n\nNo element in the digest (rules, cells, scenarios, flows, invariants, services or code locations) is named or labelled \"c4\". The digest has no tiers or dependency concept tied to it, so a downstream summary of tiers, flows and code locations cannot be derived. If you mean a specific rule (e.g. R4), cell, scenario or route, name it and I can summarize that.",
+   "status": "ok",
+   "routed": false
+  },
+  "R2-I5f": {
+   "text": "The digest does not define anything called \"c5\", so I can't say what it puts at risk.\n\nNo element in the digest (rules, cells, invariants, scenarios, flows, or notes) is named or labeled \"c5\". The rules run R1 to R148 and the unchecked notes are numbered 1 to 13, so \"c5\" matches none of them. Clarify what \"c5\" refers to (for example a rule such as R5 or an unchecked note) and I can answer.",
+   "status": "ok",
+   "routed": false
+  },
+  "R2-I6f": {
+   "text": "The digest does not define \"c6\", so I can't say whether it is a behaviour change or new wording, or what its report lists.\n\nNo element in the digest (rules, scenarios, cells, invariants, flows or the scenario index) is named or labelled \"c6\", and nothing describes a change or a report with that name. The question can't be settled without guessing.",
+   "status": "ok",
+   "routed": false
+  },
+  "R2-H6": {
+   "text": "The digest does not say. It fixes weeks as Monday to Sunday and has nothing about a Sunday start or a migration.\n\nR46 defines the weekly period as Monday to Sunday. Stored target rows are keyed to the first day of the period (R40), and past-period history looks up targets by that first day (R146). So a Sunday start would likely shift existing period boundaries and target lookups. But the digest describes no such change, so the impact on users is an inference and not settled.",
+   "status": "ok",
+   "routed": false
+  },
+  "R2-H8": {
+   "text": "Not specified: the answer could not be grounded in the spec.\n\nLattice withheld the model's answer: it stated a failure without a tier 1 or tier 2 item id, or named an id Lattice did not mint. Nothing is decided. R29 sets the limit at 120 requests per clock minute, and the scenario rate_limit_120_per_minute expects 200 for requests 1 to 120 and 429 only from the 121st. At 60, steps 61 to 120 would answer 429 instead of 200. The captured flows shown have at most 4 requests, so they stay under either limit.\n\nLattice withheld 1 sentence(s) that stated a failure without a tier 1 or tier 2 item id. Lattice does not predict failures; it decides them only for a drafted change.",
+   "status": "ok",
+   "routed": false
+  },
+  "R2-H9": {
+   "text": "scenario:batch_item_bounds goes red, most likely at step 2 (the over-limit case). That scenario is the one that checks the 100-item cap. No other scenario clearly depends on it.\n\nR83 allows 1 to 100 items and answers 422 with field `items` otherwise. batch_item_bounds expects 422 twice, then a 200 with 100 items. The digest truncates the request bodies, so I infer step 2 sends more than 100 items and would return 200 at a 500 limit. Step 1 (probably an empty list) should stay green. Steps 3 and 4 are not affected. The ann batch cell lists 200/422, so it would lose the 422 outcome if this was its only source.",
+   "status": "ok",
+   "routed": false
+  },
+  "R2-H10": {
+   "text": "Whether `rule:R125` fails is not decided: Lattice decides failures only for a drafted change (tier 1 observed, tier 2 determined). Static: it touches `wf-053146a70c`, `wf-0c6bdd7ab0`, `wf-11a98b3683`, `wf-12302559ed`, `wf-1e4314104c`, `wf-21a2d02394`, `wf-2610c56483`, `wf-2f54cb544b` (first 8 of 32).\n\nR125 says a dismissed nudge is never rewritten, recreated or pushed for the same day, and delivery rule 1 suppresses it with reason `dismissed`. The pass_suppressions scenario checks that a dismissed nudge is not rewritten and not pushed. Allowing a re-push would also hit the 3-per-day limit and the dismissal's silent clear push to other devices, which the spec treats as the user's wish, not a device's. The R125 implementation is only unverified (no verified flow), so the code could change without a test catching it.",
+   "status": "ok",
+   "routed": false
+  },
+  "R2-C1": {
+   "text": "401 with code invalid_credentials\n\nRule R14 says a wrong password or unknown email at login answers 401 `invalid_credentials`. The scenario login_with_bad_credentials_is_refused confirms it, and the login route is implemented and verified via the impl:rule:R14-related login route and flow.",
+   "status": "ok",
+   "routed": false
+  }
+ }
+}

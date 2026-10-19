@@ -5,7 +5,7 @@
 //   SessionClient            one session of one mode: lazy create, send, poll, stop
 //
 // thread = {items: [...], cost, turns}. Item kinds (each has a unique `key`):
-//   user    {text, selected, pending}      text    {text, partial, messageId}
+//   user    {text, selected, pending}      text    {text, partial, messageId, checked?}
 //   tool    {id, name, label, input, result: null | {ok, summary}, stopped}
 //   result  {ok, seconds, cost, turns}     error   {message, kind}
 //   stopped {}                             (the owner stopped the turn)
@@ -65,8 +65,11 @@ export function reduce(thread, events) {
         if (cur && (cur.partial || text.startsWith(cur.text) || cur.text.startsWith(text))) {
           cur.text = text;
           cur.partial = !!ev.partial;
+          if (ev.checked) cur.checked = ev.checked; // v1.26: counts of Lattice's claim check
         } else if (text) {
-          thread.items.push({ kind: "text", key: key(thread, "text"), text, partial: !!ev.partial, messageId: mid });
+          const item = { kind: "text", key: key(thread, "text"), text, partial: !!ev.partial, messageId: mid };
+          if (ev.checked) item.checked = ev.checked;
+          thread.items.push(item);
         }
         changed = true;
         break;

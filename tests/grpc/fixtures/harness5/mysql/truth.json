@@ -1,0 +1,484 @@
+{
+ "schema": "lattice.heldout.truth/5",
+ "app": "ledger5-mysql",
+ "conventions": {
+  "step_index_base": 0
+ },
+ "login": {
+  "service": "ledger.v1.Accounts",
+  "method": "Login",
+  "username_field": "name",
+  "password_field": "password",
+  "token_field": "token"
+ },
+ "users": [
+  {
+   "handle": "ann",
+   "username": "ann",
+   "role": "member"
+  },
+  {
+   "handle": "bob",
+   "username": "bob",
+   "role": "member"
+  }
+ ],
+ "services": [
+  "ledger.v1.Accounts",
+  "ledger.v1.Entries",
+  "ledger.v1.Reports"
+ ],
+ "rpcs": [
+  {
+   "rpc": "ledger.v1.Accounts/Login",
+   "service": "ledger.v1.Accounts",
+   "method": "Login",
+   "state": "implemented",
+   "streaming": false,
+   "auth": "Public",
+   "handler": "internal/serve/accounts.go:24",
+   "codes": [
+    "INVALID_ARGUMENT",
+    "UNAUTHENTICATED",
+    "INTERNAL"
+   ],
+   "code_sites": [],
+   "interceptor_codes": [],
+   "tables": [
+    "users",
+    "sessions"
+   ],
+   "writes": [
+    "sessions"
+   ],
+   "effects": "none"
+  },
+  {
+   "rpc": "ledger.v1.Accounts/Whoami",
+   "service": "ledger.v1.Accounts",
+   "method": "Whoami",
+   "state": "implemented",
+   "streaming": false,
+   "auth": "Member",
+   "handler": "internal/serve/accounts.go:46",
+   "codes": [
+    "UNAUTHENTICATED"
+   ],
+   "code_sites": [],
+   "interceptor_codes": [
+    "UNAUTHENTICATED"
+   ],
+   "tables": [
+    "sessions"
+   ],
+   "writes": [],
+   "effects": "none"
+  },
+  {
+   "rpc": "ledger.v1.Entries/Create",
+   "service": "ledger.v1.Entries",
+   "method": "Create",
+   "state": "implemented",
+   "streaming": false,
+   "auth": "Member",
+   "handler": "internal/serve/entries.go:48",
+   "codes": [
+    "INVALID_ARGUMENT",
+    "ALREADY_EXISTS",
+    "INTERNAL",
+    "NOT_FOUND",
+    "UNAUTHENTICATED"
+   ],
+   "code_sites": [],
+   "interceptor_codes": [
+    "UNAUTHENTICATED"
+   ],
+   "tables": [
+    "entries",
+    "sessions"
+   ],
+   "writes": [
+    "entries"
+   ],
+   "effects": "none"
+  },
+  {
+   "rpc": "ledger.v1.Entries/Get",
+   "service": "ledger.v1.Entries",
+   "method": "Get",
+   "state": "implemented",
+   "streaming": false,
+   "auth": "Member",
+   "handler": "internal/serve/entries.go:69",
+   "codes": [
+    "NOT_FOUND",
+    "INTERNAL",
+    "UNAUTHENTICATED"
+   ],
+   "code_sites": [],
+   "interceptor_codes": [
+    "UNAUTHENTICATED"
+   ],
+   "tables": [
+    "entries",
+    "sessions"
+   ],
+   "writes": [],
+   "effects": "none"
+  },
+  {
+   "rpc": "ledger.v1.Entries/List",
+   "service": "ledger.v1.Entries",
+   "method": "List",
+   "state": "implemented",
+   "streaming": false,
+   "auth": "Member",
+   "handler": "internal/serve/entries.go:74",
+   "codes": [
+    "INTERNAL",
+    "NOT_FOUND",
+    "UNAUTHENTICATED"
+   ],
+   "code_sites": [],
+   "interceptor_codes": [
+    "UNAUTHENTICATED"
+   ],
+   "tables": [
+    "entries",
+    "sessions"
+   ],
+   "writes": [],
+   "effects": "none"
+  },
+  {
+   "rpc": "ledger.v1.Entries/Close",
+   "service": "ledger.v1.Entries",
+   "method": "Close",
+   "state": "implemented",
+   "streaming": false,
+   "auth": "Member",
+   "handler": "internal/serve/entries.go:100",
+   "codes": [
+    "NOT_FOUND",
+    "FAILED_PRECONDITION",
+    "INTERNAL",
+    "UNAUTHENTICATED"
+   ],
+   "code_sites": [],
+   "interceptor_codes": [
+    "UNAUTHENTICATED"
+   ],
+   "tables": [
+    "entries",
+    "sessions"
+   ],
+   "writes": [
+    "entries"
+   ],
+   "effects": "none"
+  },
+  {
+   "rpc": "ledger.v1.Entries/Audit",
+   "service": "ledger.v1.Entries",
+   "method": "Audit",
+   "state": "unimplemented",
+   "streaming": false,
+   "auth": "Member",
+   "handler": "gen/ledger/v1/ledger_grpc.pb.go",
+   "codes": [
+    "UNIMPLEMENTED",
+    "UNAUTHENTICATED"
+   ],
+   "code_sites": [],
+   "interceptor_codes": [
+    "UNAUTHENTICATED"
+   ],
+   "tables": [
+    "sessions"
+   ],
+   "writes": [],
+   "effects": "none"
+  },
+  {
+   "rpc": "ledger.v1.Entries/Watch",
+   "service": "ledger.v1.Entries",
+   "method": "Watch",
+   "state": "unimplemented",
+   "streaming": true,
+   "auth": "Member",
+   "handler": "gen/ledger/v1/ledger_grpc.pb.go",
+   "codes": [],
+   "code_sites": [],
+   "interceptor_codes": [],
+   "tables": [],
+   "writes": [],
+   "effects": "none"
+  },
+  {
+   "rpc": "ledger.v1.Reports/Summary",
+   "service": "ledger.v1.Reports",
+   "method": "Summary",
+   "state": "not_registered",
+   "streaming": false,
+   "auth": "Member",
+   "handler": "",
+   "codes": [],
+   "code_sites": [],
+   "interceptor_codes": [],
+   "tables": [],
+   "writes": [],
+   "effects": "none"
+  }
+ ],
+ "tables": [
+  {
+   "name": "users",
+   "ddl": "harness",
+   "read_by": [
+    "ledger.v1.Accounts/Login"
+   ],
+   "written_by": [],
+   "notes": "seeded by harness.py build_db"
+  },
+  {
+   "name": "sessions",
+   "ddl": "harness",
+   "read_by": [
+    "ledger.v1.Accounts/Login",
+    "ledger.v1.Accounts/Whoami",
+    "ledger.v1.Entries/Create",
+    "ledger.v1.Entries/Get",
+    "ledger.v1.Entries/List",
+    "ledger.v1.Entries/Close",
+    "ledger.v1.Entries/Audit"
+   ],
+   "written_by": [
+    "ledger.v1.Accounts/Login"
+   ],
+   "notes": "one row per login"
+  },
+  {
+   "name": "entries",
+   "ddl": "harness",
+   "read_by": [
+    "ledger.v1.Entries/Create",
+    "ledger.v1.Entries/Get",
+    "ledger.v1.Entries/List",
+    "ledger.v1.Entries/Close"
+   ],
+   "written_by": [
+    "ledger.v1.Entries/Create",
+    "ledger.v1.Entries/Close"
+   ],
+   "notes": "title unique per owner"
+  }
+ ],
+ "flows": [
+  {
+   "name": "create_get_close",
+   "steps": [
+    {
+     "rpc": "ledger.v1.Entries/Create",
+     "as": "ann",
+     "request": {
+      "title": "alpha",
+      "tags": [
+       "x",
+       "y"
+      ]
+     },
+     "expect": {
+      "code": "OK",
+      "title": "alpha",
+      "state": "OPEN",
+      "tags.#": 2,
+      "tags.1": "y"
+     }
+    },
+    {
+     "rpc": "ledger.v1.Entries/Get",
+     "as": "ann",
+     "request": {},
+     "expect": {
+      "code": "OK",
+      "state": "OPEN",
+      "serial": 9007199254740993
+     }
+    },
+    {
+     "rpc": "ledger.v1.Entries/Close",
+     "as": "ann",
+     "request": {},
+     "expect": {
+      "code": "OK",
+      "state": "CLOSED"
+     }
+    },
+    {
+     "rpc": "ledger.v1.Entries/Close",
+     "as": "ann",
+     "request": {},
+     "expect": {
+      "code": "FAILED_PRECONDITION"
+     }
+    }
+   ],
+   "links": [
+    {
+     "from_step": 0,
+     "from_field": "id",
+     "to_step": 1,
+     "to_field": "id"
+    },
+    {
+     "from_step": 0,
+     "from_field": "id",
+     "to_step": 2,
+     "to_field": "id"
+    },
+    {
+     "from_step": 0,
+     "from_field": "id",
+     "to_step": 3,
+     "to_field": "id"
+    }
+   ]
+  },
+  {
+   "name": "two_creates_then_list",
+   "steps": [
+    {
+     "rpc": "ledger.v1.Entries/Create",
+     "as": "ann",
+     "request": {
+      "title": "beta"
+     },
+     "expect": {
+      "code": "OK",
+      "state": "OPEN"
+     }
+    },
+    {
+     "rpc": "ledger.v1.Entries/Create",
+     "as": "ann",
+     "request": {
+      "title": "gamma"
+     },
+     "expect": {
+      "code": "OK"
+     }
+    },
+    {
+     "rpc": "ledger.v1.Entries/Get",
+     "as": "ann",
+     "request": {},
+     "expect": {
+      "code": "OK",
+      "title": "beta"
+     }
+    },
+    {
+     "rpc": "ledger.v1.Entries/List",
+     "as": "ann",
+     "request": {},
+     "expect": {
+      "code": "OK",
+      "entries.#": 3,
+      "entries.2.title": "gamma"
+     }
+    }
+   ],
+   "links": [
+    {
+     "from_step": 0,
+     "from_field": "id",
+     "to_step": 2,
+     "to_field": "id"
+    }
+   ]
+  },
+  {
+   "name": "bob_reads_anns_entry",
+   "steps": [
+    {
+     "rpc": "ledger.v1.Entries/Create",
+     "as": "ann",
+     "request": {
+      "title": "delta"
+     },
+     "expect": {
+      "code": "OK"
+     }
+    },
+    {
+     "rpc": "ledger.v1.Entries/Get",
+     "as": "bob",
+     "request": {},
+     "expect": {
+      "code": "OK",
+      "owner": "ann"
+     }
+    },
+    {
+     "rpc": "ledger.v1.Entries/List",
+     "as": "bob",
+     "request": {},
+     "expect": {
+      "code": "OK",
+      "entries.#": 0
+     }
+    },
+    {
+     "rpc": "ledger.v1.Accounts/Whoami",
+     "as": "bob",
+     "request": {},
+     "expect": {
+      "code": "OK",
+      "name": "bob"
+     }
+    }
+   ],
+   "links": [
+    {
+     "from_step": 0,
+     "from_field": "id",
+     "to_step": 1,
+     "to_field": "id"
+    }
+   ]
+  },
+  {
+   "name": "gate_and_validation",
+   "steps": [
+    {
+     "rpc": "ledger.v1.Accounts/Whoami",
+     "as": null,
+     "request": {},
+     "expect": {
+      "code": "UNAUTHENTICATED"
+     }
+    },
+    {
+     "rpc": "ledger.v1.Accounts/Whoami",
+     "as": "ann",
+     "request": {},
+     "expect": {
+      "code": "OK",
+      "name": "ann"
+     }
+    },
+    {
+     "rpc": "ledger.v1.Entries/Create",
+     "as": "ann",
+     "request": {
+      "title": ""
+     },
+     "expect": {
+      "code": "INVALID_ARGUMENT"
+     }
+    }
+   ],
+   "links": []
+  }
+ ]
+}

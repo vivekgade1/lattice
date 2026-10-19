@@ -1,0 +1,4 @@
+[app]
+app = "tests.spec.shelfie_harness:make_app"
+db = "tests.spec.shelfie_harness:build_db"
+runtime = "tests.spec.shelfie_harness:RUNTIME"

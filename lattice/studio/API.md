@@ -1,4 +1,4 @@
-# Lattice Studio API contract (v1.25)
+# Lattice Studio API contract (v1.26)
 
 `lattice studio [DIR ...] [--default NAME] [--port N] [--allow-apply] [--mock FIXTURE_DIR]` serves the web UI at `/` and this JSON API, over one project or many (v1.6). It polls; there are no websockets.
 
@@ -1300,3 +1300,64 @@ A navigator group **App**, always listed (no count, no attention dot; its empty 
 
 ### The mock
 `GET /api/appmap`, `/api/appmap/element` and `/api/impact` are answered by the same `appmap.py` and `impact_ask.py` over the committed fixture project `lattice/studio/mock/appmap/` (a copy of `tests/spec/fixtures/implementation` plus one candidate): any `ready` or `accepted` mock change has the fixture candidate. The mock's second project answers `not_configured`. `POST /api/ask` routes in the mock like the real server.
+
+
+## v1.26 additions (the chat checks what it says: `[chat]`, the map router and the claim checker)
+
+**One optional `studio.toml` table, two optional keys on session events and two on the `POST /api/ask` answer. With `[chat]` absent (or both keys false) every route, every session event, the `claude` argv, the settings and the system prompt are byte-identical to v1.25.** The binding rule of v1.25 stays: **a workflow failure is observed or logically determined, never predicted.** Round 1 of the go-to place measured that a prompt alone does not keep a model from writing failure prose (72 unsupported claims on 44 questions), so the chat is now checked by a deterministic module after the model writes: no model, no subprocess, no write.
+
+### studio.toml
+```toml
+[chat]
+route = true   # the model-free map router (below); default false
+check = true   # the claim checker and its prompt paragraph (below); default false
+```
+Both keys need an `[implementation]` table (the map and the spec digest read it); `[impact]` is needed only for the tier-id parts (without it every failure sentence is unsupported by definition: there are no relevant ids). A value that is not `true` or `false`, a key other than `route` and `check`, or a key set without `[implementation]` makes Studio refuse to start (exit 2, `studio: studio.toml: [chat] <key> ...`, naming the key).
+
+### The map router (`route = true`)
+`lattice.spec.chat_route` answers six question shapes from the app map, with the same functions as `GET /api/appmap`, in a fixed template, map values verbatim, `usage.tokens` 0. It runs **after** the impact router of v1.25 (`POST /api/ask`, only with `[impact]`) and, in the session path, as a **pre-route** in `POST /api/session/{id}/message`. A question that matches no shape, or two shapes that disagree, is not routed: the model answers, then the claim checker. A question that names a change id is never routed here.
+
+| shape | the question has | the answer (`result.routed: "map"`) |
+|---|---|---|
+| MR1 | an exact route and a build verb (built, implemented, exists, in the code, ...), or "which endpoints are in the spec but not in the code" | the endpoint status (`spec_only` is "not built: in the spec, not in the code"), the code locations, the rules `required_not_implemented` that need it; `kind` `yes` or `no`, a list is `value` |
+| MR2 | the word workflow, flow or replay, and an exact route and/or a status (verified, unverified, failed, "did not pass") | the map's workflows with that route and/or recorded replay status, each with its name and its capture-time status |
+| MR3 | the word rules and a status phrase (implemented but not verified, not built, without code, verified) | the rule ids with that `impl_status`, and their number |
+| MR4 | a lifecycle or state machine word and a machine of the map (key, spec target or its table and column words) | the machine row: basis, states, edges (with the side of each), its rules, its code, the workflows that reference it |
+| MR5 | a caller (a ReviewData row such as `ann`, or "no token") and an exact route | the cell: what the spec expects, the code's `auth` and refusals (or "not built"), the statuses a verified workflow observed at capture |
+| MR6 | a counterfactual cue (suppose, what if we, if we, imagine, were to, hypothetically), a verb that changes the spec or the app, no behaviour subject ("what if a user ...") and no change id | the same answer as the impact router's hypothetical: `kind: "not_specified"`, "Lattice does not predict failures. ..." and the static neighbourhood of the elements named |
+
+On `POST /api/ask` the answer keeps the four `kind` values and gains an optional key `map` (the shape and the map keys used):
+```json
+{"kind": "yes|no|value|not_specified", "answer": "...", "explanation": "...",
+ "citations": [{"target": "rule:R7", "step": null, "quote": "..."}],
+ "citations_checked": true, "rejected_citations": [], "verified": null, "usage": {"seconds": 0, "tokens": 0},
+ "map": {"schema": "lattice.chatroute/1", "shape": "MR1|MR2|MR3|MR4|MR5|MR6", "keys": ["rule:R7"],
+         "status?": "spec_only", "route?": "GET /v1/sync", "impl_status?": "required_not_implemented"}}
+```
+A routed session turn spawns **no process** and does not need the `claude` binary; it is **not part of the Claude session's memory** (the next model turn does not know it happened). Its events are `user`, `text`, `result` (`ok`, `cost_usd` 0, `num_turns` 0, `routed`) and `status idle`.
+
+### The claim checker (`check = true`)
+`lattice.spec.claim_check` (`lattice.chatcheck/1`) checks every text block the model writes **before the owner sees it**. It reuses the round-1 scorer's unit and claim rule (lines, then sentence ends; a failure word `fail|fails|failing|failed|break|breaks|broke|broken`). A unit that holds a failure word is kept only when it carries a tier 1 or tier 2 item id of a relevant report (D0) or an owner label (`static`, `not decided`, `undecidable`, `not run`, `no change`; D1: `may`, `might` and `could` are speculation, not labels); otherwise it is **replaced** with Lattice's own text (never kept with a label added): the item verbatim (D2), the tier 3 items as "static: may fail; not a claim" (D3), the spec text of a rule quoted verbatim or a lifecycle's states and edges (D4), a workflow's recorded replay status at capture time, an observed fact (D5), or "whether X fails is not decided" with the element's static neighbourhood (D6); anything else is **withheld** (D7). A unit that holds an id Lattice did not mint (a `t1-`..`t4-`, `wf-` or `Rn` that does not exist) is withheld (E2). After the units: E1 appends the Lattice record (the router's template line and one line per tier 1 and tier 2 item) of a change the owner named when the text does not state all its ids, or the fixed "Lattice has no impact report for cN" sentence; E3 appends the fixed "Lattice does not predict failures" sentence to a hypothetical that names no change; and a footer says how many sentences were withheld. The relevant reports are D's, built in process (tiers 2 and 3, `observe` off; no tier 1 run). Spike D's tier 1 ids found in a `change_impact` result **of this turn** are observed and count as support. The checker never rewrites a failure word into a synonym.
+
+**Chat sessions.** The system prompt gains one frozen paragraph (`_CHECK_RULES`) after the v1.25 paragraph. With `check = true` no text is streamed: the `partial` text events are not emitted, each finished text block is checked and emitted once, and the raw text is never put in an event. Events (the rest of the v1.5 contract is unchanged):
+```json
+{"seq": 12, "ts": "...", "type": "text", "text": "...", "partial": false, "message_id": "m1",
+ "checked": {"kept": 3, "supported": 0, "labelled": 1, "replaced_item": 0, "replaced_tier3": 0, "replaced_quote": 0,
+             "replaced_replay": 0, "replaced_element": 1, "withheld": 1, "appended": 0, "speculative_hedge": 0, "unknown_id": 0}}
+```
+```json
+{"seq": 14, "ts": "...", "type": "result", "ok": true, "text": "...", "cost_usd": 0.01, "duration_ms": 100,
+ "input_tokens": 0, "output_tokens": 0, "cache_read_input_tokens": 0, "cache_creation_input_tokens": 0,
+ "num_turns": 1, "claude_session_id": "...|null", "routed": "impact|map|hypothetical|null",
+ "check": {"kept": 3, "supported": 0, "labelled": 1, "replaced_item": 0, "replaced_tier3": 0, "replaced_quote": 0,
+           "replaced_replay": 0, "replaced_element": 1, "withheld": 1, "appended": 0, "speculative_hedge": 0, "unknown_id": 0}}
+```
+`text.checked` holds the counts of that block (the turn's tail, which appends E1, E3 and the footer, is one more `text` event before `result`, with the turn's counts); `result.check` is the sum over the turn and `result.text` the checked text (never the raw text). `result.routed` is `null` for a model turn, `impact` and `hypothetical` for the impact router's two answers and `map` or `hypothetical` for this module's; it is present on every `result` when `route` is on, and `check` when `check` is on. A `text` event without `checked` is as in v1.5.
+
+**`POST /api/ask`.** With `check = true` the model's `answer` and `explanation` go through the checker. A `yes`, `no` or `value` answer whose `answer` text lost a unit becomes `not_specified` with the fixed text of `ask.py`'s downgrade ("Not specified: the answer could not be grounded in the spec."). The key `check` (the counts of `text.checked`) is added **only when the checker changed something**; an unchanged answer is byte-identical to v1.25. A routed answer is not checked (it is Lattice's own text).
+
+### The web UI
+A checked text shows one line under it, in words: "Checked by Lattice: k withheld, m replaced". A text event without `checked` renders exactly as before.
+
+### The mock
+The mock reads `[chat]` from the `studio.toml` of its fixture project `lattice/studio/mock/appmap/project/` (the committed one has none: off) and answers routed and checked asks and session turns with the same `chat_route` and `claim_check` modules.

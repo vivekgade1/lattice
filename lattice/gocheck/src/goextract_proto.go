@@ -68,6 +68,10 @@ type xRPC struct {
 	Calls        []string      `json:"calls,omitempty"`
 	Params       []xProtoField `json:"-"`
 	svc          *xService
+
+	// E4c
+	CustomOptions map[string]any  `json:"custom_options,omitempty"`
+	optLost       map[string]bool // custom options set on the rpc whose value was not recorded
 }
 
 type xService struct {
@@ -238,6 +242,8 @@ type protoParser struct {
 	f    *protoFile
 	toks []pTok
 	i    int
+
+	rpcOpt *pKV // E4c: the custom option the last rpc-level parseOption read (val nil: not recorded)
 }
 
 func (p *protoParser) peek() pTok { return p.toks[p.i] }
@@ -390,6 +396,20 @@ func (p *protoParser) parseOption(kind, scope string, line int) *xHTTPRule {
 	if kind == "rpc" && name == "(google.api.http)" {
 		if agg, ok := val.(pAgg); ok {
 			return p.httpRule(agg, line)
+		}
+	}
+	scalar := true // E4c: an rpc-level scalar or enum identifier is recorded on the rpc
+	switch v := val.(type) {
+	case pIdent:
+		val = string(v)
+	case string, int64, float64:
+	default:
+		val, scalar = nil, false
+	}
+	if kind == "rpc" {
+		p.rpcOpt = &pKV{key: name, val: val, line: line}
+		if scalar {
+			return nil
 		}
 	}
 	p.unread(line, "custom_option", fmt.Sprintf("the custom option %s is not read", name))
@@ -868,6 +888,20 @@ func (p *protoParser) parseRPC(svc *xService, line int) {
 				p.i++
 				if rule := p.parseOption("rpc", svc.Name, t.line); rule != nil && r.HTTP == nil {
 					r.HTTP = rule
+				}
+				if o := p.rpcOpt; o != nil {
+					p.rpcOpt = nil
+					if o.val == nil {
+						if r.optLost == nil {
+							r.optLost = map[string]bool{}
+						}
+						r.optLost[o.key] = true
+					} else {
+						if r.CustomOptions == nil {
+							r.CustomOptions = map[string]any{}
+						}
+						r.CustomOptions[o.key] = o.val
+					}
 				}
 			case t.kind == 'p' && t.text == ";":
 				p.i++

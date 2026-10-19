@@ -1,0 +1,1040 @@
+{
+ "schema": "lattice.grpc-probes5-gated/1",
+ "arm": "SG",
+ "rehearsal": false,
+ "preflight": {
+  "problems": [],
+  "hash_notes": [],
+  "layout": [],
+  "runner_sha256": "ef05f9368a1c96f2a36d4631c10a6a8532422632dffa9e1b77361263355ead40",
+  "scorer_sha256": "991cb1dc46623e58d6c457bb5c86277311b32ca6cb7a32f3513eca40ec569ec3",
+  "truth5_sha256": "b08a0759bb49f2ce1c41942cb6f5ee7cc8a4ec9e7d6855c8294608a3440f099b",
+  "contract_sha256": "f71b9e5d1b6b9caf7ccd25d7548121dde74afeaf1ca9a8257c9978178c372681",
+  "freeze5_sha256": "e92972e2c8c658c34d21ef956f3418d5537a3fb50d24bb8d848e1c0d9db16eea",
+  "target_freeze_sha256": "9e172af682b39808e5123c2ce70699e860abe20e5b900c6b5a15e3392df3fd02",
+  "staged": [],
+  "truth": [],
+  "ok": true
+ },
+ "ledger": {
+  "path": "/Users/vivekgade/Documents/lattice-grb/docs/results/data/2026-10-18-grpc-round5/ledger.jsonl",
+  "started_seq": 3,
+  "run_index": 1,
+  "prior": {},
+  "tail_sha256_before_close": "8594965881b08462033e8a0e54f5a776e29b740d9225e851a12633e67dd8f303"
+ },
+ "provenance": {
+  "label": "blind",
+  "reasons": [],
+  "pass": true,
+  "reason": ""
+ },
+ "tables_source": "go",
+ "codes_normalised": null,
+ "probes": [
+  {
+   "id": "SG-RPC",
+   "prediction": "0.80-1.00 / 0.85-1.00 (point 0.95 / 0.97); P(pass) 0.6",
+   "pass_rule": "recall >= 0.90 and precision >= 0.95 (rpc name AND state must match; `unread` counts wrong)",
+   "status": "PASS",
+   "observed": {
+    "recall": 1.0,
+    "precision": 1.0,
+    "truth rpcs": 26,
+    "extracted rpcs": 26,
+    "matched": 26,
+    "truth states": {
+     "implemented": 26
+    },
+    "streaming reported not supported": [],
+    "streaming not supported (all)": true,
+    "model endpoints": 26
+   },
+   "detail": {
+    "missed (truth, state)": [],
+    "extra (extract, state)": []
+   },
+   "label": "blind",
+   "label_reasons": []
+  },
+  {
+   "id": "SG-SAFE",
+   "prediction": "0-2; P(0) 0.8",
+   "pass_rule": "S8: 0 confident-wrong states or auth labels",
+   "status": "PASS",
+   "observed": {
+    "confident-wrong": 0,
+    "checked": 26
+   },
+   "detail": {
+    "wrong": []
+   },
+   "label": "blind",
+   "label_reasons": []
+  },
+  {
+   "id": "SG-CODES",
+   "prediction": "0.30-0.90 / 0.75-1.00 (point 0.60 / 0.92); P 0.3",
+   "pass_rule": "S9: micro recall >= 0.70 and micro precision >= 0.90 (implemented rpcs, OK excluded; unread is no extra); S11 count reported",
+   "status": "FAIL",
+   "observed": {
+    "recall": 0.0,
+    "precision": 0.0,
+    "truth": 132,
+    "extracted": 25,
+    "matched": 0,
+    "unknown_extras": [
+     "streak.v1.AccountService/DeleteMe:UNKNOWN",
+     "streak.v1.AccountService/GetMe:UNKNOWN",
+     "streak.v1.AccountService/UpdateMe:UNKNOWN",
+     "streak.v1.AuthService/Login:UNKNOWN",
+     "streak.v1.AuthService/Logout:UNKNOWN",
+     "streak.v1.AuthService/Refresh:UNKNOWN",
+     "streak.v1.AuthService/Register:UNKNOWN",
+     "streak.v1.CompletionService/BatchCreateCompletions:UNKNOWN",
+     "streak.v1.CompletionService/CreateCompletion:UNKNOWN",
+     "streak.v1.CompletionService/DeleteCompletion:UNKNOWN",
+     "streak.v1.CompletionService/ListCompletions:UNKNOWN",
+     "streak.v1.DeviceService/DeleteDevice:UNKNOWN",
+     "streak.v1.DeviceService/RegisterDevice:UNKNOWN",
+     "streak.v1.HabitService/CreateHabit:UNKNOWN",
+     "streak.v1.HabitService/DeleteHabit:UNKNOWN",
+     "streak.v1.HabitService/GetHabit:UNKNOWN",
+     "streak.v1.HabitService/GetHistory:UNKNOWN",
+     "streak.v1.HabitService/GetProgress:UNKNOWN",
+     "streak.v1.HabitService/ListHabits:UNKNOWN",
+     "streak.v1.HabitService/UpdateHabit:UNKNOWN",
+     "streak.v1.HomeService/GetHome:UNKNOWN",
+     "streak.v1.NudgeService/DismissNudge:UNKNOWN",
+     "streak.v1.NudgeService/ListNudges:UNKNOWN",
+     "streak.v1.SyncService/Sync:UNKNOWN",
+     "streak.v1.TestClockService/RunNudger:UNKNOWN"
+    ],
+    "unread_rpcs": [
+     "streak.v1.AccountService/UpdateMe",
+     "streak.v1.AuthService/Login",
+     "streak.v1.AuthService/Refresh",
+     "streak.v1.AuthService/Register",
+     "streak.v1.CompletionService/BatchCreateCompletions",
+     "streak.v1.CompletionService/CreateCompletion",
+     "streak.v1.CompletionService/DeleteCompletion",
+     "streak.v1.CompletionService/ListCompletions",
+     "streak.v1.DeviceService/RegisterDevice",
+     "streak.v1.HabitService/CreateHabit",
+     "streak.v1.HabitService/DeleteHabit",
+     "streak.v1.HabitService/GetHabit",
+     "streak.v1.HabitService/GetHistory",
+     "streak.v1.HabitService/GetProgress",
+     "streak.v1.HabitService/ListHabits",
+     "streak.v1.HabitService/UpdateHabit",
+     "streak.v1.NudgeService/DismissNudge",
+     "streak.v1.NudgeService/ListNudges",
+     "streak.v1.SyncService/Sync",
+     "streak.v1.TestClockService/SetClock"
+    ]
+   },
+   "detail": {
+    "missed": [
+     "streak.v1.AccountService/DeleteMe:FAILED_PRECONDITION",
+     "streak.v1.AccountService/DeleteMe:INTERNAL",
+     "streak.v1.AccountService/DeleteMe:RESOURCE_EXHAUSTED",
+     "streak.v1.AccountService/DeleteMe:UNAUTHENTICATED",
+     "streak.v1.AccountService/GetMe:FAILED_PRECONDITION",
+     "streak.v1.AccountService/GetMe:INTERNAL",
+     "streak.v1.AccountService/GetMe:RESOURCE_EXHAUSTED",
+     "streak.v1.AccountService/GetMe:UNAUTHENTICATED",
+     "streak.v1.AccountService/UpdateMe:FAILED_PRECONDITION",
+     "streak.v1.AccountService/UpdateMe:INTERNAL",
+     "streak.v1.AccountService/UpdateMe:INVALID_ARGUMENT",
+     "streak.v1.AccountService/UpdateMe:RESOURCE_EXHAUSTED",
+     "streak.v1.AccountService/UpdateMe:UNAUTHENTICATED",
+     "streak.v1.AuthService/Login:FAILED_PRECONDITION",
+     "streak.v1.AuthService/Login:INTERNAL",
+     "streak.v1.AuthService/Login:INVALID_ARGUMENT",
+     "streak.v1.AuthService/Login:UNAUTHENTICATED",
+     "streak.v1.AuthService/Logout:FAILED_PRECONDITION",
+     "streak.v1.AuthService/Logout:INTERNAL",
+     "streak.v1.AuthService/Logout:RESOURCE_EXHAUSTED",
+     "streak.v1.AuthService/Logout:UNAUTHENTICATED",
+     "streak.v1.AuthService/Refresh:FAILED_PRECONDITION",
+     "streak.v1.AuthService/Refresh:INTERNAL",
+     "streak.v1.AuthService/Refresh:INVALID_ARGUMENT",
+     "streak.v1.AuthService/Refresh:UNAUTHENTICATED",
+     "streak.v1.AuthService/Register:ALREADY_EXISTS",
+     "streak.v1.AuthService/Register:FAILED_PRECONDITION",
+     "streak.v1.AuthService/Register:INTERNAL",
+     "streak.v1.AuthService/Register:INVALID_ARGUMENT",
+     "streak.v1.CompletionService/BatchCreateCompletions:FAILED_PRECONDITION",
+     "streak.v1.CompletionService/BatchCreateCompletions:INTERNAL",
+     "streak.v1.CompletionService/BatchCreateCompletions:INVALID_ARGUMENT",
+     "streak.v1.CompletionService/BatchCreateCompletions:RESOURCE_EXHAUSTED",
+     "streak.v1.CompletionService/BatchCreateCompletions:UNAUTHENTICATED",
+     "streak.v1.CompletionService/CreateCompletion:ALREADY_EXISTS",
+     "streak.v1.CompletionService/CreateCompletion:FAILED_PRECONDITION",
+     "streak.v1.CompletionService/CreateCompletion:INTERNAL",
+     "streak.v1.CompletionService/CreateCompletion:INVALID_ARGUMENT",
+     "streak.v1.CompletionService/CreateCompletion:NOT_FOUND",
+     "streak.v1.CompletionService/CreateCompletion:RESOURCE_EXHAUSTED",
+     "streak.v1.CompletionService/CreateCompletion:UNAUTHENTICATED",
+     "streak.v1.CompletionService/DeleteCompletion:FAILED_PRECONDITION",
+     "streak.v1.CompletionService/DeleteCompletion:INTERNAL",
+     "streak.v1.CompletionService/DeleteCompletion:INVALID_ARGUMENT",
+     "streak.v1.CompletionService/DeleteCompletion:NOT_FOUND",
+     "streak.v1.CompletionService/DeleteCompletion:RESOURCE_EXHAUSTED",
+     "streak.v1.CompletionService/DeleteCompletion:UNAUTHENTICATED",
+     "streak.v1.CompletionService/ListCompletions:FAILED_PRECONDITION",
+     "streak.v1.CompletionService/ListCompletions:INTERNAL",
+     "streak.v1.CompletionService/ListCompletions:INVALID_ARGUMENT",
+     "streak.v1.CompletionService/ListCompletions:NOT_FOUND",
+     "streak.v1.CompletionService/ListCompletions:RESOURCE_EXHAUSTED",
+     "streak.v1.CompletionService/ListCompletions:UNAUTHENTICATED",
+     "streak.v1.DeviceService/DeleteDevice:FAILED_PRECONDITION",
+     "streak.v1.DeviceService/DeleteDevice:INTERNAL",
+     "streak.v1.DeviceService/DeleteDevice:NOT_FOUND",
+     "streak.v1.DeviceService/DeleteDevice:RESOURCE_EXHAUSTED",
+     "streak.v1.DeviceService/DeleteDevice:UNAUTHENTICATED",
+     "streak.v1.DeviceService/RegisterDevice:FAILED_PRECONDITION",
+     "streak.v1.DeviceService/RegisterDevice:INTERNAL",
+     "streak.v1.DeviceService/RegisterDevice:INVALID_ARGUMENT",
+     "streak.v1.DeviceService/RegisterDevice:RESOURCE_EXHAUSTED",
+     "streak.v1.DeviceService/RegisterDevice:UNAUTHENTICATED",
+     "streak.v1.HabitService/CreateHabit:ALREADY_EXISTS",
+     "streak.v1.HabitService/CreateHabit:FAILED_PRECONDITION",
+     "streak.v1.HabitService/CreateHabit:INTERNAL",
+     "streak.v1.HabitService/CreateHabit:INVALID_ARGUMENT",
+     "streak.v1.HabitService/CreateHabit:RESOURCE_EXHAUSTED",
+     "streak.v1.HabitService/CreateHabit:UNAUTHENTICATED",
+     "streak.v1.HabitService/DeleteHabit:FAILED_PRECONDITION",
+     "streak.v1.HabitService/DeleteHabit:INTERNAL",
+     "streak.v1.HabitService/DeleteHabit:INVALID_ARGUMENT",
+     "streak.v1.HabitService/DeleteHabit:NOT_FOUND",
+     "streak.v1.HabitService/DeleteHabit:RESOURCE_EXHAUSTED",
+     "streak.v1.HabitService/DeleteHabit:UNAUTHENTICATED",
+     "streak.v1.HabitService/GetHabit:FAILED_PRECONDITION",
+     "streak.v1.HabitService/GetHabit:INTERNAL",
+     "streak.v1.HabitService/GetHabit:INVALID_ARGUMENT",
+     "streak.v1.HabitService/GetHabit:NOT_FOUND",
+     "streak.v1.HabitService/GetHabit:RESOURCE_EXHAUSTED",
+     "streak.v1.HabitService/GetHabit:UNAUTHENTICATED",
+     "streak.v1.HabitService/GetHistory:FAILED_PRECONDITION",
+     "streak.v1.HabitService/GetHistory:INTERNAL",
+     "streak.v1.HabitService/GetHistory:INVALID_ARGUMENT",
+     "streak.v1.HabitService/GetHistory:NOT_FOUND",
+     "streak.v1.HabitService/GetHistory:RESOURCE_EXHAUSTED",
+     "streak.v1.HabitService/GetHistory:UNAUTHENTICATED",
+     "streak.v1.HabitService/GetProgress:FAILED_PRECONDITION",
+     "streak.v1.HabitService/GetProgress:INTERNAL",
+     "streak.v1.HabitService/GetProgress:INVALID_ARGUMENT",
+     "streak.v1.HabitService/GetProgress:NOT_FOUND",
+     "streak.v1.HabitService/GetProgress:RESOURCE_EXHAUSTED",
+     "streak.v1.HabitService/GetProgress:UNAUTHENTICATED",
+     "streak.v1.HabitService/ListHabits:FAILED_PRECONDITION",
+     "streak.v1.HabitService/ListHabits:INTERNAL",
+     "streak.v1.HabitService/ListHabits:INVALID_ARGUMENT",
+     "streak.v1.HabitService/ListHabits:RESOURCE_EXHAUSTED",
+     "streak.v1.HabitService/ListHabits:UNAUTHENTICATED",
+     "streak.v1.HabitService/UpdateHabit:ABORTED",
+     "streak.v1.HabitService/UpdateHabit:ALREADY_EXISTS",
+     "streak.v1.HabitService/UpdateHabit:FAILED_PRECONDITION",
+     "streak.v1.HabitService/UpdateHabit:INTERNAL",
+     "streak.v1.HabitService/UpdateHabit:INVALID_ARGUMENT",
+     "streak.v1.HabitService/UpdateHabit:NOT_FOUND",
+     "streak.v1.HabitService/UpdateHabit:RESOURCE_EXHAUSTED",
+     "streak.v1.HabitService/UpdateHabit:UNAUTHENTICATED",
+     "streak.v1.HomeService/GetHome:FAILED_PRECONDITION",
+     "streak.v1.HomeService/GetHome:INTERNAL",
+     "streak.v1.HomeService/GetHome:RESOURCE_EXHAUSTED",
+     "streak.v1.HomeService/GetHome:UNAUTHENTICATED",
+     "streak.v1.NudgeService/DismissNudge:FAILED_PRECONDITION",
+     "streak.v1.NudgeService/DismissNudge:INTERNAL",
+     "streak.v1.NudgeService/DismissNudge:INVALID_ARGUMENT",
+     "streak.v1.NudgeService/DismissNudge:NOT_FOUND",
+     "streak.v1.NudgeService/DismissNudge:RESOURCE_EXHAUSTED",
+     "streak.v1.NudgeService/DismissNudge:UNAUTHENTICATED",
+     "streak.v1.NudgeService/ListNudges:FAILED_PRECONDITION",
+     "streak.v1.NudgeService/ListNudges:INTERNAL",
+     "streak.v1.NudgeService/ListNudges:INVALID_ARGUMENT",
+     "streak.v1.NudgeService/ListNudges:RESOURCE_EXHAUSTED",
+     "streak.v1.NudgeService/ListNudges:UNAUTHENTICATED",
+     "streak.v1.SyncService/Sync:FAILED_PRECONDITION",
+     "streak.v1.SyncService/Sync:INTERNAL",
+     "streak.v1.SyncService/Sync:INVALID_ARGUMENT",
+     "streak.v1.SyncService/Sync:RESOURCE_EXHAUSTED",
+     "streak.v1.SyncService/Sync:UNAUTHENTICATED",
+     "streak.v1.TestClockService/RunNudger:FAILED_PRECONDITION",
+     "streak.v1.TestClockService/RunNudger:INTERNAL",
+     "streak.v1.TestClockService/RunNudger:UNAUTHENTICATED",
+     "streak.v1.TestClockService/SetClock:FAILED_PRECONDITION",
+     "streak.v1.TestClockService/SetClock:INTERNAL",
+     "streak.v1.TestClockService/SetClock:INVALID_ARGUMENT"
+    ],
+    "extra": [
+     "streak.v1.AccountService/DeleteMe:UNKNOWN",
+     "streak.v1.AccountService/GetMe:UNKNOWN",
+     "streak.v1.AccountService/UpdateMe:UNKNOWN",
+     "streak.v1.AuthService/Login:UNKNOWN",
+     "streak.v1.AuthService/Logout:UNKNOWN",
+     "streak.v1.AuthService/Refresh:UNKNOWN",
+     "streak.v1.AuthService/Register:UNKNOWN",
+     "streak.v1.CompletionService/BatchCreateCompletions:UNKNOWN",
+     "streak.v1.CompletionService/CreateCompletion:UNKNOWN",
+     "streak.v1.CompletionService/DeleteCompletion:UNKNOWN",
+     "streak.v1.CompletionService/ListCompletions:UNKNOWN",
+     "streak.v1.DeviceService/DeleteDevice:UNKNOWN",
+     "streak.v1.DeviceService/RegisterDevice:UNKNOWN",
+     "streak.v1.HabitService/CreateHabit:UNKNOWN",
+     "streak.v1.HabitService/DeleteHabit:UNKNOWN",
+     "streak.v1.HabitService/GetHabit:UNKNOWN",
+     "streak.v1.HabitService/GetHistory:UNKNOWN",
+     "streak.v1.HabitService/GetProgress:UNKNOWN",
+     "streak.v1.HabitService/ListHabits:UNKNOWN",
+     "streak.v1.HabitService/UpdateHabit:UNKNOWN",
+     "streak.v1.HomeService/GetHome:UNKNOWN",
+     "streak.v1.NudgeService/DismissNudge:UNKNOWN",
+     "streak.v1.NudgeService/ListNudges:UNKNOWN",
+     "streak.v1.SyncService/Sync:UNKNOWN",
+     "streak.v1.TestClockService/RunNudger:UNKNOWN"
+    ]
+   },
+   "label": "blind",
+   "label_reasons": []
+  },
+  {
+   "id": "SG-AUTH",
+   "prediction": "P(0 wrong) 0.85; unclear 0.00-0.80 (point 0.2); P 0.55",
+   "pass_rule": "S7: 0 wrong (hard) and unclear <= 0.50 of the truth's implemented + unimplemented rpcs",
+   "status": "FAIL",
+   "observed": {
+    "denominator": 26,
+    "unclear": 26,
+    "unclear_share": 1.0,
+    "reason": "unclear_above_cap",
+    "wrong": []
+   },
+   "detail": {
+    "unclear rpcs": [
+     [
+      "streak.v1.AccountService/DeleteMe",
+      "unclear"
+     ],
+     [
+      "streak.v1.AccountService/GetMe",
+      "unclear"
+     ],
+     [
+      "streak.v1.AccountService/UpdateMe",
+      "unclear"
+     ],
+     [
+      "streak.v1.AuthService/Login",
+      "unclear"
+     ],
+     [
+      "streak.v1.AuthService/Logout",
+      "unclear"
+     ],
+     [
+      "streak.v1.AuthService/Refresh",
+      "unclear"
+     ],
+     [
+      "streak.v1.AuthService/Register",
+      "unclear"
+     ],
+     [
+      "streak.v1.CompletionService/BatchCreateCompletions",
+      "unclear"
+     ],
+     [
+      "streak.v1.CompletionService/CreateCompletion",
+      "unclear"
+     ],
+     [
+      "streak.v1.CompletionService/DeleteCompletion",
+      "unclear"
+     ],
+     [
+      "streak.v1.CompletionService/ListCompletions",
+      "unclear"
+     ],
+     [
+      "streak.v1.DeviceService/DeleteDevice",
+      "unclear"
+     ],
+     [
+      "streak.v1.DeviceService/RegisterDevice",
+      "unclear"
+     ],
+     [
+      "streak.v1.HabitService/CreateHabit",
+      "unclear"
+     ],
+     [
+      "streak.v1.HabitService/DeleteHabit",
+      "unclear"
+     ],
+     [
+      "streak.v1.HabitService/GetHabit",
+      "unclear"
+     ],
+     [
+      "streak.v1.HabitService/GetHistory",
+      "unclear"
+     ],
+     [
+      "streak.v1.HabitService/GetProgress",
+      "unclear"
+     ],
+     [
+      "streak.v1.HabitService/ListHabits",
+      "unclear"
+     ],
+     [
+      "streak.v1.HabitService/UpdateHabit",
+      "unclear"
+     ],
+     [
+      "streak.v1.HomeService/GetHome",
+      "unclear"
+     ],
+     [
+      "streak.v1.NudgeService/DismissNudge",
+      "unclear"
+     ],
+     [
+      "streak.v1.NudgeService/ListNudges",
+      "unclear"
+     ],
+     [
+      "streak.v1.SyncService/Sync",
+      "unclear"
+     ],
+     [
+      "streak.v1.TestClockService/RunNudger",
+      "unclear"
+     ],
+     [
+      "streak.v1.TestClockService/SetClock",
+      "unclear"
+     ]
+    ],
+    "row": {
+     "denominator": 26,
+     "wrong": [],
+     "unclear": 26,
+     "unclear_share": 1.0,
+     "unclear_rpcs": [
+      [
+       "streak.v1.AccountService/DeleteMe",
+       "unclear"
+      ],
+      [
+       "streak.v1.AccountService/GetMe",
+       "unclear"
+      ],
+      [
+       "streak.v1.AccountService/UpdateMe",
+       "unclear"
+      ],
+      [
+       "streak.v1.AuthService/Login",
+       "unclear"
+      ],
+      [
+       "streak.v1.AuthService/Logout",
+       "unclear"
+      ],
+      [
+       "streak.v1.AuthService/Refresh",
+       "unclear"
+      ],
+      [
+       "streak.v1.AuthService/Register",
+       "unclear"
+      ],
+      [
+       "streak.v1.CompletionService/BatchCreateCompletions",
+       "unclear"
+      ],
+      [
+       "streak.v1.CompletionService/CreateCompletion",
+       "unclear"
+      ],
+      [
+       "streak.v1.CompletionService/DeleteCompletion",
+       "unclear"
+      ],
+      [
+       "streak.v1.CompletionService/ListCompletions",
+       "unclear"
+      ],
+      [
+       "streak.v1.DeviceService/DeleteDevice",
+       "unclear"
+      ],
+      [
+       "streak.v1.DeviceService/RegisterDevice",
+       "unclear"
+      ],
+      [
+       "streak.v1.HabitService/CreateHabit",
+       "unclear"
+      ],
+      [
+       "streak.v1.HabitService/DeleteHabit",
+       "unclear"
+      ],
+      [
+       "streak.v1.HabitService/GetHabit",
+       "unclear"
+      ],
+      [
+       "streak.v1.HabitService/GetHistory",
+       "unclear"
+      ],
+      [
+       "streak.v1.HabitService/GetProgress",
+       "unclear"
+      ],
+      [
+       "streak.v1.HabitService/ListHabits",
+       "unclear"
+      ],
+      [
+       "streak.v1.HabitService/UpdateHabit",
+       "unclear"
+      ],
+      [
+       "streak.v1.HomeService/GetHome",
+       "unclear"
+      ],
+      [
+       "streak.v1.NudgeService/DismissNudge",
+       "unclear"
+      ],
+      [
+       "streak.v1.NudgeService/ListNudges",
+       "unclear"
+      ],
+      [
+       "streak.v1.SyncService/Sync",
+       "unclear"
+      ],
+      [
+       "streak.v1.TestClockService/RunNudger",
+       "unclear"
+      ],
+      [
+       "streak.v1.TestClockService/SetClock",
+       "unclear"
+      ]
+     ],
+     "reason": "unclear_above_cap",
+     "pass": false
+    }
+   },
+   "label": "blind",
+   "label_reasons": []
+  },
+  {
+   "id": "SG-TABLES",
+   "prediction": "bimodal: 0.0 or 0.85-1.00 (MySQL: no D5.2); P 0.5",
+   "pass_rule": "recall >= 0.90 (`tables_source` reported beside it)",
+   "status": "FAIL",
+   "observed": {
+    "recall": 0.0,
+    "precision": 1.0,
+    "truth": 9,
+    "extracted": 0,
+    "tables_source": "go"
+   },
+   "detail": {
+    "missed": [
+     "completions",
+     "devices",
+     "habit_targets",
+     "habits",
+     "notification_prefs",
+     "nudges",
+     "refresh_tokens",
+     "test_clock",
+     "users"
+    ],
+    "extra": []
+   },
+   "label": "blind",
+   "label_reasons": []
+  },
+  {
+   "id": "SG-REC",
+   "prediction": "",
+   "pass_rule": "not a pass",
+   "status": "NOT SUPPORTED",
+   "observed": "reconcile_with builds SQLite paths (grpc.py:553/595): not supported on MySQL this round",
+   "detail": null,
+   "label": "blind",
+   "label_reasons": []
+  },
+  {
+   "id": "SG-FLOWS",
+   "prediction": "",
+   "pass_rule": "not a pass",
+   "status": "NOT SUPPORTED",
+   "observed": "run_rpc_flows builds SQLite paths (grpc.py:677): not supported on MySQL this round",
+   "detail": null,
+   "label": "blind",
+   "label_reasons": []
+  },
+  {
+   "id": "SG-CD",
+   "prediction": "pass (P 0.7)",
+   "pass_rule": "reported (validity of the author)",
+   "status": "REPORTED",
+   "observed": {
+    "findings": 136,
+    "would_pass": false
+   },
+   "detail": [
+    "scenario: access_anonymous_me",
+    "scenario: access_anonymous_update_me",
+    "scenario: access_anonymous_delete_me",
+    "scenario: access_anonymous_logout",
+    "scenario: access_anonymous_add_device",
+    "scenario: access_anonymous_delete_device",
+    "scenario: access_anonymous_list_habits",
+    "scenario: access_anonymous_create_habit",
+    "scenario: access_anonymous_get_habit",
+    "scenario: access_anonymous_patch_habit",
+    "scenario: access_anonymous_delete_habit",
+    "scenario: access_anonymous_add_completion",
+    "scenario: access_anonymous_list_completions",
+    "scenario: access_anonymous_delete_completion",
+    "scenario: access_anonymous_batch",
+    "scenario: access_anonymous_progress",
+    "scenario: access_anonymous_history",
+    "scenario: access_anonymous_home",
+    "scenario: access_anonymous_sync",
+    "scenario: access_anonymous_nudges"
+   ],
+   "label": "blind",
+   "label_reasons": []
+  },
+  {
+   "id": "SG-SQLT",
+   "prediction": "0.0-1.0 (point 0.6)",
+   "pass_rule": "reported only (S14)",
+   "status": "REPORTED",
+   "observed": {
+    "truth_pairs": 88,
+    "extracted_pairs": 69,
+    "matched": 69,
+    "recall": 0.7841,
+    "precision": 1.0,
+    "would_pass": true
+   },
+   "detail": {
+    "streak.v1.AccountService/DeleteMe": {
+     "truth": [
+      "completions",
+      "devices",
+      "habit_targets",
+      "habits",
+      "notification_prefs",
+      "nudges",
+      "refresh_tokens",
+      "users"
+     ],
+     "extracted": [
+      "users"
+     ],
+     "recall": 0.125,
+     "precision": 1.0
+    },
+    "streak.v1.AccountService/GetMe": {
+     "truth": [
+      "notification_prefs",
+      "users"
+     ],
+     "extracted": [
+      "notification_prefs",
+      "users"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "streak.v1.AccountService/UpdateMe": {
+     "truth": [
+      "notification_prefs",
+      "users"
+     ],
+     "extracted": [
+      "notification_prefs",
+      "users"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "streak.v1.AuthService/Login": {
+     "truth": [
+      "refresh_tokens",
+      "users"
+     ],
+     "extracted": [
+      "refresh_tokens",
+      "users"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "streak.v1.AuthService/Logout": {
+     "truth": [
+      "devices",
+      "refresh_tokens",
+      "users"
+     ],
+     "extracted": [
+      "devices",
+      "refresh_tokens",
+      "users"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "streak.v1.AuthService/Refresh": {
+     "truth": [
+      "refresh_tokens",
+      "users"
+     ],
+     "extracted": [
+      "refresh_tokens",
+      "users"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "streak.v1.AuthService/Register": {
+     "truth": [
+      "notification_prefs",
+      "users"
+     ],
+     "extracted": [
+      "notification_prefs",
+      "users"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "streak.v1.CompletionService/BatchCreateCompletions": {
+     "truth": [
+      "completions",
+      "habits",
+      "notification_prefs",
+      "nudges",
+      "users"
+     ],
+     "extracted": [
+      "completions",
+      "habits",
+      "notification_prefs",
+      "nudges",
+      "users"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "streak.v1.CompletionService/CreateCompletion": {
+     "truth": [
+      "completions",
+      "habits",
+      "notification_prefs",
+      "nudges",
+      "users"
+     ],
+     "extracted": [
+      "completions",
+      "habits",
+      "notification_prefs",
+      "nudges",
+      "users"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "streak.v1.CompletionService/DeleteCompletion": {
+     "truth": [
+      "completions",
+      "habits",
+      "notification_prefs",
+      "nudges",
+      "users"
+     ],
+     "extracted": [
+      "completions",
+      "habits",
+      "notification_prefs",
+      "nudges",
+      "users"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "streak.v1.CompletionService/ListCompletions": {
+     "truth": [
+      "completions",
+      "habits",
+      "users"
+     ],
+     "extracted": [
+      "habits"
+     ],
+     "recall": 0.3333,
+     "precision": 1.0
+    },
+    "streak.v1.DeviceService/DeleteDevice": {
+     "truth": [
+      "devices",
+      "users"
+     ],
+     "extracted": [
+      "devices"
+     ],
+     "recall": 0.5,
+     "precision": 1.0
+    },
+    "streak.v1.DeviceService/RegisterDevice": {
+     "truth": [
+      "devices",
+      "users"
+     ],
+     "extracted": [
+      "devices",
+      "users"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "streak.v1.HabitService/CreateHabit": {
+     "truth": [
+      "habit_targets",
+      "habits",
+      "users"
+     ],
+     "extracted": [
+      "habit_targets",
+      "habits",
+      "users"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "streak.v1.HabitService/DeleteHabit": {
+     "truth": [
+      "completions",
+      "habits",
+      "nudges",
+      "users"
+     ],
+     "extracted": [
+      "habits",
+      "users"
+     ],
+     "recall": 0.5,
+     "precision": 1.0
+    },
+    "streak.v1.HabitService/GetHabit": {
+     "truth": [
+      "habits",
+      "users"
+     ],
+     "extracted": [
+      "habits"
+     ],
+     "recall": 0.5,
+     "precision": 1.0
+    },
+    "streak.v1.HabitService/GetHistory": {
+     "truth": [
+      "completions",
+      "habit_targets",
+      "habits",
+      "users"
+     ],
+     "extracted": [
+      "completions",
+      "habit_targets",
+      "habits",
+      "users"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "streak.v1.HabitService/GetProgress": {
+     "truth": [
+      "completions",
+      "habits",
+      "users"
+     ],
+     "extracted": [
+      "completions",
+      "habits",
+      "users"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "streak.v1.HabitService/ListHabits": {
+     "truth": [
+      "habits",
+      "users"
+     ],
+     "extracted": [],
+     "recall": 0.0,
+     "precision": null
+    },
+    "streak.v1.HabitService/UpdateHabit": {
+     "truth": [
+      "completions",
+      "habit_targets",
+      "habits",
+      "users"
+     ],
+     "extracted": [
+      "completions",
+      "habit_targets",
+      "habits",
+      "users"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "streak.v1.HomeService/GetHome": {
+     "truth": [
+      "completions",
+      "habits",
+      "nudges",
+      "users"
+     ],
+     "extracted": [
+      "completions",
+      "habits",
+      "users"
+     ],
+     "recall": 0.75,
+     "precision": 1.0
+    },
+    "streak.v1.NudgeService/DismissNudge": {
+     "truth": [
+      "devices",
+      "habits",
+      "nudges",
+      "users"
+     ],
+     "extracted": [
+      "devices",
+      "habits",
+      "nudges",
+      "users"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "streak.v1.NudgeService/ListNudges": {
+     "truth": [
+      "habits",
+      "nudges",
+      "users"
+     ],
+     "extracted": [
+      "users"
+     ],
+     "recall": 0.3333,
+     "precision": 1.0
+    },
+    "streak.v1.SyncService/Sync": {
+     "truth": [
+      "completions",
+      "habits",
+      "nudges",
+      "users"
+     ],
+     "extracted": [
+      "completions",
+      "habits",
+      "nudges"
+     ],
+     "recall": 0.75,
+     "precision": 1.0
+    },
+    "streak.v1.TestClockService/RunNudger": {
+     "truth": [
+      "completions",
+      "devices",
+      "habits",
+      "notification_prefs",
+      "nudges",
+      "test_clock",
+      "users"
+     ],
+     "extracted": [
+      "completions",
+      "devices",
+      "habits",
+      "notification_prefs",
+      "nudges",
+      "test_clock",
+      "users"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "streak.v1.TestClockService/SetClock": {
+     "truth": [
+      "test_clock"
+     ],
+     "extracted": [
+      "test_clock"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    }
+   },
+   "label": "blind",
+   "label_reasons": []
+  },
+  {
+   "id": "SG-DET",
+   "prediction": "10/10 identical; P 0.95",
+   "pass_rule": "10/10 identical, no absolute path, time or port",
+   "status": "PASS",
+   "observed": {
+    "identical runs": 10,
+    "of": 10,
+    "leaks": [],
+    "artifacts": [
+     "describe",
+     "extract",
+     "model",
+     "plans"
+    ],
+    "ok": true
+   },
+   "detail": [],
+   "label": "blind",
+   "label_reasons": []
+  },
+  {
+   "id": "SG-NW",
+   "prediction": "0, 0, 0; P 0.95",
+   "pass_rule": "0 changed, 0 new, 0 claude calls",
+   "status": "PASS",
+   "observed": {
+    "changed": 0,
+    "new": 0,
+    "claude calls": 0
+   },
+   "detail": [],
+   "label": "blind",
+   "label_reasons": []
+  }
+ ]
+}

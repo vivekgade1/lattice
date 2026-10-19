@@ -1,0 +1,98 @@
+{
+ "changes": {
+  "c1": {
+   "status": "ready",
+   "byte_equal": true,
+   "got": {
+    "REQUIREMENTS.md": "0c8e095377c6f762cca9004be005204f9af2438a5f607c2d2f0cc90d6d84c13e",
+    "spec.py": "15a39dc35511b05c75f2387b694c0e4a13c8f08de3d66d147c565779e3820c12",
+    "spec.trace.json": "d711f19a3ee8cee6bf9254c3a5d2e711af3e03ba13410eab9e9182eb4e5c2e2c"
+   },
+   "want": {
+    "REQUIREMENTS.md": "0c8e095377c6f762cca9004be005204f9af2438a5f607c2d2f0cc90d6d84c13e",
+    "spec.py": "15a39dc35511b05c75f2387b694c0e4a13c8f08de3d66d147c565779e3820c12",
+    "spec.trace.json": "d711f19a3ee8cee6bf9254c3a5d2e711af3e03ba13410eab9e9182eb4e5c2e2c"
+   }
+  },
+  "c2": {
+   "status": "ready",
+   "byte_equal": true,
+   "got": {
+    "REQUIREMENTS.md": "ca836c108ce1b48bb7e0a9443420b55b7679990954b161bd75f86676a5b17ec6",
+    "spec.py": "fd488bb4558ff6c2223264abadc50bbed2d3ac605f9de619724152953f07f0ee",
+    "spec.trace.json": "9a7c6d00a8f7151080ed426f312bf3f8bf5fad5520cb9503d857a3a3b2dacc82"
+   },
+   "want": {
+    "REQUIREMENTS.md": "ca836c108ce1b48bb7e0a9443420b55b7679990954b161bd75f86676a5b17ec6",
+    "spec.py": "fd488bb4558ff6c2223264abadc50bbed2d3ac605f9de619724152953f07f0ee",
+    "spec.trace.json": "9a7c6d00a8f7151080ed426f312bf3f8bf5fad5520cb9503d857a3a3b2dacc82"
+   }
+  },
+  "c3": {
+   "status": "ready",
+   "byte_equal": true,
+   "got": {
+    "REQUIREMENTS.md": "779347540fe964074e21b09928eb6fc9f7183db2e353a0d7a2562d01aa393c70",
+    "spec.py": "6b1528dd35647f028bb4674291162172d40cb94c5a33b8b6c2783a1021a8dedf",
+    "spec.trace.json": "465f695f0dc4b9b30b08e2cebeb13a8d86acdadaea06cea1ccc7f5c3f74f775e"
+   },
+   "want": {
+    "REQUIREMENTS.md": "779347540fe964074e21b09928eb6fc9f7183db2e353a0d7a2562d01aa393c70",
+    "spec.py": "6b1528dd35647f028bb4674291162172d40cb94c5a33b8b6c2783a1021a8dedf",
+    "spec.trace.json": "465f695f0dc4b9b30b08e2cebeb13a8d86acdadaea06cea1ccc7f5c3f74f775e"
+   }
+  },
+  "c4": {
+   "status": "ready",
+   "byte_equal": true,
+   "got": {
+    "REQUIREMENTS.md": "1a00c52508761b8be4969929b86ae411645a75ba7d1f7cffc2804cd385973d5d",
+    "spec.py": "8ed27929891f7d88137685e1e37ceedb587bc8ab3ab94a871f8dcab7821b5459",
+    "spec.trace.json": "49d951917adcb5a739d375d0c287210320d499d5bd25265ac9a5226a26ce98aa"
+   },
+   "want": {
+    "REQUIREMENTS.md": "1a00c52508761b8be4969929b86ae411645a75ba7d1f7cffc2804cd385973d5d",
+    "spec.py": "8ed27929891f7d88137685e1e37ceedb587bc8ab3ab94a871f8dcab7821b5459",
+    "spec.trace.json": "49d951917adcb5a739d375d0c287210320d499d5bd25265ac9a5226a26ce98aa"
+   }
+  },
+  "c5": {
+   "status": "ready",
+   "byte_equal": true,
+   "got": {
+    "REQUIREMENTS.md": "c18dce674fa17b522faa5f8b074f5afad435e2a5f60fb93b78141e74fd0626c1",
+    "spec.py": "f8d964c7bf8f57583a029be07589e631d311366be1986491b3584cd64188b281",
+    "spec.trace.json": "eb68d7bdd4baf30248ec623fc4b1425115418201783376a358ee94aba220c7e4"
+   },
+   "want": {
+    "REQUIREMENTS.md": "c18dce674fa17b522faa5f8b074f5afad435e2a5f60fb93b78141e74fd0626c1",
+    "spec.py": "f8d964c7bf8f57583a029be07589e631d311366be1986491b3584cd64188b281",
+    "spec.trace.json": "eb68d7bdd4baf30248ec623fc4b1425115418201783376a358ee94aba220c7e4"
+   }
+  },
+  "c6": {
+   "status": "ready",
+   "byte_equal": true,
+   "got": {
+    "REQUIREMENTS.md": "929c2992665e637eed7f5b7e00f9e837e6a35d0ef994bcaa064bc3791789e4bf",
+    "spec.py": "28dfc2e6c6a2aa27168079740d28a94de7f3efcb7cf8234d795d48b7960f5624",
+    "spec.trace.json": "9e2d3d58e89cabde6149c1822f1e7cd9d84647dc71e4ff9b7c448acf033be929"
+   },
+   "want": {
+    "REQUIREMENTS.md": "929c2992665e637eed7f5b7e00f9e837e6a35d0ef994bcaa064bc3791789e4bf",
+    "spec.py": "28dfc2e6c6a2aa27168079740d28a94de7f3efcb7cf8234d795d48b7960f5624",
+    "spec.trace.json": "9e2d3d58e89cabde6149c1822f1e7cd9d84647dc71e4ff9b7c448acf033be929"
+   }
+  }
+ },
+ "notes": [
+  "S: studio.toml go_src rewritten to the clone",
+  "S4: studio.toml go_src rewritten to the clone"
+ ],
+ "scored": {
+  "G1": null,
+  "G2": null
+ },
+ "scorer_rc": 2,
+ "shim_calls": 0
+}

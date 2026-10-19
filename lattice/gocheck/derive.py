@@ -19,7 +19,10 @@ extract adds each column's ``json`` name) and builds a :class:`~lattice.gocheck.
 :func:`go_spec_policy` (pycheck has no counterpart): the derived policy with an
 **empty** baseline, laid under the spec -- for each table the spec declares, the spec's
 owner, ``owner_via``, private columns and machine win (a declared table with no owner is not
-owned); the spec's admin and open routes are added. ``lattice check`` on Go keeps
+owned); the spec's admin and open routes are added. Round 3 (K6): tables are matched by SQL name
+(a derived struct whose table is a declared table's *is* that table), and a derived table the
+spec does not declare and that carries no owner, private column, machine or users role is
+dropped, listed by :func:`undeclared_tables`. ``lattice check`` on Go keeps
 ``GoPolicy.from_spec`` by default (Ruling Q3): a caller passes ``policy=go_spec_policy(...)``.
 """
 
@@ -42,7 +45,7 @@ from lattice.gocheck import (
 if TYPE_CHECKING:
     from lattice.spec.model import Spec
 
-__all__ = ["derive_go_policy", "go_spec_policy", "policy_extract"]
+__all__ = ["derive_go_policy", "go_spec_policy", "policy_extract", "undeclared_tables"]
 
 EXTRACT_TIMEOUT_S = 120
 
@@ -126,12 +129,33 @@ def _has_json_facts(extract: Mapping[str, Any]) -> bool:
     return all("json" in c for c in cols)
 
 
+def _identity(base: GoPolicy, stated: GoPolicy) -> tuple[set[str], list[str]]:
+    """K6: (the derived tables that are declared tables under another schema name, the derived
+    tables no spec table covers and no derived fact keeps alive)."""
+    declared_sql = set(stated.tables.values())
+    same = {t for t, sql in base.tables.items() if t not in stated.tables and sql in declared_sql}
+    users = stated.users_table or base.users_table
+    facts = (base.owners, base.owner_via, base.private, base.machines)
+    bare = (t for t in base.tables if t not in stated.tables and t not in same and t != users)
+    dropped = sorted(t for t in bare if not any(t in f for f in facts))
+    return same, dropped
+
+
+def undeclared_tables(
+    spec: Spec, module_dir: Path | str, policy: GoPolicy | None = None
+) -> list[str]:
+    """The derived tables :func:`go_spec_policy` drops: undeclared by the spec, with no fact."""
+    base = policy if policy is not None else derive_go_policy(module_dir)
+    return _identity(base, GoPolicy.from_spec(spec))[1]
+
+
 def go_spec_policy(spec: Spec, module_dir: Path | str, policy: GoPolicy | None = None) -> GoPolicy:
     """The derived policy (``policy`` when given, else :func:`derive_go_policy`) with an empty
     baseline, under the spec's declarations (see the module docstring)."""
     base = policy if policy is not None else derive_go_policy(module_dir)
     stated = GoPolicy.from_spec(spec)
-    declared = set(stated.tables)
+    same, dropped = _identity(base, stated)
+    declared = set(stated.tables) | same
     owners = {t: c for t, c in base.owners.items() if t not in declared}
     owners.update(stated.owners)
     via = {t: v for t, v in base.owner_via.items() if t not in declared}
@@ -140,7 +164,8 @@ def go_spec_policy(spec: Spec, module_dir: Path | str, policy: GoPolicy | None =
     private.update(stated.private)
     machines = {t: m for t, m in base.machines.items() if t not in declared}
     machines.update(stated.machines)
-    tables = {**base.tables, **stated.tables}
+    tables = {t: s for t, s in base.tables.items() if t not in same and t not in dropped}
+    tables.update(stated.tables)
     admin = tuple(dict.fromkeys((*base.admin_routes, *stated.admin_routes)))
     return dataclasses.replace(
         base,

@@ -1,0 +1,3 @@
+7e1bbe1967ffc0b36724804c797fb7c56f31417e5923422e0970747a24f274c5  tests/gocheck/fixtures/goparity3/go.mod
+ca95d32e47a44f762e1e3e7878db74da6f63d1b05d0940b125c1aaf237fc0b0b  tests/gocheck/fixtures/goparity3/main.go
+f538ce8a152284fb093a67adfb2ec043e76fdbc476a751e604baa5d67d0048d9  tests/gocheck/fixtures/goparity3/truth.json

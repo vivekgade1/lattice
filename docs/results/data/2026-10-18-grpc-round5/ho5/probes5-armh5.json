@@ -1,0 +1,1241 @@
+{
+ "schema": "lattice.grpc-probes5-gated/1",
+ "arm": "H5",
+ "rehearsal": false,
+ "preflight": {
+  "problems": [],
+  "hash_notes": [],
+  "layout": [],
+  "runner_sha256": "ef05f9368a1c96f2a36d4631c10a6a8532422632dffa9e1b77361263355ead40",
+  "scorer_sha256": "991cb1dc46623e58d6c457bb5c86277311b32ca6cb7a32f3513eca40ec569ec3",
+  "truth5_sha256": "b08a0759bb49f2ce1c41942cb6f5ee7cc8a4ec9e7d6855c8294608a3440f099b",
+  "contract_sha256": "f71b9e5d1b6b9caf7ccd25d7548121dde74afeaf1ca9a8257c9978178c372681",
+  "freeze5_sha256": "e92972e2c8c658c34d21ef956f3418d5537a3fb50d24bb8d848e1c0d9db16eea",
+  "target_freeze_sha256": "e2ce1d33defe120b5200bdc33e47175cb8ab5d2d94bebc1389ca15f8667e2a28",
+  "staged": [],
+  "truth": [],
+  "ok": true
+ },
+ "ledger": {
+  "path": "/Users/vivekgade/Documents/lattice-grb/docs/results/data/2026-10-18-grpc-round5/ledger.jsonl",
+  "started_seq": 1,
+  "run_index": 1,
+  "prior": {},
+  "tail_sha256_before_close": "073702a91e3948846034a0b4da5e7d3fa3006036ec155a219a67dd3505b83d33"
+ },
+ "provenance": {
+  "label": "blind",
+  "reasons": [],
+  "pass": true,
+  "reason": ""
+ },
+ "tables_source": "harness_db",
+ "codes_normalised": 0,
+ "probes": [
+  {
+   "id": "HO5-RPC",
+   "prediction": "recall 0.45-1.00 / precision 0.50-1.00 (point 0.82 / 0.85); P 0.35",
+   "pass_rule": "recall >= 0.90 and precision >= 0.95 (rpc name AND state must match; `unread` counts wrong)",
+   "status": "FAIL",
+   "observed": {
+    "recall": 0.733,
+    "precision": 0.733,
+    "truth rpcs": 30,
+    "extracted rpcs": 30,
+    "matched": 22,
+    "truth states": {
+     "implemented": 26,
+     "not_registered": 1,
+     "streaming": 1,
+     "unimplemented": 2
+    },
+    "streaming reported not supported": [
+     "marina.v1.BerthService/WatchOccupancy"
+    ],
+    "streaming not supported (all)": true,
+    "model endpoints": 22
+   },
+   "detail": {
+    "missed (truth, state)": [
+     [
+      "marina.v1.BerthService/ReserveBlock",
+      "unimplemented"
+     ],
+     [
+      "marina.v1.BillingService/AddCharge",
+      "implemented"
+     ],
+     [
+      "marina.v1.BillingService/ExportLedger",
+      "unimplemented"
+     ],
+     [
+      "marina.v1.BillingService/GetInvoice",
+      "implemented"
+     ],
+     [
+      "marina.v1.BillingService/ListInvoices",
+      "implemented"
+     ],
+     [
+      "marina.v1.BillingService/PayInvoice",
+      "implemented"
+     ],
+     [
+      "marina.v1.BillingService/VoidInvoice",
+      "implemented"
+     ],
+     [
+      "marina.v1.ForecastService/GetForecast",
+      "not_registered"
+     ]
+    ],
+    "extra (extract, state)": [
+     [
+      "marina.v1.BerthService/ReserveBlock",
+      "implemented"
+     ],
+     [
+      "marina.v1.BillingService/AddCharge",
+      "unread"
+     ],
+     [
+      "marina.v1.BillingService/ExportLedger",
+      "unread"
+     ],
+     [
+      "marina.v1.BillingService/GetInvoice",
+      "unread"
+     ],
+     [
+      "marina.v1.BillingService/ListInvoices",
+      "unread"
+     ],
+     [
+      "marina.v1.BillingService/PayInvoice",
+      "unread"
+     ],
+     [
+      "marina.v1.BillingService/VoidInvoice",
+      "unread"
+     ],
+     [
+      "marina.v1.ForecastService/GetForecast",
+      "unread"
+     ]
+    ]
+   },
+   "label": "blind",
+   "label_reasons": []
+  },
+  {
+   "id": "HO5-SAFE",
+   "prediction": "0-3 confident-wrong (point 0); P(0) 0.75",
+   "pass_rule": "S8: 0 confident-wrong states or auth labels",
+   "status": "FAIL",
+   "observed": {
+    "confident-wrong": 1,
+    "checked": 30
+   },
+   "detail": {
+    "wrong": [
+     [
+      "marina.v1.BerthService/ReserveBlock",
+      "state",
+      "implemented",
+      "unimplemented"
+     ]
+    ]
+   },
+   "label": "blind",
+   "label_reasons": []
+  },
+  {
+   "id": "HO5-CODES",
+   "prediction": "recall 0.15-0.85 / precision 0.70-1.00 (point 0.45 / 0.92); P 0.2",
+   "pass_rule": "S9: micro recall >= 0.70 and micro precision >= 0.90 (implemented rpcs, OK excluded; unread is no extra); S11 count reported",
+   "status": "FAIL",
+   "observed": {
+    "recall": 0.6747,
+    "precision": 0.8,
+    "truth": 83,
+    "extracted": 70,
+    "matched": 56,
+    "unknown_extras": [],
+    "unread_rpcs": [],
+    "codes_normalised": 0
+   },
+   "detail": {
+    "missed": [
+     "marina.v1.BillingService/AddCharge:FAILED_PRECONDITION",
+     "marina.v1.BillingService/AddCharge:INTERNAL",
+     "marina.v1.BillingService/AddCharge:INVALID_ARGUMENT",
+     "marina.v1.BillingService/AddCharge:NOT_FOUND",
+     "marina.v1.BillingService/AddCharge:OUT_OF_RANGE",
+     "marina.v1.BillingService/GetInvoice:NOT_FOUND",
+     "marina.v1.BillingService/GetInvoice:PERMISSION_DENIED",
+     "marina.v1.BillingService/ListInvoices:INTERNAL",
+     "marina.v1.BillingService/ListInvoices:INVALID_ARGUMENT",
+     "marina.v1.BillingService/ListInvoices:NOT_FOUND",
+     "marina.v1.BillingService/PayInvoice:FAILED_PRECONDITION",
+     "marina.v1.BillingService/PayInvoice:INTERNAL",
+     "marina.v1.BillingService/PayInvoice:INVALID_ARGUMENT",
+     "marina.v1.BillingService/PayInvoice:NOT_FOUND",
+     "marina.v1.BillingService/PayInvoice:PERMISSION_DENIED",
+     "marina.v1.BillingService/VoidInvoice:FAILED_PRECONDITION",
+     "marina.v1.BillingService/VoidInvoice:INTERNAL",
+     "marina.v1.BillingService/VoidInvoice:INVALID_ARGUMENT",
+     "marina.v1.BillingService/VoidInvoice:NOT_FOUND",
+     "marina.v1.VesselService/GetVessel:NOT_FOUND",
+     "marina.v1.VesselService/GetVessel:PERMISSION_DENIED",
+     "marina.v1.VesselService/RegisterVessel:ALREADY_EXISTS",
+     "marina.v1.VesselService/RegisterVessel:NOT_FOUND",
+     "marina.v1.VesselService/RetireVessel:NOT_FOUND",
+     "marina.v1.VesselService/RetireVessel:PERMISSION_DENIED",
+     "marina.v1.VesselService/UpdateVessel:NOT_FOUND",
+     "marina.v1.VesselService/UpdateVessel:PERMISSION_DENIED"
+    ],
+    "extra": [
+     "marina.v1.BerthService/FindOpenBerths:NOT_FOUND",
+     "marina.v1.BerthService/FindOpenBerths:UNIMPLEMENTED",
+     "marina.v1.BerthService/GetBerth:UNIMPLEMENTED",
+     "marina.v1.BerthService/ListBerths:UNIMPLEMENTED",
+     "marina.v1.BerthService/ListPiers:INVALID_ARGUMENT",
+     "marina.v1.BerthService/ListPiers:NOT_FOUND",
+     "marina.v1.BerthService/ListPiers:UNIMPLEMENTED",
+     "marina.v1.BerthService/ReserveBlock:INTERNAL",
+     "marina.v1.BerthService/ReserveBlock:INVALID_ARGUMENT",
+     "marina.v1.BerthService/ReserveBlock:NOT_FOUND",
+     "marina.v1.BerthService/ReserveBlock:UNIMPLEMENTED",
+     "marina.v1.BerthService/SetBerthRate:UNIMPLEMENTED",
+     "marina.v1.BerthService/SetBerthStatus:UNIMPLEMENTED",
+     "marina.v1.ReservationService/GetReservation:INTERNAL"
+    ]
+   },
+   "label": "blind",
+   "label_reasons": []
+  },
+  {
+   "id": "HO5-AUTH",
+   "prediction": "P(0 wrong) 0.85; unclear 0.00-1.00 (point 0.35); P 0.5",
+   "pass_rule": "S7: 0 wrong (hard) and unclear <= 0.50 of the truth's implemented + unimplemented rpcs",
+   "status": "FAIL",
+   "observed": {
+    "denominator": 28,
+    "unclear": 28,
+    "unclear_share": 1.0,
+    "reason": "unclear_above_cap",
+    "wrong": []
+   },
+   "detail": {
+    "unclear rpcs": [
+     [
+      "marina.v1.AccessService/ListAccounts",
+      "unclear"
+     ],
+     [
+      "marina.v1.AccessService/Login",
+      "unclear"
+     ],
+     [
+      "marina.v1.AccessService/Logout",
+      "unclear"
+     ],
+     [
+      "marina.v1.AccessService/WhoAmI",
+      "unclear"
+     ],
+     [
+      "marina.v1.BerthService/FindOpenBerths",
+      "unclear"
+     ],
+     [
+      "marina.v1.BerthService/GetBerth",
+      "unclear"
+     ],
+     [
+      "marina.v1.BerthService/ListBerths",
+      "unclear"
+     ],
+     [
+      "marina.v1.BerthService/ListPiers",
+      "unclear"
+     ],
+     [
+      "marina.v1.BerthService/ReserveBlock",
+      "unclear"
+     ],
+     [
+      "marina.v1.BerthService/SetBerthRate",
+      "unclear"
+     ],
+     [
+      "marina.v1.BerthService/SetBerthStatus",
+      "unclear"
+     ],
+     [
+      "marina.v1.BillingService/AddCharge",
+      "(none)"
+     ],
+     [
+      "marina.v1.BillingService/ExportLedger",
+      "(none)"
+     ],
+     [
+      "marina.v1.BillingService/GetInvoice",
+      "(none)"
+     ],
+     [
+      "marina.v1.BillingService/ListInvoices",
+      "(none)"
+     ],
+     [
+      "marina.v1.BillingService/PayInvoice",
+      "(none)"
+     ],
+     [
+      "marina.v1.BillingService/VoidInvoice",
+      "(none)"
+     ],
+     [
+      "marina.v1.ReservationService/CancelReservation",
+      "unclear"
+     ],
+     [
+      "marina.v1.ReservationService/ConfirmReservation",
+      "unclear"
+     ],
+     [
+      "marina.v1.ReservationService/CreateReservation",
+      "unclear"
+     ],
+     [
+      "marina.v1.ReservationService/ExtendStay",
+      "unclear"
+     ],
+     [
+      "marina.v1.ReservationService/GetReservation",
+      "unclear"
+     ],
+     [
+      "marina.v1.ReservationService/ListReservations",
+      "unclear"
+     ],
+     [
+      "marina.v1.VesselService/GetVessel",
+      "unclear"
+     ],
+     [
+      "marina.v1.VesselService/ListVessels",
+      "unclear"
+     ],
+     [
+      "marina.v1.VesselService/RegisterVessel",
+      "unclear"
+     ],
+     [
+      "marina.v1.VesselService/RetireVessel",
+      "unclear"
+     ],
+     [
+      "marina.v1.VesselService/UpdateVessel",
+      "unclear"
+     ]
+    ],
+    "row": {
+     "denominator": 28,
+     "wrong": [],
+     "unclear": 28,
+     "unclear_share": 1.0,
+     "unclear_rpcs": [
+      [
+       "marina.v1.AccessService/ListAccounts",
+       "unclear"
+      ],
+      [
+       "marina.v1.AccessService/Login",
+       "unclear"
+      ],
+      [
+       "marina.v1.AccessService/Logout",
+       "unclear"
+      ],
+      [
+       "marina.v1.AccessService/WhoAmI",
+       "unclear"
+      ],
+      [
+       "marina.v1.BerthService/FindOpenBerths",
+       "unclear"
+      ],
+      [
+       "marina.v1.BerthService/GetBerth",
+       "unclear"
+      ],
+      [
+       "marina.v1.BerthService/ListBerths",
+       "unclear"
+      ],
+      [
+       "marina.v1.BerthService/ListPiers",
+       "unclear"
+      ],
+      [
+       "marina.v1.BerthService/ReserveBlock",
+       "unclear"
+      ],
+      [
+       "marina.v1.BerthService/SetBerthRate",
+       "unclear"
+      ],
+      [
+       "marina.v1.BerthService/SetBerthStatus",
+       "unclear"
+      ],
+      [
+       "marina.v1.BillingService/AddCharge",
+       "(none)"
+      ],
+      [
+       "marina.v1.BillingService/ExportLedger",
+       "(none)"
+      ],
+      [
+       "marina.v1.BillingService/GetInvoice",
+       "(none)"
+      ],
+      [
+       "marina.v1.BillingService/ListInvoices",
+       "(none)"
+      ],
+      [
+       "marina.v1.BillingService/PayInvoice",
+       "(none)"
+      ],
+      [
+       "marina.v1.BillingService/VoidInvoice",
+       "(none)"
+      ],
+      [
+       "marina.v1.ReservationService/CancelReservation",
+       "unclear"
+      ],
+      [
+       "marina.v1.ReservationService/ConfirmReservation",
+       "unclear"
+      ],
+      [
+       "marina.v1.ReservationService/CreateReservation",
+       "unclear"
+      ],
+      [
+       "marina.v1.ReservationService/ExtendStay",
+       "unclear"
+      ],
+      [
+       "marina.v1.ReservationService/GetReservation",
+       "unclear"
+      ],
+      [
+       "marina.v1.ReservationService/ListReservations",
+       "unclear"
+      ],
+      [
+       "marina.v1.VesselService/GetVessel",
+       "unclear"
+      ],
+      [
+       "marina.v1.VesselService/ListVessels",
+       "unclear"
+      ],
+      [
+       "marina.v1.VesselService/RegisterVessel",
+       "unclear"
+      ],
+      [
+       "marina.v1.VesselService/RetireVessel",
+       "unclear"
+      ],
+      [
+       "marina.v1.VesselService/UpdateVessel",
+       "unclear"
+      ]
+     ],
+     "reason": "unclear_above_cap",
+     "pass": false
+    }
+   },
+   "label": "blind",
+   "label_reasons": []
+  },
+  {
+   "id": "HO5-TABLES",
+   "prediction": "recall 0.80-1.00 (point 1.00); P 0.9",
+   "pass_rule": "recall >= 0.90 (`tables_source` reported beside it)",
+   "status": "PASS",
+   "observed": {
+    "recall": 1.0,
+    "precision": 0.889,
+    "truth": 8,
+    "extracted": 9,
+    "tables_source": "harness_db"
+   },
+   "detail": {
+    "missed": [],
+    "extra": [
+     "schema_migrations"
+    ]
+   },
+   "label": "blind",
+   "label_reasons": []
+  },
+  {
+   "id": "HO5-REC",
+   "prediction": "coverage 0.95-1.00, agreement 0.70-1.00 (point 0.95); P 0.65",
+   "pass_rule": "S5 (coverage >= 0.95, agreement 1.00, supplementary 0) + S6 not FAIL + 0 auth_refused + 0 login_failed on truth-implemented non-public rpcs + every disagreement isolated",
+   "status": "FAIL",
+   "observed": {
+    "S5 coverage": 1.0,
+    "S5 agreement": 1.0,
+    "S5 by class": {
+     "absent": "1/1",
+     "implemented": "26/26",
+     "not_registered": "1/1",
+     "unimplemented": "2/2"
+    },
+    "S5 reason": "",
+    "supplementary_calls": 0,
+    "S6": "order_vacuous",
+    "auth_refused on truth-implemented non-public rpcs": [],
+    "order disagreed": [],
+    "all disagreements resolved isolated": true,
+    "rpcs answered by the library": 30,
+    "seconds": 1.47,
+    "login_failed on truth-implemented non-public rpcs": []
+   },
+   "detail": {
+    "S5": {
+     "denominator": 30,
+     "covered": 30,
+     "coverage": 1.0,
+     "agreement": 1.0,
+     "by_class": {
+      "absent": "1/1",
+      "implemented": "26/26",
+      "not_registered": "1/1",
+      "unimplemented": "2/2"
+     },
+     "wrong": [],
+     "missing": [],
+     "supplementary_calls": 0,
+     "reason": "",
+     "pass": true
+    },
+    "S6": {
+     "status": "order_vacuous",
+     "pass": false,
+     "effectful": [
+      "marina.v1.AccessService/Login",
+      "marina.v1.AccessService/Logout",
+      "marina.v1.BerthService/WatchOccupancy",
+      "marina.v1.ReservationService/CancelReservation",
+      "marina.v1.ReservationService/ConfirmReservation",
+      "marina.v1.ReservationService/ExtendStay",
+      "marina.v1.VesselService/RetireVessel"
+     ],
+     "not_in_both_passes": [
+      "marina.v1.BerthService/WatchOccupancy"
+     ],
+     "isolated": [],
+     "reason": "order_vacuous"
+    },
+    "library output rpcs not in truth": [],
+    "codes": {
+     "marina.v1.AccessService/Login": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "marina.v1.AccessService/WhoAmI": {
+      "code": "OK",
+      "answered": true
+     },
+     "marina.v1.AccessService/Logout": {
+      "code": "OK",
+      "answered": true
+     },
+     "marina.v1.AccessService/ListAccounts": {
+      "code": "OK",
+      "answered": true
+     },
+     "marina.v1.BerthService/ListPiers": {
+      "code": "OK",
+      "answered": true
+     },
+     "marina.v1.BerthService/ListBerths": {
+      "code": "OK",
+      "answered": true
+     },
+     "marina.v1.BerthService/GetBerth": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "marina.v1.BerthService/FindOpenBerths": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "marina.v1.BerthService/SetBerthStatus": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "marina.v1.BerthService/SetBerthRate": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "marina.v1.BerthService/ReserveBlock": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "marina.v1.ReservationService/CreateReservation": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "marina.v1.ReservationService/ConfirmReservation": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "marina.v1.ReservationService/CancelReservation": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "marina.v1.ReservationService/ExtendStay": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "marina.v1.ReservationService/GetReservation": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "marina.v1.ReservationService/ListReservations": {
+      "code": "OK",
+      "answered": true
+     },
+     "marina.v1.VesselService/RegisterVessel": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "marina.v1.VesselService/GetVessel": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "marina.v1.VesselService/ListVessels": {
+      "code": "OK",
+      "answered": true
+     },
+     "marina.v1.VesselService/UpdateVessel": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "marina.v1.VesselService/RetireVessel": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "marina.v1.BillingService/GetInvoice": {
+      "code": "NOT_FOUND",
+      "answered": true,
+      "route": false
+     },
+     "marina.v1.BillingService/ListInvoices": {
+      "code": "OK",
+      "answered": true,
+      "route": false
+     },
+     "marina.v1.BillingService/PayInvoice": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true,
+      "route": false
+     },
+     "marina.v1.BillingService/VoidInvoice": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true,
+      "route": false
+     },
+     "marina.v1.BillingService/AddCharge": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true,
+      "route": false
+     },
+     "marina.v1.BillingService/ExportLedger": {
+      "code": "UNIMPLEMENTED",
+      "answered": false,
+      "route": false
+     },
+     "marina.v1.ForecastService/GetForecast": {
+      "code": "UNIMPLEMENTED",
+      "answered": false,
+      "route": false
+     },
+     "(absent)": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     }
+    }
+   },
+   "label": "blind",
+   "label_reasons": []
+  },
+  {
+   "id": "HO5-FLOWS",
+   "prediction": "truth replaying >= 0.8 of flows; verified 0-10 (point 2); edge 0.00-0.60 (point 0.20); coverage 0-6 (point 2); P 0.3",
+   "pass_rule": "S13: verified >= 1, 0 verified-but-failing, edge recall >= 0.30, coverage >= 2 truth flows (truth replay by H3, links applied)",
+   "status": "FAIL",
+   "observed": {
+    "truth_flows": 11,
+    "truth_flows_passing": 11,
+    "truth_replay_failures": {},
+    "truth_edges_total": 42,
+    "recovered": 6,
+    "recovered_by_status": {
+     "verified": 0,
+     "unverified": 0,
+     "failed": 6,
+     "unbound": 0
+    },
+    "recovered_by_kind_status": {
+     "owner_chain": {
+      "failed": 2
+     },
+     "pair": {
+      "failed": 4
+     }
+    },
+    "verified": 0,
+    "verified_but_failing": 0,
+    "edge_recall": {
+     "num": 0,
+     "den": 42,
+     "bound": 0.3,
+     "gated": true,
+     "value": 0.0,
+     "pass": false,
+     "reason": "below_bound"
+    },
+    "coverage": {
+     "num": 0,
+     "den": 11,
+     "bound": 2,
+     "gated": true,
+     "value": 0.0,
+     "pass": false,
+     "reason": "below_bound"
+    },
+    "exact": {
+     "num": 0,
+     "den": 11
+    },
+    "failing_codes": {
+     "other": 6
+    },
+    "unbound_reasons": {},
+    "reasons": [
+     "no_verified_flow",
+     "edge_recall:below_bound",
+     "coverage:below_bound"
+    ],
+    "seconds": 10.5
+   },
+   "detail": {
+    "score": {
+     "pass": false,
+     "reasons": [
+      "no_verified_flow",
+      "edge_recall:below_bound",
+      "coverage:below_bound"
+     ],
+     "recovered": 6,
+     "recovered_by_status": {
+      "verified": 0,
+      "unverified": 0,
+      "failed": 6,
+      "unbound": 0
+     },
+     "verified": 0,
+     "verified_but_failing": 0,
+     "edge_recall": {
+      "num": 0,
+      "den": 42,
+      "bound": 0.3,
+      "gated": true,
+      "value": 0.0,
+      "pass": false,
+      "reason": "below_bound"
+     },
+     "coverage": {
+      "num": 0,
+      "den": 11,
+      "bound": 2,
+      "gated": true,
+      "value": 0.0,
+      "pass": false,
+      "reason": "below_bound"
+     },
+     "exact": {
+      "num": 0,
+      "den": 11
+     },
+     "truth_defects": [],
+     "failing_codes": {
+      "other": 6
+     },
+     "unbound_reasons": {},
+     "truth_flows": 11,
+     "truth_flows_passing": 11,
+     "truth_replay_share": 1.0,
+     "truth_replay_failures": {},
+     "truth_edges_total": 42,
+     "recovered_by_kind_status": {
+      "owner_chain": {
+       "failed": 2
+      },
+      "pair": {
+       "failed": 4
+      }
+     }
+    },
+    "vbf ids": [],
+    "truth replay": [
+     {
+      "name": "boater_books_and_pays",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "closed_berth_blocks_booking",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "cancel_voids_invoice",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "extend_stay_adds_line",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "vessel_lifecycle",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "surcharge_then_settle",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "directory_and_fleet",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "access_guards",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "invoice_privacy",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "repriced_berth_quotes_new_rate",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "find_then_hold",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     }
+    ],
+    "not verified": [
+     {
+      "id": "rf-0f9bf04698",
+      "kind": "owner_chain",
+      "status": "failed",
+      "reason": "step 3: no code from step 1 for berth_code"
+     },
+     {
+      "id": "rf-6deee1b8a7",
+      "kind": "owner_chain",
+      "status": "failed",
+      "reason": "step 3: no code from step 1 for berth_code"
+     },
+     {
+      "id": "rf-11b0ccddd2",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 3: no code from step 1 for berth_code"
+     },
+     {
+      "id": "rf-d9e4991c27",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 3: no code from step 1 for berth_code"
+     },
+     {
+      "id": "rf-e27167b327",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 3: no code from step 1 for berth_code"
+     },
+     {
+      "id": "rf-e46c053b93",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 3: no code from step 1 for berth_code"
+     }
+    ]
+   },
+   "label": "blind",
+   "label_reasons": []
+  },
+  {
+   "id": "HO5-SQLT",
+   "prediction": "0.0-1.0 (point 0.6)",
+   "pass_rule": "reported only (S14)",
+   "status": "REPORTED",
+   "observed": {
+    "truth_pairs": 0,
+    "extracted_pairs": 60,
+    "matched": 0,
+    "recall": null,
+    "precision": 0.0,
+    "would_pass": true
+   },
+   "detail": {
+    "marina.v1.AccessService/ListAccounts": {
+     "truth": [],
+     "extracted": [
+      "users"
+     ],
+     "recall": null,
+     "precision": 0.0
+    },
+    "marina.v1.AccessService/Login": {
+     "truth": [],
+     "extracted": [
+      "sessions",
+      "users"
+     ],
+     "recall": null,
+     "precision": 0.0
+    },
+    "marina.v1.AccessService/Logout": {
+     "truth": [],
+     "extracted": [
+      "sessions"
+     ],
+     "recall": null,
+     "precision": 0.0
+    },
+    "marina.v1.AccessService/WhoAmI": {
+     "truth": [],
+     "extracted": [
+      "users"
+     ],
+     "recall": null,
+     "precision": 0.0
+    },
+    "marina.v1.BerthService/FindOpenBerths": {
+     "truth": [],
+     "extracted": [
+      "berths",
+      "piers",
+      "reservations"
+     ],
+     "recall": null,
+     "precision": 0.0
+    },
+    "marina.v1.BerthService/GetBerth": {
+     "truth": [],
+     "extracted": [
+      "berths",
+      "piers"
+     ],
+     "recall": null,
+     "precision": 0.0
+    },
+    "marina.v1.BerthService/ListBerths": {
+     "truth": [],
+     "extracted": [
+      "berths",
+      "piers"
+     ],
+     "recall": null,
+     "precision": 0.0
+    },
+    "marina.v1.BerthService/ListPiers": {
+     "truth": [],
+     "extracted": [
+      "piers"
+     ],
+     "recall": null,
+     "precision": 0.0
+    },
+    "marina.v1.BerthService/SetBerthRate": {
+     "truth": [],
+     "extracted": [
+      "berths",
+      "piers"
+     ],
+     "recall": null,
+     "precision": 0.0
+    },
+    "marina.v1.BerthService/SetBerthStatus": {
+     "truth": [],
+     "extracted": [
+      "berths",
+      "piers"
+     ],
+     "recall": null,
+     "precision": 0.0
+    },
+    "marina.v1.BillingService/AddCharge": {
+     "truth": [],
+     "extracted": [],
+     "recall": null,
+     "precision": null
+    },
+    "marina.v1.BillingService/GetInvoice": {
+     "truth": [],
+     "extracted": [],
+     "recall": null,
+     "precision": null
+    },
+    "marina.v1.BillingService/ListInvoices": {
+     "truth": [],
+     "extracted": [],
+     "recall": null,
+     "precision": null
+    },
+    "marina.v1.BillingService/PayInvoice": {
+     "truth": [],
+     "extracted": [],
+     "recall": null,
+     "precision": null
+    },
+    "marina.v1.BillingService/VoidInvoice": {
+     "truth": [],
+     "extracted": [],
+     "recall": null,
+     "precision": null
+    },
+    "marina.v1.ReservationService/CancelReservation": {
+     "truth": [],
+     "extracted": [
+      "berths",
+      "invoices",
+      "reservations",
+      "users",
+      "vessels"
+     ],
+     "recall": null,
+     "precision": 0.0
+    },
+    "marina.v1.ReservationService/ConfirmReservation": {
+     "truth": [],
+     "extracted": [
+      "berths",
+      "invoice_lines",
+      "invoices",
+      "reservations",
+      "users",
+      "vessels"
+     ],
+     "recall": null,
+     "precision": 0.0
+    },
+    "marina.v1.ReservationService/CreateReservation": {
+     "truth": [],
+     "extracted": [
+      "berths",
+      "invoices",
+      "reservations",
+      "users",
+      "vessels"
+     ],
+     "recall": null,
+     "precision": 0.0
+    },
+    "marina.v1.ReservationService/ExtendStay": {
+     "truth": [],
+     "extracted": [
+      "berths",
+      "invoice_lines",
+      "invoices",
+      "reservations",
+      "users",
+      "vessels"
+     ],
+     "recall": null,
+     "precision": 0.0
+    },
+    "marina.v1.ReservationService/GetReservation": {
+     "truth": [],
+     "extracted": [
+      "berths",
+      "invoices",
+      "reservations",
+      "users",
+      "vessels"
+     ],
+     "recall": null,
+     "precision": 0.0
+    },
+    "marina.v1.ReservationService/ListReservations": {
+     "truth": [],
+     "extracted": [
+      "berths",
+      "invoices",
+      "reservations",
+      "users",
+      "vessels"
+     ],
+     "recall": null,
+     "precision": 0.0
+    },
+    "marina.v1.VesselService/GetVessel": {
+     "truth": [],
+     "extracted": [
+      "users",
+      "vessels"
+     ],
+     "recall": null,
+     "precision": 0.0
+    },
+    "marina.v1.VesselService/ListVessels": {
+     "truth": [],
+     "extracted": [
+      "users",
+      "vessels"
+     ],
+     "recall": null,
+     "precision": 0.0
+    },
+    "marina.v1.VesselService/RegisterVessel": {
+     "truth": [],
+     "extracted": [
+      "users",
+      "vessels"
+     ],
+     "recall": null,
+     "precision": 0.0
+    },
+    "marina.v1.VesselService/RetireVessel": {
+     "truth": [],
+     "extracted": [
+      "reservations",
+      "users",
+      "vessels"
+     ],
+     "recall": null,
+     "precision": 0.0
+    },
+    "marina.v1.VesselService/UpdateVessel": {
+     "truth": [],
+     "extracted": [
+      "users",
+      "vessels"
+     ],
+     "recall": null,
+     "precision": 0.0
+    }
+   },
+   "label": "blind",
+   "label_reasons": []
+  },
+  {
+   "id": "HO5-DET",
+   "prediction": "10/10 identical; P 0.95",
+   "pass_rule": "10/10 identical, no absolute path, time or port",
+   "status": "PASS",
+   "observed": {
+    "identical runs": 10,
+    "of": 10,
+    "leaks": [],
+    "artifacts": [
+     "describe",
+     "extract",
+     "flows",
+     "model",
+     "plans",
+     "reconcile"
+    ],
+    "ok": true
+   },
+   "detail": [],
+   "label": "blind",
+   "label_reasons": []
+  },
+  {
+   "id": "HO5-NW",
+   "prediction": "0, 0, 0; P 0.95",
+   "pass_rule": "0 changed, 0 new, 0 claude calls",
+   "status": "PASS",
+   "observed": {
+    "changed": 0,
+    "new": 0,
+    "claude calls": 0
+   },
+   "detail": [],
+   "label": "blind",
+   "label_reasons": []
+  }
+ ]
+}

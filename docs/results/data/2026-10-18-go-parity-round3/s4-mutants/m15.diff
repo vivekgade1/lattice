@@ -1,0 +1,23 @@
+--- a/internal/api/shelves.go
++++ b/internal/api/shelves.go
+@@ -15,6 +15,7 @@
+ type shelfInput struct {
+ 	Name        string `json:"name" binding:"required,max=80"`
+ 	Description string `json:"description" binding:"max=500"`
++	UserID      uint   `json:"user_id"`
+ }
+ 
+ func (s *Server) listShelves(c *gin.Context) {
+@@ -32,7 +33,11 @@
+ 		fail(c, http.StatusUnprocessableEntity, "name is required (1 to 80 characters) and description at most 500")
+ 		return
+ 	}
+-	shelf := models.Shelf{UserID: userID(c), Name: strings.TrimSpace(in.Name), Description: strings.TrimSpace(in.Description)}
++	owner := userID(c)
++	if in.UserID != 0 {
++		owner = in.UserID
++	}
++	shelf := models.Shelf{UserID: owner, Name: strings.TrimSpace(in.Name), Description: strings.TrimSpace(in.Description)}
+ 	if err := s.db.Create(&shelf).Error; err != nil {
+ 		fail(c, http.StatusInternalServerError, "could not create the shelf")
+ 		return

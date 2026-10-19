@@ -1,0 +1,1406 @@
+{
+ "G1": {
+  "n": 30,
+  "pass": null,
+  "rule": "30/30 exact",
+  "run": false
+ },
+ "G2": {
+  "n": 16,
+  "pass": null,
+  "rule": "16/16 exact under the frozen router checks; 0 literal claims; 0 model calls on routed I/H questions",
+  "run": false
+ },
+ "G3": {
+  "by_set": {
+   "C_control": {
+    "claims": 0,
+    "claims_lenient": 0,
+    "correct": 5,
+    "n": 6,
+    "not_run": 0,
+    "unscored": 0
+   },
+   "H_hypothetical": {
+    "claims": 0,
+    "claims_lenient": 0,
+    "correct": 10,
+    "n": 10,
+    "not_run": 0,
+    "unscored": 0
+   },
+   "I_impact": {
+    "claims": 0,
+    "claims_lenient": 0,
+    "correct": 6,
+    "n": 12,
+    "not_run": 6,
+    "unscored": 0
+   },
+   "M_access": {
+    "claims": 0,
+    "claims_lenient": 0,
+    "correct": 6,
+    "n": 6,
+    "not_run": 0,
+    "unscored": 0
+   },
+   "M_machines": {
+    "claims": 0,
+    "claims_lenient": 0,
+    "correct": 3,
+    "n": 4,
+    "not_run": 0,
+    "unscored": 0
+   },
+   "M_rules": {
+    "claims": 0,
+    "claims_lenient": 0,
+    "correct": 6,
+    "n": 6,
+    "not_run": 0,
+    "unscored": 0
+   },
+   "M_workflows": {
+    "claims": 0,
+    "claims_lenient": 0,
+    "correct": 6,
+    "n": 8,
+    "not_run": 0,
+    "unscored": 0
+   },
+   "N_not_built": {
+    "claims": 0,
+    "claims_lenient": 0,
+    "correct": 6,
+    "n": 6,
+    "not_run": 0,
+    "unscored": 0
+   },
+   "W_prose": {
+    "claims": 0,
+    "claims_lenient": 0,
+    "correct": 2,
+    "n": 4,
+    "not_run": 0,
+    "unscored": 0
+   },
+   "X_absent": {
+    "claims": 0,
+    "claims_lenient": 0,
+    "correct": 2,
+    "n": 2,
+    "not_run": 0,
+    "unscored": 0
+   }
+  },
+  "correct": 52,
+  "floors": {
+   "H_hypothetical": {
+    "correct": 10,
+    "min": 8,
+    "n": 10,
+    "pass": true
+   },
+   "M_workflows": {
+    "correct": 6,
+    "min": 6,
+    "n": 8,
+    "pass": true
+   },
+   "N_not_built": {
+    "correct": 6,
+    "min": 4,
+    "n": 6,
+    "pass": true
+   }
+  },
+  "i_verbatim_id_compliance": 6,
+  "lenient_note": "report-only (round 1 Amendment 2): negations and named recorded replays exempted; never gated",
+  "n": 64,
+  "not_run": 6,
+  "partial": "partial: 58 of 64",
+  "pass": false,
+  "questions": [
+   {
+    "checks": {
+     "id_set:0": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {
+     "id_set:0": [
+      "R1",
+      "R2",
+      "R6",
+      "R15",
+      "R22",
+      "R136",
+      "R138",
+      "R140",
+      "R142"
+     ]
+    },
+    "id": "R2-MR1",
+    "not_run": false,
+    "routed": false,
+    "set": "M_rules",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:R140": true,
+     "any:0": true,
+     "any:1": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-MR2",
+    "not_run": false,
+    "routed": false,
+    "set": "M_rules",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:108": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-MR3",
+    "not_run": false,
+    "routed": true,
+    "set": "M_rules",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:R126": true,
+     "any:0": true,
+     "any:1": true,
+     "none:0": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-MR4",
+    "not_run": false,
+    "routed": false,
+    "set": "M_rules",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:context": true,
+     "id_set:0": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {
+     "id_set:0": [
+      "R1",
+      "R2",
+      "R100"
+     ]
+    },
+    "id": "R2-MR5",
+    "not_run": false,
+    "routed": false,
+    "set": "M_rules",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:141": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-MR6",
+    "not_run": false,
+    "routed": false,
+    "set": "M_rules",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "id_set:0": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {
+     "id_set:0": [
+      "wf-053146a70c",
+      "wf-7f0f99bdcf",
+      "wf-9523e7a835",
+      "wf-9f87f3f1d9",
+      "wf-b2ee5de88e",
+      "wf-c71e6bbb49",
+      "wf-da24bc5b11",
+      "wf-ebadb4a811"
+     ]
+    },
+    "id": "R2-MW1",
+    "not_run": false,
+    "routed": true,
+    "set": "M_workflows",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "id_set:0": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {
+     "id_set:0": [
+      "wf-2818e45412",
+      "wf-801d529a0f"
+     ]
+    },
+    "id": "R2-MW2",
+    "not_run": false,
+    "routed": true,
+    "set": "M_workflows",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "id_set:0": false
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": false,
+    "got": {
+     "id_set:0": [
+      "wf-2818e45412",
+      "wf-3de8783507",
+      "wf-b2acc9eac6"
+     ]
+    },
+    "id": "R2-MW3",
+    "not_run": false,
+    "routed": false,
+    "set": "M_workflows",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "any:0": true,
+     "id_set:0": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {
+     "id_set:0": [
+      "wf-0da61e11ce"
+     ]
+    },
+    "id": "R2-MW4",
+    "not_run": false,
+    "routed": true,
+    "set": "M_workflows",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "id_set:0": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {
+     "id_set:0": [
+      "wf-5a6bab46c9",
+      "wf-a9ac9b88a4",
+      "wf-c675dd6cb3",
+      "wf-ce853d194f",
+      "wf-ffaa047bf2"
+     ]
+    },
+    "id": "R2-MW5",
+    "not_run": false,
+    "routed": true,
+    "set": "M_workflows",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:DELETE /v1/habits/{}": true,
+     "all:DELETE /v1/habits/{}/completions/{}": true,
+     "all:PATCH /v1/habits/{}": true,
+     "all:POST /v1/habits": true,
+     "all:POST /v1/habits/{}/completions": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-MW6",
+    "not_run": false,
+    "routed": false,
+    "set": "M_workflows",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "id_set:0": false
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": false,
+    "got": {
+     "id_set:0": [
+      "wf-3d2436d2dd",
+      "wf-5cf3da443e",
+      "wf-5eebdfc88b",
+      "wf-bd46b71ee2",
+      "wf-da24bc5b11",
+      "wf-dbac494b10",
+      "wf-de433cd704"
+     ]
+    },
+    "id": "R2-MW7",
+    "not_run": false,
+    "routed": false,
+    "set": "M_workflows",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "id_set:0": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {
+     "id_set:0": [
+      "wf-053146a70c",
+      "wf-6a4cc7a302",
+      "wf-9f87f3f1d9",
+      "wf-c71e6bbb49"
+     ]
+    },
+    "id": "R2-MW8",
+    "not_run": false,
+    "routed": false,
+    "set": "M_workflows",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:static": true,
+     "any:0": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-MM1",
+    "not_run": false,
+    "routed": true,
+    "set": "M_machines",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:pending": true,
+     "any:0": false
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": false,
+    "got": {},
+    "id": "R2-MM2",
+    "not_run": false,
+    "routed": false,
+    "set": "M_machines",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:pending": true,
+     "all:sent": true,
+     "all:suppressed": true,
+     "any:0": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-MM3",
+    "not_run": false,
+    "routed": true,
+    "set": "M_machines",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "id_set:0": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {
+     "id_set:0": [
+      "R123",
+      "R127",
+      "R136",
+      "R140"
+     ]
+    },
+    "id": "R2-MM4",
+    "not_run": false,
+    "routed": false,
+    "set": "M_machines",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:404": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-MA1",
+    "not_run": false,
+    "routed": true,
+    "set": "M_access",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:201": true,
+     "all:409": true,
+     "all:422": true,
+     "any:0": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-MA2",
+    "not_run": false,
+    "routed": true,
+    "set": "M_access",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:200": true,
+     "all:422": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-MA3",
+    "not_run": false,
+    "routed": true,
+    "set": "M_access",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:200": true,
+     "all:404": true,
+     "all:409": true,
+     "any:0": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-MA4",
+    "not_run": false,
+    "routed": false,
+    "set": "M_access",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:200": true,
+     "all:404": true,
+     "all:409": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-MA5",
+    "not_run": false,
+    "routed": false,
+    "set": "M_access",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:200": true,
+     "any:0": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-MA6",
+    "not_run": false,
+    "routed": true,
+    "set": "M_access",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:DELETE /v1/devices/{}": true,
+     "all:GET /v1/home": true,
+     "all:GET /v1/nudges": true,
+     "all:GET /v1/sync": true,
+     "all:POST /v1/devices": true,
+     "all:POST /v1/nudges/{}/dismiss": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-N1",
+    "not_run": false,
+    "routed": false,
+    "set": "N_not_built",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:GET /v1/sync": true,
+     "any:0": true,
+     "none:0": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-N2",
+    "not_run": false,
+    "routed": true,
+    "set": "N_not_built",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:29": true,
+     "id_set:0": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {
+     "id_set:0": [
+      "R7",
+      "R21",
+      "R27",
+      "R28",
+      "R31",
+      "R32",
+      "R33",
+      "R34",
+      "R89",
+      "R90",
+      "R91",
+      "R92",
+      "R93",
+      "R94",
+      "R114",
+      "R125",
+      "R127",
+      "R128",
+      "R129",
+      "R132",
+      "R133",
+      "R134",
+      "R135",
+      "R137",
+      "R138",
+      "R139",
+      "R140",
+      "R141",
+      "R143"
+     ]
+    },
+    "id": "R2-N3",
+    "not_run": false,
+    "routed": false,
+    "set": "N_not_built",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:R138": true,
+     "any:0": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-N4",
+    "not_run": false,
+    "routed": false,
+    "set": "N_not_built",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:POST /v1/devices": true,
+     "any:0": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-N5",
+    "not_run": false,
+    "routed": false,
+    "set": "N_not_built",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:R7": true,
+     "any:0": true,
+     "none:0": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-N6",
+    "not_run": false,
+    "routed": false,
+    "set": "N_not_built",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "tier1_ids_equal": true,
+     "tier2_ids_equal": true,
+     "tier3_never_failure": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {
+     "t1": [],
+     "t2": [
+      "t2-1bd497dc68",
+      "t2-bb0f6eb361"
+     ],
+     "unknown_ids": []
+    },
+    "id": "R2-I1r",
+    "not_run": false,
+    "routed": true,
+    "set": "I_impact",
+    "subset": "I_routed",
+    "tier3_called_failure": [],
+    "verbatim_id_compliant": true
+   },
+   {
+    "checks": {},
+    "claims": [],
+    "claims_lenient": [],
+    "correct": false,
+    "id": "R2-I1f",
+    "not_run": true,
+    "routed": false,
+    "set": "I_impact",
+    "status": "error",
+    "subset": "I_free"
+   },
+   {
+    "checks": {
+     "tier1_ids_equal": true,
+     "tier2_ids_equal": true,
+     "tier3_never_failure": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {
+     "t1": [],
+     "t2": [],
+     "unknown_ids": []
+    },
+    "id": "R2-I2r",
+    "not_run": false,
+    "routed": true,
+    "set": "I_impact",
+    "subset": "I_routed",
+    "tier3_called_failure": [],
+    "verbatim_id_compliant": true
+   },
+   {
+    "checks": {},
+    "claims": [],
+    "claims_lenient": [],
+    "correct": false,
+    "id": "R2-I2f",
+    "not_run": true,
+    "routed": false,
+    "set": "I_impact",
+    "status": "error",
+    "subset": "I_free"
+   },
+   {
+    "checks": {
+     "tier1_ids_equal": true,
+     "tier2_ids_equal": true,
+     "tier3_never_failure": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {
+     "t1": [],
+     "t2": [],
+     "unknown_ids": []
+    },
+    "id": "R2-I3r",
+    "not_run": false,
+    "routed": true,
+    "set": "I_impact",
+    "subset": "I_routed",
+    "tier3_called_failure": [],
+    "verbatim_id_compliant": true
+   },
+   {
+    "checks": {},
+    "claims": [],
+    "claims_lenient": [],
+    "correct": false,
+    "id": "R2-I3f",
+    "not_run": true,
+    "routed": false,
+    "set": "I_impact",
+    "status": "error",
+    "subset": "I_free"
+   },
+   {
+    "checks": {
+     "tier1_ids_equal": true,
+     "tier2_ids_equal": true,
+     "tier3_never_failure": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {
+     "t1": [],
+     "t2": [],
+     "unknown_ids": []
+    },
+    "id": "R2-I4r",
+    "not_run": false,
+    "routed": true,
+    "set": "I_impact",
+    "subset": "I_routed",
+    "tier3_called_failure": [],
+    "verbatim_id_compliant": true
+   },
+   {
+    "checks": {},
+    "claims": [],
+    "claims_lenient": [],
+    "correct": false,
+    "id": "R2-I4f",
+    "not_run": true,
+    "routed": false,
+    "set": "I_impact",
+    "status": "error",
+    "subset": "I_free"
+   },
+   {
+    "checks": {
+     "tier1_ids_equal": true,
+     "tier2_ids_equal": true,
+     "tier3_never_failure": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {
+     "t1": [],
+     "t2": [],
+     "unknown_ids": []
+    },
+    "id": "R2-I5r",
+    "not_run": false,
+    "routed": true,
+    "set": "I_impact",
+    "subset": "I_routed",
+    "tier3_called_failure": [],
+    "verbatim_id_compliant": true
+   },
+   {
+    "checks": {},
+    "claims": [],
+    "claims_lenient": [],
+    "correct": false,
+    "id": "R2-I5f",
+    "not_run": true,
+    "routed": false,
+    "set": "I_impact",
+    "status": "error",
+    "subset": "I_free"
+   },
+   {
+    "checks": {
+     "tier1_ids_equal": true,
+     "tier2_ids_equal": true,
+     "tier3_never_failure": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {
+     "t1": [],
+     "t2": [],
+     "unknown_ids": []
+    },
+    "id": "R2-I6r",
+    "not_run": false,
+    "routed": true,
+    "set": "I_impact",
+    "subset": "I_routed",
+    "tier3_called_failure": [],
+    "verbatim_id_compliant": true
+   },
+   {
+    "checks": {},
+    "claims": [],
+    "claims_lenient": [],
+    "correct": false,
+    "id": "R2-I6f",
+    "not_run": true,
+    "routed": false,
+    "set": "I_impact",
+    "status": "error",
+    "subset": "I_free"
+   },
+   {
+    "checks": {
+     "no_tier12_ids": true,
+     "no_unsupported_claims": true,
+     "not_decided": true,
+     "offer_to_draft": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-H1",
+    "not_run": false,
+    "routed": true,
+    "set": "H_hypothetical",
+    "subset": "routed",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "no_tier12_ids": true,
+     "no_unsupported_claims": true,
+     "not_decided": true,
+     "offer_to_draft": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-H2",
+    "not_run": false,
+    "routed": true,
+    "set": "H_hypothetical",
+    "subset": "routed",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "no_tier12_ids": true,
+     "no_unsupported_claims": true,
+     "not_decided": true,
+     "offer_to_draft": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-H3",
+    "not_run": false,
+    "routed": true,
+    "set": "H_hypothetical",
+    "subset": "routed",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "no_tier12_ids": true,
+     "no_unsupported_claims": true,
+     "not_decided": true,
+     "offer_to_draft": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-H4",
+    "not_run": false,
+    "routed": true,
+    "set": "H_hypothetical",
+    "subset": "routed",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "no_tier12_ids": true,
+     "no_unsupported_claims": true,
+     "not_decided": true,
+     "offer_to_draft": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-H5",
+    "not_run": false,
+    "routed": true,
+    "set": "H_hypothetical",
+    "subset": "free",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "no_tier12_ids": true,
+     "no_unsupported_claims": true,
+     "not_decided": true,
+     "offer_to_draft": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-H6",
+    "not_run": false,
+    "routed": false,
+    "set": "H_hypothetical",
+    "subset": "free",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "no_tier12_ids": true,
+     "no_unsupported_claims": true,
+     "not_decided": true,
+     "offer_to_draft": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-H7",
+    "not_run": false,
+    "routed": true,
+    "set": "H_hypothetical",
+    "subset": "free",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "no_tier12_ids": true,
+     "no_unsupported_claims": true,
+     "not_decided": true,
+     "offer_to_draft": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-H8",
+    "not_run": false,
+    "routed": false,
+    "set": "H_hypothetical",
+    "subset": "free",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "no_tier12_ids": true,
+     "no_unsupported_claims": true,
+     "not_decided": true,
+     "offer_to_draft": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-H9",
+    "not_run": false,
+    "routed": false,
+    "set": "H_hypothetical",
+    "subset": "free",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "no_tier12_ids": true,
+     "no_unsupported_claims": true,
+     "not_decided": true,
+     "offer_to_draft": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-H10",
+    "not_run": false,
+    "routed": false,
+    "set": "H_hypothetical",
+    "subset": "free",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:401": true,
+     "all:invalid_credentials": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-C1",
+    "not_run": false,
+    "routed": false,
+    "set": "C_control",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:200": false
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": false,
+    "got": {},
+    "id": "R2-C2",
+    "not_run": false,
+    "routed": false,
+    "set": "C_control",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:401": true,
+     "all:refresh_token_reused": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-C3",
+    "not_run": false,
+    "routed": false,
+    "set": "C_control",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:100": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-C4",
+    "not_run": false,
+    "routed": false,
+    "set": "C_control",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:429": true,
+     "all:rate_limited": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-C5",
+    "not_run": false,
+    "routed": false,
+    "set": "C_control",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:date_in_future": true,
+     "all:date_out_of_range": true,
+     "all:date_too_old": true,
+     "none:0": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-C6",
+    "not_run": false,
+    "routed": false,
+    "set": "C_control",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:GET /v1/home": true,
+     "all:POST /v1/habits": true,
+     "all:POST /v1/habits/{}/completions": true,
+     "any:0": true,
+     "any:1": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-W1",
+    "not_run": false,
+    "routed": false,
+    "set": "W_prose",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:POST /v1/auth/login": true,
+     "all:POST /v1/auth/register": true,
+     "any:0": true,
+     "any:1": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-W2",
+    "not_run": false,
+    "routed": false,
+    "set": "W_prose",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:DELETE /v1/habits/{}": true,
+     "all:PATCH /v1/habits/{}": true,
+     "all:POST /v1/habits": true,
+     "any:0": true,
+     "any:1": false
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": false,
+    "got": {},
+    "id": "R2-W3",
+    "not_run": false,
+    "routed": false,
+    "set": "W_prose",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "all:DELETE /v1/devices/{}": false,
+     "all:POST /v1/devices": true,
+     "any:0": true,
+     "any:1": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": false,
+    "got": {},
+    "id": "R2-W4",
+    "not_run": false,
+    "routed": false,
+    "set": "W_prose",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "any:0": true,
+     "none:0": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-X1",
+    "not_run": false,
+    "routed": false,
+    "set": "X_absent",
+    "tier3_called_failure": []
+   },
+   {
+    "checks": {
+     "any:0": true,
+     "none:0": true
+    },
+    "claims": [],
+    "claims_lenient": [],
+    "correct": true,
+    "got": {},
+    "id": "R2-X2",
+    "not_run": false,
+    "routed": true,
+    "set": "X_absent",
+    "tier3_called_failure": []
+   }
+  ],
+  "raw_arm": {
+   "by_set": {
+    "C_control": {
+     "claims": 6,
+     "claims_lenient": 3,
+     "correct": 5,
+     "n": 6,
+     "not_run": 0,
+     "unscored": 0
+    },
+    "H_hypothetical": {
+     "claims": 19,
+     "claims_lenient": 8,
+     "correct": 1,
+     "n": 10,
+     "not_run": 0,
+     "unscored": 0
+    },
+    "I_impact": {
+     "claims": 0,
+     "claims_lenient": 0,
+     "correct": 0,
+     "n": 12,
+     "not_run": 12,
+     "unscored": 0
+    },
+    "M_access": {
+     "claims": 6,
+     "claims_lenient": 3,
+     "correct": 6,
+     "n": 6,
+     "not_run": 0,
+     "unscored": 0
+    },
+    "M_machines": {
+     "claims": 8,
+     "claims_lenient": 8,
+     "correct": 3,
+     "n": 4,
+     "not_run": 0,
+     "unscored": 0
+    },
+    "M_rules": {
+     "claims": 0,
+     "claims_lenient": 0,
+     "correct": 6,
+     "n": 6,
+     "not_run": 0,
+     "unscored": 0
+    },
+    "M_workflows": {
+     "claims": 12,
+     "claims_lenient": 7,
+     "correct": 4,
+     "n": 8,
+     "not_run": 0,
+     "unscored": 0
+    },
+    "N_not_built": {
+     "claims": 0,
+     "claims_lenient": 0,
+     "correct": 6,
+     "n": 6,
+     "not_run": 0,
+     "unscored": 0
+    },
+    "W_prose": {
+     "claims": 2,
+     "claims_lenient": 0,
+     "correct": 2,
+     "n": 4,
+     "not_run": 0,
+     "unscored": 0
+    },
+    "X_absent": {
+     "claims": 0,
+     "claims_lenient": 0,
+     "correct": 2,
+     "n": 2,
+     "not_run": 0,
+     "unscored": 0
+    }
+   },
+   "correct": 35,
+   "damage": {
+    "ids": [
+     "R2-MM2"
+    ],
+    "n": 1
+   },
+   "n": 64,
+   "not_run": 12,
+   "note": "report-only: the session's raw stream text scored by the same frozen checks",
+   "unsupported_failure_claims": 53,
+   "unsupported_failure_claims_lenient": 29
+  },
+  "routed": {
+   "claims": 0,
+   "correct": 25,
+   "n": 25,
+   "precision": 1.0,
+   "vacuous": false
+  },
+  "routing_rate": {
+   "C_control": 0,
+   "H_free": 2,
+   "M_plus_N": 12,
+   "all": 25
+  },
+  "rule": "(i) all 64 status ok; (ii) 0 literal unsupported failure claims (hard); (iii) correct >= 52/64; (iv) I verbatim-id compliance >= 11/12; (v) floors H >= 8/10, N >= 4/6, M_workflows >= 6/8; (vi) routed answers >= 95% correct and 0 claims",
+  "run": true,
+  "sub": {
+   "i_all_ok": false,
+   "ii_zero_claims": true,
+   "iii_correct": true,
+   "iv_compliance": false,
+   "v_floors": true,
+   "vi_routed": true
+  },
+  "unscored": 0,
+  "unsupported_failure_claims": 0,
+  "unsupported_failure_claims_lenient": 0
+ },
+ "changes": {
+  "c1": "verified",
+  "c2": "verified",
+  "c3": "verified",
+  "c4": "verified",
+  "c5": "verified",
+  "c6": "verified"
+ },
+ "errors": [],
+ "r1_scorer": {
+  "path": "/Users/vivekgade/Documents/lattice-fc2/docs/results/data/2026-10-18-goto-chat-round2/frozen-r1/goto_score.py",
+  "sha256": "d7e5e5aa4fbc8aec67ee3273ea79b28408a945f680febe9b6aba9eb0571fe082"
+ },
+ "schema": "lattice.chat2-score/1"
+}

@@ -1,0 +1,176 @@
+{
+  "runner": "go_parity_s3r",
+  "runner_sha256": "7dc58c193f8f452d0f8d9427f21846e1af5ffa68a062528161552e80aaea1cc8",
+  "kind": "scored",
+  "run_id": "2eaecdb33b1d",
+  "base_ref": "978b468",
+  "lattice_file": "/Users/vivekgade/Documents/lattice-g3/lattice/__init__.py",
+  "freeze": {
+    "freeze.sha256": {
+      "file": "/Users/vivekgade/Documents/lattice-g3/docs/results/data/2026-10-18-go-parity-gaps-round2/freeze.sha256",
+      "list_sha256": "800fc1f7131ca9969bef0496541e3ff9e7a232ab9aa5a4cc0d9f23d0322891f0",
+      "entries": 21,
+      "mismatches": 0,
+      "running_script_listed": null
+    },
+    "s3runner.sha256": {
+      "file": "/Users/vivekgade/Documents/lattice-g3/docs/results/data/2026-10-18-go-parity-gaps-round2/s3runner.sha256",
+      "list_sha256": "35524804d13e541a5f8cde1e625907f740ca383511465283692a77b4055a461b",
+      "entries": 3,
+      "mismatches": 0,
+      "running_script_listed": null
+    },
+    "s3.freeze.sha256": {
+      "file": "/Users/vivekgade/Documents/lattice-g3/docs/results/data/2026-10-18-go-parity-gaps-round2/s3.freeze.sha256",
+      "list_sha256": "0a27192ddd13b9baf9b97f22603424db9e56a41a5218290a00fc332c635fc85d",
+      "entries": 9,
+      "mismatches": 0,
+      "running_script_listed": null,
+      "archive_copies_equal": 8
+    },
+    "t0-freeze.sha256": {
+      "file": "/Users/vivekgade/Documents/lattice-g3/docs/results/data/2026-10-18-go-parity-round3/t0-freeze.sha256",
+      "list_sha256": "4c7508e9eba61fa7c08966d08648fce8ef1a15f263d7994b9861b52fd84fed45",
+      "entries": 2,
+      "mismatches": 0,
+      "running_script_listed": true
+    },
+    "library": {
+      "ref": "978b468",
+      "head": "f245a5c9e903e54f26461c2f2c0a675f47742f03",
+      "tracked_diff": 0,
+      "untracked": 0
+    },
+    "lattice_file": "/Users/vivekgade/Documents/lattice-g3/lattice/__init__.py",
+    "import_subprocess_lattice_file": "/Users/vivekgade/Documents/lattice-g3/lattice/__init__.py"
+  },
+  "timings": {
+    "build_fixture_s": 0.3703057919628918,
+    "import_bare_s": 7.917498749913648,
+    "import_dotted_s": 8.076375000178814
+  },
+  "fx_error": null,
+  "fixtures_changed": [],
+  "shim_calls": [],
+  "python": "3.14.0",
+  "results": [
+    {
+      "id": "T0-FREEZE",
+      "probe": "every self-hash entry, before any metric",
+      "ran": true,
+      "predicted": "freeze.sha256 (21), s3runner.sha256 (3), s3.freeze.sha256 (8 files + FILES.txt) and the runner's own entry all OK before any metric",
+      "observed": {
+        "freeze.sha256": {
+          "file": "/Users/vivekgade/Documents/lattice-g3/docs/results/data/2026-10-18-go-parity-gaps-round2/freeze.sha256",
+          "list_sha256": "800fc1f7131ca9969bef0496541e3ff9e7a232ab9aa5a4cc0d9f23d0322891f0",
+          "entries": 21,
+          "mismatches": 0,
+          "running_script_listed": null
+        },
+        "s3runner.sha256": {
+          "file": "/Users/vivekgade/Documents/lattice-g3/docs/results/data/2026-10-18-go-parity-gaps-round2/s3runner.sha256",
+          "list_sha256": "35524804d13e541a5f8cde1e625907f740ca383511465283692a77b4055a461b",
+          "entries": 3,
+          "mismatches": 0,
+          "running_script_listed": null
+        },
+        "s3.freeze.sha256": {
+          "file": "/Users/vivekgade/Documents/lattice-g3/docs/results/data/2026-10-18-go-parity-gaps-round2/s3.freeze.sha256",
+          "list_sha256": "0a27192ddd13b9baf9b97f22603424db9e56a41a5218290a00fc332c635fc85d",
+          "entries": 9,
+          "mismatches": 0,
+          "running_script_listed": null,
+          "archive_copies_equal": 8
+        },
+        "t0-freeze.sha256": {
+          "file": "/Users/vivekgade/Documents/lattice-g3/docs/results/data/2026-10-18-go-parity-round3/t0-freeze.sha256",
+          "list_sha256": "4c7508e9eba61fa7c08966d08648fce8ef1a15f263d7994b9861b52fd84fed45",
+          "entries": 2,
+          "mismatches": 0,
+          "running_script_listed": true
+        },
+        "library": {
+          "ref": "978b468",
+          "head": "f245a5c9e903e54f26461c2f2c0a675f47742f03",
+          "tracked_diff": 0,
+          "untracked": 0
+        },
+        "lattice_file": "/Users/vivekgade/Documents/lattice-g3/lattice/__init__.py",
+        "import_subprocess_lattice_file": "/Users/vivekgade/Documents/lattice-g3/lattice/__init__.py"
+      },
+      "pass": true,
+      "evidence": {
+        "prediction_met": true,
+        "reading": "the run aborts (no metric) on any mismatch, so a row that exists is a pass"
+      }
+    },
+    {
+      "id": "T0-PI4",
+      "probe": "the corrected S3 spec re-probed on variant2",
+      "ran": true,
+      "predicted": "35 seed-verified; 34-35 still verified on variant2; fraction >= 0.95",
+      "observed": {
+        "seed_verified": 35,
+        "still_verified": 35,
+        "fraction": 1.0,
+        "lost": {}
+      },
+      "pass": true,
+      "evidence": {
+        "prediction_met": true
+      }
+    },
+    {
+      "id": "T0-PR3",
+      "probe": "layer R on S3 with the imported candidate_spec.py (correction map applied)",
+      "ran": true,
+      "predicted": "identical verdict map after round 2's correction map; 63 = 63; 0 corrections",
+      "observed": {
+        "items_import": 63,
+        "items_rerun": 63,
+        "corrections": 0,
+        "differences [import, rerun]": {}
+      },
+      "pass": true,
+      "evidence": {
+        "prediction_met": true
+      }
+    },
+    {
+      "id": "T0-CTL",
+      "probe": "in-process machinery (root on sys.path) vs the CLI import, literally",
+      "ran": true,
+      "predicted": "in-process machinery() (root on sys.path) == the CLI import's final verdicts on the seed; 63 items, 35 verified",
+      "observed": {
+        "items_import": 63,
+        "items_rerun": 63,
+        "verified_import": 35,
+        "verified_rerun": 35,
+        "differences [import, rerun]": {}
+      },
+      "pass": true,
+      "evidence": {
+        "prediction_met": true
+      }
+    },
+    {
+      "id": "T0-FORM",
+      "probe": "the same on a scratch copy whose studio.toml uses the dotted form",
+      "ran": true,
+      "predicted": "the same on a scratch copy of S3 whose studio.toml uses the dotted harness form; identical to T0-CTL",
+      "observed": {
+        "items_import": 63,
+        "items_rerun": 63,
+        "verified_import": 35,
+        "verified_rerun": 35,
+        "differences within the dotted copy [import, rerun]": {},
+        "differences bare vs dotted import [bare, dotted]": {}
+      },
+      "pass": true,
+      "evidence": {
+        "studio_toml": "# gotickets: a small ticket service on Gin + GORM + glebarez/sqlite.\n# The harness is tests/spec/gotickets_harness.py.\n[app]\napp = \"tests.spec.gotickets_harness:make_app\"\ndb = \"tests.spec.gotickets_harness:build_db\"\nruntime = \"tests.spec.gotickets_harness:RUNTIME\"\n",
+        "prediction_met": true
+      }
+    }
+  ]
+}

@@ -1524,6 +1524,16 @@ SCENARIOS = (
         refused("GET", "/p/nope/api/impact", 404, "no such project", params={"change": "c1"}),
         UNCHANGED,
     )),
+    Scenario("ask_is_not_routed_without_a_chat_table", steps=(
+        Step("POST", "/api/ask", json={"question": "Which rules are required by the spec but not "
+                                                   "built yet?"},
+             expect_body={"kind": "not_specified", "answer": "Not specified (stub answer).",
+                          "citations": [], "usage": {"tokens": 0}}),
+        Step("POST", "/api/ask", json={"question": "What if we removed the notes limit?"},
+             expect_body={"kind": "not_specified", "answer": "Not specified (stub answer).",
+                          "citations": [], "usage": {"tokens": 0}}),
+        UNCHANGED,
+    )),
     Scenario("static_files_stay_in_the_web_directory", steps=(
         Step("GET", "/"),
         Step("GET", "/index.html"),
@@ -1733,6 +1743,14 @@ UNCHECKED = (
               "words, node --check and the pure decision functions, and "
               "docs/results/2026-10-15-studio-ui-results.md says whether the browser walk on the "
               "mock was done; layout, focus and the polling feel are not checked blind."),
+    Unchecked("R110-R112 (the `[chat]` table, the map router and the claim checker) need a "
+              "studio.toml with `[chat]`, an `[implementation]` inventory (R104 fixes the seed "
+              "as not configured) and, for the session events, the claude binary (R25), so the "
+              "seed checks only the off state (R109). tests/studio/test_chat_check_api.py checks "
+              "every refusal of a bad `[chat]` and each router shape on the real server and the "
+              "mock, tests/studio/test_chat_check_session.py the routed and the checked turn "
+              "against a fake claude, and dogfood/chat2_probes.py the whole path "
+              "(docs/results/2026-10-18-goto-chat-round2-results.md)."),
     Unchecked("Concurrency: requests racing the drafting thread (e.g. accept vs. a follow-up "
               "finishing) are not raced; Studio keeps no database, so layer X has no table "
               "to race on."),

@@ -36,7 +36,9 @@ target); what each cannot see is listed with it.
   whose ``Model``/``Table``/destination is the table's struct) -- directly or in the
   helpers it calls -- while nothing it runs (the handler, its middleware, those helpers)
   filters, compares or sets the owner column: the column in a GORM call's arguments (a
-  condition string, a map or struct condition), its field compared with ``==``/``!=``,
+  condition string, a map or struct condition), its field compared with ``==``/``!=``
+  (or a name holding it: ``owner := row.UserID``, or the result a module helper returns
+  as ``return book, shelf.UserID, nil`` and the caller binds, then compares),
   assigned, or set in a model literal. A table owned through a parent needs that
   evidence on the parent. Admin-only: the spec says so, a middleware of the route or an
   ``if`` of the handler names an admin concept. Silent when the route calls code the
@@ -88,6 +90,12 @@ target); what each cannot see is listed with it.
   set or regex check in another function than the write's (but a bool helper called
   from it), a set held in a map (``validRoles[x]``), a check through an ``if`` init
   (``if ok := valid(x); !ok``) or one that skips the write with ``continue``.
+* **GO805 not-owned answer** (PY805's first half; ``GoPolicy.not_owned``, derived from the
+  original by :func:`lattice.gocheck.notowned.with_not_owned`). A route whose owner-scoped
+  lookup (a GORM chain comparing the owner column, its result tested by the next statement)
+  refuses with a constant 4xx other than the one status every such refusal of the original
+  shares. Silent without an answer (none, or the original's refusals disagree). *Cannot see:*
+  refusals in helpers, error values, the admin answer (a Gin app declares no admin dependency).
 * **GO807 partial writes** (PY807; Lattice's one transaction per write). In a function
   a route runs (the handler, a middleware, or a module helper they call, to
   ``helper_depth``), a committed write -- a GORM ``Create``, ``Save``, ``Update``,
@@ -161,12 +169,6 @@ A's notes):
   the registration order (and a conflicting wildcard pattern panics when the route is
   registered, at start-up). No declaration order can swallow a literal path, so the
   guarantee holds by construction.
-* **GO805 error conventions** (PY805): the app's own conventions (the status it answers
-  another user's row, its admin dependency's answer) are derived by pycheck from a
-  Python original (``derive_not_owned``, the admin dependency); a Gin app has no
-  declared admin dependency and its caller is app-defined, and no Go derivation exists
-  yet. The spec's per-route error answers are checked dynamically by layer R. Lifted
-  when: a Go derivation of the app's not-owned and admin answers exists.
 * **GO806 naive / aware datetimes** (PY806): Go has no naive datetime -- every
   ``time.Time`` carries a location, and ``Before``/``After``/``Sub``/``Compare`` compare
   instants -- so the mix PY806 catches cannot be written.
@@ -205,6 +207,7 @@ GO_CODES: dict[str, str] = {
     "GO801": "ownership: an owned table's rows reach a caller who was not checked to own them",
     "GO802": "private columns: a private column reaches a response",
     "GO803": "bounds: a request value is written to the database or used as a limit unbounded",
+    "GO805": "error conventions: another user's row is refused with another status than the app's",
     "GO807": "partial writes: a commit that a later refusal of the same request can follow",
     "GO808": "state machines: a state written from a guarded state with no edge to it",
 }
@@ -214,9 +217,6 @@ GO_GATED: dict[str, str] = {
     "GO804": "route order (PY804) is moot on Gin: its radix-tree router matches a static "
     "segment before a parameter whatever the registration order, and panics at start-up "
     "on a conflicting pattern",
-    "GO805": "error conventions (PY805) are derived from a Python original; a Gin app's "
-    "caller and admin concept are app-defined and no Go derivation exists yet (layer R "
-    "probes the spec's error answers)",
     "GO806": "naive/aware datetimes (PY806) cannot be mixed in Go: every time.Time carries "
     "a location and Before/After/Sub compare instants",
 }
@@ -255,6 +255,7 @@ class GoPolicy:
     helper_depth: int = HELPER_DEPTH
     rules: tuple[str, ...] = ()  # only these codes (default: all)
     baseline: frozenset[str] = frozenset()
+    not_owned: int | None = None  # the status the original answers another user's row with (GO805)
 
     @classmethod
     def from_spec(cls, spec: Spec) -> GoPolicy:
@@ -453,10 +454,17 @@ def all_go_findings(src_dir: Path | str, policy: GoPolicy) -> list[Finding]:
     if proc.returncode != 0:
         raise GoCheckError(f"gocheck failed (exit {proc.returncode}): {proc.stderr.strip()}")
     data = json.loads(proc.stdout)
-    return [
+    found = [
         Finding(f["code"], f["file"], int(f["line"]), f["message"], f["hint"], key=f["key"])
         for f in data.get("findings", ())
     ]
+    if policy.not_owned is not None and (not policy.rules or "GO805" in policy.rules):
+        if not any(f.code == "GO800" for f in found):
+            from lattice.gocheck.notowned import not_owned_findings
+
+            found += not_owned_findings(src_dir, policy)
+            found.sort(key=lambda f: (f.file, f.line, f.code, f.key))
+    return found
 
 
 def run_gocheck(src_dir: Path | str, policy: GoPolicy, *, strict: bool = False) -> list[Finding]:

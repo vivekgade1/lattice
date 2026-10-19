@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package audience5.v1;
+
+import "audience5/options/v1/access.proto";
+
+option go_package = "example.com/a5opt/gen/audience5/v1;audience5v1";
+
+message Req {
+  string name = 1;
+}
+
+message Rep {
+  string name = 1;
+}
+
+service Door {
+  rpc Login(Req) returns (Rep) {
+    option (audience5.options.v1.audience) = AUDIENCE_ANONYMOUS;
+  }
+  rpc Info(Req) returns (Rep);
+  rpc Staff(Req) returns (Rep) {
+    option (audience5.options.v1.audience) = AUDIENCE_STAFF;
+  }
+  rpc Odd(Req) returns (Rep) {
+    option (audience5.options.v1.audience) = { value: AUDIENCE_ANONYMOUS };
+  }
+}

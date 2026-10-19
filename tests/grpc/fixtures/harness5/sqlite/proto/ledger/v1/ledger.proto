@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+package ledger.v1;
+
+option go_package = "example.com/ledger5/gen/ledger/v1;ledgerv1";
+
+// Accounts: the login rpc and one protected read.
+service Accounts {
+  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc Whoami(WhoamiRequest) returns (WhoamiResponse);
+}
+
+// Entries: a small ledger of titled entries.
+service Entries {
+  rpc Create(CreateRequest) returns (Entry);
+  rpc Get(GetRequest) returns (Entry);
+  rpc List(ListRequest) returns (ListResponse);
+  rpc Close(CloseRequest) returns (Entry);
+  rpc Audit(AuditRequest) returns (AuditResponse);
+  rpc Watch(WatchRequest) returns (stream Entry);
+}
+
+// Reports is declared here and never registered with the server.
+service Reports {
+  rpc Summary(SummaryRequest) returns (SummaryResponse);
+}
+
+message LoginRequest {
+  string name = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  string token = 1;
+}
+
+message WhoamiRequest {}
+
+message WhoamiResponse {
+  string name = 1;
+}
+
+message Entry {
+  int64 id = 1;
+  string title = 2;
+  string owner = 3;
+  string state = 4;
+  int64 serial = 5;
+  repeated string tags = 6;
+}
+
+message CreateRequest {
+  string title = 1;
+  repeated string tags = 2;
+}
+
+message GetRequest {
+  int64 id = 1;
+}
+
+message ListRequest {}
+
+message ListResponse {
+  repeated Entry entries = 1;
+}
+
+message CloseRequest {
+  int64 id = 1;
+}
+
+message AuditRequest {}
+
+message AuditResponse {}
+
+message WatchRequest {}
+
+message SummaryRequest {}
+
+message SummaryResponse {
+  int64 open = 1;
+}
