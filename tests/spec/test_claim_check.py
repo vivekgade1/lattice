@@ -388,3 +388,171 @@ def test_a_quoted_rule_is_the_specs_own_text() -> None:
     quoted = out.split('"', 1)[1].rsplit('"', 1)[0]
     assert quoted == W.RULE_TEXT
     assert ask.check_citation(dg, {"target": "rule:R2", "quote": quoted}) is None
+
+
+# ---- partial-section change_impact answers (post-hoc fix of the round-2 crash) -------------------
+# The tool answers one section at a time (lattice/mcp/tools.py _impact_view): the items are under
+# `items`, there is no `tier2` key in a summary, and the call used to end the turn in KeyError.
+
+_TIERS_RUN = {"1": "run", "2": "run", "3": "run", "4": "not_run:spike_e"}
+
+
+def _tool(**kw: object) -> str:
+    return json.dumps({"schema": "lattice.impact/1", "tiers": _TIERS_RUN, **kw})
+
+
+def _summary_text() -> str:
+    """The real shape of a summary answer (streams/R2-I3f.jsonl), with the tier 1 not run."""
+    return _tool(
+        tiers={"1": "not_run:not_requested", "2": "run", "3": "run", "4": "not_run:spike_e"},
+        section="summary",
+        rules={"added": 0, "changed": 1, "removed": 0, "unchanged": 147},
+        targets={"added": 0, "removed": 0, "modified": 3},
+        summary={
+            "1": {"failing": 0, "resolved": 0, "flows": 0},
+            "2": {"determined": 0, "flows": 0, "undecidable": 4, "decidable": 0},
+            "3": {"locations": 52, "flows": 31, "unread": 1},
+        },
+        workflows={"t1_fail": 0, "t2_fail": 0, "t3_may_fail": 31},
+        note="n",
+        determined=[],
+        files=["internal/db/owned.go"],
+        sections=["summary", "tier1", "tier2", "tier3", "flows", "unread", "decidability"],
+    )
+
+
+def _tier1_text() -> str:
+    item = {"id": W.T1, "tier": 1, "kind": "check_failure", "target": "rule:R3",
+            "summary": "rule R3 case 51 answered 201"}  # fmt: skip
+    return _tool(section="tier1", total=1, returned=1, items=[item], resolved=[], counts={})
+
+
+def _tier3_text() -> str:
+    loc = {"id": W.T3, "tier": 3, "kind": "static", "target": "rule:R3", "what": "limit check"}
+    return _tool(section="tier3", total=1, returned=1, items=[loc], counts={}, external=None)
+
+
+def _tier2_empty_text() -> str:
+    return _tool(section="tier2", total=0, returned=0, items=[], flows=[])
+
+
+PARTIALS = {
+    "summary": _summary_text,
+    "tier1": _tier1_text,
+    "tier3": _tier3_text,
+    "tier2_empty": _tier2_empty_text,
+}
+
+
+@pytest.mark.parametrize("name", PARTIALS)
+def test_a_partial_section_answer_never_crashes_the_checker(name: str) -> None:
+    ctx = W.ctx("What does c3 do?")
+    ctx.add_tool_result(PARTIALS[name]())
+    view = ctx.report("candidate")  # was KeyError: 'tier2'
+    assert view.ok and view.impact is not None
+    assert cc.record_block(view).startswith("Lattice record (candidate): ")
+    assert cc.check_text("Nothing here fails.", ctx).text  # the whole check runs
+
+
+def test_a_summary_has_no_items_and_says_what_it_does_not_hold() -> None:
+    ctx = W.ctx()
+    ctx.add_tool_result(_summary_text())
+    view = ctx.report("candidate")
+    assert view.t1 == {} and view.t2 == {} and view.t3 == {}, "no item is invented"
+    imp = view.impact
+    assert imp is not None
+    assert imp["tier2"] == {"determined": [], "flows": []}
+    assert imp["tier1"]["state"] == "not_run"
+    assert imp["absent"] == [
+        "tier2.determined", "tier2.flows", "tier3.locations", "tier3.flows",
+    ]  # fmt: skip
+    assert cc.record_block(view) == (
+        "Lattice record (candidate): Tier 1 (observed): not run here; Tier 2 (determined): "
+        "not in this section; Tier 3 (static, may fail): not in this section; Tier 4: not run."
+    )
+
+
+def test_a_tier1_section_is_observed_support_and_only_tier1() -> None:
+    ctx = W.ctx("What fails if c5 is applied?")
+    ctx.add_tool_result(_tier1_text())
+    assert W.T1 in ctx.turn_t1, "a tier 1 item of a section answer is observed"
+    view = ctx.report("candidate")
+    assert set(view.t1) == {W.T1} and view.t2 == {} and view.t3 == {}
+    assert view.impact is not None
+    assert view.impact["tier1"]["failing"][0]["id"] == W.T1
+    rec = cc.record_block(view)
+    assert f"`{W.T1}` (tier 1, observed, candidate): rule R3 case 51 answered 201" in rec
+    assert "Tier 1 (observed): 1 failing (only part of it is in this section)" in rec
+    assert "Tier 2 (determined): not in this section" in rec
+    assert "Tier 3 (static, may fail): not in this section" in rec
+    res = cc.check_text(f"{W.T1} fails: rule R3 case 51 answered 201.", ctx)
+    assert res.counts["supported"] == 1 and "withheld" not in res.text
+
+
+def test_a_tier3_section_holds_locations_not_workflows() -> None:
+    ctx = W.ctx()
+    ctx.add_tool_result(_tier3_text())
+    view = ctx.report("candidate")
+    assert set(view.t3) == {W.T3} and view.t1 == {} and view.t2 == {}
+    rec = cc.record_block(view)
+    assert "Tier 3 (static, may fail): 1 locations, workflows not in this section" in rec
+    assert "Tier 2 (determined): not in this section" in rec
+    assert cc.check_text(f"{W.T3} may fail.", ctx).counts["withheld"] == 0
+
+
+def test_empty_lists_are_a_count_of_zero_not_a_missing_section() -> None:
+    ctx = W.ctx()
+    ctx.add_tool_result(_tier2_empty_text())
+    rec = cc.record_block(ctx.report("candidate"))
+    assert "Tier 2 (determined): 0;" in rec, "the tier 2 lists are there and empty"
+    assert "Tier 3 (static, may fail): not in this section" in rec
+
+
+def test_a_flows_section_files_each_flow_under_its_tier() -> None:
+    f2 = {"id": W.T2B, "tier": 2, "kind": "flow_fails_after_change", "claim": "flow x fails"}
+    f3 = {"id": W.T3B, "tier": 3, "kind": "may_fail", "target": "flow:wf", "routes": ["GET /a"]}
+    ctx = W.ctx()
+    ctx.add_tool_result(_tool(section="flows", total=2, returned=2, items=[f2, f3]))
+    view = ctx.report("candidate")
+    assert set(view.t2) == {W.T2B} and set(view.t3) == {W.T3B} and view.t1 == {}
+    assert view.impact is not None
+    assert "tier2.flows" not in view.impact["absent"] and "tier3.flows" not in view.impact["absent"]
+    assert "tier2.determined" in view.impact["absent"]
+
+
+def test_two_sections_of_one_turn_are_merged_not_overwritten() -> None:
+    ctx = W.ctx()
+    ctx.add_tool_result(_tier1_text())
+    ctx.add_tool_result(_tier3_text())
+    ctx.add_tool_result(_summary_text())
+    view = ctx.report("candidate")
+    assert set(view.t1) == {W.T1} and set(view.t3) == {W.T3}
+    assert W.T1 in ctx.turn_t1
+
+
+def test_a_partial_answer_keeps_the_full_report_of_a_studio_change() -> None:
+    """The Studio lookup is the complete report: a later summary of the same change adds to it,
+    never replaces its record with 'not in this section'."""
+    plain = W.ctx("What breaks if c1 is applied?")
+    want = cc.record_block(plain.report("c1"))
+    ctx = W.ctx("What breaks if c1 is applied?")
+    ctx.add_tool_result(_tool(input={"change": "c1"}, section="summary", summary={}, files=[]))
+    got = cc.record_block(ctx.report("c1"))
+    assert got == want and "not in this section" not in got
+
+
+def test_a_complete_document_is_unchanged_by_the_section_handling() -> None:
+    """Byte-identity: a complete report has no `section`, `normalize_impact` returns it as it
+    is, its impact value has no `absent` and its template line is the old one."""
+    body = W.body_c1()
+    assert cc.normalize_impact(body["report"]) is body["report"]
+    view = cc.view_of_body("c1", body)
+    assert view.impact is not None and "absent" not in view.impact
+    assert cc.record_block(view).splitlines()[0] == (
+        "Lattice record (c1): Tier 1 (observed): 1 failing; Tier 2 (determined): 2; "
+        "Tier 3 (static, may fail): 1 locations, 1 workflows; Tier 4: not run."
+    )
+    ctx = W.ctx("What breaks if c2 is applied?")
+    ctx.add_tool_result(json.dumps(W.body_c2()["report"]))
+    v = ctx.report("c2")
+    assert v.impact is not None and "absent" not in v.impact

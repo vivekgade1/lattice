@@ -21,7 +21,7 @@ from lattice.studio import session as S
 from lattice.studio.session import ChatHooks, SessionManager
 from tests.spec import chat_world as W
 from tests.studio.test_server import make_project
-from tests.studio.test_session import Fake, wait_done
+from tests.studio.test_session import SID, Fake, wait_done
 
 FIX = Path(__file__).parent / "fixtures" / "chat2"
 AM = W.make_map()
@@ -256,3 +256,77 @@ def test_the_frozen_paragraph_is_the_preregistered_text() -> None:
         elif para:
             break
     assert " ".join(para).strip().strip('"') == S._CHECK_RULES
+
+
+REAL_I_FREE = (
+    Path(__file__).parents[2] / "docs/results/data/2026-10-18-goto-chat-round2/scored/agent/streams"
+)
+
+
+def _no_crash(events: list[dict[str, Any]]) -> None:
+    assert not [e for e in events if e["type"] == "error"], events
+    res = events[-2]
+    assert res["type"] == "result" and res["check"] is not None
+    assert texts(events), "the turn ends with text, not a KeyError"
+
+
+# the real tool answer and the model's final words of streams/R2-I3f.jsonl (change_impact, c3)
+SUMMARY_ANSWER = '{"schema":"lattice.impact/1","tiers":{"1":"not_run:not_requested","2":"run","3":"run","4":"not_run:spike_e"},"section":"summary","rules":{"added":0,"changed":1,"removed":0,"unchanged":147},"targets":{"added":0,"removed":0,"modified":3},"summary":{"1":{"failing":0,"resolved":0,"flows":0},"2":{"determined":0,"flows":0,"undecidable":4,"decidable":0},"3":{"locations":52,"flows":31,"unread":1}},"workflows":{"t1_fail":0,"t2_fail":0,"t3_may_fail":31},"note":"Which workflows fail is mostly not decidable before the change exists: a flow records the answers the app gives today, so it passes today by construction. Before an implementation only a changed invariant (tier 1, observed) and an exact-prefix contradiction (tier 2, determined) decide a workflow; every other flow listed is tier 3 \'may_fail\' (static, with unknowns), settled by tier 4 (Spike E, observed after the change).","determined":[],"files":["internal/completions/routes.go","internal/db/bodies.go","internal/db/changeseq.go","internal/db/owned.go","internal/httpapi/body.go","internal/httpapi/registry.go","internal/nudges/checkin.go","internal/period/period.go","internal/progress/compute.go","internal/progress/routes.go"],"sections":["summary","tier1","tier2","tier3","flows","unread","decidability"]}'
+SUMMARY_TEXT = (
+    "**Code locations (tier 3, static):** c3 reaches 52 code locations, and 31 workflows may be "
+    "affected. One item is unread.\n\nc3 changes 1 rule and modifies 3 targets. The other 147 "
+    "rules are unchanged.\n\n**Determined workflow failures:** none.\n- Tier 1 (observed) was not "
+    "run, because it wasn't requested. Its failing count is 0.\n- Tier 2 (determined) has no "
+    "determined items.\n- The 31 tier 3 workflows are static: may fail. They are not failures."
+)
+
+
+def _summary_stream() -> list[dict[str, Any]]:
+    use = {
+        "type": "tool_use",
+        "id": "t1",
+        "name": "mcp__lattice__change_impact",
+        "input": {"change": "c3"},
+    }
+    res = {"type": "tool_result", "tool_use_id": "t1", "content": SUMMARY_ANSWER}
+    half = len(SUMMARY_TEXT) // 2
+    return [
+        {"type": "system", "subtype": "init", "session_id": SID},
+        {"type": "assistant", "message": {"id": "m1", "content": [use]}},
+        {"type": "user", "message": {"content": [res]}},
+        {"type": "stream_event", "event": {"type": "message_start", "message": {"id": "m2"}}},
+        {"type": "stream_event", "event": {"type": "content_block_start", "index": 0, "content_block": {"type": "text"}}},
+        *[
+            {"type": "stream_event", "event": {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": t}}}
+            for t in (SUMMARY_TEXT[:half], SUMMARY_TEXT[half:])
+        ],
+        {"type": "stream_event", "event": {"type": "content_block_stop", "index": 0}},
+        {"type": "assistant", "message": {"id": "m2", "content": [{"type": "text", "text": SUMMARY_TEXT}]}},
+        {"type": "result", "subtype": "success", "is_error": False, "result": SUMMARY_TEXT, "session_id": SID, "total_cost_usd": 0.03, "duration_ms": 4778, "num_turns": 2, "usage": {"input_tokens": 100, "output_tokens": 20}},
+    ]  # fmt: skip
+
+
+def test_a_summary_section_impact_result_does_not_end_the_turn(mgr, fake: Fake) -> None:
+    """Round 2 (R2-I1f..I6f): a `lattice.impact/1` answer with `section: "summary"` has no tier2
+    key; the turn used to end in KeyError: 'tier2' with no text (the tool result is R2-I3f's)."""
+    fake.script(_summary_stream())
+    events = turn(mgr(hooks(check=True)), "What does c3 touch?")
+    _no_crash(events)
+    shown = "\n".join(e["text"] for e in texts(events))
+    assert "c3 reaches 52" in shown and "tier 3" in shown.lower()
+
+
+@pytest.mark.parametrize("n", range(1, 7))
+def test_the_real_crashed_streams_replay_without_the_crash(mgr, fake: Fake, n: int) -> None:
+    path = REAL_I_FREE / f"R2-I{n}f.jsonl"
+    if not path.exists():
+        pytest.skip("the round-2 streams are not in this checkout")
+    recs = [json.loads(ln) for ln in path.read_text().splitlines()]
+    fake.script([r for r in recs if r.get("type") not in ("rate_limit_event",)])
+    events = turn(mgr(hooks(check=True)), "What does c3 touch?")
+    if recs[-1].get("type") == "result":
+        _no_crash(events)
+    else:  # the run was cut where the harness crashed: only the CLI's own exit is an error
+        assert [e["message"] for e in events if e["type"] == "error"] == [
+            "claude exited with status 0"
+        ]

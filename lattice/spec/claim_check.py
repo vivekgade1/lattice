@@ -228,6 +228,163 @@ def _index(items: list[Any]) -> dict[str, dict[str, Any]]:
     return {str(i["id"]): i for i in items if isinstance(i, dict) and i.get("id")}
 
 
+def _dicts(x: Any) -> list[dict[str, Any]]:
+    return [i for i in x if isinstance(i, dict)] if isinstance(x, list) else []
+
+
+def normalize_impact(doc: Mapping[str, Any]) -> Mapping[str, Any]:
+    """A ``change_impact`` tool answer in the shape of a ``lattice.impact/1`` report.
+
+    The tool answers one section at a time (``section`` is set: ``summary``, ``tier1``..``tier3``,
+    ``flows``, ``unread``, ``decidability``) with the items under ``items``, not under
+    ``tier1``..``tier3``. This returns a report-shaped dict that holds only the lists the section
+    carries (the others are not there: "not in this section", never an empty list) and keeps
+    ``section``. A complete report (no ``section``) is returned as it is."""
+    section = doc.get("section")
+    if not isinstance(section, str) or not section:
+        return doc
+    out: dict[str, Any] = {k: doc[k] for k in ("schema", "input", "tiers", "diff") if k in doc}
+    out["section"] = section
+    for k in ("tier1", "tier2", "tier3"):
+        if isinstance(doc.get(k), dict):
+            out[k] = dict(doc[k])
+    items = _dicts(doc.get("items"))
+    if section == "tier1":
+        out.setdefault("tier1", {}).update({"failing": items})
+        if isinstance(doc.get("resolved"), list):
+            out["tier1"]["resolved"] = _dicts(doc["resolved"])
+    elif section == "tier2":
+        out.setdefault("tier2", {}).update({"determined": items})
+        if isinstance(doc.get("flows"), list):
+            out["tier2"]["flows"] = _dicts(doc["flows"])
+    elif section == "tier3":
+        out.setdefault("tier3", {}).update({"locations": items})
+    elif section == "flows":
+        for it in items:
+            tier = it.get("tier")
+            if not isinstance(tier, int):
+                m = TID_RE.search(str(it.get("id") or ""))
+                tier = int(m.group(1)) if m else 0
+            if tier in (1, 2, 3):
+                out.setdefault(f"tier{tier}", {}).setdefault("flows", []).append(it)
+        for tier in (1, 2, 3):  # the section holds every flow: a tier with none has none
+            out.setdefault(f"tier{tier}", {}).setdefault("flows", [])
+    elif section == "unread":
+        out.setdefault("tier3", {}).update({"unread": items})
+    elif section == "decidability":
+        out.setdefault("tier2", {}).update({"decidability": items})
+    return out
+
+
+def merge_impact(prev: Mapping[str, Any], new: Mapping[str, Any]) -> Mapping[str, Any]:
+    """Two answers for one change in one turn: a complete report stands; two partial sections
+    are merged, a later list replacing an earlier one of the same name."""
+    if "section" not in prev or "section" not in new:
+        return new if "section" not in new else prev
+    tiers = ("tier1", "tier2", "tier3")
+    out: dict[str, Any] = {**prev, **{k: v for k, v in new.items() if k not in tiers}}
+    for k in tiers:
+        if k in prev or k in new:
+            out[k] = {**(prev.get(k) or {}), **(new.get(k) or {})}
+    return out
+
+
+_NOT_HERE = "not in this section"
+
+
+def _partial_items(report: Mapping[str, Any], saved: Mapping[str, Any]) -> dict[str, Any]:
+    """``impact_ask._items`` for a partial-section document (``report["section"]`` is set: the
+    ``change_impact`` tool answers one section at a time). It holds only the lists of that section:
+    a list it does not hold is empty here and named in ``absent`` (``tier2.determined``, ...) as
+    "not in this section", never as "none". A complete report goes through ``_items`` unchanged."""
+    t1: Mapping[str, Any] = (
+        saved["tier1"] if saved.get("state") == "shown" and saved.get("tier1") else {}
+    )
+    t2 = report.get("tier2") or {}
+    t3 = report.get("tier3") or {}
+    ran1 = (report.get("tiers") or {}).get("1") == "run"
+    absent = [
+        f"{tier}.{part}"
+        for tier, held, parts in (
+            ("tier1", t1, ("failing", "flows")),
+            ("tier2", t2, ("determined", "flows")),
+            ("tier3", t3, ("locations", "flows")),
+        )
+        for part in parts
+        if part not in held and (tier != "tier1" or ran1)
+    ]
+    out: dict[str, Any] = {
+        "change": (report.get("input") or {}).get("change"),
+        "state": "ok",
+        "tiers": dict(report.get("tiers") or {}),
+        "tier1": {
+            "state": "shown" if t1 else "not_run",
+            "failing": list(t1.get("failing", [])),
+            "flows": list(t1.get("flows", [])),
+        },
+        "tier2": {
+            "determined": list(t2.get("determined", [])),
+            "flows": list(t2.get("flows", [])),
+        },
+        "tier3": {
+            "locations": list(t3.get("locations", [])[: impact_ask.TIER3_CAP]),
+            "flows": list(t3.get("flows", [])[: impact_ask.TIER3_CAP]),
+            "total": {
+                "locations": len(t3.get("locations", [])),
+                "flows": len(t3.get("flows", [])),
+            },
+        },
+        "tier4": "not_run",
+    }
+    if absent:
+        out["absent"] = absent
+    return out
+
+
+def impact_value(report: Mapping[str, Any], saved: Mapping[str, Any]) -> dict[str, Any]:
+    """The router's ``impact`` value of a report: ``impact_ask._items`` for a complete report
+    (byte for byte), :func:`_partial_items` for a partial-section document."""
+    if "section" in report:
+        return _partial_items(report, saved)
+    return impact_ask._items(report, saved)
+
+
+def _template(impact: Mapping[str, Any]) -> str:
+    """The fixed tier line of a record: ``impact_ask._tier_template`` when every list is held, the
+    same words with "not in this section" where a list is not (a partial-section document)."""
+    absent = set(impact.get("absent") or ())
+    if not absent:
+        return impact_ask._tier_template(impact)
+    t1, t2, t3 = impact["tier1"], impact["tier2"], impact["tier3"]["total"]
+    if {"tier1.failing", "tier1.flows"} <= absent:
+        first = _NOT_HERE
+    else:
+        first = (
+            f"{len(t1['failing']) + len(t1['flows'])} failing"
+            if t1["state"] == "shown"
+            else "not run here"
+        )
+        if absent & {"tier1.failing", "tier1.flows"}:
+            first += " (only part of it is in this section)"
+    if {"tier2.determined", "tier2.flows"} <= absent:
+        second = _NOT_HERE
+    else:
+        second = str(len(t2["determined"]) + len(t2["flows"]))
+        if absent & {"tier2.determined", "tier2.flows"}:
+            second += " (only part of it is in this section)"
+    if {"tier3.locations", "tier3.flows"} <= absent:
+        third = _NOT_HERE
+    else:
+        third = ", ".join(
+            f"{label} {_NOT_HERE}" if f"tier3.{part}" in absent else f"{t3[part]} {label}"
+            for part, label in (("locations", "locations"), ("flows", "workflows"))
+        )
+    return (
+        f"Tier 1 (observed): {first}; Tier 2 (determined): {second}; "
+        f"Tier 3 (static, may fail): {third}; Tier 4: not run."
+    )
+
+
 def _add_report(view: ReportView, report: Mapping[str, Any], tier1: Mapping[str, Any]) -> None:
     view.t1.update(_index([*tier1.get("failing", []), *tier1.get("flows", [])]))
     t2 = report.get("tier2") or {}
@@ -258,7 +415,7 @@ def view_of_body(change: str, body: Mapping[str, Any]) -> ReportView:
         saved["tier1"] if saved.get("state") == "shown" and saved.get("tier1") else {}
     )
     _add_report(view, body["report"], tier1)
-    view.impact = impact_ask._items(body["report"], saved)
+    view.impact = impact_value(body["report"], saved)
     return view
 
 
@@ -304,6 +461,10 @@ class CheckContext:
         if isinstance(doc, dict) and doc.get("schema") == IMPACT_SCHEMA:
             inp = doc.get("input") or {}
             key = str(inp.get("change") or "candidate")
+            prev = self.turn_reports.get(key)
+            doc = normalize_impact(doc)
+            if prev is not None:
+                doc = merge_impact(prev, doc)
             self.turn_reports[key] = doc
             self._views.pop(key, None)
             t1 = doc.get("tier1") or {}
@@ -377,7 +538,10 @@ class CheckContext:
                 v = ReportView(cid, "ok")
             t1 = turn.get("tier1") or {}
             _add_report(v, turn, t1)
-            v.impact = impact_ask._items(turn, {"state": "shown", "tier1": t1})
+            if "section" in turn and (turn.get("tiers") or {}).get("1") != "run":
+                t1 = {}  # a partial answer shows tier 1 only when tier 1 ran
+            if "section" not in turn or v.impact is None:  # a partial answer keeps the full report
+                v.impact = impact_value(turn, {"state": "shown", "tier1": t1})
         self._views[cid] = v
         return v
 
@@ -455,7 +619,7 @@ def render_tier3(item_id: str, item: Mapping[str, Any], change: str) -> str:
 def record_from_impact(change: str, impact: Mapping[str, Any]) -> str:
     """The Lattice record of a change from the router's ``impact`` value (``impact_ask._items``):
     its fixed template line and one line per tier 1 and tier 2 item, verbatim."""
-    lines = [f"Lattice record ({change}): {impact_ask._tier_template(impact)}"]
+    lines = [f"Lattice record ({change}): {_template(impact)}"]
     t1 = [*impact["tier1"]["failing"], *impact["tier1"]["flows"]]
     t2 = [*impact["tier2"]["determined"], *impact["tier2"]["flows"]]
     for it in sorted(t1, key=lambda i: i["id"]):
@@ -1119,7 +1283,9 @@ __all__ = [
     "check_text",
     "has_not_decided",
     "merge_counts",
+    "merge_impact",
     "new_counts",
+    "normalize_impact",
     "record_block",
     "record_from_impact",
     "scorer_claims",
