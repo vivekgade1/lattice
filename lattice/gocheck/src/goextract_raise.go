@@ -2,6 +2,8 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"go/ast"
 	"go/token"
 	"sort"
@@ -650,4 +652,85 @@ func (g *gx) writerTarget(key string) (xWriteMap, *xWriter, bool) {
 		}
 	}
 	return xWriteMap{}, nil, false
+}
+
+// K8 (opt-in policy extract): an owner-scoped lookup's refusal. A `compare` use of a chain whose result is
+// tested (`err := chain` and the next `if`, or the `if` holding the chain) links to the one constant 4xx raise
+// that branch returns. xOwner is in a frozen file and the raises of helpers come later: the link rides on its
+// MarshalJSON and is read there.
+var ownerLinks = map[xOwner]func() *xRaise{}
+
+func (o xOwner) MarshalJSON() ([]byte, error) {
+	type plain xOwner
+	var raise map[string]any
+	if f := ownerLinks[o]; f != nil {
+		if r := f(); r != nil {
+			raise = map[string]any{"status": *r.Status, "file": r.File, "line": r.Line}
+		}
+	}
+	var b bytes.Buffer
+	enc := json.NewEncoder(&b)
+	enc.SetEscapeHTML(false) // as the extract's own encoder
+	err := enc.Encode(struct {
+		plain
+		Raise map[string]any `json:"raise,omitempty"`
+	}{plain(o), raise})
+	return bytes.TrimRight(b.Bytes(), "\n"), err
+}
+
+func (g *gx) linkRaise(ci *closureInfo, b *Func, stack []ast.Node, n0 int) {
+	var ifs *ast.IfStmt
+	var lhs []ast.Expr
+	tested := false
+	for i := len(stack) - 2; i >= 0 && ifs == nil; i-- {
+		switch s := stack[i].(type) {
+		case *ast.IfStmt:
+			ifs, tested = s, stack[i+1] == ast.Node(s.Cond)
+			if a, ok := stack[i+1].(*ast.AssignStmt); ok {
+				lhs = a.Lhs
+			}
+		case *ast.BlockStmt:
+			for j, st := range s.List {
+				if a, ok := st.(*ast.AssignStmt); ok && ast.Node(a) == stack[i+1] && j+1 < len(s.List) {
+					ifs, _ = s.List[j+1].(*ast.IfStmt)
+					lhs = a.Lhs
+				}
+			}
+			if ifs == nil {
+				return
+			}
+		}
+	}
+	if ifs == nil || len(ifs.Body.List) == 0 {
+		return
+	}
+	ast.Inspect(ifs.Cond, func(n ast.Node) bool {
+		for _, l := range lhs {
+			if id, ok := n.(*ast.Ident); ok && id.Name == g.src(l) {
+				tested = true
+			}
+		}
+		return true
+	})
+	cond := g.src(ifs.Cond)
+	if _, returns := ifs.Body.List[len(ifs.Body.List)-1].(*ast.ReturnStmt); !tested || !returns || strings.Contains(cond, "== nil") || strings.Contains(cond, "!errors.") {
+		return
+	}
+	one := func() *xRaise {
+		var hit []xRaise
+		for _, r := range ci.raises {
+			if r.File == b.File.Rel && r.Line >= g.line(ifs.Body.Pos()) && r.Line <= g.line(ifs.Body.End()) {
+				hit = append(hit, r)
+			}
+		}
+		if len(hit) == 1 && hit[0].Status != nil && *hit[0].Status/100 == 4 {
+			return &hit[0]
+		}
+		return nil
+	}
+	for _, o := range ci.owners[n0:] {
+		if o.How == "compare" {
+			ownerLinks[o] = one
+		}
+	}
 }
