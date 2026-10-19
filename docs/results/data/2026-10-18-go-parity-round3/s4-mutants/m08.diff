@@ -1,0 +1,11 @@
+--- a/internal/api/router.go
++++ b/internal/api/router.go
+@@ -38,7 +38,7 @@
+ 	member.POST("/books/:id/finish", s.finishBook)
+ 	member.GET("/books/:id/notes", s.listNotes)
+ 	member.POST("/books/:id/notes", s.createNote)
+-	member.DELETE("/notes/:id", s.deleteNote)
++	r.DELETE("/notes/:id", s.deleteNote)
+ 
+ 	return r
+ }

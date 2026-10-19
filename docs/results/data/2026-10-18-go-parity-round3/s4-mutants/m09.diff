@@ -1,0 +1,11 @@
+--- a/internal/api/shelves.go
++++ b/internal/api/shelves.go
+@@ -48,7 +48,7 @@
+ 	}
+ 	var shelf models.Shelf
+ 	if err := s.db.First(&shelf, id).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+-		fail(c, http.StatusNotFound, "shelf not found")
++		fail(c, http.StatusForbidden, "shelf not found")
+ 		return
+ 	} else if err != nil {
+ 		fail(c, http.StatusInternalServerError, "could not load the shelf")

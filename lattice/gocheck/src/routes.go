@@ -22,6 +22,8 @@ type Route struct {
 	Unreadable   bool // a handler or middleware the checker cannot resolve
 	File         *File
 	Line         int
+	Wraps        []*Func // K1: the wrapper literals of the handler and middleware
+	Bound        bool    // K1: the handler is a wrapper's argument
 }
 
 type mwRef struct {
@@ -132,13 +134,21 @@ func (c *checker) findRoutes() {
 			router := xt.is("gin.Engine") || xt.is("gin.RouterGroup") || xt.is("gin.IRouter") ||
 				xt.is("gin.IRoutes")
 			handlerExprs := args[1:]
-			handler := m.FuncRef(e, handlerExprs[len(handlerExprs)-1])
-			if !router && (handler == nil || !m.hasCtxParam(handler)) {
+			last := handlerExprs[len(handlerExprs)-1]
+			handler := m.FuncRef(e, last)
+			bound, wl := c.bind(e, last)
+			if bound != nil {
+				handler = bound
+			}
+			if !router && (handler == nil || !m.hasCtxParam(handler) && wl == nil) {
 				return true
 			}
 			prefix, mws, exact, unreadable := c.routerPrefix(e, sel.X, calls, 2)
 			r := &Route{Method: method, Path: joinPath(prefix, path), Exact: exact,
 				Handler: handler, File: fn.File, Line: m.Line(call.Pos()), Unreadable: unreadable}
+			if wl != nil {
+				r.Bound, r.Wraps = true, []*Func{wl}
+			}
 			for _, h := range handlerExprs[:len(handlerExprs)-1] {
 				mws = append(mws, mwRef{e, h})
 			}
@@ -148,6 +158,9 @@ func (c *checker) findRoutes() {
 					continue // owner-neutral library middleware: neither a guard nor unreadable
 				}
 				f := m.FuncRef(mw.e, mw.x)
+				if b, wl := c.bind(mw.e, mw.x); b != nil {
+					f, r.Wraps = b, append(r.Wraps, wl)
+				}
 				if f == nil {
 					r.Unreadable = true
 					continue
@@ -175,7 +188,7 @@ func (c *checker) findRoutes() {
 	})
 	seen := map[*Func]bool{}
 	for _, r := range c.routes {
-		if r.Handler != nil && !seen[r.Handler] {
+		if r.Handler != nil && (r.Bound || !seen[r.Handler]) {
 			seen[r.Handler] = true
 			c.roots = append(c.roots, &Root{Fn: r.Handler, Route: r})
 		}
@@ -197,6 +210,47 @@ func (c *checker) findRoutes() {
 		seen[fn] = true
 		c.roots = append(c.roots, &Root{Fn: fn})
 	}
+}
+
+// bind reads K1: x is W(arg, ...) for a wrapper W (the extractor's wrapperParam), or a factory
+// whose only return is such a call. It answers arg's function and W's literal. One level: an
+// argument that is a wrapper's literal, or does not resolve, binds nothing.
+func (c *checker) bind(e *Env, x ast.Expr) (*Func, *Func) {
+	g := &gx{m: c.m, wrapMemo: map[*Func]int{}, wrapWriter: map[*Func]*Func{}}
+	for range 3 {
+		call, ok := unparen(x).(*ast.CallExpr)
+		if !ok {
+			return nil, nil
+		}
+		w := c.m.Callee(e, call)
+		if w == nil || w.Lit != nil {
+			return nil, nil
+		}
+		var rets []ast.Expr
+		ast.Inspect(w.Body, func(n ast.Node) bool {
+			if r, ok := n.(*ast.ReturnStmt); ok {
+				rets = append(rets, r.Results...)
+			}
+			_, lit := n.(*ast.FuncLit)
+			return !lit
+		})
+		if i := g.wrapperParam(w); i >= 0 && i < len(call.Args) {
+			arg := c.m.FuncRef(e, call.Args[i])
+			if arg == nil || arg.Lit != nil && g.wrapperParam(arg.Parent) >= 0 {
+				return nil, nil
+			}
+			for _, r := range rets {
+				if l, ok := unparen(r).(*ast.FuncLit); ok {
+					return arg, c.m.LitFunc(l, w)
+				}
+			}
+		}
+		if len(rets) != 1 {
+			return nil, nil
+		}
+		x, e = rets[0], c.m.EnvOf(w)
+	}
+	return nil, nil
 }
 
 // Gin's own logging and recovery middleware: none of them authenticates, scopes or refuses by

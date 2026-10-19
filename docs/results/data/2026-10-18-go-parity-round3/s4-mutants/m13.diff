@@ -1,0 +1,11 @@
+--- a/internal/api/books.go
++++ b/internal/api/books.go
+@@ -190,7 +190,7 @@
+ 		return
+ 	}
+ 	now := time.Now().UTC()
+-	res := s.db.Model(&models.Book{}).Where("id = ? AND status = ?", book.ID, "reading").Updates(map[string]any{"status": "finished", "rating": in.Rating, "finished_at": now})
++	res := s.db.Model(&models.Book{}).Where("id = ?", book.ID).Updates(map[string]any{"status": "finished", "rating": in.Rating, "finished_at": now})
+ 	if res.Error != nil {
+ 		fail(c, http.StatusInternalServerError, "could not finish the book")
+ 		return

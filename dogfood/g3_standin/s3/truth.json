@@ -1,0 +1,380 @@
+{
+ "schema": "lattice.g3truth/1",
+ "stand_in_for": "S4 (the held-out Go app); this is S3 (tests/spec/gotickets) with its truth in S4's schema, for the runner self-test only",
+ "package": "gotickets",
+ "harness": "tests.spec.gotickets_harness",
+ "routes": [
+  {
+   "method": "GET",
+   "path": "/health",
+   "auth": "Public",
+   "file": "api/api.go",
+   "line": 36
+  },
+  {
+   "method": "POST",
+   "path": "/login",
+   "auth": "Public",
+   "file": "api/api.go",
+   "line": 37
+  },
+  {
+   "method": "GET",
+   "path": "/queues",
+   "auth": "Public",
+   "file": "api/api.go",
+   "line": 38
+  },
+  {
+   "method": "GET",
+   "path": "/me",
+   "auth": "Member",
+   "file": "api/api.go",
+   "line": 41
+  },
+  {
+   "method": "POST",
+   "path": "/queues/:qid/tickets",
+   "auth": "Member",
+   "file": "api/api.go",
+   "line": 42
+  },
+  {
+   "method": "GET",
+   "path": "/tickets",
+   "auth": "Member",
+   "file": "api/api.go",
+   "line": 43
+  },
+  {
+   "method": "GET",
+   "path": "/tickets/:tid",
+   "auth": "Member",
+   "file": "api/api.go",
+   "line": 44
+  },
+  {
+   "method": "POST",
+   "path": "/tickets/:tid/close",
+   "auth": "Member",
+   "file": "api/api.go",
+   "line": 45
+  },
+  {
+   "method": "POST",
+   "path": "/tickets/:tid/reopen",
+   "auth": "Member",
+   "file": "api/api.go",
+   "line": 46
+  },
+  {
+   "method": "POST",
+   "path": "/tickets/:tid/handoffs",
+   "auth": "Member",
+   "file": "api/api.go",
+   "line": 47
+  },
+  {
+   "method": "GET",
+   "path": "/handoffs",
+   "auth": "Member",
+   "file": "api/api.go",
+   "line": 48
+  }
+ ],
+ "tables": [
+  {
+   "struct": "User",
+   "table": "users",
+   "columns": [
+    {
+     "name": "id",
+     "json": "id",
+     "private": false
+    },
+    {
+     "name": "name",
+     "json": "name",
+     "private": false
+    },
+    {
+     "name": "password_hash",
+     "json": "-",
+     "private": true
+    }
+   ]
+  },
+  {
+   "struct": "Queue",
+   "table": "queues",
+   "columns": [
+    {
+     "name": "id",
+     "json": "id",
+     "private": false
+    },
+    {
+     "name": "name",
+     "json": "name",
+     "private": false
+    }
+   ]
+  },
+  {
+   "struct": "Ticket",
+   "table": "tickets",
+   "columns": [
+    {
+     "name": "id",
+     "json": "id",
+     "private": false
+    },
+    {
+     "name": "queue_id",
+     "json": "queue_id",
+     "private": false
+    },
+    {
+     "name": "reporter_id",
+     "json": "reporter_id",
+     "private": false
+    },
+    {
+     "name": "title",
+     "json": "title",
+     "private": false
+    },
+    {
+     "name": "status",
+     "json": "status",
+     "private": false
+    }
+   ]
+  },
+  {
+   "struct": "Handoff",
+   "table": "handoffs",
+   "columns": [
+    {
+     "name": "id",
+     "json": "id",
+     "private": false
+    },
+    {
+     "name": "ticket_id",
+     "json": "ticket_id",
+     "private": false
+    },
+    {
+     "name": "from_user_id",
+     "json": "from_user_id",
+     "private": false
+    },
+    {
+     "name": "to_user_id",
+     "json": "to_user_id",
+     "private": false
+    }
+   ]
+  }
+ ],
+ "owners": {
+  "Ticket": "reporter_id"
+ },
+ "owner_via": {},
+ "machines": {
+  "Ticket.status": {
+   "initial": "open",
+   "edges": [
+    [
+     "open",
+     "closed"
+    ],
+    [
+     "closed",
+     "open"
+    ]
+   ]
+  }
+ },
+ "refusals": [
+  {
+   "route": "POST /login",
+   "status": 422,
+   "detail": "invalid body",
+   "cause": "invalid",
+   "file": "api/api.go",
+   "line": 75
+  },
+  {
+   "route": "POST /login",
+   "status": 401,
+   "detail": "Incorrect username or password",
+   "cause": "auth",
+   "file": "api/api.go",
+   "line": 80
+  },
+  {
+   "route": "GET /me",
+   "status": 401,
+   "detail": "Not authenticated",
+   "cause": "auth",
+   "file": "api/api.go",
+   "line": 127
+  },
+  {
+   "route": "POST /queues/:qid/tickets",
+   "status": 400,
+   "detail": "bad id",
+   "cause": "invalid",
+   "file": "api/api.go",
+   "line": 144
+  },
+  {
+   "route": "POST /queues/:qid/tickets",
+   "status": 404,
+   "detail": "Not found",
+   "cause": "not_found",
+   "file": "api/api.go",
+   "line": 149
+  },
+  {
+   "route": "POST /queues/:qid/tickets",
+   "status": 422,
+   "detail": "invalid body",
+   "cause": "invalid",
+   "file": "api/api.go",
+   "line": 154
+  },
+  {
+   "route": "POST /queues/:qid/tickets",
+   "status": 409,
+   "detail": "already open",
+   "cause": "conflict",
+   "file": "api/api.go",
+   "line": 162
+  },
+  {
+   "route": "GET /tickets",
+   "status": 422,
+   "detail": "invalid query",
+   "cause": "invalid",
+   "file": "api/api.go",
+   "line": 184
+  },
+  {
+   "route": "GET /tickets/:tid",
+   "status": 400,
+   "detail": "bad id",
+   "cause": "invalid",
+   "file": "api/api.go",
+   "line": 206
+  },
+  {
+   "route": "GET /tickets/:tid",
+   "status": 404,
+   "detail": "Not found",
+   "cause": "not_owned",
+   "file": "api/api.go",
+   "line": 211
+  },
+  {
+   "route": "POST /tickets/:tid/close",
+   "status": 400,
+   "detail": "bad id",
+   "cause": "invalid",
+   "file": "api/api.go",
+   "line": 223
+  },
+  {
+   "route": "POST /tickets/:tid/close",
+   "status": 404,
+   "detail": "Not found",
+   "cause": "not_owned",
+   "file": "api/api.go",
+   "line": 228
+  },
+  {
+   "route": "POST /tickets/:tid/close",
+   "status": 409,
+   "detail": "not open",
+   "cause": "conflict",
+   "file": "api/api.go",
+   "line": 232
+  },
+  {
+   "route": "POST /tickets/:tid/reopen",
+   "status": 400,
+   "detail": "bad id",
+   "cause": "invalid",
+   "file": "api/api.go",
+   "line": 248
+  },
+  {
+   "route": "POST /tickets/:tid/reopen",
+   "status": 404,
+   "detail": "Not found",
+   "cause": "not_owned",
+   "file": "api/api.go",
+   "line": 253
+  },
+  {
+   "route": "POST /tickets/:tid/reopen",
+   "status": 409,
+   "detail": "not closed",
+   "cause": "conflict",
+   "file": "api/api.go",
+   "line": 257
+  },
+  {
+   "route": "POST /tickets/:tid/handoffs",
+   "status": 400,
+   "detail": "bad id",
+   "cause": "invalid",
+   "file": "api/api.go",
+   "line": 278
+  },
+  {
+   "route": "POST /tickets/:tid/handoffs",
+   "status": 404,
+   "detail": "Not found",
+   "cause": "not_owned",
+   "file": "api/api.go",
+   "line": 283
+  },
+  {
+   "route": "POST /tickets/:tid/handoffs",
+   "status": 422,
+   "detail": "invalid body",
+   "cause": "invalid",
+   "file": "api/api.go",
+   "line": 288
+  },
+  {
+   "route": "POST /tickets/:tid/handoffs",
+   "status": 404,
+   "detail": "No such user",
+   "cause": "not_found",
+   "file": "api/api.go",
+   "line": 293
+  }
+ ],
+ "bind_status": 422,
+ "login": {
+  "path": "/login",
+  "fields": [
+   "username",
+   "password"
+  ]
+ },
+ "seed_users": [
+  {
+   "name": "ann",
+   "role": "Member"
+  },
+  {
+   "name": "ben",
+   "role": "Member"
+  }
+ ]
+}

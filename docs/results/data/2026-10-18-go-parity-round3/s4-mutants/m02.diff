@@ -1,0 +1,13 @@
+--- a/internal/api/notes.go
++++ b/internal/api/notes.go
+@@ -30,10 +30,6 @@
+ 		fail(c, http.StatusInternalServerError, "could not load the book")
+ 		return
+ 	}
+-	if owner != userID(c) {
+-		fail(c, http.StatusForbidden, "book belongs to another user")
+-		return
+-	}
+ 	notes := []models.Note{}
+ 	if err := s.db.Where("book_id = ? AND user_id = ?", book.ID, owner).Order("id").Find(&notes).Error; err != nil {
+ 		fail(c, http.StatusInternalServerError, "could not load the notes")

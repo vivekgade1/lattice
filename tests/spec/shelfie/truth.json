@@ -1,0 +1,912 @@
+{
+ "schema": "lattice.g3truth/1",
+ "package": "shelfie",
+ "harness": "tests.spec.shelfie_harness",
+ "routes": [
+  {
+   "method": "GET",
+   "path": "/health",
+   "auth": "Public",
+   "file": "internal/api/router.go",
+   "line": 25
+  },
+  {
+   "method": "POST",
+   "path": "/login",
+   "auth": "Public",
+   "file": "internal/api/router.go",
+   "line": 26
+  },
+  {
+   "method": "GET",
+   "path": "/me",
+   "auth": "Member",
+   "file": "internal/api/router.go",
+   "line": 29
+  },
+  {
+   "method": "GET",
+   "path": "/shelves",
+   "auth": "Member",
+   "file": "internal/api/router.go",
+   "line": 30
+  },
+  {
+   "method": "POST",
+   "path": "/shelves",
+   "auth": "Member",
+   "file": "internal/api/router.go",
+   "line": 31
+  },
+  {
+   "method": "GET",
+   "path": "/shelves/:id",
+   "auth": "Member",
+   "file": "internal/api/router.go",
+   "line": 32
+  },
+  {
+   "method": "DELETE",
+   "path": "/shelves/:id",
+   "auth": "Member",
+   "file": "internal/api/router.go",
+   "line": 33
+  },
+  {
+   "method": "POST",
+   "path": "/shelves/:id/books",
+   "auth": "Member",
+   "file": "internal/api/router.go",
+   "line": 34
+  },
+  {
+   "method": "GET",
+   "path": "/books/:id",
+   "auth": "Member",
+   "file": "internal/api/router.go",
+   "line": 35
+  },
+  {
+   "method": "PATCH",
+   "path": "/books/:id",
+   "auth": "Member",
+   "file": "internal/api/router.go",
+   "line": 36
+  },
+  {
+   "method": "POST",
+   "path": "/books/:id/start",
+   "auth": "Member",
+   "file": "internal/api/router.go",
+   "line": 37
+  },
+  {
+   "method": "POST",
+   "path": "/books/:id/finish",
+   "auth": "Member",
+   "file": "internal/api/router.go",
+   "line": 38
+  },
+  {
+   "method": "GET",
+   "path": "/books/:id/notes",
+   "auth": "Member",
+   "file": "internal/api/router.go",
+   "line": 39
+  },
+  {
+   "method": "POST",
+   "path": "/books/:id/notes",
+   "auth": "Member",
+   "file": "internal/api/router.go",
+   "line": 40
+  },
+  {
+   "method": "DELETE",
+   "path": "/notes/:id",
+   "auth": "Member",
+   "file": "internal/api/router.go",
+   "line": 41
+  }
+ ],
+ "tables": [
+  {
+   "struct": "User",
+   "table": "users",
+   "columns": [
+    {
+     "name": "id",
+     "json": "id",
+     "private": false
+    },
+    {
+     "name": "username",
+     "json": "username",
+     "private": false
+    },
+    {
+     "name": "password",
+     "json": "-",
+     "private": true
+    },
+    {
+     "name": "display_name",
+     "json": "display_name",
+     "private": false
+    }
+   ]
+  },
+  {
+   "struct": "Shelf",
+   "table": "shelves",
+   "columns": [
+    {
+     "name": "id",
+     "json": "id",
+     "private": false
+    },
+    {
+     "name": "user_id",
+     "json": "user_id",
+     "private": false
+    },
+    {
+     "name": "name",
+     "json": "name",
+     "private": false
+    },
+    {
+     "name": "description",
+     "json": "description",
+     "private": false
+    }
+   ]
+  },
+  {
+   "struct": "Book",
+   "table": "books",
+   "columns": [
+    {
+     "name": "id",
+     "json": "id",
+     "private": false
+    },
+    {
+     "name": "shelf_id",
+     "json": "shelf_id",
+     "private": false
+    },
+    {
+     "name": "title",
+     "json": "title",
+     "private": false
+    },
+    {
+     "name": "author",
+     "json": "author",
+     "private": false
+    },
+    {
+     "name": "status",
+     "json": "status",
+     "private": false
+    },
+    {
+     "name": "rating",
+     "json": "rating",
+     "private": false
+    },
+    {
+     "name": "created_at",
+     "json": "created_at",
+     "private": false
+    },
+    {
+     "name": "finished_at",
+     "json": "finished_at",
+     "private": false
+    }
+   ]
+  },
+  {
+   "struct": "Note",
+   "table": "notes",
+   "columns": [
+    {
+     "name": "id",
+     "json": "id",
+     "private": false
+    },
+    {
+     "name": "user_id",
+     "json": "user_id",
+     "private": false
+    },
+    {
+     "name": "book_id",
+     "json": "book_id",
+     "private": false
+    },
+    {
+     "name": "body",
+     "json": "body",
+     "private": false
+    },
+    {
+     "name": "created_at",
+     "json": "created_at",
+     "private": false
+    }
+   ]
+  }
+ ],
+ "owners": {
+  "Shelf": "user_id",
+  "Note": "user_id"
+ },
+ "owner_via": {
+  "Book": [
+   "Shelf",
+   "shelf_id"
+  ]
+ },
+ "machines": {
+  "Book.status": {
+   "initial": "queued",
+   "edges": [
+    [
+     "queued",
+     "reading"
+    ],
+    [
+     "reading",
+     "finished"
+    ]
+   ]
+  }
+ },
+ "refusals": [
+  {
+   "route": "GET /health",
+   "status": 503,
+   "detail": "database unavailable",
+   "cause": "other",
+   "file": "internal/api/accounts.go",
+   "line": 21
+  },
+  {
+   "route": "POST /login",
+   "status": 422,
+   "detail": "username and password are required",
+   "cause": "invalid",
+   "file": "internal/api/accounts.go",
+   "line": 30
+  },
+  {
+   "route": "POST /login",
+   "status": 500,
+   "detail": "could not look up the user",
+   "cause": "other",
+   "file": "internal/api/accounts.go",
+   "line": 35
+  },
+  {
+   "route": "POST /login",
+   "status": 401,
+   "detail": "invalid username or password",
+   "cause": "auth",
+   "file": "internal/api/accounts.go",
+   "line": 39
+  },
+  {
+   "route": "GET /me",
+   "status": 500,
+   "detail": "could not load the user",
+   "cause": "other",
+   "file": "internal/api/accounts.go",
+   "line": 52
+  },
+  {
+   "route": "POST /shelves/:id/books",
+   "status": 400,
+   "detail": "shelf id must be a positive integer",
+   "cause": "invalid",
+   "file": "internal/api/books.go",
+   "line": 34
+  },
+  {
+   "route": "POST /shelves/:id/books",
+   "status": 404,
+   "detail": "shelf not found",
+   "cause": "not_found",
+   "file": "internal/api/books.go",
+   "line": 39
+  },
+  {
+   "route": "POST /shelves/:id/books",
+   "status": 500,
+   "detail": "could not load the shelf",
+   "cause": "other",
+   "file": "internal/api/books.go",
+   "line": 42
+  },
+  {
+   "route": "POST /shelves/:id/books",
+   "status": 403,
+   "detail": "shelf belongs to another user",
+   "cause": "not_owned",
+   "file": "internal/api/books.go",
+   "line": 46
+  },
+  {
+   "route": "POST /shelves/:id/books",
+   "status": 422,
+   "detail": "title and author are required (1 to 120 characters each)",
+   "cause": "invalid",
+   "file": "internal/api/books.go",
+   "line": 51
+  },
+  {
+   "route": "POST /shelves/:id/books",
+   "status": 500,
+   "detail": "could not create the book",
+   "cause": "other",
+   "file": "internal/api/books.go",
+   "line": 56
+  },
+  {
+   "route": "GET /books/:id",
+   "status": 400,
+   "detail": "book id must be a positive integer",
+   "cause": "invalid",
+   "file": "internal/api/books.go",
+   "line": 65
+  },
+  {
+   "route": "GET /books/:id",
+   "status": 404,
+   "detail": "book not found",
+   "cause": "not_found",
+   "file": "internal/api/books.go",
+   "line": 70
+  },
+  {
+   "route": "GET /books/:id",
+   "status": 500,
+   "detail": "could not load the book",
+   "cause": "other",
+   "file": "internal/api/books.go",
+   "line": 73
+  },
+  {
+   "route": "GET /books/:id",
+   "status": 403,
+   "detail": "book belongs to another user",
+   "cause": "not_owned",
+   "file": "internal/api/books.go",
+   "line": 77
+  },
+  {
+   "route": "PATCH /books/:id",
+   "status": 400,
+   "detail": "book id must be a positive integer",
+   "cause": "invalid",
+   "file": "internal/api/books.go",
+   "line": 86
+  },
+  {
+   "route": "PATCH /books/:id",
+   "status": 404,
+   "detail": "book not found",
+   "cause": "not_found",
+   "file": "internal/api/books.go",
+   "line": 91
+  },
+  {
+   "route": "PATCH /books/:id",
+   "status": 500,
+   "detail": "could not load the book",
+   "cause": "other",
+   "file": "internal/api/books.go",
+   "line": 94
+  },
+  {
+   "route": "PATCH /books/:id",
+   "status": 403,
+   "detail": "book belongs to another user",
+   "cause": "not_owned",
+   "file": "internal/api/books.go",
+   "line": 98
+  },
+  {
+   "route": "PATCH /books/:id",
+   "status": 422,
+   "detail": "send a title and/or an author of 1 to 120 characters",
+   "cause": "invalid",
+   "file": "internal/api/books.go",
+   "line": 103
+  },
+  {
+   "route": "PATCH /books/:id",
+   "status": 500,
+   "detail": "could not update the book",
+   "cause": "other",
+   "file": "internal/api/books.go",
+   "line": 116
+  },
+  {
+   "route": "POST /books/:id/start",
+   "status": 400,
+   "detail": "book id must be a positive integer",
+   "cause": "invalid",
+   "file": "internal/api/books.go",
+   "line": 141
+  },
+  {
+   "route": "POST /books/:id/start",
+   "status": 404,
+   "detail": "book not found",
+   "cause": "not_found",
+   "file": "internal/api/books.go",
+   "line": 146
+  },
+  {
+   "route": "POST /books/:id/start",
+   "status": 500,
+   "detail": "could not load the book",
+   "cause": "other",
+   "file": "internal/api/books.go",
+   "line": 149
+  },
+  {
+   "route": "POST /books/:id/start",
+   "status": 403,
+   "detail": "book belongs to another user",
+   "cause": "not_owned",
+   "file": "internal/api/books.go",
+   "line": 153
+  },
+  {
+   "route": "POST /books/:id/start",
+   "status": 500,
+   "detail": "could not start the book",
+   "cause": "other",
+   "file": "internal/api/books.go",
+   "line": 158
+  },
+  {
+   "route": "POST /books/:id/start",
+   "status": 409,
+   "detail": "only a queued book can be started",
+   "cause": "conflict",
+   "file": "internal/api/books.go",
+   "line": 162
+  },
+  {
+   "route": "POST /books/:id/finish",
+   "status": 400,
+   "detail": "book id must be a positive integer",
+   "cause": "invalid",
+   "file": "internal/api/books.go",
+   "line": 172
+  },
+  {
+   "route": "POST /books/:id/finish",
+   "status": 404,
+   "detail": "book not found",
+   "cause": "not_found",
+   "file": "internal/api/books.go",
+   "line": 177
+  },
+  {
+   "route": "POST /books/:id/finish",
+   "status": 500,
+   "detail": "could not load the book",
+   "cause": "other",
+   "file": "internal/api/books.go",
+   "line": 180
+  },
+  {
+   "route": "POST /books/:id/finish",
+   "status": 403,
+   "detail": "book belongs to another user",
+   "cause": "not_owned",
+   "file": "internal/api/books.go",
+   "line": 184
+  },
+  {
+   "route": "POST /books/:id/finish",
+   "status": 422,
+   "detail": "rating, when sent, must be a whole number from 1 to 5",
+   "cause": "invalid",
+   "file": "internal/api/books.go",
+   "line": 189
+  },
+  {
+   "route": "POST /books/:id/finish",
+   "status": 500,
+   "detail": "could not finish the book",
+   "cause": "other",
+   "file": "internal/api/books.go",
+   "line": 195
+  },
+  {
+   "route": "POST /books/:id/finish",
+   "status": 409,
+   "detail": "only a book being read can be finished",
+   "cause": "conflict",
+   "file": "internal/api/books.go",
+   "line": 199
+  },
+  {
+   "route": "GET /me",
+   "status": 401,
+   "detail": "authentication required",
+   "cause": "auth",
+   "file": "internal/api/middleware.go",
+   "line": 16
+  },
+  {
+   "route": "GET /shelves",
+   "status": 401,
+   "detail": "authentication required",
+   "cause": "auth",
+   "file": "internal/api/middleware.go",
+   "line": 16
+  },
+  {
+   "route": "POST /shelves",
+   "status": 401,
+   "detail": "authentication required",
+   "cause": "auth",
+   "file": "internal/api/middleware.go",
+   "line": 16
+  },
+  {
+   "route": "GET /shelves/:id",
+   "status": 401,
+   "detail": "authentication required",
+   "cause": "auth",
+   "file": "internal/api/middleware.go",
+   "line": 16
+  },
+  {
+   "route": "DELETE /shelves/:id",
+   "status": 401,
+   "detail": "authentication required",
+   "cause": "auth",
+   "file": "internal/api/middleware.go",
+   "line": 16
+  },
+  {
+   "route": "POST /shelves/:id/books",
+   "status": 401,
+   "detail": "authentication required",
+   "cause": "auth",
+   "file": "internal/api/middleware.go",
+   "line": 16
+  },
+  {
+   "route": "GET /books/:id",
+   "status": 401,
+   "detail": "authentication required",
+   "cause": "auth",
+   "file": "internal/api/middleware.go",
+   "line": 16
+  },
+  {
+   "route": "PATCH /books/:id",
+   "status": 401,
+   "detail": "authentication required",
+   "cause": "auth",
+   "file": "internal/api/middleware.go",
+   "line": 16
+  },
+  {
+   "route": "POST /books/:id/start",
+   "status": 401,
+   "detail": "authentication required",
+   "cause": "auth",
+   "file": "internal/api/middleware.go",
+   "line": 16
+  },
+  {
+   "route": "POST /books/:id/finish",
+   "status": 401,
+   "detail": "authentication required",
+   "cause": "auth",
+   "file": "internal/api/middleware.go",
+   "line": 16
+  },
+  {
+   "route": "GET /books/:id/notes",
+   "status": 401,
+   "detail": "authentication required",
+   "cause": "auth",
+   "file": "internal/api/middleware.go",
+   "line": 16
+  },
+  {
+   "route": "POST /books/:id/notes",
+   "status": 401,
+   "detail": "authentication required",
+   "cause": "auth",
+   "file": "internal/api/middleware.go",
+   "line": 16
+  },
+  {
+   "route": "DELETE /notes/:id",
+   "status": 401,
+   "detail": "authentication required",
+   "cause": "auth",
+   "file": "internal/api/middleware.go",
+   "line": 16
+  },
+  {
+   "route": "GET /books/:id/notes",
+   "status": 400,
+   "detail": "book id must be a positive integer",
+   "cause": "invalid",
+   "file": "internal/api/notes.go",
+   "line": 22
+  },
+  {
+   "route": "GET /books/:id/notes",
+   "status": 404,
+   "detail": "book not found",
+   "cause": "not_found",
+   "file": "internal/api/notes.go",
+   "line": 27
+  },
+  {
+   "route": "GET /books/:id/notes",
+   "status": 500,
+   "detail": "could not load the book",
+   "cause": "other",
+   "file": "internal/api/notes.go",
+   "line": 30
+  },
+  {
+   "route": "GET /books/:id/notes",
+   "status": 403,
+   "detail": "book belongs to another user",
+   "cause": "not_owned",
+   "file": "internal/api/notes.go",
+   "line": 34
+  },
+  {
+   "route": "GET /books/:id/notes",
+   "status": 500,
+   "detail": "could not load the notes",
+   "cause": "other",
+   "file": "internal/api/notes.go",
+   "line": 39
+  },
+  {
+   "route": "POST /books/:id/notes",
+   "status": 400,
+   "detail": "book id must be a positive integer",
+   "cause": "invalid",
+   "file": "internal/api/notes.go",
+   "line": 48
+  },
+  {
+   "route": "POST /books/:id/notes",
+   "status": 404,
+   "detail": "book not found",
+   "cause": "not_found",
+   "file": "internal/api/notes.go",
+   "line": 53
+  },
+  {
+   "route": "POST /books/:id/notes",
+   "status": 500,
+   "detail": "could not load the book",
+   "cause": "other",
+   "file": "internal/api/notes.go",
+   "line": 56
+  },
+  {
+   "route": "POST /books/:id/notes",
+   "status": 403,
+   "detail": "book belongs to another user",
+   "cause": "not_owned",
+   "file": "internal/api/notes.go",
+   "line": 60
+  },
+  {
+   "route": "POST /books/:id/notes",
+   "status": 422,
+   "detail": "body is required (1 to 2000 characters)",
+   "cause": "invalid",
+   "file": "internal/api/notes.go",
+   "line": 65
+  },
+  {
+   "route": "POST /books/:id/notes",
+   "status": 500,
+   "detail": "could not create the note",
+   "cause": "other",
+   "file": "internal/api/notes.go",
+   "line": 70
+  },
+  {
+   "route": "DELETE /notes/:id",
+   "status": 400,
+   "detail": "note id must be a positive integer",
+   "cause": "invalid",
+   "file": "internal/api/notes.go",
+   "line": 79
+  },
+  {
+   "route": "DELETE /notes/:id",
+   "status": 404,
+   "detail": "note not found",
+   "cause": "not_found",
+   "file": "internal/api/notes.go",
+   "line": 84
+  },
+  {
+   "route": "DELETE /notes/:id",
+   "status": 500,
+   "detail": "could not load the note",
+   "cause": "other",
+   "file": "internal/api/notes.go",
+   "line": 87
+  },
+  {
+   "route": "DELETE /notes/:id",
+   "status": 403,
+   "detail": "note belongs to another user",
+   "cause": "not_owned",
+   "file": "internal/api/notes.go",
+   "line": 91
+  },
+  {
+   "route": "DELETE /notes/:id",
+   "status": 500,
+   "detail": "could not delete the note",
+   "cause": "other",
+   "file": "internal/api/notes.go",
+   "line": 95
+  },
+  {
+   "route": "GET /shelves",
+   "status": 500,
+   "detail": "could not load the shelves",
+   "cause": "other",
+   "file": "internal/api/shelves.go",
+   "line": 23
+  },
+  {
+   "route": "POST /shelves",
+   "status": 422,
+   "detail": "name is required (1 to 80 characters) and description at most 500",
+   "cause": "invalid",
+   "file": "internal/api/shelves.go",
+   "line": 32
+  },
+  {
+   "route": "POST /shelves",
+   "status": 500,
+   "detail": "could not create the shelf",
+   "cause": "other",
+   "file": "internal/api/shelves.go",
+   "line": 37
+  },
+  {
+   "route": "GET /shelves/:id",
+   "status": 400,
+   "detail": "shelf id must be a positive integer",
+   "cause": "invalid",
+   "file": "internal/api/shelves.go",
+   "line": 46
+  },
+  {
+   "route": "GET /shelves/:id",
+   "status": 404,
+   "detail": "shelf not found",
+   "cause": "not_found",
+   "file": "internal/api/shelves.go",
+   "line": 51
+  },
+  {
+   "route": "GET /shelves/:id",
+   "status": 500,
+   "detail": "could not load the shelf",
+   "cause": "other",
+   "file": "internal/api/shelves.go",
+   "line": 54
+  },
+  {
+   "route": "GET /shelves/:id",
+   "status": 403,
+   "detail": "shelf belongs to another user",
+   "cause": "not_owned",
+   "file": "internal/api/shelves.go",
+   "line": 58
+  },
+  {
+   "route": "GET /shelves/:id",
+   "status": 500,
+   "detail": "could not load the books of the shelf",
+   "cause": "other",
+   "file": "internal/api/shelves.go",
+   "line": 63
+  },
+  {
+   "route": "DELETE /shelves/:id",
+   "status": 400,
+   "detail": "shelf id must be a positive integer",
+   "cause": "invalid",
+   "file": "internal/api/shelves.go",
+   "line": 72
+  },
+  {
+   "route": "DELETE /shelves/:id",
+   "status": 404,
+   "detail": "shelf not found",
+   "cause": "not_found",
+   "file": "internal/api/shelves.go",
+   "line": 77
+  },
+  {
+   "route": "DELETE /shelves/:id",
+   "status": 500,
+   "detail": "could not load the shelf",
+   "cause": "other",
+   "file": "internal/api/shelves.go",
+   "line": 80
+  },
+  {
+   "route": "DELETE /shelves/:id",
+   "status": 403,
+   "detail": "shelf belongs to another user",
+   "cause": "not_owned",
+   "file": "internal/api/shelves.go",
+   "line": 84
+  },
+  {
+   "route": "DELETE /shelves/:id",
+   "status": 500,
+   "detail": "could not count the books of the shelf",
+   "cause": "other",
+   "file": "internal/api/shelves.go",
+   "line": 89
+  },
+  {
+   "route": "DELETE /shelves/:id",
+   "status": 409,
+   "detail": "shelf still has books",
+   "cause": "conflict",
+   "file": "internal/api/shelves.go",
+   "line": 93
+  },
+  {
+   "route": "DELETE /shelves/:id",
+   "status": 500,
+   "detail": "could not delete the shelf",
+   "cause": "other",
+   "file": "internal/api/shelves.go",
+   "line": 97
+  }
+ ],
+ "bind_status": 422,
+ "login": {
+  "path": "/login",
+  "fields": [
+   "username",
+   "password"
+  ]
+ },
+ "seed_users": [
+  {
+   "name": "ann",
+   "role": "Member"
+  },
+  {
+   "name": "ben",
+   "role": "Member"
+  }
+ ]
+}

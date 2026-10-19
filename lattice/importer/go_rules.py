@@ -35,6 +35,17 @@ each recorded in ``inferences[]`` with its ``rule``:
   seed (which cycles ``choices``) creates rows in every state.
 * E5 ``json_dash``: the columns of a table whose ``json`` is ``"-"`` (never a name), minus the
   primary key, are the table's ``private`` columns in the generated profile.
+
+Round 3 (Spike J, node G3):
+
+* K3 ``body_model``: the extract hands a route's request-body fields over as scalar body
+  parameters, which the contract builder (``emit_spec._params``) reads only when a body
+  parameter's type names a model. :func:`infer_body_models` points the route's body at the Go
+  struct's own model (``body_models`` of the extract) or, when the body is anonymous or spans
+  structs, at a model synthesised from the body fields (``<METHOD>_<path>Body``).
+* K4 ``not_run:server_dialect``: see :func:`server_dialect` and ``rules.import_rules``.
+* K5: ``choices`` (E4) only when the default plus the constants written or named as ``from``
+  states are at least two distinct values: a single constant is not a state set.
 """
 
 from __future__ import annotations
@@ -46,21 +57,34 @@ from collections.abc import Callable, Mapping
 from pathlib import Path
 from typing import Any
 
-from lattice.importer.appmodel import FieldSpec, RepoModel, TableModel
+from lattice.importer.appmodel import DataModel, FieldSpec, RepoModel, RouteParam, TableModel
 
 __all__ = [
     "InferringFrontEnd",
     "harness_factory",
     "infer_bind_status",
+    "infer_body_models",
     "infer_choices",
     "infer_owners",
     "infer_path_parse",
     "infer_private",
     "patch_profile",
+    "server_dialect",
 ]
 
 RULE = "owner_uses"
 OWNER_HOWS = ("compare", "assign")
+
+
+def server_dialect(root: Path | str, package: str) -> str | None:
+    """K4: the server database the module's ``studio.toml`` ``[app] database`` names (``mysql``,
+    ``postgres``, ``clickhouse``: a registered server engine), else None. Layer R (whole-table
+    SQLite diffs) cannot run on such an app, and the importer's seed is SQLite."""
+    from lattice.importer.frontends.go_gin import _studio_app
+    from lattice.spec import engines
+
+    found = engines.find(_studio_app(Path(root) / package).get("database", "").lower())
+    return found.name if found is not None else None
 
 
 def harness_factory(root: Path | str, package: str) -> tuple[Callable[[Path], Any], str] | None:
@@ -207,12 +231,70 @@ def infer_choices(
             named = {w["value"] for w in ws if isinstance(w["value"], str)}
             named |= {s for f in fs for s in f["from"] if s != "*"}
             choices = ([c.default] if c.default is not None else []) + sorted(named - {c.default})
+            if len(set(choices)) < 2:  # K5: one value is not a state set
+                cols.append(c)
+                continue
             cols.append(dataclasses.replace(c, choices=tuple(choices)))
             evidence = sorted({f"code:{x['file']}:{x['line']}" for x in (*fs, *ws)})
             inferences.append({"rule": "status_facts", "table": t.name, "column": c.name,
                                "choices": choices, "evidence": evidence})  # fmt: skip
         tables.append(dataclasses.replace(t, columns=tuple(cols)))
     return dataclasses.replace(model, tables=tuple(tables)), inferences
+
+
+def infer_body_models(
+    data: Mapping[str, Any], model: RepoModel
+) -> tuple[RepoModel, list[dict[str, Any]]]:
+    """K3: each route whose body fields arrive as scalar body parameters gets one body parameter
+    typed by a model (see the module docstring); ``data`` is the default extract."""
+    declared = {m.name: m for m in model.models}
+    extract = {(r["method"], r["path_template"]): r for r in data.get("routes", ())}
+    inferences: list[dict[str, Any]] = []
+    routes, made = [], []
+    for r in model.routes:
+        body = [p for p in r.params if p.source == "body" and p.type]
+        if not body or any(p.type in declared for p in body):
+            routes.append(r)
+            continue
+        names = [p.name for p in body]
+        raw = extract.get((r.method, r.path), {})
+        bound = raw.get("body_models") or []
+        if (
+            len(bound) == 1
+            and bound[0] in declared
+            and not bound[0].startswith("struct@")  # an anonymous struct: named by its route
+            and set(names) <= {f.name for f in declared[bound[0]].fields}
+        ):
+            name = bound[0]
+        else:
+            name = f"{r.method}{re.sub('[^A-Za-z0-9]+', '_', r.path)}Body"
+            if name in declared or any(m.name == name for m in made):
+                routes.append(r)
+                continue
+            made.append(DataModel(name, r.module, tuple(
+                FieldSpec(p.name, p.annotation, p.type, required=p.required,
+                          min_length=p.min_length, max_length=p.max_length, ge=p.ge, le=p.le,
+                          choices=p.choices)
+                for p in body
+            ), ()))  # fmt: skip
+        seen = [p for p in raw.get("params", ()) if p.get("source") == "body"]
+        evidence = [f"code:{p['file']}:{p['line']}" for p in seen if p.get("file")]
+        params, placed = [], False
+        for p in r.params:
+            if p in body:
+                if not placed:
+                    params.append(RouteParam(name, name, name, "body"))
+                    placed = True
+            else:
+                params.append(p)
+        routes.append(dataclasses.replace(r, params=tuple(params)))
+        inferences.append({"rule": "body_model", "route": f"{r.method} {r.path}", "model": name,
+                           "fields": names, "evidence": evidence})  # fmt: skip
+    if not inferences:
+        return model, []
+    return dataclasses.replace(
+        model, routes=tuple(routes), models=(*model.models, *made)
+    ), inferences
 
 
 def infer_private(pol: Mapping[str, Any]) -> tuple[dict[str, list[str]], list[dict[str, Any]]]:
@@ -280,5 +362,6 @@ class InferringFrontEnd:
         self.validation_status, bind = infer_bind_status(pol)
         model, choices = infer_choices(data, workflow, model)
         self.private, dash = infer_private(pol)
-        self.inferences = [*owners, *parse, *bind, *choices, *dash]
+        model, body = infer_body_models(data, model)
+        self.inferences = [*owners, *parse, *bind, *choices, *dash, *body]
         return model

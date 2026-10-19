@@ -1,0 +1,4409 @@
+{
+  "schema": "lattice-import-report/2",
+  "repo": "/Users/vivekgade/Documents/lattice-g3/tests/spec",
+  "package": "shelfie",
+  "app_factory": "tests.spec.shelfie_harness:make_app",
+  "llm": false,
+  "method": null,
+  "model": null,
+  "coverage": {
+    "routes": 0,
+    "R0": 0,
+    "R1": 0,
+    "R2": 0,
+    "R3": 0,
+    "R4": 0,
+    "needs-llm": 0,
+    "verified": 0,
+    "lattice_pct": 0.0,
+    "carve_out_pct": 0.0,
+    "island_pct": 0.0,
+    "needs_llm_pct": 0.0,
+    "verified_pct": 0.0,
+    "complete": true,
+    "lines": {},
+    "ast_nodes": {},
+    "tiers": {
+      "T0": 0,
+      "T1": 0,
+      "T2": 0,
+      "T3": 0,
+      "island": 0,
+      "needs-llm": 0
+    },
+    "carve_kinds": {
+      "procedure": 0,
+      "native": 0
+    },
+    "rules": {
+      "items": {
+        "verified": 1,
+        "refuted": 0,
+        "unexercised": 118,
+        "unclear": 0
+      },
+      "tables": {
+        "verified": 0,
+        "total": 4
+      },
+      "routes": {
+        "verified": 0,
+        "total": 15
+      }
+    }
+  },
+  "budget": null,
+  "cost": {
+    "usd": 0.0,
+    "notes_usd": 0.0,
+    "per_llm_verified_route_usd": null,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "llm_rounds": 0,
+    "wall_s": 0.0
+  },
+  "routes": [],
+  "behaviour_changes": [],
+  "islands": [],
+  "carve_out_natives": [],
+  "unclear": [
+    {
+      "topic": "private",
+      "subject": "Book",
+      "reason": "no response model returns Book; its private columns are not inferred",
+      "candidates": []
+    },
+    {
+      "topic": "private",
+      "subject": "Note",
+      "reason": "no response model returns Note; its private columns are not inferred",
+      "candidates": []
+    },
+    {
+      "topic": "private",
+      "subject": "Shelf",
+      "reason": "no response model returns Shelf; its private columns are not inferred",
+      "candidates": []
+    },
+    {
+      "topic": "private",
+      "subject": "User",
+      "reason": "no response model returns User; its private columns are not inferred",
+      "candidates": []
+    },
+    {
+      "topic": "auth",
+      "subject": "User",
+      "reason": "the app's own auth (gin, bearer) is not lifted: the profile's NativeToken names caller_key, which refuses to run (lattice.importer.app_auth)",
+      "candidates": []
+    }
+  ],
+  "notes_disagreements": [],
+  "rules": {
+    "summary": {
+      "items": {
+        "verified": 1,
+        "refuted": 0,
+        "unexercised": 118,
+        "unclear": 0
+      },
+      "tables": {
+        "verified": 0,
+        "total": 4
+      },
+      "routes": {
+        "verified": 0,
+        "total": 15
+      }
+    },
+    "items": {
+      "T1 Book": {
+        "id": "T1 Book",
+        "kind": "T1",
+        "subject": "Book",
+        "sentence": "Book rows are shared: any user may read them",
+        "predicted": {
+          "ownership": "shared"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe reached it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "T1 Note": {
+        "id": "T1 Note",
+        "kind": "T1",
+        "subject": "Note",
+        "sentence": "a Note row belongs to the user in user_id; others cannot reach it",
+        "predicted": {
+          "ownership": "owner",
+          "column": "user_id"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe reached it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "T1 Shelf": {
+        "id": "T1 Shelf",
+        "kind": "T1",
+        "subject": "Shelf",
+        "sentence": "a Shelf row belongs to the user in user_id; others cannot reach it",
+        "predicted": {
+          "ownership": "owner",
+          "column": "user_id"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe reached it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "T1 User": {
+        "id": "T1 User",
+        "kind": "T1",
+        "subject": "User",
+        "sentence": "User is the users table: every role logs in; 'me' is the caller",
+        "predicted": {
+          "ownership": "users"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe reached it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "T2 User.password": {
+        "id": "T2 User.password",
+        "kind": "T2",
+        "subject": "User",
+        "sentence": "User.password is private: no answer shows it",
+        "predicted": {
+          "private": "password"
+        },
+        "verdict": "unexercised",
+        "reason": "no 2xx answer returned a User row",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "T3 Book.author max_len 120": {
+        "id": "T3 Book.author max_len 120",
+        "kind": "T3",
+        "subject": "Book",
+        "sentence": "Book.author max_len 120: writes past it are refused",
+        "predicted": {
+          "column": "author",
+          "op": "max_len",
+          "value": 120
+        },
+        "verdict": "unexercised",
+        "reason": "no probe reached it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "T3 Book.title max_len 120": {
+        "id": "T3 Book.title max_len 120",
+        "kind": "T3",
+        "subject": "Book",
+        "sentence": "Book.title max_len 120: writes past it are refused",
+        "predicted": {
+          "column": "title",
+          "op": "max_len",
+          "value": 120
+        },
+        "verdict": "unexercised",
+        "reason": "no probe reached it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "T3 Note.body max_len 2000": {
+        "id": "T3 Note.body max_len 2000",
+        "kind": "T3",
+        "subject": "Note",
+        "sentence": "Note.body max_len 2000: writes past it are refused",
+        "predicted": {
+          "column": "body",
+          "op": "max_len",
+          "value": 2000
+        },
+        "verdict": "unexercised",
+        "reason": "no probe reached it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "T3 Shelf.description max_len 500": {
+        "id": "T3 Shelf.description max_len 500",
+        "kind": "T3",
+        "subject": "Shelf",
+        "sentence": "Shelf.description max_len 500: writes past it are refused",
+        "predicted": {
+          "column": "description",
+          "op": "max_len",
+          "value": 500
+        },
+        "verdict": "unexercised",
+        "reason": "no probe reached it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "T3 Shelf.name max_len 80": {
+        "id": "T3 Shelf.name max_len 80",
+        "kind": "T3",
+        "subject": "Shelf",
+        "sentence": "Shelf.name max_len 80: writes past it are refused",
+        "predicted": {
+          "column": "name",
+          "op": "max_len",
+          "value": 80
+        },
+        "verdict": "unexercised",
+        "reason": "no probe reached it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "T4 Book.status": {
+        "id": "T4 Book.status",
+        "kind": "T4",
+        "subject": "Book",
+        "sentence": "Book.status is one of finished, queued, reading",
+        "predicted": {
+          "values": [
+            "finished",
+            "queued",
+            "reading"
+          ],
+          "stored": [
+            "finished",
+            "queued",
+            "reading"
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no route writes Book.status through a parameter (every stored value is listed)",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "T5 Book (id)": {
+        "id": "T5 Book (id)",
+        "kind": "T5",
+        "subject": "Book",
+        "sentence": "no two Book rows share (id)",
+        "predicted": {
+          "key": [
+            "id"
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no route creates Book rows",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "T5 Note (id)": {
+        "id": "T5 Note (id)",
+        "kind": "T5",
+        "subject": "Note",
+        "sentence": "no two Note rows share (id)",
+        "predicted": {
+          "key": [
+            "id"
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no route creates Note rows",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "T5 Shelf (id)": {
+        "id": "T5 Shelf (id)",
+        "kind": "T5",
+        "subject": "Shelf",
+        "sentence": "no two Shelf rows share (id)",
+        "predicted": {
+          "key": [
+            "id"
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no route can repeat the key: no create route of Shelf takes (id) or stamps it from the caller",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "T5 User (id)": {
+        "id": "T5 User (id)",
+        "kind": "T5",
+        "subject": "User",
+        "sentence": "no two User rows share (id)",
+        "predicted": {
+          "key": [
+            "id"
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no route can repeat the key: no create route of User takes (id) or stamps it from the caller",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /health": {
+        "id": "R1 GET /health",
+        "kind": "R1",
+        "subject": "GET /health",
+        "sentence": "GET /health admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /health | no caller | anonymous",
+          "GET /health | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /health 503 database unavailable": {
+        "id": "R3 GET /health 503 database unavailable",
+        "kind": "R3",
+        "subject": "GET /health",
+        "sentence": "GET /health answers 503 'database unavailable' (other)",
+        "predicted": {
+          "status": 503,
+          "detail": "database unavailable",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /health 5xx": {
+        "id": "R3 GET /health 5xx",
+        "kind": "R3",
+        "subject": "GET /health",
+        "sentence": "GET /health answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": [
+            503
+          ]
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 2 probes (2 past the auth check)",
+        "probes": [
+          "GET /health | no caller | anonymous",
+          "GET /health | malformed token | call"
+        ],
+        "decisive": [
+          "GET /health | no caller | anonymous",
+          "GET /health | malformed token | call"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 POST /login": {
+        "id": "R1 POST /login",
+        "kind": "R1",
+        "subject": "POST /login",
+        "sentence": "POST /login admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted",
+        "probes": [
+          "POST /login | no caller | anonymous",
+          "POST /login | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /login 422 username and password are required": {
+        "id": "R3 POST /login 422 username and password are required",
+        "kind": "R3",
+        "subject": "POST /login",
+        "sentence": "POST /login answers 422 'username and password are required' (other)",
+        "predicted": {
+          "status": 422,
+          "detail": "username and password are required",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /login 500 could not look up the user": {
+        "id": "R3 POST /login 500 could not look up the user",
+        "kind": "R3",
+        "subject": "POST /login",
+        "sentence": "POST /login answers 500 'could not look up the user' (other)",
+        "predicted": {
+          "status": 500,
+          "detail": "could not look up the user",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /login 401 invalid username or password": {
+        "id": "R3 POST /login 401 invalid username or password",
+        "kind": "R3",
+        "subject": "POST /login",
+        "sentence": "POST /login answers 401 'invalid username or password' (other)",
+        "predicted": {
+          "status": 401,
+          "detail": "invalid username or password",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /login 5xx": {
+        "id": "R3 POST /login 5xx",
+        "kind": "R3",
+        "subject": "POST /login",
+        "sentence": "POST /login answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": [
+            500
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no probe got past the auth check to the handler (answers [401])",
+        "probes": [
+          "POST /login | no caller | anonymous",
+          "POST /login | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /me": {
+        "id": "R1 GET /me",
+        "kind": "R1",
+        "subject": "GET /me",
+        "sentence": "GET /me admits exactly: Customer",
+        "predicted": {
+          "allowed": [
+            "Admin",
+            "Customer"
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /me | no caller | anonymous",
+          "GET /me | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /me 500 could not load the user": {
+        "id": "R3 GET /me 500 could not load the user",
+        "kind": "R3",
+        "subject": "GET /me",
+        "sentence": "GET /me answers 500 'could not load the user' (other)",
+        "predicted": {
+          "status": 500,
+          "detail": "could not load the user",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /me 5xx": {
+        "id": "R3 GET /me 5xx",
+        "kind": "R3",
+        "subject": "GET /me",
+        "sentence": "GET /me answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": [
+            500
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no probe got past the auth check to the handler (answers [401])",
+        "probes": [
+          "GET /me | no caller | anonymous",
+          "GET /me | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /shelves": {
+        "id": "R1 GET /shelves",
+        "kind": "R1",
+        "subject": "GET /shelves",
+        "sentence": "GET /shelves admits exactly: Customer",
+        "predicted": {
+          "allowed": [
+            "Admin",
+            "Customer"
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /shelves | no caller | anonymous",
+          "GET /shelves | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R2 GET /shelves": {
+        "id": "R2 GET /shelves",
+        "kind": "R2",
+        "subject": "GET /shelves",
+        "sentence": "GET /shelves acts on the caller's own Shelf rows only",
+        "predicted": {
+          "scope": "owner",
+          "table": "Shelf"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe reached it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /shelves 500 could not load the shelves": {
+        "id": "R3 GET /shelves 500 could not load the shelves",
+        "kind": "R3",
+        "subject": "GET /shelves",
+        "sentence": "GET /shelves answers 500 'could not load the shelves' (other)",
+        "predicted": {
+          "status": 500,
+          "detail": "could not load the shelves",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /shelves 5xx": {
+        "id": "R3 GET /shelves 5xx",
+        "kind": "R3",
+        "subject": "GET /shelves",
+        "sentence": "GET /shelves answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": [
+            500
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no probe got past the auth check to the handler (answers [401])",
+        "probes": [
+          "GET /shelves | no caller | anonymous",
+          "GET /shelves | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R1 POST /shelves": {
+        "id": "R1 POST /shelves",
+        "kind": "R1",
+        "subject": "POST /shelves",
+        "sentence": "POST /shelves admits exactly: Customer",
+        "predicted": {
+          "allowed": [
+            "Admin",
+            "Customer"
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "POST /shelves | no caller | anonymous",
+          "POST /shelves | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R2 POST /shelves": {
+        "id": "R2 POST /shelves",
+        "kind": "R2",
+        "subject": "POST /shelves",
+        "sentence": "POST /shelves acts on the caller's own Shelf rows only",
+        "predicted": {
+          "scope": "owner",
+          "table": "Shelf"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe reached it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /shelves 422 name is required (1 to 80 characters) and description at most 500": {
+        "id": "R3 POST /shelves 422 name is required (1 to 80 characters) and description at most 500",
+        "kind": "R3",
+        "subject": "POST /shelves",
+        "sentence": "POST /shelves answers 422 'name is required (1 to 80 characters) and description at most 500' (other)",
+        "predicted": {
+          "status": 422,
+          "detail": "name is required (1 to 80 characters) and description at most 500",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /shelves 500 could not create the shelf": {
+        "id": "R3 POST /shelves 500 could not create the shelf",
+        "kind": "R3",
+        "subject": "POST /shelves",
+        "sentence": "POST /shelves answers 500 'could not create the shelf' (other)",
+        "predicted": {
+          "status": 500,
+          "detail": "could not create the shelf",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /shelves 422": {
+        "id": "R3 POST /shelves 422",
+        "kind": "R3",
+        "subject": "POST /shelves",
+        "sentence": "POST /shelves answers 422 (invalid)",
+        "predicted": {
+          "status": 422,
+          "detail": null,
+          "when": "invalid"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+        "probes": [
+          "POST /shelves | no caller | invalid body"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /shelves 5xx": {
+        "id": "R3 POST /shelves 5xx",
+        "kind": "R3",
+        "subject": "POST /shelves",
+        "sentence": "POST /shelves answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": [
+            500
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no probe got past the auth check to the handler (answers [401])",
+        "probes": [
+          "POST /shelves | no caller | anonymous",
+          "POST /shelves | malformed token | call",
+          "POST /shelves | no caller | invalid body"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /shelves/{id}": {
+        "id": "R1 GET /shelves/{id}",
+        "kind": "R1",
+        "subject": "GET /shelves/{id}",
+        "sentence": "GET /shelves/{id} admits exactly: Customer",
+        "predicted": {
+          "allowed": [
+            "Admin",
+            "Customer"
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /shelves/{id} | no caller | anonymous",
+          "GET /shelves/{id} | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R2 GET /shelves/{id}": {
+        "id": "R2 GET /shelves/{id}",
+        "kind": "R2",
+        "subject": "GET /shelves/{id}",
+        "sentence": "GET /shelves/{id} acts on the caller's own Shelf rows only",
+        "predicted": {
+          "scope": "owner",
+          "table": "Shelf"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe reached it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /shelves/{id} 400 shelf id must be a positive integer": {
+        "id": "R3 GET /shelves/{id} 400 shelf id must be a positive integer",
+        "kind": "R3",
+        "subject": "GET /shelves/{id}",
+        "sentence": "GET /shelves/{id} answers 400 'shelf id must be a positive integer' (other)",
+        "predicted": {
+          "status": 400,
+          "detail": "shelf id must be a positive integer",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /shelves/{id} 404 shelf not found": {
+        "id": "R3 GET /shelves/{id} 404 shelf not found",
+        "kind": "R3",
+        "subject": "GET /shelves/{id}",
+        "sentence": "GET /shelves/{id} answers 404 'shelf not found' (not_found)",
+        "predicted": {
+          "status": 404,
+          "detail": "shelf not found",
+          "when": "not_found"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+        "probes": [
+          "GET /shelves/{id} | no caller | missing id"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /shelves/{id} 500 could not load the shelf": {
+        "id": "R3 GET /shelves/{id} 500 could not load the shelf",
+        "kind": "R3",
+        "subject": "GET /shelves/{id}",
+        "sentence": "GET /shelves/{id} answers 500 'could not load the shelf' (other)",
+        "predicted": {
+          "status": 500,
+          "detail": "could not load the shelf",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /shelves/{id} 403 shelf belongs to another user": {
+        "id": "R3 GET /shelves/{id} 403 shelf belongs to another user",
+        "kind": "R3",
+        "subject": "GET /shelves/{id}",
+        "sentence": "GET /shelves/{id} answers 403 'shelf belongs to another user' (not_owned)",
+        "predicted": {
+          "status": 403,
+          "detail": "shelf belongs to another user",
+          "when": "not_owned"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe reached it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /shelves/{id} 500 could not load the books of the shelf": {
+        "id": "R3 GET /shelves/{id} 500 could not load the books of the shelf",
+        "kind": "R3",
+        "subject": "GET /shelves/{id}",
+        "sentence": "GET /shelves/{id} answers 500 'could not load the books of the shelf' (other)",
+        "predicted": {
+          "status": 500,
+          "detail": "could not load the books of the shelf",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /shelves/{id} 5xx": {
+        "id": "R3 GET /shelves/{id} 5xx",
+        "kind": "R3",
+        "subject": "GET /shelves/{id}",
+        "sentence": "GET /shelves/{id} answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": [
+            500
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no probe got past the auth check to the handler (answers [401])",
+        "probes": [
+          "GET /shelves/{id} | no caller | anonymous",
+          "GET /shelves/{id} | malformed token | call",
+          "GET /shelves/{id} | no caller | missing id"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R1 DELETE /shelves/{id}": {
+        "id": "R1 DELETE /shelves/{id}",
+        "kind": "R1",
+        "subject": "DELETE /shelves/{id}",
+        "sentence": "DELETE /shelves/{id} admits exactly: Customer",
+        "predicted": {
+          "allowed": [
+            "Admin",
+            "Customer"
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "DELETE /shelves/{id} | no caller | anonymous",
+          "DELETE /shelves/{id} | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R2 DELETE /shelves/{id}": {
+        "id": "R2 DELETE /shelves/{id}",
+        "kind": "R2",
+        "subject": "DELETE /shelves/{id}",
+        "sentence": "DELETE /shelves/{id} acts on the caller's own Shelf rows only",
+        "predicted": {
+          "scope": "owner",
+          "table": "Shelf"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe reached it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 DELETE /shelves/{id} 400 shelf id must be a positive integer": {
+        "id": "R3 DELETE /shelves/{id} 400 shelf id must be a positive integer",
+        "kind": "R3",
+        "subject": "DELETE /shelves/{id}",
+        "sentence": "DELETE /shelves/{id} answers 400 'shelf id must be a positive integer' (other)",
+        "predicted": {
+          "status": 400,
+          "detail": "shelf id must be a positive integer",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 DELETE /shelves/{id} 404 shelf not found": {
+        "id": "R3 DELETE /shelves/{id} 404 shelf not found",
+        "kind": "R3",
+        "subject": "DELETE /shelves/{id}",
+        "sentence": "DELETE /shelves/{id} answers 404 'shelf not found' (not_found)",
+        "predicted": {
+          "status": 404,
+          "detail": "shelf not found",
+          "when": "not_found"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+        "probes": [
+          "DELETE /shelves/{id} | no caller | missing id"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 DELETE /shelves/{id} 500 could not load the shelf": {
+        "id": "R3 DELETE /shelves/{id} 500 could not load the shelf",
+        "kind": "R3",
+        "subject": "DELETE /shelves/{id}",
+        "sentence": "DELETE /shelves/{id} answers 500 'could not load the shelf' (other)",
+        "predicted": {
+          "status": 500,
+          "detail": "could not load the shelf",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 DELETE /shelves/{id} 403 shelf belongs to another user": {
+        "id": "R3 DELETE /shelves/{id} 403 shelf belongs to another user",
+        "kind": "R3",
+        "subject": "DELETE /shelves/{id}",
+        "sentence": "DELETE /shelves/{id} answers 403 'shelf belongs to another user' (not_owned)",
+        "predicted": {
+          "status": 403,
+          "detail": "shelf belongs to another user",
+          "when": "not_owned"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe reached it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 DELETE /shelves/{id} 500 could not count the books of the shelf": {
+        "id": "R3 DELETE /shelves/{id} 500 could not count the books of the shelf",
+        "kind": "R3",
+        "subject": "DELETE /shelves/{id}",
+        "sentence": "DELETE /shelves/{id} answers 500 'could not count the books of the shelf' (other)",
+        "predicted": {
+          "status": 500,
+          "detail": "could not count the books of the shelf",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 DELETE /shelves/{id} 409 shelf still has books": {
+        "id": "R3 DELETE /shelves/{id} 409 shelf still has books",
+        "kind": "R3",
+        "subject": "DELETE /shelves/{id}",
+        "sentence": "DELETE /shelves/{id} answers 409 'shelf still has books' (other)",
+        "predicted": {
+          "status": 409,
+          "detail": "shelf still has books",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 DELETE /shelves/{id} 500 could not delete the shelf": {
+        "id": "R3 DELETE /shelves/{id} 500 could not delete the shelf",
+        "kind": "R3",
+        "subject": "DELETE /shelves/{id}",
+        "sentence": "DELETE /shelves/{id} answers 500 'could not delete the shelf' (other)",
+        "predicted": {
+          "status": 500,
+          "detail": "could not delete the shelf",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 DELETE /shelves/{id} 5xx": {
+        "id": "R3 DELETE /shelves/{id} 5xx",
+        "kind": "R3",
+        "subject": "DELETE /shelves/{id}",
+        "sentence": "DELETE /shelves/{id} answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": [
+            500
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no probe got past the auth check to the handler (answers [401])",
+        "probes": [
+          "DELETE /shelves/{id} | no caller | anonymous",
+          "DELETE /shelves/{id} | malformed token | call",
+          "DELETE /shelves/{id} | no caller | missing id"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R1 POST /shelves/{id}/books": {
+        "id": "R1 POST /shelves/{id}/books",
+        "kind": "R1",
+        "subject": "POST /shelves/{id}/books",
+        "sentence": "POST /shelves/{id}/books admits exactly: Customer",
+        "predicted": {
+          "allowed": [
+            "Admin",
+            "Customer"
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "POST /shelves/{id}/books | no caller | anonymous",
+          "POST /shelves/{id}/books | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R2 POST /shelves/{id}/books": {
+        "id": "R2 POST /shelves/{id}/books",
+        "kind": "R2",
+        "subject": "POST /shelves/{id}/books",
+        "sentence": "POST /shelves/{id}/books acts on the caller's own Shelf rows only",
+        "predicted": {
+          "scope": "owner",
+          "table": "Shelf"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe reached it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /shelves/{id}/books 400 shelf id must be a positive integer": {
+        "id": "R3 POST /shelves/{id}/books 400 shelf id must be a positive integer",
+        "kind": "R3",
+        "subject": "POST /shelves/{id}/books",
+        "sentence": "POST /shelves/{id}/books answers 400 'shelf id must be a positive integer' (other)",
+        "predicted": {
+          "status": 400,
+          "detail": "shelf id must be a positive integer",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /shelves/{id}/books 404 shelf not found": {
+        "id": "R3 POST /shelves/{id}/books 404 shelf not found",
+        "kind": "R3",
+        "subject": "POST /shelves/{id}/books",
+        "sentence": "POST /shelves/{id}/books answers 404 'shelf not found' (not_found)",
+        "predicted": {
+          "status": 404,
+          "detail": "shelf not found",
+          "when": "not_found"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+        "probes": [
+          "POST /shelves/{id}/books | no caller | missing id"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /shelves/{id}/books 500 could not load the shelf": {
+        "id": "R3 POST /shelves/{id}/books 500 could not load the shelf",
+        "kind": "R3",
+        "subject": "POST /shelves/{id}/books",
+        "sentence": "POST /shelves/{id}/books answers 500 'could not load the shelf' (other)",
+        "predicted": {
+          "status": 500,
+          "detail": "could not load the shelf",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /shelves/{id}/books 403 shelf belongs to another user": {
+        "id": "R3 POST /shelves/{id}/books 403 shelf belongs to another user",
+        "kind": "R3",
+        "subject": "POST /shelves/{id}/books",
+        "sentence": "POST /shelves/{id}/books answers 403 'shelf belongs to another user' (not_owned)",
+        "predicted": {
+          "status": 403,
+          "detail": "shelf belongs to another user",
+          "when": "not_owned"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe reached it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /shelves/{id}/books 422 title and author are required (1 to 120 characters each)": {
+        "id": "R3 POST /shelves/{id}/books 422 title and author are required (1 to 120 characters each)",
+        "kind": "R3",
+        "subject": "POST /shelves/{id}/books",
+        "sentence": "POST /shelves/{id}/books answers 422 'title and author are required (1 to 120 characters each)' (other)",
+        "predicted": {
+          "status": 422,
+          "detail": "title and author are required (1 to 120 characters each)",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /shelves/{id}/books 500 could not create the book": {
+        "id": "R3 POST /shelves/{id}/books 500 could not create the book",
+        "kind": "R3",
+        "subject": "POST /shelves/{id}/books",
+        "sentence": "POST /shelves/{id}/books answers 500 'could not create the book' (other)",
+        "predicted": {
+          "status": 500,
+          "detail": "could not create the book",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /shelves/{id}/books 422": {
+        "id": "R3 POST /shelves/{id}/books 422",
+        "kind": "R3",
+        "subject": "POST /shelves/{id}/books",
+        "sentence": "POST /shelves/{id}/books answers 422 (invalid)",
+        "predicted": {
+          "status": 422,
+          "detail": null,
+          "when": "invalid"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+        "probes": [
+          "POST /shelves/{id}/books | no caller | invalid body"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /shelves/{id}/books 5xx": {
+        "id": "R3 POST /shelves/{id}/books 5xx",
+        "kind": "R3",
+        "subject": "POST /shelves/{id}/books",
+        "sentence": "POST /shelves/{id}/books answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": [
+            500
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no probe got past the auth check to the handler (answers [401])",
+        "probes": [
+          "POST /shelves/{id}/books | no caller | anonymous",
+          "POST /shelves/{id}/books | malformed token | call",
+          "POST /shelves/{id}/books | no caller | missing id",
+          "POST /shelves/{id}/books | no caller | invalid body"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /books/{id}": {
+        "id": "R1 GET /books/{id}",
+        "kind": "R1",
+        "subject": "GET /books/{id}",
+        "sentence": "GET /books/{id} admits exactly: Customer",
+        "predicted": {
+          "allowed": [
+            "Admin",
+            "Customer"
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /books/{id} | no caller | anonymous",
+          "GET /books/{id} | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /books/{id} 400 book id must be a positive integer": {
+        "id": "R3 GET /books/{id} 400 book id must be a positive integer",
+        "kind": "R3",
+        "subject": "GET /books/{id}",
+        "sentence": "GET /books/{id} answers 400 'book id must be a positive integer' (other)",
+        "predicted": {
+          "status": 400,
+          "detail": "book id must be a positive integer",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /books/{id} 404 book not found": {
+        "id": "R3 GET /books/{id} 404 book not found",
+        "kind": "R3",
+        "subject": "GET /books/{id}",
+        "sentence": "GET /books/{id} answers 404 'book not found' (not_found)",
+        "predicted": {
+          "status": 404,
+          "detail": "book not found",
+          "when": "not_found"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+        "probes": [
+          "GET /books/{id} | no caller | missing id"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /books/{id} 500 could not load the book": {
+        "id": "R3 GET /books/{id} 500 could not load the book",
+        "kind": "R3",
+        "subject": "GET /books/{id}",
+        "sentence": "GET /books/{id} answers 500 'could not load the book' (other)",
+        "predicted": {
+          "status": 500,
+          "detail": "could not load the book",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /books/{id} 403 book belongs to another user": {
+        "id": "R3 GET /books/{id} 403 book belongs to another user",
+        "kind": "R3",
+        "subject": "GET /books/{id}",
+        "sentence": "GET /books/{id} answers 403 'book belongs to another user' (other)",
+        "predicted": {
+          "status": 403,
+          "detail": "book belongs to another user",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /books/{id} 5xx": {
+        "id": "R3 GET /books/{id} 5xx",
+        "kind": "R3",
+        "subject": "GET /books/{id}",
+        "sentence": "GET /books/{id} answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": [
+            500
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no probe got past the auth check to the handler (answers [401])",
+        "probes": [
+          "GET /books/{id} | no caller | anonymous",
+          "GET /books/{id} | malformed token | call",
+          "GET /books/{id} | no caller | missing id"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R1 PATCH /books/{id}": {
+        "id": "R1 PATCH /books/{id}",
+        "kind": "R1",
+        "subject": "PATCH /books/{id}",
+        "sentence": "PATCH /books/{id} admits exactly: Customer",
+        "predicted": {
+          "allowed": [
+            "Admin",
+            "Customer"
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "PATCH /books/{id} | no caller | anonymous",
+          "PATCH /books/{id} | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 PATCH /books/{id} 400 book id must be a positive integer": {
+        "id": "R3 PATCH /books/{id} 400 book id must be a positive integer",
+        "kind": "R3",
+        "subject": "PATCH /books/{id}",
+        "sentence": "PATCH /books/{id} answers 400 'book id must be a positive integer' (other)",
+        "predicted": {
+          "status": 400,
+          "detail": "book id must be a positive integer",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 PATCH /books/{id} 404 book not found": {
+        "id": "R3 PATCH /books/{id} 404 book not found",
+        "kind": "R3",
+        "subject": "PATCH /books/{id}",
+        "sentence": "PATCH /books/{id} answers 404 'book not found' (not_found)",
+        "predicted": {
+          "status": 404,
+          "detail": "book not found",
+          "when": "not_found"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+        "probes": [
+          "PATCH /books/{id} | no caller | missing id"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 PATCH /books/{id} 500 could not load the book": {
+        "id": "R3 PATCH /books/{id} 500 could not load the book",
+        "kind": "R3",
+        "subject": "PATCH /books/{id}",
+        "sentence": "PATCH /books/{id} answers 500 'could not load the book' (other)",
+        "predicted": {
+          "status": 500,
+          "detail": "could not load the book",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 PATCH /books/{id} 403 book belongs to another user": {
+        "id": "R3 PATCH /books/{id} 403 book belongs to another user",
+        "kind": "R3",
+        "subject": "PATCH /books/{id}",
+        "sentence": "PATCH /books/{id} answers 403 'book belongs to another user' (other)",
+        "predicted": {
+          "status": 403,
+          "detail": "book belongs to another user",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 PATCH /books/{id} 422 send a title and/or an author of 1 to 120 characters": {
+        "id": "R3 PATCH /books/{id} 422 send a title and/or an author of 1 to 120 characters",
+        "kind": "R3",
+        "subject": "PATCH /books/{id}",
+        "sentence": "PATCH /books/{id} answers 422 'send a title and/or an author of 1 to 120 characters' (other)",
+        "predicted": {
+          "status": 422,
+          "detail": "send a title and/or an author of 1 to 120 characters",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 PATCH /books/{id} 500 could not update the book": {
+        "id": "R3 PATCH /books/{id} 500 could not update the book",
+        "kind": "R3",
+        "subject": "PATCH /books/{id}",
+        "sentence": "PATCH /books/{id} answers 500 'could not update the book' (other)",
+        "predicted": {
+          "status": 500,
+          "detail": "could not update the book",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 PATCH /books/{id} 5xx": {
+        "id": "R3 PATCH /books/{id} 5xx",
+        "kind": "R3",
+        "subject": "PATCH /books/{id}",
+        "sentence": "PATCH /books/{id} answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": [
+            500
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no probe got past the auth check to the handler (answers [401])",
+        "probes": [
+          "PATCH /books/{id} | no caller | anonymous",
+          "PATCH /books/{id} | malformed token | call",
+          "PATCH /books/{id} | no caller | missing id"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R1 POST /books/{id}/start": {
+        "id": "R1 POST /books/{id}/start",
+        "kind": "R1",
+        "subject": "POST /books/{id}/start",
+        "sentence": "POST /books/{id}/start admits exactly: Customer",
+        "predicted": {
+          "allowed": [
+            "Admin",
+            "Customer"
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "POST /books/{id}/start | no caller | anonymous",
+          "POST /books/{id}/start | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /books/{id}/start 400 book id must be a positive integer": {
+        "id": "R3 POST /books/{id}/start 400 book id must be a positive integer",
+        "kind": "R3",
+        "subject": "POST /books/{id}/start",
+        "sentence": "POST /books/{id}/start answers 400 'book id must be a positive integer' (other)",
+        "predicted": {
+          "status": 400,
+          "detail": "book id must be a positive integer",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /books/{id}/start 404 book not found": {
+        "id": "R3 POST /books/{id}/start 404 book not found",
+        "kind": "R3",
+        "subject": "POST /books/{id}/start",
+        "sentence": "POST /books/{id}/start answers 404 'book not found' (not_found)",
+        "predicted": {
+          "status": 404,
+          "detail": "book not found",
+          "when": "not_found"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+        "probes": [
+          "POST /books/{id}/start | no caller | missing id"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /books/{id}/start 500 could not load the book": {
+        "id": "R3 POST /books/{id}/start 500 could not load the book",
+        "kind": "R3",
+        "subject": "POST /books/{id}/start",
+        "sentence": "POST /books/{id}/start answers 500 'could not load the book' (other)",
+        "predicted": {
+          "status": 500,
+          "detail": "could not load the book",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /books/{id}/start 403 book belongs to another user": {
+        "id": "R3 POST /books/{id}/start 403 book belongs to another user",
+        "kind": "R3",
+        "subject": "POST /books/{id}/start",
+        "sentence": "POST /books/{id}/start answers 403 'book belongs to another user' (other)",
+        "predicted": {
+          "status": 403,
+          "detail": "book belongs to another user",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /books/{id}/start 500 could not start the book": {
+        "id": "R3 POST /books/{id}/start 500 could not start the book",
+        "kind": "R3",
+        "subject": "POST /books/{id}/start",
+        "sentence": "POST /books/{id}/start answers 500 'could not start the book' (other)",
+        "predicted": {
+          "status": 500,
+          "detail": "could not start the book",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /books/{id}/start 409 only a queued book can be started": {
+        "id": "R3 POST /books/{id}/start 409 only a queued book can be started",
+        "kind": "R3",
+        "subject": "POST /books/{id}/start",
+        "sentence": "POST /books/{id}/start answers 409 'only a queued book can be started' (other)",
+        "predicted": {
+          "status": 409,
+          "detail": "only a queued book can be started",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /books/{id}/start 5xx": {
+        "id": "R3 POST /books/{id}/start 5xx",
+        "kind": "R3",
+        "subject": "POST /books/{id}/start",
+        "sentence": "POST /books/{id}/start answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": [
+            500
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no probe got past the auth check to the handler (answers [401])",
+        "probes": [
+          "POST /books/{id}/start | no caller | anonymous",
+          "POST /books/{id}/start | malformed token | call",
+          "POST /books/{id}/start | no caller | missing id"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R1 POST /books/{id}/finish": {
+        "id": "R1 POST /books/{id}/finish",
+        "kind": "R1",
+        "subject": "POST /books/{id}/finish",
+        "sentence": "POST /books/{id}/finish admits exactly: Customer",
+        "predicted": {
+          "allowed": [
+            "Admin",
+            "Customer"
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "POST /books/{id}/finish | no caller | anonymous",
+          "POST /books/{id}/finish | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /books/{id}/finish 400 book id must be a positive integer": {
+        "id": "R3 POST /books/{id}/finish 400 book id must be a positive integer",
+        "kind": "R3",
+        "subject": "POST /books/{id}/finish",
+        "sentence": "POST /books/{id}/finish answers 400 'book id must be a positive integer' (other)",
+        "predicted": {
+          "status": 400,
+          "detail": "book id must be a positive integer",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /books/{id}/finish 404 book not found": {
+        "id": "R3 POST /books/{id}/finish 404 book not found",
+        "kind": "R3",
+        "subject": "POST /books/{id}/finish",
+        "sentence": "POST /books/{id}/finish answers 404 'book not found' (not_found)",
+        "predicted": {
+          "status": 404,
+          "detail": "book not found",
+          "when": "not_found"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+        "probes": [
+          "POST /books/{id}/finish | no caller | missing id"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /books/{id}/finish 500 could not load the book": {
+        "id": "R3 POST /books/{id}/finish 500 could not load the book",
+        "kind": "R3",
+        "subject": "POST /books/{id}/finish",
+        "sentence": "POST /books/{id}/finish answers 500 'could not load the book' (other)",
+        "predicted": {
+          "status": 500,
+          "detail": "could not load the book",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /books/{id}/finish 403 book belongs to another user": {
+        "id": "R3 POST /books/{id}/finish 403 book belongs to another user",
+        "kind": "R3",
+        "subject": "POST /books/{id}/finish",
+        "sentence": "POST /books/{id}/finish answers 403 'book belongs to another user' (other)",
+        "predicted": {
+          "status": 403,
+          "detail": "book belongs to another user",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /books/{id}/finish 422 rating, when sent, must be a whole number from 1 to 5": {
+        "id": "R3 POST /books/{id}/finish 422 rating, when sent, must be a whole number from 1 to 5",
+        "kind": "R3",
+        "subject": "POST /books/{id}/finish",
+        "sentence": "POST /books/{id}/finish answers 422 'rating, when sent, must be a whole number from 1 to 5' (other)",
+        "predicted": {
+          "status": 422,
+          "detail": "rating, when sent, must be a whole number from 1 to 5",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /books/{id}/finish 500 could not finish the book": {
+        "id": "R3 POST /books/{id}/finish 500 could not finish the book",
+        "kind": "R3",
+        "subject": "POST /books/{id}/finish",
+        "sentence": "POST /books/{id}/finish answers 500 'could not finish the book' (other)",
+        "predicted": {
+          "status": 500,
+          "detail": "could not finish the book",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /books/{id}/finish 409 only a book being read can be finished": {
+        "id": "R3 POST /books/{id}/finish 409 only a book being read can be finished",
+        "kind": "R3",
+        "subject": "POST /books/{id}/finish",
+        "sentence": "POST /books/{id}/finish answers 409 'only a book being read can be finished' (other)",
+        "predicted": {
+          "status": 409,
+          "detail": "only a book being read can be finished",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /books/{id}/finish 5xx": {
+        "id": "R3 POST /books/{id}/finish 5xx",
+        "kind": "R3",
+        "subject": "POST /books/{id}/finish",
+        "sentence": "POST /books/{id}/finish answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": [
+            500
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no probe got past the auth check to the handler (answers [401])",
+        "probes": [
+          "POST /books/{id}/finish | no caller | anonymous",
+          "POST /books/{id}/finish | malformed token | call",
+          "POST /books/{id}/finish | no caller | missing id"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /books/{id}/notes": {
+        "id": "R1 GET /books/{id}/notes",
+        "kind": "R1",
+        "subject": "GET /books/{id}/notes",
+        "sentence": "GET /books/{id}/notes admits exactly: Customer",
+        "predicted": {
+          "allowed": [
+            "Admin",
+            "Customer"
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /books/{id}/notes | no caller | anonymous",
+          "GET /books/{id}/notes | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /books/{id}/notes 400 book id must be a positive integer": {
+        "id": "R3 GET /books/{id}/notes 400 book id must be a positive integer",
+        "kind": "R3",
+        "subject": "GET /books/{id}/notes",
+        "sentence": "GET /books/{id}/notes answers 400 'book id must be a positive integer' (other)",
+        "predicted": {
+          "status": 400,
+          "detail": "book id must be a positive integer",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /books/{id}/notes 404 book not found": {
+        "id": "R3 GET /books/{id}/notes 404 book not found",
+        "kind": "R3",
+        "subject": "GET /books/{id}/notes",
+        "sentence": "GET /books/{id}/notes answers 404 'book not found' (not_found)",
+        "predicted": {
+          "status": 404,
+          "detail": "book not found",
+          "when": "not_found"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+        "probes": [
+          "GET /books/{id}/notes | no caller | missing id"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /books/{id}/notes 500 could not load the book": {
+        "id": "R3 GET /books/{id}/notes 500 could not load the book",
+        "kind": "R3",
+        "subject": "GET /books/{id}/notes",
+        "sentence": "GET /books/{id}/notes answers 500 'could not load the book' (other)",
+        "predicted": {
+          "status": 500,
+          "detail": "could not load the book",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /books/{id}/notes 403 book belongs to another user": {
+        "id": "R3 GET /books/{id}/notes 403 book belongs to another user",
+        "kind": "R3",
+        "subject": "GET /books/{id}/notes",
+        "sentence": "GET /books/{id}/notes answers 403 'book belongs to another user' (other)",
+        "predicted": {
+          "status": 403,
+          "detail": "book belongs to another user",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /books/{id}/notes 500 could not load the notes": {
+        "id": "R3 GET /books/{id}/notes 500 could not load the notes",
+        "kind": "R3",
+        "subject": "GET /books/{id}/notes",
+        "sentence": "GET /books/{id}/notes answers 500 'could not load the notes' (other)",
+        "predicted": {
+          "status": 500,
+          "detail": "could not load the notes",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /books/{id}/notes 5xx": {
+        "id": "R3 GET /books/{id}/notes 5xx",
+        "kind": "R3",
+        "subject": "GET /books/{id}/notes",
+        "sentence": "GET /books/{id}/notes answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": [
+            500
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no probe got past the auth check to the handler (answers [401])",
+        "probes": [
+          "GET /books/{id}/notes | no caller | anonymous",
+          "GET /books/{id}/notes | malformed token | call",
+          "GET /books/{id}/notes | no caller | missing id"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R1 POST /books/{id}/notes": {
+        "id": "R1 POST /books/{id}/notes",
+        "kind": "R1",
+        "subject": "POST /books/{id}/notes",
+        "sentence": "POST /books/{id}/notes admits exactly: Customer",
+        "predicted": {
+          "allowed": [
+            "Admin",
+            "Customer"
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "POST /books/{id}/notes | no caller | anonymous",
+          "POST /books/{id}/notes | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /books/{id}/notes 400 book id must be a positive integer": {
+        "id": "R3 POST /books/{id}/notes 400 book id must be a positive integer",
+        "kind": "R3",
+        "subject": "POST /books/{id}/notes",
+        "sentence": "POST /books/{id}/notes answers 400 'book id must be a positive integer' (other)",
+        "predicted": {
+          "status": 400,
+          "detail": "book id must be a positive integer",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /books/{id}/notes 404 book not found": {
+        "id": "R3 POST /books/{id}/notes 404 book not found",
+        "kind": "R3",
+        "subject": "POST /books/{id}/notes",
+        "sentence": "POST /books/{id}/notes answers 404 'book not found' (not_found)",
+        "predicted": {
+          "status": 404,
+          "detail": "book not found",
+          "when": "not_found"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+        "probes": [
+          "POST /books/{id}/notes | no caller | missing id"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /books/{id}/notes 500 could not load the book": {
+        "id": "R3 POST /books/{id}/notes 500 could not load the book",
+        "kind": "R3",
+        "subject": "POST /books/{id}/notes",
+        "sentence": "POST /books/{id}/notes answers 500 'could not load the book' (other)",
+        "predicted": {
+          "status": 500,
+          "detail": "could not load the book",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /books/{id}/notes 403 book belongs to another user": {
+        "id": "R3 POST /books/{id}/notes 403 book belongs to another user",
+        "kind": "R3",
+        "subject": "POST /books/{id}/notes",
+        "sentence": "POST /books/{id}/notes answers 403 'book belongs to another user' (other)",
+        "predicted": {
+          "status": 403,
+          "detail": "book belongs to another user",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /books/{id}/notes 422 body is required (1 to 2000 characters)": {
+        "id": "R3 POST /books/{id}/notes 422 body is required (1 to 2000 characters)",
+        "kind": "R3",
+        "subject": "POST /books/{id}/notes",
+        "sentence": "POST /books/{id}/notes answers 422 'body is required (1 to 2000 characters)' (other)",
+        "predicted": {
+          "status": 422,
+          "detail": "body is required (1 to 2000 characters)",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /books/{id}/notes 500 could not create the note": {
+        "id": "R3 POST /books/{id}/notes 500 could not create the note",
+        "kind": "R3",
+        "subject": "POST /books/{id}/notes",
+        "sentence": "POST /books/{id}/notes answers 500 'could not create the note' (other)",
+        "predicted": {
+          "status": 500,
+          "detail": "could not create the note",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /books/{id}/notes 422": {
+        "id": "R3 POST /books/{id}/notes 422",
+        "kind": "R3",
+        "subject": "POST /books/{id}/notes",
+        "sentence": "POST /books/{id}/notes answers 422 (invalid)",
+        "predicted": {
+          "status": 422,
+          "detail": null,
+          "when": "invalid"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+        "probes": [
+          "POST /books/{id}/notes | no caller | invalid body"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 POST /books/{id}/notes 5xx": {
+        "id": "R3 POST /books/{id}/notes 5xx",
+        "kind": "R3",
+        "subject": "POST /books/{id}/notes",
+        "sentence": "POST /books/{id}/notes answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": [
+            500
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no probe got past the auth check to the handler (answers [401])",
+        "probes": [
+          "POST /books/{id}/notes | no caller | anonymous",
+          "POST /books/{id}/notes | malformed token | call",
+          "POST /books/{id}/notes | no caller | missing id",
+          "POST /books/{id}/notes | no caller | invalid body"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R1 DELETE /notes/{id}": {
+        "id": "R1 DELETE /notes/{id}",
+        "kind": "R1",
+        "subject": "DELETE /notes/{id}",
+        "sentence": "DELETE /notes/{id} admits exactly: Customer",
+        "predicted": {
+          "allowed": [
+            "Admin",
+            "Customer"
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "DELETE /notes/{id} | no caller | anonymous",
+          "DELETE /notes/{id} | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R2 DELETE /notes/{id}": {
+        "id": "R2 DELETE /notes/{id}",
+        "kind": "R2",
+        "subject": "DELETE /notes/{id}",
+        "sentence": "DELETE /notes/{id} acts on the caller's own Note rows only",
+        "predicted": {
+          "scope": "owner",
+          "table": "Note"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe reached it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 DELETE /notes/{id} 400 note id must be a positive integer": {
+        "id": "R3 DELETE /notes/{id} 400 note id must be a positive integer",
+        "kind": "R3",
+        "subject": "DELETE /notes/{id}",
+        "sentence": "DELETE /notes/{id} answers 400 'note id must be a positive integer' (other)",
+        "predicted": {
+          "status": 400,
+          "detail": "note id must be a positive integer",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 DELETE /notes/{id} 404 note not found": {
+        "id": "R3 DELETE /notes/{id} 404 note not found",
+        "kind": "R3",
+        "subject": "DELETE /notes/{id}",
+        "sentence": "DELETE /notes/{id} answers 404 'note not found' (not_found)",
+        "predicted": {
+          "status": 404,
+          "detail": "note not found",
+          "when": "not_found"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+        "probes": [
+          "DELETE /notes/{id} | no caller | missing id"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 DELETE /notes/{id} 500 could not load the note": {
+        "id": "R3 DELETE /notes/{id} 500 could not load the note",
+        "kind": "R3",
+        "subject": "DELETE /notes/{id}",
+        "sentence": "DELETE /notes/{id} answers 500 'could not load the note' (other)",
+        "predicted": {
+          "status": 500,
+          "detail": "could not load the note",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 DELETE /notes/{id} 403 note belongs to another user": {
+        "id": "R3 DELETE /notes/{id} 403 note belongs to another user",
+        "kind": "R3",
+        "subject": "DELETE /notes/{id}",
+        "sentence": "DELETE /notes/{id} answers 403 'note belongs to another user' (not_owned)",
+        "predicted": {
+          "status": 403,
+          "detail": "note belongs to another user",
+          "when": "not_owned"
+        },
+        "verdict": "unexercised",
+        "reason": "no probe reached it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 DELETE /notes/{id} 500 could not delete the note": {
+        "id": "R3 DELETE /notes/{id} 500 could not delete the note",
+        "kind": "R3",
+        "subject": "DELETE /notes/{id}",
+        "sentence": "DELETE /notes/{id} answers 500 'could not delete the note' (other)",
+        "predicted": {
+          "status": 500,
+          "detail": "could not delete the note",
+          "when": "other"
+        },
+        "verdict": "unexercised",
+        "reason": "unreachable-by-probe: no example triggers it",
+        "probes": [],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 DELETE /notes/{id} 5xx": {
+        "id": "R3 DELETE /notes/{id} 5xx",
+        "kind": "R3",
+        "subject": "DELETE /notes/{id}",
+        "sentence": "DELETE /notes/{id} answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": [
+            500
+          ]
+        },
+        "verdict": "unexercised",
+        "reason": "no probe got past the auth check to the handler (answers [401])",
+        "probes": [
+          "DELETE /notes/{id} | no caller | anonymous",
+          "DELETE /notes/{id} | malformed token | call",
+          "DELETE /notes/{id} | no caller | missing id"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      }
+    },
+    "tables": {
+      "Book": {
+        "verdict": "unverified",
+        "reason": "unreached",
+        "items": {
+          "T1 Book": "unexercised",
+          "T3 Book.author max_len 120": "unexercised",
+          "T3 Book.title max_len 120": "unexercised",
+          "T4 Book.status": "unexercised",
+          "T5 Book (id)": "unexercised"
+        }
+      },
+      "Note": {
+        "verdict": "unverified",
+        "reason": "unreached",
+        "items": {
+          "T1 Note": "unexercised",
+          "T3 Note.body max_len 2000": "unexercised",
+          "T5 Note (id)": "unexercised"
+        }
+      },
+      "Shelf": {
+        "verdict": "unverified",
+        "reason": "unreached",
+        "items": {
+          "T1 Shelf": "unexercised",
+          "T3 Shelf.description max_len 500": "unexercised",
+          "T3 Shelf.name max_len 80": "unexercised",
+          "T5 Shelf (id)": "unexercised"
+        }
+      },
+      "User": {
+        "verdict": "unverified",
+        "reason": "unreached",
+        "items": {
+          "T1 User": "unexercised",
+          "T2 User.password": "unexercised",
+          "T5 User (id)": "unexercised"
+        }
+      }
+    },
+    "routes": {
+      "GET /health": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /health": "unexercised",
+          "R3 GET /health 503 database unavailable": "unexercised",
+          "R3 GET /health 5xx": "verified"
+        }
+      },
+      "POST /login": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 POST /login": "unexercised",
+          "R3 POST /login 422 username and password are required": "unexercised",
+          "R3 POST /login 500 could not look up the user": "unexercised",
+          "R3 POST /login 401 invalid username or password": "unexercised",
+          "R3 POST /login 5xx": "unexercised"
+        }
+      },
+      "GET /me": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /me": "unexercised",
+          "R3 GET /me 500 could not load the user": "unexercised",
+          "R3 GET /me 5xx": "unexercised"
+        }
+      },
+      "GET /shelves": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised; R2 unexercised",
+        "items": {
+          "R1 GET /shelves": "unexercised",
+          "R2 GET /shelves": "unexercised",
+          "R3 GET /shelves 500 could not load the shelves": "unexercised",
+          "R3 GET /shelves 5xx": "unexercised"
+        }
+      },
+      "POST /shelves": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised; R2 unexercised",
+        "items": {
+          "R1 POST /shelves": "unexercised",
+          "R2 POST /shelves": "unexercised",
+          "R3 POST /shelves 422 name is required (1 to 80 characters) and description at most 500": "unexercised",
+          "R3 POST /shelves 500 could not create the shelf": "unexercised",
+          "R3 POST /shelves 422": "unexercised",
+          "R3 POST /shelves 5xx": "unexercised"
+        }
+      },
+      "GET /shelves/{id}": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised; R2 unexercised",
+        "items": {
+          "R1 GET /shelves/{id}": "unexercised",
+          "R2 GET /shelves/{id}": "unexercised",
+          "R3 GET /shelves/{id} 400 shelf id must be a positive integer": "unexercised",
+          "R3 GET /shelves/{id} 404 shelf not found": "unexercised",
+          "R3 GET /shelves/{id} 500 could not load the shelf": "unexercised",
+          "R3 GET /shelves/{id} 403 shelf belongs to another user": "unexercised",
+          "R3 GET /shelves/{id} 500 could not load the books of the shelf": "unexercised",
+          "R3 GET /shelves/{id} 5xx": "unexercised"
+        }
+      },
+      "DELETE /shelves/{id}": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised; R2 unexercised",
+        "items": {
+          "R1 DELETE /shelves/{id}": "unexercised",
+          "R2 DELETE /shelves/{id}": "unexercised",
+          "R3 DELETE /shelves/{id} 400 shelf id must be a positive integer": "unexercised",
+          "R3 DELETE /shelves/{id} 404 shelf not found": "unexercised",
+          "R3 DELETE /shelves/{id} 500 could not load the shelf": "unexercised",
+          "R3 DELETE /shelves/{id} 403 shelf belongs to another user": "unexercised",
+          "R3 DELETE /shelves/{id} 500 could not count the books of the shelf": "unexercised",
+          "R3 DELETE /shelves/{id} 409 shelf still has books": "unexercised",
+          "R3 DELETE /shelves/{id} 500 could not delete the shelf": "unexercised",
+          "R3 DELETE /shelves/{id} 5xx": "unexercised"
+        }
+      },
+      "POST /shelves/{id}/books": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised; R2 unexercised",
+        "items": {
+          "R1 POST /shelves/{id}/books": "unexercised",
+          "R2 POST /shelves/{id}/books": "unexercised",
+          "R3 POST /shelves/{id}/books 400 shelf id must be a positive integer": "unexercised",
+          "R3 POST /shelves/{id}/books 404 shelf not found": "unexercised",
+          "R3 POST /shelves/{id}/books 500 could not load the shelf": "unexercised",
+          "R3 POST /shelves/{id}/books 403 shelf belongs to another user": "unexercised",
+          "R3 POST /shelves/{id}/books 422 title and author are required (1 to 120 characters each)": "unexercised",
+          "R3 POST /shelves/{id}/books 500 could not create the book": "unexercised",
+          "R3 POST /shelves/{id}/books 422": "unexercised",
+          "R3 POST /shelves/{id}/books 5xx": "unexercised"
+        }
+      },
+      "GET /books/{id}": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /books/{id}": "unexercised",
+          "R3 GET /books/{id} 400 book id must be a positive integer": "unexercised",
+          "R3 GET /books/{id} 404 book not found": "unexercised",
+          "R3 GET /books/{id} 500 could not load the book": "unexercised",
+          "R3 GET /books/{id} 403 book belongs to another user": "unexercised",
+          "R3 GET /books/{id} 5xx": "unexercised"
+        }
+      },
+      "PATCH /books/{id}": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 PATCH /books/{id}": "unexercised",
+          "R3 PATCH /books/{id} 400 book id must be a positive integer": "unexercised",
+          "R3 PATCH /books/{id} 404 book not found": "unexercised",
+          "R3 PATCH /books/{id} 500 could not load the book": "unexercised",
+          "R3 PATCH /books/{id} 403 book belongs to another user": "unexercised",
+          "R3 PATCH /books/{id} 422 send a title and/or an author of 1 to 120 characters": "unexercised",
+          "R3 PATCH /books/{id} 500 could not update the book": "unexercised",
+          "R3 PATCH /books/{id} 5xx": "unexercised"
+        }
+      },
+      "POST /books/{id}/start": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 POST /books/{id}/start": "unexercised",
+          "R3 POST /books/{id}/start 400 book id must be a positive integer": "unexercised",
+          "R3 POST /books/{id}/start 404 book not found": "unexercised",
+          "R3 POST /books/{id}/start 500 could not load the book": "unexercised",
+          "R3 POST /books/{id}/start 403 book belongs to another user": "unexercised",
+          "R3 POST /books/{id}/start 500 could not start the book": "unexercised",
+          "R3 POST /books/{id}/start 409 only a queued book can be started": "unexercised",
+          "R3 POST /books/{id}/start 5xx": "unexercised"
+        }
+      },
+      "POST /books/{id}/finish": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 POST /books/{id}/finish": "unexercised",
+          "R3 POST /books/{id}/finish 400 book id must be a positive integer": "unexercised",
+          "R3 POST /books/{id}/finish 404 book not found": "unexercised",
+          "R3 POST /books/{id}/finish 500 could not load the book": "unexercised",
+          "R3 POST /books/{id}/finish 403 book belongs to another user": "unexercised",
+          "R3 POST /books/{id}/finish 422 rating, when sent, must be a whole number from 1 to 5": "unexercised",
+          "R3 POST /books/{id}/finish 500 could not finish the book": "unexercised",
+          "R3 POST /books/{id}/finish 409 only a book being read can be finished": "unexercised",
+          "R3 POST /books/{id}/finish 5xx": "unexercised"
+        }
+      },
+      "GET /books/{id}/notes": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /books/{id}/notes": "unexercised",
+          "R3 GET /books/{id}/notes 400 book id must be a positive integer": "unexercised",
+          "R3 GET /books/{id}/notes 404 book not found": "unexercised",
+          "R3 GET /books/{id}/notes 500 could not load the book": "unexercised",
+          "R3 GET /books/{id}/notes 403 book belongs to another user": "unexercised",
+          "R3 GET /books/{id}/notes 500 could not load the notes": "unexercised",
+          "R3 GET /books/{id}/notes 5xx": "unexercised"
+        }
+      },
+      "POST /books/{id}/notes": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 POST /books/{id}/notes": "unexercised",
+          "R3 POST /books/{id}/notes 400 book id must be a positive integer": "unexercised",
+          "R3 POST /books/{id}/notes 404 book not found": "unexercised",
+          "R3 POST /books/{id}/notes 500 could not load the book": "unexercised",
+          "R3 POST /books/{id}/notes 403 book belongs to another user": "unexercised",
+          "R3 POST /books/{id}/notes 422 body is required (1 to 2000 characters)": "unexercised",
+          "R3 POST /books/{id}/notes 500 could not create the note": "unexercised",
+          "R3 POST /books/{id}/notes 422": "unexercised",
+          "R3 POST /books/{id}/notes 5xx": "unexercised"
+        }
+      },
+      "DELETE /notes/{id}": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised; R2 unexercised",
+        "items": {
+          "R1 DELETE /notes/{id}": "unexercised",
+          "R2 DELETE /notes/{id}": "unexercised",
+          "R3 DELETE /notes/{id} 400 note id must be a positive integer": "unexercised",
+          "R3 DELETE /notes/{id} 404 note not found": "unexercised",
+          "R3 DELETE /notes/{id} 500 could not load the note": "unexercised",
+          "R3 DELETE /notes/{id} 403 note belongs to another user": "unexercised",
+          "R3 DELETE /notes/{id} 500 could not delete the note": "unexercised",
+          "R3 DELETE /notes/{id} 5xx": "unexercised"
+        }
+      }
+    },
+    "probes": {
+      "GET /health | no caller | anonymous": {
+        "route": "GET /health",
+        "items": [
+          "R1 GET /health"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/health",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "status": "ok"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /health": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 GET /health 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /health | malformed token | call": {
+        "route": "GET /health",
+        "items": [
+          "R1 GET /health"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/health",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "status": "ok"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /health": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 GET /health 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "POST /login | no caller | anonymous": {
+        "route": "POST /login",
+        "items": [
+          "R1 POST /login"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/login",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": {
+            "username": "valid username",
+            "password": "valid password"
+          },
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "invalid username or password"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 POST /login": {
+            "decisive": false,
+            "says": "undecided",
+            "why": "undecided (401): a refusal of the credentials sent (invented, or bad on purpose)"
+          },
+          "R3 POST /login 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /login | malformed token | call": {
+        "route": "POST /login",
+        "items": [
+          "R1 POST /login"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/login",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": {
+            "username": "valid username",
+            "password": "valid password"
+          },
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "invalid username or password"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 POST /login": {
+            "decisive": false,
+            "says": "undecided",
+            "why": "undecided (401): a refusal of the credentials sent (invented, or bad on purpose)"
+          },
+          "R3 POST /login 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "GET /me | no caller | anonymous": {
+        "route": "GET /me",
+        "items": [
+          "R1 GET /me"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/me",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /me": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 GET /me 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "GET /me | malformed token | call": {
+        "route": "GET /me",
+        "items": [
+          "R1 GET /me"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/me",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /me": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 GET /me 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "GET /shelves | no caller | anonymous": {
+        "route": "GET /shelves",
+        "items": [
+          "R1 GET /shelves"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/shelves",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /shelves": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 GET /shelves 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "GET /shelves | malformed token | call": {
+        "route": "GET /shelves",
+        "items": [
+          "R1 GET /shelves"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/shelves",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /shelves": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 GET /shelves 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /shelves | no caller | anonymous": {
+        "route": "POST /shelves",
+        "items": [
+          "R1 POST /shelves"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/shelves",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": {
+            "name": "valid name"
+          },
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /shelves": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 POST /shelves 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /shelves | malformed token | call": {
+        "route": "POST /shelves",
+        "items": [
+          "R1 POST /shelves"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/shelves",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": {
+            "name": "valid name"
+          },
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /shelves": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 POST /shelves 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "GET /shelves/{id} | no caller | anonymous": {
+        "route": "GET /shelves/{id}",
+        "items": [
+          "R1 GET /shelves/{id}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/shelves/1",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /shelves/{id}": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 GET /shelves/{id} 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "GET /shelves/{id} | malformed token | call": {
+        "route": "GET /shelves/{id}",
+        "items": [
+          "R1 GET /shelves/{id}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/shelves/1",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /shelves/{id}": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 GET /shelves/{id} 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "DELETE /shelves/{id} | no caller | anonymous": {
+        "route": "DELETE /shelves/{id}",
+        "items": [
+          "R1 DELETE /shelves/{id}"
+        ],
+        "request": {
+          "method": "DELETE",
+          "path": "/shelves/1",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 DELETE /shelves/{id}": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 DELETE /shelves/{id} 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "DELETE /shelves/{id} | malformed token | call": {
+        "route": "DELETE /shelves/{id}",
+        "items": [
+          "R1 DELETE /shelves/{id}"
+        ],
+        "request": {
+          "method": "DELETE",
+          "path": "/shelves/1",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 DELETE /shelves/{id}": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 DELETE /shelves/{id} 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /shelves/{id}/books | no caller | anonymous": {
+        "route": "POST /shelves/{id}/books",
+        "items": [
+          "R1 POST /shelves/{id}/books"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/shelves/1/books",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "author": "valid author"
+          },
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /shelves/{id}/books": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 POST /shelves/{id}/books 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /shelves/{id}/books | malformed token | call": {
+        "route": "POST /shelves/{id}/books",
+        "items": [
+          "R1 POST /shelves/{id}/books"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/shelves/1/books",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "author": "valid author"
+          },
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /shelves/{id}/books": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 POST /shelves/{id}/books 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "GET /books/{id} | no caller | anonymous": {
+        "route": "GET /books/{id}",
+        "items": [
+          "R1 GET /books/{id}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/books/1",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /books/{id}": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 GET /books/{id} 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "GET /books/{id} | malformed token | call": {
+        "route": "GET /books/{id}",
+        "items": [
+          "R1 GET /books/{id}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/books/1",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /books/{id}": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 GET /books/{id} 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "PATCH /books/{id} | no caller | anonymous": {
+        "route": "PATCH /books/{id}",
+        "items": [
+          "R1 PATCH /books/{id}"
+        ],
+        "request": {
+          "method": "PATCH",
+          "path": "/books/1",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": {},
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 PATCH /books/{id}": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 PATCH /books/{id} 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "PATCH /books/{id} | malformed token | call": {
+        "route": "PATCH /books/{id}",
+        "items": [
+          "R1 PATCH /books/{id}"
+        ],
+        "request": {
+          "method": "PATCH",
+          "path": "/books/1",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": {},
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 PATCH /books/{id}": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 PATCH /books/{id} 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /books/{id}/start | no caller | anonymous": {
+        "route": "POST /books/{id}/start",
+        "items": [
+          "R1 POST /books/{id}/start"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/books/1/start",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /books/{id}/start": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 POST /books/{id}/start 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /books/{id}/start | malformed token | call": {
+        "route": "POST /books/{id}/start",
+        "items": [
+          "R1 POST /books/{id}/start"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/books/1/start",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /books/{id}/start": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 POST /books/{id}/start 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /books/{id}/finish | no caller | anonymous": {
+        "route": "POST /books/{id}/finish",
+        "items": [
+          "R1 POST /books/{id}/finish"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/books/1/finish",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": {},
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /books/{id}/finish": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 POST /books/{id}/finish 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /books/{id}/finish | malformed token | call": {
+        "route": "POST /books/{id}/finish",
+        "items": [
+          "R1 POST /books/{id}/finish"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/books/1/finish",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": {},
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /books/{id}/finish": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 POST /books/{id}/finish 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "GET /books/{id}/notes | no caller | anonymous": {
+        "route": "GET /books/{id}/notes",
+        "items": [
+          "R1 GET /books/{id}/notes"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/books/1/notes",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /books/{id}/notes": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 GET /books/{id}/notes 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "GET /books/{id}/notes | malformed token | call": {
+        "route": "GET /books/{id}/notes",
+        "items": [
+          "R1 GET /books/{id}/notes"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/books/1/notes",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /books/{id}/notes": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 GET /books/{id}/notes 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /books/{id}/notes | no caller | anonymous": {
+        "route": "POST /books/{id}/notes",
+        "items": [
+          "R1 POST /books/{id}/notes"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/books/1/notes",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": {
+            "body": "valid body"
+          },
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /books/{id}/notes": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 POST /books/{id}/notes 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /books/{id}/notes | malformed token | call": {
+        "route": "POST /books/{id}/notes",
+        "items": [
+          "R1 POST /books/{id}/notes"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/books/1/notes",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": {
+            "body": "valid body"
+          },
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 POST /books/{id}/notes": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 POST /books/{id}/notes 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "DELETE /notes/{id} | no caller | anonymous": {
+        "route": "DELETE /notes/{id}",
+        "items": [
+          "R1 DELETE /notes/{id}"
+        ],
+        "request": {
+          "method": "DELETE",
+          "path": "/notes/1",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 DELETE /notes/{id}": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 DELETE /notes/{id} 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "DELETE /notes/{id} | malformed token | call": {
+        "route": "DELETE /notes/{id}",
+        "items": [
+          "R1 DELETE /notes/{id}"
+        ],
+        "request": {
+          "method": "DELETE",
+          "path": "/notes/1",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 DELETE /notes/{id}": {
+            "decisive": true,
+            "says": "refused",
+            "why": "refused (401)"
+          },
+          "R3 DELETE /notes/{id} 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /shelves | no caller | invalid body": {
+        "route": "POST /shelves",
+        "items": [
+          "R3 POST /shelves 422"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/shelves",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": {
+            "name": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 POST /shelves 422": {
+            "decisive": false,
+            "says": "neither",
+            "why": "the caller was refused (401); the probe never reached the rule"
+          },
+          "R3 POST /shelves 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "GET /shelves/{id} | no caller | missing id": {
+        "route": "GET /shelves/{id}",
+        "items": [
+          "R3 GET /shelves/{id} 404 shelf not found"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/shelves/999999",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 GET /shelves/{id} 404 shelf not found": {
+            "decisive": false,
+            "says": "neither",
+            "why": "the caller was refused (401); the probe never reached the rule"
+          },
+          "R3 GET /shelves/{id} 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "DELETE /shelves/{id} | no caller | missing id": {
+        "route": "DELETE /shelves/{id}",
+        "items": [
+          "R3 DELETE /shelves/{id} 404 shelf not found"
+        ],
+        "request": {
+          "method": "DELETE",
+          "path": "/shelves/999999",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 DELETE /shelves/{id} 404 shelf not found": {
+            "decisive": false,
+            "says": "neither",
+            "why": "the caller was refused (401); the probe never reached the rule"
+          },
+          "R3 DELETE /shelves/{id} 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /shelves/{id}/books | no caller | missing id": {
+        "route": "POST /shelves/{id}/books",
+        "items": [
+          "R3 POST /shelves/{id}/books 404 shelf not found"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/shelves/999999/books",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "valid title",
+            "author": "valid author"
+          },
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 POST /shelves/{id}/books 404 shelf not found": {
+            "decisive": false,
+            "says": "neither",
+            "why": "the caller was refused (401); the probe never reached the rule"
+          },
+          "R3 POST /shelves/{id}/books 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /shelves/{id}/books | no caller | invalid body": {
+        "route": "POST /shelves/{id}/books",
+        "items": [
+          "R3 POST /shelves/{id}/books 422"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/shelves/1/books",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": {
+            "title": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "author": "valid author"
+          },
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 POST /shelves/{id}/books 422": {
+            "decisive": false,
+            "says": "neither",
+            "why": "the caller was refused (401); the probe never reached the rule"
+          },
+          "R3 POST /shelves/{id}/books 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "GET /books/{id} | no caller | missing id": {
+        "route": "GET /books/{id}",
+        "items": [
+          "R3 GET /books/{id} 404 book not found"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/books/999999",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 GET /books/{id} 404 book not found": {
+            "decisive": false,
+            "says": "neither",
+            "why": "the caller was refused (401); the probe never reached the rule"
+          },
+          "R3 GET /books/{id} 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "PATCH /books/{id} | no caller | missing id": {
+        "route": "PATCH /books/{id}",
+        "items": [
+          "R3 PATCH /books/{id} 404 book not found"
+        ],
+        "request": {
+          "method": "PATCH",
+          "path": "/books/999999",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": {},
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 PATCH /books/{id} 404 book not found": {
+            "decisive": false,
+            "says": "neither",
+            "why": "the caller was refused (401); the probe never reached the rule"
+          },
+          "R3 PATCH /books/{id} 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /books/{id}/start | no caller | missing id": {
+        "route": "POST /books/{id}/start",
+        "items": [
+          "R3 POST /books/{id}/start 404 book not found"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/books/999999/start",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 POST /books/{id}/start 404 book not found": {
+            "decisive": false,
+            "says": "neither",
+            "why": "the caller was refused (401); the probe never reached the rule"
+          },
+          "R3 POST /books/{id}/start 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /books/{id}/finish | no caller | missing id": {
+        "route": "POST /books/{id}/finish",
+        "items": [
+          "R3 POST /books/{id}/finish 404 book not found"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/books/999999/finish",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": {},
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 POST /books/{id}/finish 404 book not found": {
+            "decisive": false,
+            "says": "neither",
+            "why": "the caller was refused (401); the probe never reached the rule"
+          },
+          "R3 POST /books/{id}/finish 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "GET /books/{id}/notes | no caller | missing id": {
+        "route": "GET /books/{id}/notes",
+        "items": [
+          "R3 GET /books/{id}/notes 404 book not found"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/books/999999/notes",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 GET /books/{id}/notes 404 book not found": {
+            "decisive": false,
+            "says": "neither",
+            "why": "the caller was refused (401); the probe never reached the rule"
+          },
+          "R3 GET /books/{id}/notes 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /books/{id}/notes | no caller | missing id": {
+        "route": "POST /books/{id}/notes",
+        "items": [
+          "R3 POST /books/{id}/notes 404 book not found"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/books/999999/notes",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": {
+            "body": "valid body"
+          },
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 POST /books/{id}/notes 404 book not found": {
+            "decisive": false,
+            "says": "neither",
+            "why": "the caller was refused (401); the probe never reached the rule"
+          },
+          "R3 POST /books/{id}/notes 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "POST /books/{id}/notes | no caller | invalid body": {
+        "route": "POST /books/{id}/notes",
+        "items": [
+          "R3 POST /books/{id}/notes 422"
+        ],
+        "request": {
+          "method": "POST",
+          "path": "/books/1/notes",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": {
+            "body": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          },
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 POST /books/{id}/notes 422": {
+            "decisive": false,
+            "says": "neither",
+            "why": "the caller was refused (401); the probe never reached the rule"
+          },
+          "R3 POST /books/{id}/notes 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      },
+      "DELETE /notes/{id} | no caller | missing id": {
+        "route": "DELETE /notes/{id}",
+        "items": [
+          "R3 DELETE /notes/{id} 404 note not found"
+        ],
+        "request": {
+          "method": "DELETE",
+          "path": "/notes/999999",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 401,
+        "body": {
+          "detail": "authentication required"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 DELETE /notes/{id} 404 note not found": {
+            "decisive": false,
+            "says": "neither",
+            "why": "the caller was refused (401); the probe never reached the rule"
+          },
+          "R3 DELETE /notes/{id} 5xx": {
+            "decisive": false,
+            "says": "neither",
+            "why": "refused before the handler ran (401)"
+          }
+        }
+      }
+    },
+    "notes": [
+      "layer R: no login given; probes run without callers"
+    ],
+    "framework": "gin",
+    "excluded_routes": [],
+    "baseline": [],
+    "corrections": [],
+    "mining": {
+      "proposed": 1,
+      "refuted": 0,
+      "uncompiled": 0,
+      "snapshots": 1,
+      "runs": 43,
+      "app_rows": 0
+    },
+    "mining_templates": [
+      "sign",
+      "not_null",
+      "one_per_fk",
+      "sum",
+      "machine"
+    ],
+    "unreachable": [
+      [
+        "R3 DELETE /notes/{id} 400 note id must be a positive integer",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 DELETE /notes/{id} 500 could not delete the note",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 DELETE /notes/{id} 500 could not load the note",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 DELETE /shelves/{id} 400 shelf id must be a positive integer",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 DELETE /shelves/{id} 409 shelf still has books",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 DELETE /shelves/{id} 500 could not count the books of the shelf",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 DELETE /shelves/{id} 500 could not delete the shelf",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 DELETE /shelves/{id} 500 could not load the shelf",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 GET /books/{id} 400 book id must be a positive integer",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 GET /books/{id} 403 book belongs to another user",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 GET /books/{id} 500 could not load the book",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 GET /books/{id}/notes 400 book id must be a positive integer",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 GET /books/{id}/notes 403 book belongs to another user",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 GET /books/{id}/notes 500 could not load the book",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 GET /books/{id}/notes 500 could not load the notes",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 GET /health 503 database unavailable",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 GET /me 500 could not load the user",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 GET /shelves 500 could not load the shelves",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 GET /shelves/{id} 400 shelf id must be a positive integer",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 GET /shelves/{id} 500 could not load the books of the shelf",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 GET /shelves/{id} 500 could not load the shelf",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 PATCH /books/{id} 400 book id must be a positive integer",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 PATCH /books/{id} 403 book belongs to another user",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 PATCH /books/{id} 422 send a title and/or an author of 1 to 120 characters",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 PATCH /books/{id} 500 could not load the book",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 PATCH /books/{id} 500 could not update the book",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /books/{id}/finish 400 book id must be a positive integer",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /books/{id}/finish 403 book belongs to another user",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /books/{id}/finish 409 only a book being read can be finished",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /books/{id}/finish 422 rating, when sent, must be a whole number from 1 to 5",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /books/{id}/finish 500 could not finish the book",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /books/{id}/finish 500 could not load the book",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /books/{id}/notes 400 book id must be a positive integer",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /books/{id}/notes 403 book belongs to another user",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /books/{id}/notes 422 body is required (1 to 2000 characters)",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /books/{id}/notes 500 could not create the note",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /books/{id}/notes 500 could not load the book",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /books/{id}/start 400 book id must be a positive integer",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /books/{id}/start 403 book belongs to another user",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /books/{id}/start 409 only a queued book can be started",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /books/{id}/start 500 could not load the book",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /books/{id}/start 500 could not start the book",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /login 401 invalid username or password",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /login 422 username and password are required",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /login 500 could not look up the user",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /shelves 422 name is required (1 to 80 characters) and description at most 500",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /shelves 500 could not create the shelf",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /shelves/{id}/books 400 shelf id must be a positive integer",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /shelves/{id}/books 422 title and author are required (1 to 120 characters each)",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /shelves/{id}/books 500 could not create the book",
+        "unreachable-by-probe: no example triggers it"
+      ],
+      [
+        "R3 POST /shelves/{id}/books 500 could not load the shelf",
+        "unreachable-by-probe: no example triggers it"
+      ]
+    ],
+    "timing": {
+      "extract": 0.113,
+      "probe": 2.5,
+      "correct": 0.0,
+      "mine": 0.022,
+      "variant2": 2.286,
+      "go_policy": 0.024,
+      "total": 4.946
+    },
+    "variant2": {
+      "variant": "variant2",
+      "summary": {
+        "items": {
+          "verified": 1,
+          "refuted": 0,
+          "unexercised": 118,
+          "unclear": 0
+        },
+        "tables": {
+          "verified": 0,
+          "total": 4
+        },
+        "routes": {
+          "verified": 0,
+          "total": 15
+        }
+      },
+      "findings": [],
+      "clean": true
+    },
+    "outside_api": {},
+    "seed": {
+      "variants": {
+        "seed": {
+          "seed": 31,
+          "rows_per_table": 8,
+          "key_shift": 0
+        },
+        "variant2": {
+          "seed": 97,
+          "rows_per_table": 11,
+          "key_shift": 100
+        }
+      }
+    },
+    "inferences": [
+      {
+        "table": "Note",
+        "column": "user_id",
+        "evidence": [
+          "code:internal/api/notes.go:90"
+        ],
+        "rule": "owner_uses"
+      },
+      {
+        "table": "Shelf",
+        "column": "user_id",
+        "evidence": [
+          "code:internal/api/books.go:45",
+          "code:internal/api/shelves.go:22",
+          "code:internal/api/shelves.go:35",
+          "code:internal/api/shelves.go:57",
+          "code:internal/api/shelves.go:83"
+        ],
+        "rule": "owner_uses"
+      },
+      {
+        "rule": "path_parse",
+        "route": "GET /shelves/{id}",
+        "param": "id",
+        "evidence": [
+          "code:internal/api/shelves.go:44"
+        ]
+      },
+      {
+        "rule": "path_parse",
+        "route": "DELETE /shelves/{id}",
+        "param": "id",
+        "evidence": [
+          "code:internal/api/shelves.go:70"
+        ]
+      },
+      {
+        "rule": "path_parse",
+        "route": "POST /shelves/{id}/books",
+        "param": "id",
+        "evidence": [
+          "code:internal/api/books.go:32"
+        ]
+      },
+      {
+        "rule": "path_parse",
+        "route": "GET /books/{id}",
+        "param": "id",
+        "evidence": [
+          "code:internal/api/books.go:63"
+        ]
+      },
+      {
+        "rule": "path_parse",
+        "route": "PATCH /books/{id}",
+        "param": "id",
+        "evidence": [
+          "code:internal/api/books.go:84"
+        ]
+      },
+      {
+        "rule": "path_parse",
+        "route": "POST /books/{id}/start",
+        "param": "id",
+        "evidence": [
+          "code:internal/api/books.go:139"
+        ]
+      },
+      {
+        "rule": "path_parse",
+        "route": "POST /books/{id}/finish",
+        "param": "id",
+        "evidence": [
+          "code:internal/api/books.go:170"
+        ]
+      },
+      {
+        "rule": "path_parse",
+        "route": "GET /books/{id}/notes",
+        "param": "id",
+        "evidence": [
+          "code:internal/api/notes.go:20"
+        ]
+      },
+      {
+        "rule": "path_parse",
+        "route": "POST /books/{id}/notes",
+        "param": "id",
+        "evidence": [
+          "code:internal/api/notes.go:46"
+        ]
+      },
+      {
+        "rule": "path_parse",
+        "route": "DELETE /notes/{id}",
+        "param": "id",
+        "evidence": [
+          "code:internal/api/notes.go:77"
+        ]
+      },
+      {
+        "rule": "bind_status",
+        "status": 422,
+        "evidence": [
+          "code:internal/api/accounts.go:30"
+        ]
+      },
+      {
+        "rule": "status_facts",
+        "table": "Book",
+        "column": "status",
+        "choices": [
+          "finished",
+          "queued",
+          "reading"
+        ],
+        "evidence": [
+          "code:internal/api/books.go:156",
+          "code:internal/api/books.go:165",
+          "code:internal/api/books.go:193",
+          "code:internal/api/books.go:202",
+          "code:internal/api/books.go:54"
+        ]
+      },
+      {
+        "rule": "json_dash",
+        "table": "User",
+        "columns": [
+          "password"
+        ]
+      },
+      {
+        "rule": "body_model",
+        "route": "POST /login",
+        "model": "loginInput",
+        "fields": [
+          "username",
+          "password"
+        ],
+        "evidence": [
+          "code:internal/api/accounts.go:14",
+          "code:internal/api/accounts.go:15"
+        ]
+      },
+      {
+        "rule": "body_model",
+        "route": "POST /shelves",
+        "model": "shelfInput",
+        "fields": [
+          "name",
+          "description"
+        ],
+        "evidence": [
+          "code:internal/api/shelves.go:16",
+          "code:internal/api/shelves.go:17"
+        ]
+      },
+      {
+        "rule": "body_model",
+        "route": "POST /shelves/{id}/books",
+        "model": "bookInput",
+        "fields": [
+          "title",
+          "author"
+        ],
+        "evidence": [
+          "code:internal/api/books.go:18",
+          "code:internal/api/books.go:19"
+        ]
+      },
+      {
+        "rule": "body_model",
+        "route": "PATCH /books/{id}",
+        "model": "bookPatch",
+        "fields": [
+          "title",
+          "author"
+        ],
+        "evidence": [
+          "code:internal/api/books.go:23",
+          "code:internal/api/books.go:24"
+        ]
+      },
+      {
+        "rule": "body_model",
+        "route": "POST /books/{id}/finish",
+        "model": "finishInput",
+        "fields": [
+          "rating"
+        ],
+        "evidence": [
+          "code:internal/api/books.go:28"
+        ]
+      },
+      {
+        "rule": "body_model",
+        "route": "POST /books/{id}/notes",
+        "model": "noteInput",
+        "fields": [
+          "body"
+        ],
+        "evidence": [
+          "code:internal/api/notes.go:16"
+        ]
+      }
+    ]
+  }
+}

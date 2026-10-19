@@ -274,6 +274,7 @@ func (g *gx) scanOwner(ci *closureInfo, v *gxVisit, b *Func, e *Env) {
 				tbl = rooted[name][0]
 			}
 		}
+		n0 := len(ci.owners)
 		for _, l := range links {
 			args := l.call.Args
 			condAt := -1
@@ -319,6 +320,9 @@ func (g *gx) scanOwner(ci *closureInfo, v *gxVisit, b *Func, e *Env) {
 					}
 				}
 			}
+		}
+		if g.policy && v.entry == nil {
+			g.linkRaise(ci, b, stack, n0)
 		}
 	})
 	// a model literal, a field assignment, a field comparison

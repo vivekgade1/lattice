@@ -167,11 +167,11 @@ func (c *checker) checkOwnership() {
 		if r == nil || r.Unreadable || c.adminOnly(root) || c.openRoute(root) {
 			continue
 		}
-		fns, complete := c.reach([]*Func{root.Fn}, c.pol.HelperDepth)
+		fns, complete := c.reach(append([]*Func{root.Fn}, r.Wraps...), c.pol.HelperDepth, r.Wraps...)
 		if !complete {
 			continue
 		}
-		mw, mwComplete := c.reach(r.Middleware, c.pol.HelperDepth)
+		mw, mwComplete := c.reach(append(append([]*Func{}, r.Middleware...), r.Wraps...), c.pol.HelperDepth, r.Wraps...)
 		if !mwComplete {
 			continue
 		}

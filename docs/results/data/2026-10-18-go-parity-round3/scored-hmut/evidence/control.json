@@ -1,0 +1,28 @@
+{
+  "passes": false,
+  "go801_go802_on_hm_routes": [
+    "GO801|POST /books/:id/finish|Shelf",
+    "GO801|POST /books/:id/start|Shelf"
+  ],
+  "registered_r_items_refuted": [],
+  "pristine_copy_new_findings": [],
+  "pristine_copy_equals_s4": true,
+  "r_available": true,
+  "layer_a_original_total": 5,
+  "layer_a_original_outside_baseline": [],
+  "original_finding_keys": [
+    "GO801|GET /books/:id|Shelf",
+    "GO801|PATCH /books/:id|Shelf",
+    "GO801|POST /books/:id/finish|Shelf",
+    "GO801|POST /books/:id/notes|Shelf",
+    "GO801|POST /books/:id/start|Shelf"
+  ],
+  "r_items": 119,
+  "r_verified": 1,
+  "r_items_unstable_between_two_runs": [],
+  "binary_injection": {
+    "harness_binary_env": "shelfie_BIN",
+    "works": true,
+    "detail": "make_app starts /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3-run/hmut/mut/control/bin"
+  }
+}
