@@ -830,3 +830,6 @@ base" and any round that changes the extractor breaks it; it differs on notes (d
 post hoc, as code-list differences from E3d/E3b) and kilnworks and harborline; the `spec check --help` HTTP difference is not from round 5
 (identical to 978b468, 73/73). P5-BUDGET also stays failed (924 vs 650). Therefore the round cannot pass in full; the held-out and SG stages
 are still run because their result is the information.
+
+**HO5 app freeze (orchestrator, before the scored run; audited: 25 tool calls, 0 reads outside the author directory, one temporary command directory inside it removed from the delivered tree):**
+- ho5/freeze.sha256 sha256 e2ce1d33defe120b5200bdc33e47175cb8ab5d2d94bebc1389ca15f8667e2a28
