@@ -617,3 +617,17 @@ by the orchestrator. (3) K2 generalised to an outside-rooted receiver chain plus
 that calls a method on the error returned by its own parameter stays silent (it matters for the held-out). (4) The fixture's
 revision 2 (recorded before any probe ran; revision 1's hash is kept) is accepted. (5) LM16/LM17 and the Tier 2 rows wait for B2.
 (6) The build node's `pkill -f` cleanup and one unintended unshimmed pytest run (throwaway containers, removed) are disclosed.
+
+## Amendment 3 (the freeze, orchestrator, 2026-10-18, before the held-out author starts)
+Builds B1 (K1-K6, runners), B2 (K8, K10) and the runner completion are merged in `np-go-round3`; the runner's self-test is OK on every arm
+(52 gated pass, 6 fail on dev data: PS-PI3-3, M-SM1, M-SM2, M-SM3, M-I1's clause, P2-805A; M-R1 not run by instruction; no improper NOT RUN);
+the J0' document's own check passes on the merged tree (20 rows, 169 citations, 0 problems). Every file of `MUST_LIST` plus the K8 files
+(`goextract_raise.go`, `goextract_owner.go`, `gocheck/__init__.py`), the three declared test edits, `HARNESS_API.md` and `BRIEF.md` is hashed in
+`docs/results/data/2026-10-18-go-parity-round3/freeze3.sha256` (31 entries); any byte change after this commit makes the run dev data. Rulings:
+P2-805A stays failed as registered (the counts 3 and 6 are part of its pass rule: observed 2 and 4; status exact). LM16/LM17 are killed by named unit
+tests (the registered probe killer cannot exist). The ledger path is `docs/results/data/2026-10-18-go-parity-round3/ledger.jsonl`. **Truth
+normalisation:** the author's `truth.json` deviates from the stand-in schema in three declared ways (a `refs` map of file:line, `json: null`
+for never-returned columns, no `schema` key, to avoid naming an idiom); the orchestrator normalises mechanically before the contract check
+(add `schema: lattice.g3truth/1`, `json: null` -> `"-"`, drop `refs` after checking every file:line exists) and records the normaliser's
+sha256; the author does not see this. The author works in `/Users/vivekgade/Documents/g3-s4-author` (the brief's fixed path); the
+orchestrator audits every tool call from the transcript. The route count means the total including `/health` and the login.
