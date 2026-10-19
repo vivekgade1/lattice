@@ -1,12 +1,784 @@
 {
  "cap": 8.0,
- "spent": 0.391902,
+ "spent": 7.528232,
  "entries": [
   {
    "arm": "smoke",
    "qid": "smoke",
    "usd": 0.391902,
    "status": "ok"
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-MR1",
+   "usd": 0.103844,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-MR2",
+   "usd": 0.035192,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-MR3",
+   "usd": 0.0,
+   "status": "ok",
+   "routed": true
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-MR4",
+   "usd": 0.036994,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-MR5",
+   "usd": 0.112209,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-MR6",
+   "usd": 0.108652,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-MW1",
+   "usd": 0.0,
+   "status": "ok",
+   "routed": true
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-MW2",
+   "usd": 0.0,
+   "status": "ok",
+   "routed": true
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-MW3",
+   "usd": 0.186193,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-MW4",
+   "usd": 0.0,
+   "status": "ok",
+   "routed": true
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-MW5",
+   "usd": 0.0,
+   "status": "ok",
+   "routed": true
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-MW6",
+   "usd": 0.03923,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-MW7",
+   "usd": 0.115317,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-MW8",
+   "usd": 0.092933,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-MM1",
+   "usd": 0.0,
+   "status": "ok",
+   "routed": true
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-MM2",
+   "usd": 0.080963,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-MM3",
+   "usd": 0.0,
+   "status": "ok",
+   "routed": true
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-MM4",
+   "usd": 0.174404,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-MA1",
+   "usd": 0.0,
+   "status": "ok",
+   "routed": true
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-MA2",
+   "usd": 0.0,
+   "status": "ok",
+   "routed": true
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-MA3",
+   "usd": 0.0,
+   "status": "ok",
+   "routed": true
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-MA4",
+   "usd": 0.138478,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-MA5",
+   "usd": 0.10703,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-MA6",
+   "usd": 0.0,
+   "status": "ok",
+   "routed": true
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-N1",
+   "usd": 0.367366,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-N2",
+   "usd": 0.0,
+   "status": "ok",
+   "routed": true
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-N3",
+   "usd": 0.147481,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-N4",
+   "usd": 0.036084,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-N5",
+   "usd": 0.070447,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-N6",
+   "usd": 0.04456,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-I1r",
+   "usd": 0.0,
+   "status": "ok",
+   "routed": true
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-I1f",
+   "usd": 0.0,
+   "status": "error",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-I2r",
+   "usd": 0.0,
+   "status": "ok",
+   "routed": true
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-I2f",
+   "usd": 0.0,
+   "status": "error",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-I3r",
+   "usd": 0.0,
+   "status": "ok",
+   "routed": true
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-I3f",
+   "usd": 0.0,
+   "status": "error",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-I4r",
+   "usd": 0.0,
+   "status": "ok",
+   "routed": true
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-I4f",
+   "usd": 0.0,
+   "status": "error",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-I5r",
+   "usd": 0.0,
+   "status": "ok",
+   "routed": true
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-I5f",
+   "usd": 0.0,
+   "status": "error",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-I6r",
+   "usd": 0.0,
+   "status": "ok",
+   "routed": true
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-I6f",
+   "usd": 0.0,
+   "status": "error",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-H1",
+   "usd": 0.0,
+   "status": "ok",
+   "routed": true
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-H2",
+   "usd": 0.0,
+   "status": "ok",
+   "routed": true
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-H3",
+   "usd": 0.0,
+   "status": "ok",
+   "routed": true
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-H4",
+   "usd": 0.0,
+   "status": "ok",
+   "routed": true
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-H5",
+   "usd": 0.0,
+   "status": "ok",
+   "routed": true
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-H6",
+   "usd": 0.044227,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-H7",
+   "usd": 0.0,
+   "status": "ok",
+   "routed": true
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-H8",
+   "usd": 0.103669,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-H9",
+   "usd": 0.04331,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-H10",
+   "usd": 0.140518,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-C1",
+   "usd": 0.07553,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-C2",
+   "usd": 0.047827,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-C3",
+   "usd": 0.082755,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-C4",
+   "usd": 0.087666,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-C5",
+   "usd": 0.085255,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-C6",
+   "usd": 0.130218,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-W1",
+   "usd": 0.056035,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-W2",
+   "usd": 0.097078,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-W3",
+   "usd": 0.210457,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-W4",
+   "usd": 0.113514,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-X1",
+   "usd": 0.043938,
+   "status": "ok",
+   "routed": false
+  },
+  {
+   "arm": "gated",
+   "qid": "R2-X2",
+   "usd": 0.0,
+   "status": "ok",
+   "routed": true
+  },
+  {
+   "arm": "ablation",
+   "qid": "R2-MR3",
+   "usd": 0.056119,
+   "status": "ok"
+  },
+  {
+   "arm": "ablation",
+   "qid": "R2-MW1",
+   "usd": 0.102947,
+   "status": "ok"
+  },
+  {
+   "arm": "ablation",
+   "qid": "R2-MW2",
+   "usd": 0.097085,
+   "status": "ok"
+  },
+  {
+   "arm": "ablation",
+   "qid": "R2-MW4",
+   "usd": 0.090803,
+   "status": "ok"
+  },
+  {
+   "arm": "ablation",
+   "qid": "R2-MW5",
+   "usd": 0.106781,
+   "status": "ok"
+  },
+  {
+   "arm": "ablation",
+   "qid": "R2-MM1",
+   "usd": 0.03824,
+   "status": "ok"
+  },
+  {
+   "arm": "ablation",
+   "qid": "R2-MM3",
+   "usd": 0.034192,
+   "status": "ok"
+  },
+  {
+   "arm": "ablation",
+   "qid": "R2-MA1",
+   "usd": 0.11119,
+   "status": "ok"
+  },
+  {
+   "arm": "ablation",
+   "qid": "R2-MA2",
+   "usd": 0.088382,
+   "status": "ok"
+  },
+  {
+   "arm": "ablation",
+   "qid": "R2-MA3",
+   "usd": 0.093703,
+   "status": "ok"
+  },
+  {
+   "arm": "ablation",
+   "qid": "R2-MA6",
+   "usd": 0.121694,
+   "status": "ok"
+  },
+  {
+   "arm": "ablation",
+   "qid": "R2-N2",
+   "usd": 0.043015,
+   "status": "ok"
+  },
+  {
+   "arm": "ablation",
+   "qid": "R2-I1r",
+   "usd": 0.0,
+   "status": "error"
+  },
+  {
+   "arm": "ablation",
+   "qid": "R2-I2r",
+   "usd": 0.0,
+   "status": "error"
+  },
+  {
+   "arm": "ablation",
+   "qid": "R2-I3r",
+   "usd": 0.0,
+   "status": "error"
+  },
+  {
+   "arm": "ablation",
+   "qid": "R2-I4r",
+   "usd": 0.0,
+   "status": "error"
+  },
+  {
+   "arm": "ablation",
+   "qid": "R2-I5r",
+   "usd": 0.0,
+   "status": "error"
+  },
+  {
+   "arm": "ablation",
+   "qid": "R2-I6r",
+   "usd": 0.0,
+   "status": "error"
+  },
+  {
+   "arm": "ablation",
+   "qid": "R2-H1",
+   "usd": 0.099607,
+   "status": "ok"
+  },
+  {
+   "arm": "ablation",
+   "qid": "R2-H2",
+   "usd": 0.051925,
+   "status": "ok"
+  },
+  {
+   "arm": "ablation",
+   "qid": "R2-H3",
+   "usd": 0.144343,
+   "status": "ok"
+  },
+  {
+   "arm": "ablation",
+   "qid": "R2-H4",
+   "usd": 0.052932,
+   "status": "ok"
+  },
+  {
+   "arm": "ablation",
+   "qid": "R2-H5",
+   "usd": 0.035682,
+   "status": "ok"
+  },
+  {
+   "arm": "ablation",
+   "qid": "R2-H7",
+   "usd": 0.1197,
+   "status": "ok"
+  },
+  {
+   "arm": "ablation",
+   "qid": "R2-X2",
+   "usd": 0.039426,
+   "status": "ok"
+  },
+  {
+   "arm": "oneshot",
+   "qid": "R2-MR1",
+   "usd": 0.244257,
+   "status": 200
+  },
+  {
+   "arm": "oneshot",
+   "qid": "R2-MR2",
+   "usd": 0.109751,
+   "status": 200
+  },
+  {
+   "arm": "oneshot",
+   "qid": "R2-MR4",
+   "usd": 0.106053,
+   "status": 200
+  },
+  {
+   "arm": "oneshot",
+   "qid": "R2-MR5",
+   "usd": 0.100707,
+   "status": 200
+  },
+  {
+   "arm": "oneshot",
+   "qid": "R2-MR6",
+   "usd": 0.112189,
+   "status": 200
+  },
+  {
+   "arm": "oneshot",
+   "qid": "R2-MW3",
+   "usd": 0.054495,
+   "status": 200
+  },
+  {
+   "arm": "oneshot",
+   "qid": "R2-MW6",
+   "usd": 0.058169,
+   "status": 200
+  },
+  {
+   "arm": "oneshot",
+   "qid": "R2-MW7",
+   "usd": 0.053647,
+   "status": 200
+  },
+  {
+   "arm": "oneshot",
+   "qid": "R2-MW8",
+   "usd": 0.056861,
+   "status": 200
+  },
+  {
+   "arm": "oneshot",
+   "qid": "R2-MM2",
+   "usd": 0.103581,
+   "status": 200
+  },
+  {
+   "arm": "oneshot",
+   "qid": "R2-MM4",
+   "usd": 0.104851,
+   "status": 200
+  },
+  {
+   "arm": "oneshot",
+   "qid": "R2-MA4",
+   "usd": 0.111201,
+   "status": 200
+  },
+  {
+   "arm": "oneshot",
+   "qid": "R2-MA5",
+   "usd": 0.111201,
+   "status": 200
+  },
+  {
+   "arm": "oneshot",
+   "qid": "R2-N1",
+   "usd": 0.160434,
+   "status": 200
+  },
+  {
+   "arm": "oneshot",
+   "qid": "R2-N3",
+   "usd": 0.035493,
+   "status": 200
+  },
+  {
+   "arm": "oneshot",
+   "qid": "R2-N4",
+   "usd": 0.038127,
+   "status": 200
+  },
+  {
+   "arm": "oneshot",
+   "qid": "R2-N5",
+   "usd": 0.040693,
+   "status": 200
+  },
+  {
+   "arm": "oneshot",
+   "qid": "R2-N6",
+   "usd": 0.038867,
+   "status": 200
+  },
+  {
+   "arm": "oneshot",
+   "qid": "R2-I1f",
+   "usd": 0.036113,
+   "status": 200
+  },
+  {
+   "arm": "oneshot",
+   "qid": "R2-I2f",
+   "usd": 0.048677,
+   "status": 200
+  },
+  {
+   "arm": "oneshot",
+   "qid": "R2-I3f",
+   "usd": 0.051441,
+   "status": 200
+  },
+  {
+   "arm": "oneshot",
+   "qid": "R2-I4f",
+   "usd": 0.049249,
+   "status": 200
+  },
+  {
+   "arm": "oneshot",
+   "qid": "R2-I5f",
+   "usd": 0.048591,
+   "status": 200
+  },
+  {
+   "arm": "oneshot",
+   "qid": "R2-I6f",
+   "usd": 0.048909,
+   "status": 200
+  },
+  {
+   "arm": "oneshot",
+   "qid": "R2-H6",
+   "usd": 0.056337,
+   "status": 200
+  },
+  {
+   "arm": "oneshot",
+   "qid": "R2-H8",
+   "usd": 0.057463,
+   "status": 200
+  },
+  {
+   "arm": "oneshot",
+   "qid": "R2-H9",
+   "usd": 0.056001,
+   "status": 200
+  },
+  {
+   "arm": "oneshot",
+   "qid": "R2-H10",
+   "usd": 0.051957,
+   "status": 200
+  },
+  {
+   "arm": "oneshot",
+   "qid": "R2-C1",
+   "usd": 0.103875,
+   "status": 200
   }
  ]
 }
