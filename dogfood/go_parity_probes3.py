@@ -1,9 +1,10 @@
-"""Probes of Go parity, round 3 (docs/results/2026-10-18-go-parity-round3-prereg.md, sections 5.2-5.5,
+"""Probes of Go parity, round 3 (docs/results/2026-10-18-go-parity-round3-prereg.md, sections 5.2-5.6,
 5.8, 5.9 and Amendments 1-2; Spike J, node G3, builder B1): Arm 0 (static fixtures), Arm S (S1, S2,
-S3), Arm M (Streak a0679e9), Arm J (job-scheduler-go 00dd1de), Arm H (the held-out S4, blind), Arm P
-(cross-arm byte compatibility) and Arm X (the default extract).
+S3), Arm M (Streak a0679e9), Arm J (job-scheduler-go 00dd1de), Arm 2 (Tier 2, section 5.6: K8's GO805 and
+K10's J0' matrix; builder B2's rows, completed by the runner node), Arm H (the held-out S4, blind),
+Arm P (cross-arm byte compatibility) and Arm X (the default extract).
 
-    "$PY" dogfood/go_parity_probes3.py --arm 0,S,M,J,P,H,X --base "$SCRATCH/base" \\
+    "$PY" dogfood/go_parity_probes3.py --arm 0,S,M,J,2,P,H,X --base "$SCRATCH/base" \\
         --streak "$SCRATCH/streak" --jobsched "$SCRATCH/jobsched" --freeze "$SCRATCH/g3.sha256" \\
         --runs 10 --out docs/results/data/2026-10-18-go-parity-round3/scored
 
@@ -65,7 +66,7 @@ MUTANTS_REL = "dogfood/go_parity_mutants3.py"
 R3_DATA = S3R.R3_DATA
 LEDGER = S3R.LEDGER  # fixed, never derived from --out
 BASE_REF = "978b468"
-ARMS = ("0", "S", "M", "J", "P", "H", "X")
+ARMS = ("0", "S", "M", "J", "2", "P", "H", "X")
 KINDS = S3R.KINDS
 VERIFIED = P1.VERIFIED
 result, not_run, sha = P1.result, P1.not_run, P1.sha
@@ -85,11 +86,15 @@ MUST_LIST = (
     "lattice/gocheck/derive.py",
     "lattice/importer/go_rules.py",
     "lattice/importer/rules.py",
+    "dogfood/g3_standin/k8_mutants.json",
+    "lattice/gocheck/notowned.py",
+    "docs/results/2026-10-18-parity-matrix-j0prime.md",
     "tests/gocheck/fixtures/goparity3/go.mod",
     "tests/gocheck/fixtures/goparity3/main.go",
     "tests/gocheck/fixtures/goparity3/truth.json",
     "tests/gocheck/test_go_wrap3.py",
     "tests/gocheck/test_go_derive3.py",
+    "tests/gocheck/test_go805.py",
     "tests/importer/test_go_rules3.py",
     "tests/spec/test_go_parity_probes3.py",
 )
@@ -129,6 +134,13 @@ P: dict[str, tuple[str, bool, Any]] = {
     "J-A": ("J", True, "layer A on the original: 0 findings"),
     "J-SM1": ("J", False, "layer A 0 (by design); B or D reports it (p 0.5)"),
     "J-SM2": ("J", False, "layer A 0 (by design); D reports it (p 0.8)"),
+    # arm 2 (5.6): Tier 2, K8 (GO805) and K10 (J0')
+    "P2-805A": ("2", True, "S2 404 (3 linked raises); S3 404 (6); Streak `unclear` or none (its refusals are error values, not constants)"),
+    "P2-805B": ("2", True, "GO805|GET /tickets/:tid|not_owned on the S3 copy whose get answers 403"),
+    "P2-805C": ("2", True, "0 GO805 on S1, S2, S3, Streak, job-scheduler"),
+    "P2-805D": ("2", True, "GO805 out of GO_GATED and gated_note(); GO804 and GO806 text byte-identical to 978b468"),
+    "P2-DEF": ("2", False, "K9 not built (Q6): reported; lattice/spec/check.py unchanged"),
+    "P2-J0": ("2", True, "every Python and Go cell of J0' cites an existing file:line and a test or results row (100%)"),
     # arm H (5.8)
     "H-PI1": ("H", True, "route recall >= 0.90; auth exact on >= 0.85; 0 extra routes"),
     "H-PI2": ("H", True, "0 confident-wrong owners; every truth owner inferred or unclear naming it"),
@@ -205,6 +217,14 @@ def missing(ctx: Ctx, row: str) -> str | None:
             return "docker is not available"
         if not ctx.driver_ok:
             return f"the driver python {ctx.driver_py} lacks PyMySQL/bcrypt"
+    if row in (
+        "P2-805A",
+        "P2-805C",
+    ):  # the Streak and job-scheduler originals are rows of K8's registered probes
+        if ctx.streak_src is None or not (ctx.streak_src / "go.mod").is_file():
+            return "no Streak copy (--streak: a `git archive` of a0679e9)"
+        if ctx.jobsched_src is None or not (ctx.jobsched_src / "go.mod").is_file():
+            return "no job-scheduler copy (--jobsched: a `git archive` of 00dd1de)"
     if arm == "H" and ctx.h_target is None:
         return "no held-out target (--s4 DIR, or the stand-ins of --self-test)"
     return None
@@ -1001,6 +1021,30 @@ def digest(doc: Mapping[str, Any]) -> str:
     return hashlib.sha256(json.dumps(doc, sort_keys=True).encode()).hexdigest()[:16]
 
 
+def base_gating(ctx: Ctx) -> tuple[dict[str, str], str]:
+    """``(GO_GATED, gated_note())`` of the 978b468 library, read in a subprocess of the base archive (cached)."""
+    if "base_gating" not in ctx.cache:
+        base = ctx.scratch / "base"
+        code = "import json;from lattice.gocheck import GO_GATED, gated_note;print(json.dumps([GO_GATED, gated_note()]))"
+        proc = subprocess.run([sys.executable, "-c", code], cwd=base, env=dict(os.environ, PYTHONPATH=str(base), PYTHONDONTWRITEBYTECODE="1"),
+                              capture_output=True, text=True, check=False)  # fmt: skip
+        if proc.returncode != 0:
+            raise RuntimeError(f"the 978b468 lattice.gocheck did not import: {proc.stderr[-300:]}")
+        ctx.cache["base_gating"] = tuple(json.loads(proc.stdout))
+    return ctx.cache["base_gating"]  # type: ignore[no-any-return]
+
+
+def with_base_gated_note(ctx: Ctx, doc: Mapping[str, Any]) -> dict[str, Any]:
+    """The one declared byte difference of a ``lattice check`` report (prereg section 8: ``gated_note()``, GO805 leaves it,
+    K8): this tree's layer-A gating note put back to 978b468's text, so that the rest of the report is compared byte for byte."""
+    from lattice.gocheck import gated_note
+
+    now, then = gated_note(), base_gating(ctx)[1]
+    d = json.loads(json.dumps(doc))
+    d["notes"] = [n.replace(now, then) for n in d.get("notes", [])]
+    return d  # type: ignore[no-any-return]
+
+
 def m_r1_command(copy: Path, py: str) -> list[str]:
     """Arm M's command (prereg 5.4 M-R1), run in ``copy``."""
     return [py, "-m", "lattice.spec", "check", "--spec", "spec:SPEC", "--app", "harness:make_app", "--db", "harness:build_db",
@@ -1039,6 +1083,7 @@ def m_r1(ctx: Ctx) -> dict[str, Any]:
     ok_ = rc == 0 and doc.get("verdict") == "pass" and not findings
     return result("M-R1", "lattice check --layers ACD --database mysql on Streak (Docker)", P["M-R1"][2], got, ok_,
                   cases_480=len(doc.get("cases", [])) == 480, normalised_matches_arm_m=norm == "351c3104c613c54a",
+                  normalised_matches_arm_m_with_978b468_gated_note=digest(normalise_check(with_base_gated_note(ctx, doc))) == "351c3104c613c54a",
                   reading="pass = exit 0, verdict pass, 0 findings; a normalised-hash or case-count difference is listed and allowed only in layer A's notes")  # fmt: skip
 
 
@@ -1113,18 +1158,20 @@ def j_0(ctx: Ctx) -> dict[str, Any]:
             False,
         )
     a, b = normalise_check(old[1]), normalise_check(new[1])
+    b_declared = normalise_check(with_base_gated_note(ctx, new[1]))
     got = {
         "rc": [old[0], new[0]],
         "verdict": [old[1].get("verdict"), new[1].get("verdict")],
         "findings": [len(old[1].get("findings", [])), len(new[1].get("findings", []))],
         "cases": len(new[1].get("cases", [])),
         "normalised_sha256": [digest(a), digest(b)],
+        "normalised_sha256_with_978b468_gated_note": digest(b_declared),
     }
     ok = (
         new[0] == 0
         and new[1].get("verdict") == "pass"
         and not new[1].get("findings")
-        and digest(a) == digest(b)
+        and digest(a) == digest(b_declared)
     )
     return result(
         "J-0",
@@ -1132,6 +1179,7 @@ def j_0(ctx: Ctx) -> dict[str, Any]:
         P["J-0"][2],
         got,
         ok,
+        reading="identical after putting 978b468's layer-A gating note back: the one difference is gated_note(), GO805 leaving it, which prereg section 8 declares (K8); normalised_sha256 are the raw digests",
     )
 
 
@@ -1186,6 +1234,161 @@ ARM_J: dict[str, Callable[[Ctx], dict[str, Any]]] = {
 }  # fmt: skip
 
 
+# ---- arm 2: K8 (GO805, the not-owned answer) and K10 (the J0' matrix), prereg 5.6 -------------------------------
+
+J0PRIME = REPO / "docs/results/2026-10-18-parity-matrix-j0prime.md"
+K8_WANT = {
+    "S2 goginapp": (404, 3),
+    "S3 gotickets": (404, 6),
+}  # prereg 5.6 P2-805A: (status, linked raises)
+P2_FILE_REF = re.compile(r"`([A-Za-z0-9_.-]+/[A-Za-z0-9_./-]+\.[a-z]+)(?::(\d+))?`")
+P2_LINE_REF = re.compile(r"`[A-Za-z0-9_.-]+/[A-Za-z0-9_./-]+\.[a-z]+:\d+`")
+
+
+def k8_modules(ctx: Ctx) -> dict[str, Path]:
+    assert ctx.streak_src is not None and ctx.jobsched_src is not None
+    return {"S1 goapp": SPEC_DIR / "goapp", "S2 goginapp": SPEC_DIR / "goginapp", "S3 gotickets": SPEC_DIR / "gotickets",
+            "goparity3": GP3, "Streak": ctx.streak_src, "job-scheduler": ctx.jobsched_src}  # fmt: skip
+
+
+def p2_805a(ctx: Ctx) -> dict[str, Any]:
+    """The K8 derivation on S1, S2, S3, goparity3, Streak and job-scheduler: the answer and the linked refusals it rests on."""
+    from lattice.gocheck.derive import derive_go_policy, policy_extract
+    from lattice.gocheck.notowned import derive_not_owned, linked_uses
+
+    rows: dict[str, Any] = {}
+    for name, d in k8_modules(ctx).items():
+        owners = dict(derive_go_policy(d).owners)
+        ex = policy_extract(d)
+        got, every = derive_not_owned(ex, owners), derive_not_owned(ex, None)
+        linked = sorted(
+            (f"{rt['method']} {rt['path']}", u["raise"]["status"], u["raise"]["line"])
+            for rt, u in linked_uses(ex, owners)
+        )
+        rows[name] = {"owners": owners, "status": got.status, "linked": got.linked, "note": got.note, "every_column_status": every.status,
+                      "every_column_linked": every.linked, "linked_refusals": [list(x) for x in linked]}  # fmt: skip
+    status_ok = {n: rows[n]["status"] == s for n, (s, _) in K8_WANT.items()}
+    count_ok = {n: rows[n]["linked"] == c for n, (_, c) in K8_WANT.items()}
+    return result("P2-805A", "K8 derivation (GO805's not-owned answer) on the originals", P["P2-805A"][2],
+                  {n: {k: v for k, v in r.items() if k in ("owners", "status", "linked", "note")} for n, r in rows.items()},
+                  all(status_ok.values()) and all(count_ok.values()), rows=rows, status_exact=status_ok, linked_count_exact=count_ok,
+                  reading="exact = the status and the linked-refusal count of S2 and S3 as registered; Streak and the others are reported; goparity3 has no owned table, so no K8 decoy lives there")  # fmt: skip
+
+
+def p2_805b(ctx: Ctx) -> dict[str, Any]:
+    """An S3 copy whose GET /tickets/:tid answers another user's ticket with 403 instead of 404: one GO805, no other code."""
+    import dataclasses
+
+    from lattice.gocheck import run_gocheck
+    from lattice.gocheck.derive import derive_go_policy
+    from lattice.gocheck.notowned import with_not_owned
+
+    orig = SPEC_DIR / "gotickets"
+    copy = ctx.scratch / "p2" / "gotickets"
+    shutil.rmtree(copy.parent, ignore_errors=True)
+    shutil.copytree(orig, copy)
+    api = copy / "api/api.go"
+    text = api.read_text()
+    old = 'First(&t).Error; err != nil {\n\t\t\tdetail(c, http.StatusNotFound, "Not found")\n\t\t\treturn\n\t\t}\n\t\tc.JSON(http.StatusOK, t)'
+    if text.count(old) != 1:
+        raise ValueError(f"api/api.go: the GET /tickets/:tid edit matches {text.count(old)} times")
+    api.write_text(text.replace(old, old.replace("StatusNotFound", "StatusForbidden")))
+    pol = with_not_owned(dataclasses.replace(derive_go_policy(orig), baseline=frozenset()), orig)
+    found = run_gocheck(copy, pol, strict=True)
+    keys = [f.key for f in found if f.code == "GO805"]
+    return result("P2-805B", "S3 copy: GET /tickets/:tid answers another user's ticket with 403", P["P2-805B"][2],
+                  {"answer": pol.not_owned, "go805": keys, "findings": [f"{f.key} ({f.file}:{f.line})" for f in found],
+                   "message": [f.message for f in found if f.code == "GO805"], "other_codes": sorted({f.code for f in found if f.code != "GO805"})},
+                  keys == ["GO805|GET /tickets/:tid|not_owned"])  # fmt: skip
+
+
+def p2_805c(ctx: Ctx) -> dict[str, Any]:
+    """No GO805 on the five originals under the answer derived from each (baseline emptied)."""
+    import dataclasses
+
+    from lattice.gocheck import run_gocheck
+    from lattice.gocheck.derive import derive_go_policy
+    from lattice.gocheck.notowned import with_not_owned
+
+    rows: dict[str, Any] = {}
+    for name, d in k8_modules(ctx).items():
+        if name == "goparity3":
+            continue  # prereg 5.6 names S1, S2, S3, Streak and job-scheduler
+        pol = with_not_owned(dataclasses.replace(derive_go_policy(d), baseline=frozenset()), d)
+        found = run_gocheck(d, pol, strict=True)
+        rows[name] = {"answer": pol.not_owned, "go805": [f.key for f in found if f.code == "GO805"], "other": sorted(f.key for f in found if f.code != "GO805")[:5]}  # fmt: skip
+    return result("P2-805C", "GO805 on the originals S1, S2, S3, Streak, job-scheduler", P["P2-805C"][2],
+                  {n: r["go805"] for n, r in rows.items()}, all(not r["go805"] for r in rows.values()), rows=rows)  # fmt: skip
+
+
+def p2_805d(ctx: Ctx) -> dict[str, Any]:
+    """GO805 is carried over (in GO_CODES, not in GO_GATED, not in gated_note); GO804 and GO806 keep their 978b468 text."""
+    from lattice.gocheck import GO_CODES, GO_GATED, gated_note
+
+    bg, bn = base_gating(ctx)
+    now = gated_note()
+    got = {"base_gated": sorted(bg), "now_gated": sorted(GO_GATED), "go805_in_codes": "GO805" in GO_CODES,
+           "GO804_text_identical": bg["GO804"] == GO_GATED["GO804"], "GO806_text_identical": bg["GO806"] == GO_GATED["GO806"],
+           "go805_in_now_note": "GO805" in now, "base_note": bn, "now_note": now}  # fmt: skip
+    ok = (sorted(GO_GATED) == ["GO804", "GO806"] and sorted(bg) == ["GO804", "GO805", "GO806"] and "GO805" in GO_CODES and got["GO804_text_identical"]
+          and got["GO806_text_identical"] and not got["go805_in_now_note"])  # fmt: skip
+    return result("P2-805D", "gated_note() and GO_GATED against 978b468", P["P2-805D"][2], got, ok)
+
+
+def p2_def(ctx: Ctx) -> dict[str, Any]:
+    """K9 was not built (Amendment 1 Q6): lattice/spec/check.py is the frozen file, so the default is the unchanged `from_spec`."""
+    want = dict(frozen_table())["lattice/spec/check.py"]
+    mine, theirs = (
+        sha(REPO / "lattice/spec/check.py"),
+        sha(ctx.scratch / "base" / "lattice/spec/check.py"),
+    )
+    return result("P2-DEF", "K9: the default policy of `lattice check` (not built: Q6)", P["P2-DEF"][2],
+                  {"K9": "not built (Amendment 1 Q6)", "check_py_sha256": mine, "base_sha256": theirs, "prereg_sha256": want, "unchanged": mine == theirs == want},
+                  mine == theirs == want, reading="reported, not gated (Q6): with check.py unchanged the default is GoPolicy.from_spec, identical to 978b468 by construction")  # fmt: skip
+
+
+def j0prime_check(doc: str, root: Path) -> dict[str, Any]:
+    """The check of the J0' document's section 6 (every cited file exists and the line is inside it; every Python and Go cell
+    cites a file:line and a test or results row), plus its grade counts read from the matrix."""
+    bad: list[str] = []
+    cited = set(P2_FILE_REF.findall(doc))
+    for path, line in sorted(cited):
+        p = root / path
+        if not p.is_file():
+            bad.append(f"missing file {path}")
+        elif line and not 1 <= int(line) <= len(p.read_text().splitlines()):
+            bad.append(f"{path}:{line} outside the file")
+    rows = [
+        ln
+        for ln in doc.splitlines()
+        if re.match(r"\| \d+ \| ", ln) and len(ln.strip("|").split("|")) == 5
+    ]
+    counts: dict[str, dict[str, int]] = {"Python": {}, "Go": {}}
+    for ln in rows:
+        cells = [c.strip() for c in ln.strip("|").split("|")]
+        for name, cell in (("Python", cells[2]), ("Go", cells[3])):
+            ev = re.search(r"(T|R): ", cell) and re.search(r"`(tests|docs/results)/", cell)
+            if not (P2_LINE_REF.search(cell) and ev):
+                bad.append(f"row {cells[0]} {name}: needs a file:line and a test or results row")
+            grade = re.match(r"\*\*([SPA])\*\*", cell)
+            g = grade.group(1) if grade else "?"
+            counts[name][g] = counts[name].get(g, 0) + 1
+    return {"rows": len(rows), "citations": len(cited), "problems": bad, "grades": counts}
+
+
+def p2_j0(ctx: Ctx) -> dict[str, Any]:
+    got = j0prime_check(J0PRIME.read_text(), REPO)
+    return result("P2-J0", "J0': every Python and Go cell cites an existing file:line and a test or results row", P["P2-J0"][2],
+                  {"rows": got["rows"], "citations": got["citations"], "problems": len(got["problems"]), "grades": got["grades"]},
+                  got["rows"] == 20 and not got["problems"], problem_list=got["problems"],
+                  reading="the script of the document's section 6, run on this tree; the independent re-run on the merged commit is V's")  # fmt: skip
+
+
+ARM_2: dict[str, Callable[[Ctx], dict[str, Any]]] = {
+    "P2-805A": p2_805a, "P2-805B": p2_805b, "P2-805C": p2_805c, "P2-805D": p2_805d, "P2-DEF": p2_def, "P2-J0": p2_j0,
+}  # fmt: skip
+
+
 # ---- arm P and X: cross-arm byte compatibility (5.9) ----------------------------------------------------------
 
 PREREG = REPO / "docs/results/2026-10-18-go-parity-round3-prereg.md"
@@ -1226,6 +1429,30 @@ def frozen_hash(root: Path, rel: str) -> str:
     return sha(root / rel)
 
 
+# The existing test files whose edit the prereg declares (section 8: ``gated_note()`` and the policy extract's K8 key; Amendment 2
+# ruling 2: the inferences list gains ``body_model``): path -> sha256 of the edited file. PB-F lets exactly these bytes differ
+# from 978b468; any other byte in them, or any other test file, still fails it.
+DECLARED_TEST_EDITS = {
+    "tests/gocheck/test_go_derive.py": "bc66129984d1a125ad334d9f4bfa6878043663297eefa9de800fc16a7e634bbb",
+    "tests/gocheck/test_gocheck_rules.py": "ffb2dc883c6f25a342e3de0bce49d7930b52abafc057eac6f1db8fa58cc3ec9a",
+    "tests/importer/test_go_rules2.py": "7833667c0fddbf568086bba319f5659d65b8736dcece2f9ef4538c074ad7714c",
+}
+
+
+def undeclared_test_changes(
+    changed: Sequence[str], root: Path = REPO
+) -> tuple[list[str], list[str]]:
+    """``(undeclared, declared)``: the changed test files not covered by :data:`DECLARED_TEST_EDITS` (a declared file whose bytes are
+    not the declared ones is undeclared) and the declared edits that are in place."""
+    undeclared, declared = [], []
+    for t in changed:
+        if DECLARED_TEST_EDITS.get(t) == (sha(root / t) if (root / t).is_file() else None):
+            declared.append(t)
+        else:
+            undeclared.append(t)
+    return undeclared, declared
+
+
 def pb_f(ctx: Ctx) -> dict[str, Any]:
     base = ctx.scratch / "base"
     rows, stale, touched = [], [], []
@@ -1238,16 +1465,19 @@ def pb_f(ctx: Ctx) -> dict[str, Any]:
             touched.append(rel)
     fixtures = P2.changed_vs_base(base, ("tests/gocheck/fixtures",))
     docs = P2.changed_vs_base(base, ("docs/results/data/2026-10-18-go-parity-gaps-round2",))
-    tests = [
-        t
-        for t in P2.changed_vs_base(base, ("tests", "lattice/studio", "lattice/mcp"))
-        if t not in fixtures and "/golden" not in t
-    ]
+    tests, declared = undeclared_test_changes(
+        [
+            t
+            for t in P2.changed_vs_base(base, ("tests", "lattice/studio", "lattice/mcp"))
+            if t not in fixtures and "/golden" not in t
+        ]
+    )
     return result("PB-F", "section 8's frozen table at 978b468; existing fixtures, tests and round-2 freeze data unchanged", P["PB-F"][2],
                   {"files": len(rows), "prereg_value_differs_from_978b468": stale, "changed_since_978b468": touched,
-                   "existing_fixture_files_changed": fixtures, "round2_data_changed": docs, "existing_test_files_changed": tests},
+                   "existing_fixture_files_changed": fixtures, "round2_data_changed": docs, "existing_test_files_changed": tests,
+                   "declared_test_edits_in_place": declared},
                   not stale and not touched and not fixtures and not docs and not tests, rows=rows,
-                  reading="a row whose prereg value differs from the 978b468 archive is listed in prereg_value_differs_from_978b468 and fails; files added by this round are not listed (changed_vs_base lists differing existing files only)")  # fmt: skip
+                  reading="a row whose prereg value differs from the 978b468 archive is listed in prereg_value_differs_from_978b468 and fails; files added by this round are not listed (changed_vs_base lists differing existing files only); the three declared test edits (DECLARED_TEST_EDITS, by sha256) are listed in declared_test_edits_in_place and do not fail the row")  # fmt: skip
 
 
 def pb_x(ctx: Ctx) -> dict[str, Any]:
@@ -1884,6 +2114,7 @@ ROW_FN: dict[str, Callable[[Ctx], dict[str, Any]]] = {
     **ARMS_S,
     **ARM_M,
     **ARM_J,
+    **ARM_2,
     **ARM_P,
     **ARM_X,
 }
@@ -1892,6 +2123,7 @@ ORDER = [
     *ROWS_OF["S"],
     *ROWS_OF["M"],
     *ROWS_OF["J"],
+    *ROWS_OF["2"],
     *ROWS_OF["H"],
     *ROWS_OF["X"],
     *[r for r in ROWS_OF["P"] if r != "PW"],
@@ -1988,8 +2220,8 @@ def parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument(
         "--arm",
-        default="0,S,M,J,P,H,X",
-        help="comma list of 0, S, M, J, P (cross-arm), H, X (default extract)",
+        default="0,S,M,J,2,P,H,X",
+        help="comma list of 0, S, M, J, 2 (K8, K10), P (cross-arm), H, X (default extract)",
     )
     ap.add_argument("--kind", default="shakedown", choices=list(KINDS))
     ap.add_argument("--base", required=True, help="an existing `git archive 978b468`")
