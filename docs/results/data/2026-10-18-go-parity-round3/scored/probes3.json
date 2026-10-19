@@ -1,0 +1,2585 @@
+{
+  "runner": "go_parity_probes3",
+  "runner_sha256": "d58838de18f67c37a120892c38b20a1359cf846c13158b6a375607403a6ca982",
+  "kind": "scored",
+  "run_id": "28c1361c13dc",
+  "base_ref": "978b468",
+  "arms": [
+    "0",
+    "S",
+    "M",
+    "J",
+    "2",
+    "P",
+    "H",
+    "X"
+  ],
+  "lattice_file": "/Users/vivekgade/Documents/lattice-g3/lattice/__init__.py",
+  "freeze": {
+    "file": "/Users/vivekgade/Documents/lattice-g3/docs/results/data/2026-10-18-go-parity-round3/freeze3.sha256",
+    "list_sha256": "79a5642d6dfee8b6de33e816bc492cf2774f663be70f30377ed90a19a233bf8f",
+    "entries": 31,
+    "mismatches": 0,
+    "running_script_listed": true,
+    "lattice_file": "/Users/vivekgade/Documents/lattice-g3/lattice/__init__.py",
+    "import_subprocess_lattice_file": "/Users/vivekgade/Documents/lattice-g3/lattice/__init__.py"
+  },
+  "timings": {
+    "build_goapp_s": 0.4546054999809712,
+    "build_goginapp_s": 0.34834683290682733,
+    "build_s3_s": 0.34488145797513425,
+    "import_s3_s": 9.447388083906844,
+    "s2_import_lazy_build_s": 6.003301416058093,
+    "pi7_import_walls": 5.51,
+    "r_s1": 0.7741334999445826,
+    "b_s1": 0.9220366671215743,
+    "import_S4_s": 5.46852729213424
+  },
+  "shim_calls": [
+    "docker ps -a --filter label=lattice.owner=apply-31629-83d15a283726 --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=apply-39123-91d76a3138d7 --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=apply-43735-c9d7dfa201cb --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=apply-47859-278e019454aa --format {{.Names}}",
+    "docker info --format {{.ServerVersion}}",
+    "docker info --format {{.ServerVersion}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=impact-callertoken1 --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=impact-693a8eddadbb --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=impact-693a8eddadbb --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=impact-693a8eddadbb --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=studio-90209-e76da4eaf09c --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=g3-run --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=apply-90209-d99b9d2997cf --format {{.Names}}",
+    "docker ps -a --filter label=lattice.owner=studio-5655-c7d30cc42d9f --format {{.Names}}"
+  ],
+  "python": "3.14.0",
+  "gated": [
+    "P0-WRAP",
+    "P0-OPQ",
+    "P0-BODY",
+    "P0-CHOICES2",
+    "P0-REG",
+    "PS-PI3-3",
+    "PS-PI4-3",
+    "PS-PR3-3",
+    "PS-JM31",
+    "PS-ST2",
+    "PS-ST3",
+    "PS-S3A",
+    "PS-S2",
+    "PS-S1",
+    "M-A0",
+    "M-SM1",
+    "M-SM2",
+    "M-SM3",
+    "M-I1",
+    "M-I2",
+    "M-P1",
+    "M-R1",
+    "J-0",
+    "J-A",
+    "P2-805A",
+    "P2-805B",
+    "P2-805C",
+    "P2-805D",
+    "P2-J0",
+    "H-PI1",
+    "H-PI2",
+    "H-PI3",
+    "H-PI4",
+    "H-PI7",
+    "H-PR3",
+    "H-PA1",
+    "H-PA0",
+    "H-JUDGE",
+    "H-X",
+    "PB-X",
+    "PB-F",
+    "PB-G",
+    "PB-P",
+    "PB-P2",
+    "PB-N",
+    "PB-H",
+    "PB-T",
+    "PB-D",
+    "PW"
+  ],
+  "results": [
+    {
+      "id": "P0-WRAP",
+      "probe": "layer A on goparity3: one-level wrapper unscoped / scoped / two levels",
+      "ran": true,
+      "predicted": "GO801 on w1; none on w2; none on w3 (silent, two levels)",
+      "observed": {
+        "GET /w1/:id": [
+          "GO801|GET /w1/:id|Widget"
+        ],
+        "GET /w2/:id": [],
+        "GET /w3/:id": []
+      },
+      "pass": true,
+      "evidence": {
+        "w4_reported": [],
+        "roots": {
+          "GET /m1/w/:id": {
+            "handler": "GetWidgetM1.func1",
+            "bound": false
+          },
+          "GET /m2/w/:id": {
+            "handler": "GetWidgetM2.func1",
+            "bound": false
+          },
+          "GET /w1/:id": {
+            "handler": "handler.getW1",
+            "bound": true
+          },
+          "GET /w2/:id": {
+            "handler": "handler.getW2",
+            "bound": true
+          },
+          "GET /w3/:id": {
+            "handler": "Handle.func1",
+            "bound": false
+          },
+          "GET /w4/:id": {
+            "handler": "handler.getW4",
+            "bound": true
+          },
+          "POST /widgets": {
+            "handler": "CreateWidget.func1",
+            "bound": false
+          }
+        },
+        "reading": "w4 (HandleMsg: err.Error() on the error the parameter returns) is reported, not gated: the receiver cannot be inferred and stays opaque"
+      },
+      "gated": true,
+      "arm": "0"
+    },
+    {
+      "id": "P0-OPQ",
+      "probe": "layer A on goparity3: hmac.New(...).Write/Sum guard vs a guard handing *gin.Context to an outside method",
+      "ran": true,
+      "predicted": "GO801 on the m1 route; none on the m2 route",
+      "observed": {
+        "GET /m1/w/:id": [
+          "GO801|GET /m1/w/:id|Widget"
+        ],
+        "GET /m2/w/:id": []
+      },
+      "pass": true,
+      "evidence": {},
+      "gated": true,
+      "arm": "0"
+    },
+    {
+      "id": "P0-BODY",
+      "probe": "K3 on goparity3 b1",
+      "ran": true,
+      "predicted": "contract param `title` body Str required max_len=40; one body_model inference",
+      "observed": {
+        "params": [
+          [
+            "title",
+            "body",
+            "Str",
+            true,
+            40
+          ]
+        ],
+        "body_model_inferences": [
+          [
+            "POST /widgets",
+            "widgetBody",
+            [
+              "title"
+            ]
+          ]
+        ]
+      },
+      "pass": true,
+      "evidence": {},
+      "gated": true,
+      "arm": "0"
+    },
+    {
+      "id": "P0-CHOICES2",
+      "probe": "K5 on goparity3, S2, S3",
+      "ran": true,
+      "predicted": "c1 no choices; c2 two; S2 Run.status (queued, cancelled); S3 Ticket.status (open, closed)",
+      "observed": {
+        "goparity3": {
+          "Gadget.kind": [
+            "a",
+            "b"
+          ]
+        },
+        "S2": {
+          "Run.status": [
+            "queued",
+            "cancelled"
+          ]
+        },
+        "S3": {
+          "Ticket.status": [
+            "open",
+            "closed"
+          ]
+        }
+      },
+      "pass": true,
+      "evidence": {},
+      "gated": true,
+      "arm": "0"
+    },
+    {
+      "id": "P0-REG",
+      "probe": "round 2's static rows re-expressed on the G3 runner",
+      "ran": true,
+      "predicted": "P0-PARSE, P0-OMIT, P0-BIND, P0-LIBMW, P0-PRIV, PA4 as round 2",
+      "observed": {
+        "P0-PARSE": true,
+        "P0-OMIT": true,
+        "P0-BIND": true,
+        "P0-LIBMW": true,
+        "P0-PRIV": true,
+        "PA4": true
+      },
+      "pass": true,
+      "evidence": {
+        "sub_rows": {
+          "P0-PARSE": {
+            "pass": true,
+            "observed": {
+              "goparity2": {
+                "GET /a/{id}": [
+                  "Int"
+                ],
+                "GET /b/{id}": [
+                  null
+                ],
+                "GET /c/{id}": [
+                  null
+                ]
+              },
+              "S2_model_Int": [
+                [
+                  "GET /runs/{rid}",
+                  "rid"
+                ],
+                [
+                  "POST /configs/{cid}/runs",
+                  "cid"
+                ],
+                [
+                  "POST /runs/{rid}/cancel",
+                  "rid"
+                ]
+              ],
+              "S2_inferences": 3
+            }
+          },
+          "P0-OMIT": {
+            "pass": true,
+            "observed": {
+              "goparity2": {
+                "GET /n1": [
+                  0,
+                  10,
+                  0
+                ],
+                "GET /n2": [
+                  null,
+                  10,
+                  1
+                ],
+                "GET /n3": [
+                  1,
+                  10,
+                  0
+                ]
+              },
+              "S2": [
+                0,
+                50
+              ]
+            }
+          },
+          "P0-BIND": {
+            "pass": true,
+            "observed": {
+              "goparity2": {
+                "validation_status": 422,
+                "bind_status": [
+                  {
+                    "rule": "bind_status",
+                    "status": 422,
+                    "evidence": [
+                      "code:main.go:93",
+                      "code:main.go:103",
+                      "code:main.go:113"
+                    ]
+                  }
+                ]
+              },
+              "goparity2mixed": {
+                "validation_status": null,
+                "bind_status": [
+                  {
+                    "rule": "bind_status",
+                    "unclear": true,
+                    "statuses": [
+                      400,
+                      422
+                    ]
+                  }
+                ]
+              },
+              "S2": {
+                "validation_status": 422,
+                "bind_status": [
+                  {
+                    "rule": "bind_status",
+                    "status": 422,
+                    "evidence": [
+                      "code:api/api.go:59",
+                      "code:api/api.go:143"
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          "P0-LIBMW": {
+            "pass": true,
+            "observed": [
+              "GO801|GET /notes|Note"
+            ]
+          },
+          "P0-PRIV": {
+            "pass": true,
+            "observed": {
+              "S2": {
+                "User": [
+                  "password",
+                  "token"
+                ]
+              },
+              "goextract": {
+                "User": [
+                  "password_hash"
+                ]
+              }
+            }
+          },
+          "PA4": {
+            "pass": true,
+            "observed": {
+              "owners": {
+                "Item": "owner_id",
+                "Audit": "actor"
+              },
+              "private": {
+                "User": [
+                  "password_hash"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "gated": true,
+      "arm": "0"
+    },
+    {
+      "id": "PS-PI3-3",
+      "probe": "rule items of the S3 import on the seed (K3)",
+      "ran": true,
+      "predicted": "63-70 items; share 0.60-0.68; refuted 0-2 each with a correction; both R2 creates verified",
+      "observed": {
+        "items": 67,
+        "verdicts": {
+          "verified": 40,
+          "unexercised": 26,
+          "unclear": 1
+        },
+        "verified_share": 0.597,
+        "refuted": [],
+        "r2_creates": {
+          "R2 POST /queues/{qid}/tickets": "verified",
+          "R2 POST /tickets/{tid}/handoffs": "unexercised"
+        },
+        "refuted_without_correction": [],
+        "unexercised_without_reason": []
+      },
+      "pass": false,
+      "evidence": {
+        "in_predicted_range": {
+          "items": true,
+          "share": false,
+          "refuted": true
+        },
+        "unexercised": {
+          "T1 Queue": "no probe reached it",
+          "T4 Ticket.status": "no route writes Ticket.status through a parameter (every stored value is listed)",
+          "T5 User (id)": "no route creates User rows",
+          "T5 Queue (id)": "no route creates Queue rows",
+          "T5 Ticket (id)": "no route can repeat the key: no create route of Ticket takes (id) or stamps it from the caller",
+          "T5 Handoff (id)": "no route creates Handoff rows",
+          "R3 POST /login 422 invalid body": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+          "R3 POST /login 401 Incorrect username or password": "unreachable-by-probe: no example triggers it",
+          "R3 GET /me 401 Not authenticated": "unreachable-by-probe: no example triggers it",
+          "R3 POST /queues/{qid}/tickets 400 bad id": "unreachable-by-probe: no example triggers it",
+          "R3 POST /queues/{qid}/tickets 422 invalid body": "unreachable-by-probe: no example triggers it",
+          "R3 POST /queues/{qid}/tickets 409 already open": "unreachable-by-probe: no example triggers it",
+          "R3 POST /queues/{qid}/tickets 500": "unreachable-by-probe: no example triggers it",
+          "R3 GET /tickets 422 invalid query": "unreachable-by-probe: no example triggers it",
+          "R3 GET /tickets/{tid} 400 bad id": "unreachable-by-probe: no example triggers it",
+          "R3 POST /tickets/{tid}/close 400 bad id": "unreachable-by-probe: no example triggers it",
+          "R3 POST /tickets/{tid}/close 409 not open": "unreachable-by-probe: no example triggers it",
+          "R3 POST /tickets/{tid}/close 500": "unreachable-by-probe: no example triggers it",
+          "R3 POST /tickets/{tid}/reopen 400 bad id": "unreachable-by-probe: no example triggers it",
+          "R3 POST /tickets/{tid}/reopen 409 not closed": "unreachable-by-probe: no example triggers it",
+          "R3 POST /tickets/{tid}/reopen 500": "unreachable-by-probe: no example triggers it",
+          "R2 POST /tickets/{tid}/handoffs": "no probe confirmed or contradicted it: a 201 create added no Ticket row",
+          "R3 POST /tickets/{tid}/handoffs 400 bad id": "unreachable-by-probe: no example triggers it",
+          "R3 POST /tickets/{tid}/handoffs 422 invalid body": "unreachable-by-probe: no example triggers it",
+          "R3 POST /tickets/{tid}/handoffs 404 No such user": "no probe reached it",
+          "R3 POST /tickets/{tid}/handoffs 500": "unreachable-by-probe: no example triggers it"
+        },
+        "corrections": 0,
+        "reading": "the gate is round 2's (share >= 0.60, not lowered) plus 'both R2 creates verified'; the 0.60-0.68 band is the prediction"
+      },
+      "gated": true,
+      "arm": "S"
+    },
+    {
+      "id": "PS-PI4-3",
+      "probe": "the corrected S3 spec re-probed on variant2",
+      "ran": true,
+      "predicted": "every seed-verified item still verified (>= 0.95)",
+      "observed": {
+        "seed_verified": 40,
+        "still_verified": 38,
+        "fraction": 0.95,
+        "lost": {
+          "T3 Handoff.to_user_id ge 1": "unexercised",
+          "R1 POST /tickets/{tid}/handoffs": "unexercised"
+        }
+      },
+      "pass": true,
+      "evidence": {},
+      "gated": true,
+      "arm": "S"
+    },
+    {
+      "id": "PS-PR3-3",
+      "probe": "layer R on S3 with the imported candidate_spec.py (in-process, the import root on sys.path: K7)",
+      "ran": true,
+      "predicted": "the same verdict map after the correction map",
+      "observed": {
+        "items_import": 67,
+        "items_rerun": 67,
+        "corrections": 0,
+        "differences [import, rerun]": {}
+      },
+      "pass": true,
+      "evidence": {},
+      "gated": true,
+      "arm": "S"
+    },
+    {
+      "id": "PS-JM31",
+      "probe": "JM31 on a scratch copy of S3 under go_spec_policy of its candidate spec",
+      "ran": true,
+      "predicted": "GO801|POST /tickets/:tid/close|Ticket; original 0 outside the baseline",
+      "observed": {
+        "new_keys": [
+          "GO801|POST /tickets/:tid/close|Ticket"
+        ],
+        "original_total": 0,
+        "original_outside_baseline": []
+      },
+      "pass": true,
+      "evidence": {
+        "expected": "GO801|POST /tickets/:tid/close|Ticket"
+      },
+      "gated": true,
+      "arm": "S"
+    },
+    {
+      "id": "PS-ST2",
+      "probe": "ST2 on a scratch copy of S3 under go_spec_policy of its candidate spec",
+      "ran": true,
+      "predicted": "GO801|GET /tickets/:tid|Ticket",
+      "observed": {
+        "new_keys": [
+          "GO801|GET /tickets/:tid|Ticket"
+        ],
+        "original_total": 0,
+        "original_outside_baseline": []
+      },
+      "pass": true,
+      "evidence": {
+        "expected": "GO801|GET /tickets/:tid|Ticket"
+      },
+      "gated": true,
+      "arm": "S"
+    },
+    {
+      "id": "PS-ST3",
+      "probe": "ST3 on a scratch copy of S3 under go_spec_policy of its candidate spec",
+      "ran": true,
+      "predicted": "GO801|POST /tickets/:tid/reopen|Ticket",
+      "observed": {
+        "new_keys": [
+          "GO801|POST /tickets/:tid/reopen|Ticket"
+        ],
+        "original_total": 0,
+        "original_outside_baseline": []
+      },
+      "pass": true,
+      "evidence": {
+        "expected": "GO801|POST /tickets/:tid/reopen|Ticket"
+      },
+      "gated": true,
+      "arm": "S"
+    },
+    {
+      "id": "PS-S3A",
+      "probe": "layer A on the S3 original",
+      "ran": true,
+      "predicted": "0 findings under from_spec and under go_spec_policy",
+      "observed": {
+        "from_spec": [],
+        "go_spec_policy": []
+      },
+      "pass": true,
+      "evidence": {
+        "judged": {
+          "routes": 11,
+          "judged": 11
+        }
+      },
+      "gated": true,
+      "arm": "S"
+    },
+    {
+      "id": "PS-S2",
+      "probe": "S2 regressions PI1-PI7, PR3, PR-T2, PA1-PA3 (round 2's rules; PI2 and PI3 as G3 states them)",
+      "ran": true,
+      "predicted": "PI1-PI7, PR3, PR-T2, PA1-PA3 as round 2; PI3 41-44 items, share 0.61-0.68",
+      "observed": {
+        "PI1": true,
+        "PI2": true,
+        "PI3": true,
+        "PI4": true,
+        "PI5": true,
+        "PI6": true,
+        "PI7": true,
+        "PR3": true,
+        "PR-T2": true,
+        "PA1": true,
+        "PA2": true,
+        "PA3": true
+      },
+      "pass": true,
+      "evidence": {
+        "sub_rows": {
+          "PI1": {
+            "pass": true,
+            "observed": {
+              "framework": "gin",
+              "routes": 7,
+              "contracts": 7,
+              "tables": [
+                "configs",
+                "runs",
+                "users"
+              ],
+              "auth": {
+                "GET /health": "Public",
+                "POST /login": "Public",
+                "GET /configs": "Customer",
+                "POST /configs/{cid}/runs": "Customer",
+                "GET /runs": "Customer",
+                "GET /runs/{rid}": "Customer",
+                "POST /runs/{rid}/cancel": "Customer"
+              }
+            }
+          },
+          "PI2": {
+            "pass": true,
+            "observed": {
+              "inferences": 8,
+              "by_rule": {
+                "owner_uses": 1,
+                "path_parse": 3,
+                "bind_status": 1,
+                "status_facts": 1,
+                "json_dash": 1,
+                "body_model": 1
+              },
+              "how": [
+                "assign",
+                "compare",
+                "compare",
+                "compare"
+              ],
+              "owners": {
+                "User": null,
+                "Config": null,
+                "Run": "user_id"
+              }
+            }
+          },
+          "PI3": {
+            "pass": true,
+            "observed": {
+              "items": 41,
+              "verified_share": 0.6098,
+              "refuted": []
+            },
+            "in_predicted_range": {
+              "items": true,
+              "share": false,
+              "refuted": true
+            }
+          },
+          "PI4": {
+            "pass": true,
+            "observed": {
+              "seed_verified": 25,
+              "still_verified": 25,
+              "fraction": 1.0,
+              "lost": {}
+            }
+          },
+          "PI5": {
+            "pass": true,
+            "observed": {
+              "count": 4,
+              "kinds": [
+                "invariant",
+                "machine"
+              ],
+              "machine_runs_status": true,
+              "all_pending": true,
+              "sentences": [
+                "Run's config_id is positive.",
+                "No two User rows share name.",
+                "No two User rows share token.",
+                "Run.status moves only queued -> cancelled, starting in queued."
+              ]
+            },
+            "in_predicted_range": true
+          },
+          "PI6": {
+            "pass": true,
+            "observed": {
+              "exit": 0,
+              "listed": 16,
+              "expected": 16,
+              "listed_not_expected": [],
+              "expected_not_listed": [],
+              "corrections": 0,
+              "stderr": ""
+            }
+          },
+          "PI7": {
+            "pass": true,
+            "observed": {
+              "identical": 10,
+              "of": 10,
+              "differing_files": [],
+              "walls_s": [
+                5.58,
+                5.27,
+                5.27,
+                5.84,
+                5.29,
+                5.31,
+                5.69,
+                5.74,
+                5.39,
+                5.72
+              ]
+            }
+          },
+          "PR3": {
+            "pass": true,
+            "observed": {
+              "items_import": 41,
+              "items_rerun": 41,
+              "corrections": 0,
+              "differences [import, rerun]": {}
+            }
+          },
+          "PR-T2": {
+            "pass": true,
+            "observed": {
+              "T2 User.password": "verified",
+              "T2 User.token": "verified"
+            }
+          },
+          "PA1": {
+            "pass": true,
+            "observed": {
+              "tables": 3,
+              "users_table": "User",
+              "owners": {
+                "Run": "user_id"
+              },
+              "private": {
+                "User": [
+                  "password",
+                  "token"
+                ]
+              },
+              "admin_routes": [],
+              "machines": {},
+              "baseline": [
+                "GO802|POST /login|User.token"
+              ]
+            }
+          },
+          "PA2": {
+            "pass": true,
+            "observed": {
+              "run_owned": false,
+              "machine": [
+                "Run"
+              ],
+              "baseline": [],
+              "derived_baseline": [
+                "GO802|POST /login|User.token"
+              ]
+            }
+          },
+          "PA3": {
+            "pass": true,
+            "observed": {
+              "original_total": 1,
+              "original_outside_baseline": 0,
+              "original_outside": [],
+              "new_findings": {
+                "JM5": [
+                  {
+                    "code": "GO801",
+                    "key": "GO801|POST /runs/:rid/cancel|Run"
+                  }
+                ],
+                "JM6": []
+              }
+            }
+          }
+        }
+      },
+      "gated": true,
+      "arm": "S"
+    },
+    {
+      "id": "PS-S1",
+      "probe": "S1 regressions PR1, PR2, PR4, PB1, PB1-CLI, PB2, PB3 (round 2's rules)",
+      "ran": true,
+      "predicted": "PR1, PR2, PR4, PB1, PB1-CLI, PB2, PB3 as round 2",
+      "observed": {
+        "PR1": true,
+        "PR2": true,
+        "PR4": true,
+        "PB1": true,
+        "PB1-CLI": true,
+        "PB2": true,
+        "PB3": true
+      },
+      "pass": true,
+      "evidence": {
+        "sub_rows": {
+          "PR1": {
+            "pass": true,
+            "observed": {
+              "items": 23,
+              "verdicts": {
+                "verified": 16,
+                "refuted": 0,
+                "unexercised": 7,
+                "unclear": 0
+              },
+              "verified_share": 0.6957,
+              "routes": {
+                "verified": 4,
+                "total": 4
+              }
+            }
+          },
+          "PR2": {
+            "pass": true,
+            "observed": {
+              "JM1": {
+                "refuted": [
+                  "R1 GET /runs/{rid}"
+                ],
+                "on_route": [
+                  "R1 GET /runs/{rid}"
+                ]
+              },
+              "JM2": {
+                "refuted": [
+                  "R3 GET /runs/{rid} 404 Not found"
+                ],
+                "on_route": [
+                  "R3 GET /runs/{rid} 404 Not found"
+                ]
+              }
+            }
+          },
+          "PR4": {
+            "pass": true,
+            "observed": {
+              "identical": 10,
+              "of": 10
+            }
+          },
+          "PB1": {
+            "pass": true,
+            "observed": {
+              "cases": 32,
+              "findings": []
+            }
+          },
+          "PB1-CLI": {
+            "pass": true,
+            "observed": {
+              "with_rules_rc": 0,
+              "with_rules_findings": [],
+              "python_api": [],
+              "without_rules_rc": 1,
+              "without_rules_findings": 6
+            }
+          },
+          "PB2": {
+            "pass": true,
+            "observed": {
+              "nocheck": {
+                "endpoints": [
+                  "POST /configs/{cid}/runs"
+                ],
+                "findings": 2
+              },
+              "nocancel": {
+                "endpoints": [
+                  "POST /runs/{rid}/cancel"
+                ],
+                "findings": 2
+              }
+            }
+          },
+          "PB3": {
+            "pass": true,
+            "observed": {
+              "identical": 20,
+              "of": 20,
+              "safe": [],
+              "nocheck": [
+                "B|POST /configs/{cid}/runs|POST /configs/{cid}/runs | ann | cid=2",
+                "B|POST /configs/{cid}/runs|POST /configs/{cid}/runs | ben | cid=2"
+              ]
+            }
+          }
+        }
+      },
+      "gated": true,
+      "arm": "S"
+    },
+    {
+      "id": "M-A0",
+      "probe": "layer A on the Streak original under GoPolicy.from_spec(SPEC)",
+      "ran": true,
+      "predicted": "0 findings (range 0-2) under GoPolicy.from_spec(SPEC)",
+      "observed": {
+        "findings": []
+      },
+      "pass": true,
+      "evidence": {
+        "classified": [],
+        "reading": "every finding is listed; a false positive fails the row (range 0-2 is the prediction)"
+      },
+      "gated": true,
+      "arm": "M"
+    },
+    {
+      "id": "M-A1",
+      "probe": "judged routes (root and middleware reach complete) on Streak",
+      "ran": true,
+      "predicted": "978b468: 0-1 of 26 judged; G3: 18-24 of the 24 wrapped routes",
+      "observed": {
+        "routes": 26,
+        "judged": 7,
+        "wrapped_routes": 25,
+        "wrapped_judged": 6,
+        "not_judged": [
+          "DELETE /habits/:id",
+          "DELETE /habits/:id/completions/:cid",
+          "GET /habits",
+          "GET /habits/:id/completions",
+          "GET /habits/:id/history",
+          "GET /habits/:id/progress",
+          "GET /home",
+          "GET /nudges",
+          "PATCH /habits/:id",
+          "POST /auth/login",
+          "POST /auth/logout",
+          "POST /auth/refresh",
+          "POST /auth/register",
+          "POST /completions/batch",
+          "POST /devices",
+          "POST /habits",
+          "POST /habits/:id/completions",
+          "POST /nudges/:id/dismiss",
+          "PUT /test/clock"
+        ]
+      },
+      "pass": true,
+      "evidence": {
+        "reading": "the 978b468 count is in the data of Arm M (m4/route-dump): 1 of 26 (GET /health) was judged; every handler was Handle.func1; informational, so always reported as pass=True"
+      },
+      "gated": false,
+      "arm": "M"
+    },
+    {
+      "id": "M-SM1",
+      "probe": "Streak copy (SM1) under GoPolicy.from_spec(SPEC)",
+      "ran": true,
+      "predicted": "GO801|GET /v1/habits/:id|Habit",
+      "observed": {
+        "new_keys": [
+          "GO801|GET /habits/:id|Habit"
+        ],
+        "builds": true,
+        "detected_exact_key": false,
+        "detected_without_the_v1_prefix": [
+          "GO801|GET /habits/:id|Habit"
+        ]
+      },
+      "pass": false,
+      "evidence": {
+        "build_error": null,
+        "reading": "the key is written with the route as the checker reads it: a router handed through a struct field (`r.Member.GET`) keeps its tail, so `/v1` is not in the key"
+      },
+      "gated": true,
+      "arm": "M"
+    },
+    {
+      "id": "M-SM2",
+      "probe": "Streak copy (SM2) under GoPolicy.from_spec(SPEC)",
+      "ran": true,
+      "predicted": "GO801|PATCH /v1/habits/:id|Habit",
+      "observed": {
+        "new_keys": [],
+        "builds": true,
+        "detected_exact_key": false,
+        "detected_without_the_v1_prefix": []
+      },
+      "pass": false,
+      "evidence": {
+        "build_error": null,
+        "reading": "the key is written with the route as the checker reads it: a router handed through a struct field (`r.Member.GET`) keeps its tail, so `/v1` is not in the key"
+      },
+      "gated": true,
+      "arm": "M"
+    },
+    {
+      "id": "M-SM3",
+      "probe": "Streak copy (SM3) under GoPolicy.from_spec(SPEC)",
+      "ran": true,
+      "predicted": "a GO801 on GET /v1/habits/{id}/completions, table Habit or Completion",
+      "observed": {
+        "new_keys": [],
+        "builds": true,
+        "detected_exact_key": false,
+        "detected_without_the_v1_prefix": []
+      },
+      "pass": false,
+      "evidence": {
+        "build_error": null,
+        "reading": "the key is written with the route as the checker reads it: a router handed through a struct field (`r.Member.GET`) keeps its tail, so `/v1` is not in the key"
+      },
+      "gated": true,
+      "arm": "M"
+    },
+    {
+      "id": "M-SM4",
+      "probe": "Streak copy (SM4) under GoPolicy.from_spec(SPEC)",
+      "ran": true,
+      "predicted": "GO801 on POST /v1/nudges/{id}/dismiss (p 0.6)",
+      "observed": {
+        "new_keys": [],
+        "builds": true,
+        "detected_exact_key": false,
+        "detected_without_the_v1_prefix": []
+      },
+      "pass": false,
+      "evidence": {
+        "build_error": null,
+        "reading": "the key is written with the route as the checker reads it: a router handed through a struct field (`r.Member.GET`) keeps its tail, so `/v1` is not in the key"
+      },
+      "gated": false,
+      "arm": "M"
+    },
+    {
+      "id": "M-I1",
+      "probe": "the rules-first import of Streak (K4)",
+      "ran": true,
+      "predicted": "exit 0; rules.status not_run:server_dialect, dialect mysql; 26 routes, 26 contracts, 0 rule items; empty proposals; 0 docker calls; no SQLite file; review list 0 items",
+      "observed": {
+        "rc": 0,
+        "status": "not_run:server_dialect",
+        "dialect": "mysql",
+        "routes": 26,
+        "contracts": 26,
+        "rule_items": 0,
+        "proposals": [],
+        "docker_calls": [],
+        "sqlite_files": [],
+        "review_rc": 0,
+        "review_listed": 176,
+        "review_listed_with_a_verdict": 0,
+        "report_md_first_line": "layer R was not run: the app's database is mysql (`not_run:server_dialect`)."
+      },
+      "pass": false,
+      "evidence": {
+        "reading": "the registered 'review list lists 0 items' does not hold: review.py (frozen) lists the candidate spec's rule items as `pending [unprobed]` whatever the report holds; none of them carries a verdict (review_listed_with_a_verdict)"
+      },
+      "gated": true,
+      "arm": "M"
+    },
+    {
+      "id": "M-I2",
+      "probe": "the inferences of the Streak import (K5)",
+      "ran": true,
+      "predicted": "4 owner_uses, 2 json_dash, status_facts only for Nudge.delivery; no choices on quiet_start, quiet_end, nudge_time",
+      "observed": {
+        "by_rule": {
+          "owner_uses": 4,
+          "status_facts": 1,
+          "json_dash": 2,
+          "body_model": 10
+        },
+        "owner_uses": [
+          [
+            "Device",
+            "user_id"
+          ],
+          [
+            "Habit",
+            "user_id"
+          ],
+          [
+            "NotificationPrefs",
+            "user_id"
+          ],
+          [
+            "RefreshToken",
+            "user_id"
+          ]
+        ],
+        "status_facts": [
+          [
+            "Nudge",
+            "delivery",
+            [
+              "failed",
+              "pending",
+              "sent",
+              "suppressed"
+            ]
+          ]
+        ],
+        "model_choices": {
+          "Nudge.delivery": [
+            "failed",
+            "pending",
+            "sent",
+            "suppressed"
+          ]
+        }
+      },
+      "pass": true,
+      "evidence": {
+        "reading": "the prediction lists owner_uses, json_dash, status_facts; K3's body_model inferences (one per route with bound body fields) are reported in by_rule, not scored"
+      },
+      "gated": true,
+      "arm": "M"
+    },
+    {
+      "id": "M-P1",
+      "probe": "go_spec_policy(SPEC, copy) against GoPolicy.from_spec(SPEC) (K6)",
+      "ran": true,
+      "predicted": "go_spec_policy == GoPolicy.from_spec in every field; undeclared_tables == [SchemaMigration]",
+      "observed": {
+        "equal_in_every_field": true,
+        "undeclared_tables": [
+          "SchemaMigration"
+        ]
+      },
+      "pass": true,
+      "evidence": {},
+      "gated": true,
+      "arm": "M"
+    },
+    {
+      "id": "M-R1",
+      "probe": "lattice check --layers ACD --database mysql on Streak (Docker)",
+      "ran": true,
+      "predicted": "exit 0, pass, 0 findings, 480 cases; normalised sha256 351c3104c613c54a",
+      "observed": {
+        "rc": 0,
+        "verdict": "pass",
+        "findings": 0,
+        "cases": 480,
+        "normalised_sha256": "28a6b06463a38be6",
+        "wall_s": 29.4
+      },
+      "pass": true,
+      "evidence": {
+        "cases_480": true,
+        "normalised_matches_arm_m": false,
+        "normalised_matches_arm_m_with_978b468_gated_note": true,
+        "reading": "pass = exit 0, verdict pass, 0 findings; a normalised-hash or case-count difference is listed and allowed only in layer A's notes"
+      },
+      "gated": true,
+      "arm": "M"
+    },
+    {
+      "id": "J-0",
+      "probe": "the owner's check.sh command on job-scheduler (ABCDX, SQLite), 978b468 library vs this tree",
+      "ran": true,
+      "predicted": "pass, 0 findings; normalised report identical to the 978b468 library",
+      "observed": {
+        "rc": [
+          0,
+          0
+        ],
+        "verdict": [
+          "pass",
+          "pass"
+        ],
+        "findings": [
+          0,
+          0
+        ],
+        "cases": 154,
+        "normalised_sha256": [
+          "ce07cdc4632ca1e7",
+          "86b34048b1af8e3c"
+        ],
+        "normalised_sha256_with_978b468_gated_note": "ce07cdc4632ca1e7"
+      },
+      "pass": true,
+      "evidence": {
+        "reading": "identical after putting 978b468's layer-A gating note back: the one difference is gated_note(), GO805 leaving it, which prereg section 8 declares (K8); normalised_sha256 are the raw digests"
+      },
+      "gated": true,
+      "arm": "J"
+    },
+    {
+      "id": "J-A",
+      "probe": "layer A on the job-scheduler original (its spec declares no owner column)",
+      "ran": true,
+      "predicted": "layer A on the original: 0 findings",
+      "observed": {
+        "findings": [],
+        "routes": 22,
+        "judged": 9
+      },
+      "pass": true,
+      "evidence": {},
+      "gated": true,
+      "arm": "J"
+    },
+    {
+      "id": "J-SM1",
+      "probe": "job-scheduler copy (JSM1): layer A and layers B, D",
+      "ran": true,
+      "predicted": "layer A 0 (by design); B or D reports it (p 0.5)",
+      "observed": {
+        "A": 0,
+        "findings_by_layer": {},
+        "rc": 0,
+        "first": []
+      },
+      "pass": true,
+      "evidence": {
+        "detected": false,
+        "stderr": "",
+        "reading": "reported only (Amendment 1 Q10): the row is informational, pass=True means it ran"
+      },
+      "gated": false,
+      "arm": "J"
+    },
+    {
+      "id": "J-SM2",
+      "probe": "job-scheduler copy (JSM2): layer A and layers B, D",
+      "ran": true,
+      "predicted": "layer A 0 (by design); D reports it (p 0.8)",
+      "observed": {
+        "A": 0,
+        "findings_by_layer": {
+          "D": 35
+        },
+        "rc": 1,
+        "first": [
+          "D|GET /applications/2|each_user_sees_only_their_applications / step 6",
+          "D|GET /applications/1/members|app_admins_manage_their_members / step 1",
+          "D|PUT /applications/1/members/5|executors_and_outsiders_cannot_manage_members / step 3",
+          "D|PUT /applications/1/members/5|member_requests_are_validated / step 1",
+          "D|POST /applications/1/jobs|app_admins_register_job_configs / step 1",
+          "D|POST /applications/1/jobs|executors_and_outsiders_cannot_register / step 2"
+        ]
+      },
+      "pass": true,
+      "evidence": {
+        "detected": true,
+        "stderr": "",
+        "reading": "reported only (Amendment 1 Q10): the row is informational, pass=True means it ran"
+      },
+      "gated": false,
+      "arm": "J"
+    },
+    {
+      "id": "P2-805A",
+      "probe": "K8 derivation (GO805's not-owned answer) on the originals",
+      "ran": true,
+      "predicted": "S2 404 (3 linked raises); S3 404 (6); Streak `unclear` or none (its refusals are error values, not constants)",
+      "observed": {
+        "S1 goapp": {
+          "owners": {},
+          "status": null,
+          "linked": 0,
+          "note": "no owner-scoped lookup refuses with a constant 4xx: GO805 silent"
+        },
+        "S2 goginapp": {
+          "owners": {
+            "Run": "user_id"
+          },
+          "status": 404,
+          "linked": 2,
+          "note": ""
+        },
+        "S3 gotickets": {
+          "owners": {
+            "Ticket": "reporter_id"
+          },
+          "status": 404,
+          "linked": 4,
+          "note": ""
+        },
+        "goparity3": {
+          "owners": {},
+          "status": null,
+          "linked": 0,
+          "note": "no owner-scoped lookup refuses with a constant 4xx: GO805 silent"
+        },
+        "Streak": {
+          "owners": {
+            "NotificationPrefs": "user_id",
+            "Device": "user_id",
+            "RefreshToken": "user_id",
+            "Habit": "user_id"
+          },
+          "status": null,
+          "linked": 0,
+          "note": "no owner-scoped lookup refuses with a constant 4xx: GO805 silent"
+        },
+        "job-scheduler": {
+          "owners": {
+            "Membership": "user_id",
+            "JobConfig": "created_by"
+          },
+          "status": null,
+          "linked": 0,
+          "note": "no owner-scoped lookup refuses with a constant 4xx: GO805 silent"
+        }
+      },
+      "pass": false,
+      "evidence": {
+        "rows": {
+          "S1 goapp": {
+            "owners": {},
+            "status": null,
+            "linked": 0,
+            "note": "no owner-scoped lookup refuses with a constant 4xx: GO805 silent",
+            "every_column_status": null,
+            "every_column_linked": 0,
+            "linked_refusals": []
+          },
+          "S2 goginapp": {
+            "owners": {
+              "Run": "user_id"
+            },
+            "status": 404,
+            "linked": 2,
+            "note": "",
+            "every_column_status": 404,
+            "every_column_linked": 2,
+            "linked_refusals": [
+              [
+                "GET /runs/:rid",
+                404,
+                166
+              ],
+              [
+                "POST /runs/:rid/cancel",
+                404,
+                183
+              ]
+            ]
+          },
+          "S3 gotickets": {
+            "owners": {
+              "Ticket": "reporter_id"
+            },
+            "status": 404,
+            "linked": 4,
+            "note": "",
+            "every_column_status": 404,
+            "every_column_linked": 4,
+            "linked_refusals": [
+              [
+                "GET /tickets/:tid",
+                404,
+                211
+              ],
+              [
+                "POST /tickets/:tid/close",
+                404,
+                228
+              ],
+              [
+                "POST /tickets/:tid/handoffs",
+                404,
+                283
+              ],
+              [
+                "POST /tickets/:tid/reopen",
+                404,
+                253
+              ]
+            ]
+          },
+          "goparity3": {
+            "owners": {},
+            "status": null,
+            "linked": 0,
+            "note": "no owner-scoped lookup refuses with a constant 4xx: GO805 silent",
+            "every_column_status": null,
+            "every_column_linked": 0,
+            "linked_refusals": []
+          },
+          "Streak": {
+            "owners": {
+              "NotificationPrefs": "user_id",
+              "Device": "user_id",
+              "RefreshToken": "user_id",
+              "Habit": "user_id"
+            },
+            "status": null,
+            "linked": 0,
+            "note": "no owner-scoped lookup refuses with a constant 4xx: GO805 silent",
+            "every_column_status": null,
+            "every_column_linked": 0,
+            "linked_refusals": []
+          },
+          "job-scheduler": {
+            "owners": {
+              "Membership": "user_id",
+              "JobConfig": "created_by"
+            },
+            "status": null,
+            "linked": 0,
+            "note": "no owner-scoped lookup refuses with a constant 4xx: GO805 silent",
+            "every_column_status": null,
+            "every_column_linked": 0,
+            "linked_refusals": []
+          }
+        },
+        "status_exact": {
+          "S2 goginapp": true,
+          "S3 gotickets": true
+        },
+        "linked_count_exact": {
+          "S2 goginapp": false,
+          "S3 gotickets": false
+        },
+        "reading": "exact = the status and the linked-refusal count of S2 and S3 as registered; Streak and the others are reported; goparity3 has no owned table, so no K8 decoy lives there"
+      },
+      "gated": true,
+      "arm": "2"
+    },
+    {
+      "id": "P2-805B",
+      "probe": "S3 copy: GET /tickets/:tid answers another user's ticket with 403",
+      "ran": true,
+      "predicted": "GO805|GET /tickets/:tid|not_owned on the S3 copy whose get answers 403",
+      "observed": {
+        "answer": 404,
+        "go805": [
+          "GO805|GET /tickets/:tid|not_owned"
+        ],
+        "findings": [
+          "GO805|GET /tickets/:tid|not_owned (api/api.go:211)"
+        ],
+        "message": [
+          "GET /tickets/:tid answers another user's Ticket with 403; this app answers it with 404"
+        ],
+        "other_codes": []
+      },
+      "pass": true,
+      "evidence": {},
+      "gated": true,
+      "arm": "2"
+    },
+    {
+      "id": "P2-805C",
+      "probe": "GO805 on the originals S1, S2, S3, Streak, job-scheduler",
+      "ran": true,
+      "predicted": "0 GO805 on S1, S2, S3, Streak, job-scheduler",
+      "observed": {
+        "S1 goapp": [],
+        "S2 goginapp": [],
+        "S3 gotickets": [],
+        "Streak": [],
+        "job-scheduler": []
+      },
+      "pass": true,
+      "evidence": {
+        "rows": {
+          "S1 goapp": {
+            "answer": null,
+            "go805": [],
+            "other": []
+          },
+          "S2 goginapp": {
+            "answer": 404,
+            "go805": [],
+            "other": [
+              "GO802|POST /login|User.token"
+            ]
+          },
+          "S3 gotickets": {
+            "answer": 404,
+            "go805": [],
+            "other": []
+          },
+          "Streak": {
+            "answer": null,
+            "go805": [],
+            "other": []
+          },
+          "job-scheduler": {
+            "answer": null,
+            "go805": [],
+            "other": [
+              "GO801|GET /applications/:id/jobs/:job_id/runs|JobConfig"
+            ]
+          }
+        }
+      },
+      "gated": true,
+      "arm": "2"
+    },
+    {
+      "id": "P2-805D",
+      "probe": "gated_note() and GO_GATED against 978b468",
+      "ran": true,
+      "predicted": "GO805 out of GO_GATED and gated_note(); GO804 and GO806 text byte-identical to 978b468",
+      "observed": {
+        "base_gated": [
+          "GO804",
+          "GO805",
+          "GO806"
+        ],
+        "now_gated": [
+          "GO804",
+          "GO806"
+        ],
+        "go805_in_codes": true,
+        "GO804_text_identical": true,
+        "GO806_text_identical": true,
+        "go805_in_now_note": false,
+        "base_note": "layer A (gocheck): not available for Go: GO804 -- route order (PY804) is moot on Gin: its radix-tree router matches a static segment before a parameter whatever the registration order, and panics at start-up on a conflicting pattern; GO805 -- error conventions (PY805) are derived from a Python original; a Gin app's caller and admin concept are app-defined and no Go derivation exists yet (layer R probes the spec's error answers); GO806 -- naive/aware datetimes (PY806) cannot be mixed in Go: every time.Time carries a location and Before/After/Sub compare instants",
+        "now_note": "layer A (gocheck): not available for Go: GO804 -- route order (PY804) is moot on Gin: its radix-tree router matches a static segment before a parameter whatever the registration order, and panics at start-up on a conflicting pattern; GO806 -- naive/aware datetimes (PY806) cannot be mixed in Go: every time.Time carries a location and Before/After/Sub compare instants"
+      },
+      "pass": true,
+      "evidence": {},
+      "gated": true,
+      "arm": "2"
+    },
+    {
+      "id": "P2-DEF",
+      "probe": "K9: the default policy of `lattice check` (not built: Q6)",
+      "ran": true,
+      "predicted": "K9 not built (Q6): reported; lattice/spec/check.py unchanged",
+      "observed": {
+        "K9": "not built (Amendment 1 Q6)",
+        "check_py_sha256": "1c1e84e278e8c7397a40118ffa86476a9cfde93afd76d52cbbcffc81ef887691",
+        "base_sha256": "1c1e84e278e8c7397a40118ffa86476a9cfde93afd76d52cbbcffc81ef887691",
+        "prereg_sha256": "1c1e84e278e8c7397a40118ffa86476a9cfde93afd76d52cbbcffc81ef887691",
+        "unchanged": true
+      },
+      "pass": true,
+      "evidence": {
+        "reading": "reported, not gated (Q6): with check.py unchanged the default is GoPolicy.from_spec, identical to 978b468 by construction"
+      },
+      "gated": false,
+      "arm": "2"
+    },
+    {
+      "id": "P2-J0",
+      "probe": "J0': every Python and Go cell cites an existing file:line and a test or results row",
+      "ran": true,
+      "predicted": "every Python and Go cell of J0' cites an existing file:line and a test or results row (100%)",
+      "observed": {
+        "rows": 20,
+        "citations": 169,
+        "problems": 0,
+        "grades": {
+          "Python": {
+            "S": 15,
+            "A": 2,
+            "P": 3
+          },
+          "Go": {
+            "S": 15,
+            "A": 1,
+            "P": 4
+          }
+        }
+      },
+      "pass": true,
+      "evidence": {
+        "problem_list": [],
+        "reading": "the script of the document's section 6, run on this tree; the independent re-run on the merged commit is V's"
+      },
+      "gated": true,
+      "arm": "2"
+    },
+    {
+      "id": "H-PI1",
+      "probe": "import: routes and auth against truth.json",
+      "ran": true,
+      "predicted": "route recall >= 0.90; auth exact on >= 0.85; 0 extra routes",
+      "observed": {
+        "recall": 1.0,
+        "auth_exact": 1.0,
+        "extra_routes": [],
+        "missing": [],
+        "auth_wrong": {}
+      },
+      "pass": true,
+      "evidence": {
+        "reading": "the importer's `Customer` role is read as truth's `Member` (renaming it is out of scope); auth is scored over all truth routes, a missing route counts as wrong"
+      },
+      "gated": true,
+      "arm": "H"
+    },
+    {
+      "id": "H-PI2",
+      "probe": "import: owners",
+      "ran": true,
+      "predicted": "0 confident-wrong owners; every truth owner inferred or unclear naming it",
+      "observed": {
+        "confident": {
+          "Note": "user_id",
+          "Shelf": "user_id"
+        },
+        "unclear": {},
+        "confident_wrong": {},
+        "recall": 1.0
+      },
+      "pass": true,
+      "evidence": {
+        "reading": "pass: 0 confident-wrong owners and recall >= 0.5 (the prediction's lower bound)"
+      },
+      "gated": true,
+      "arm": "H"
+    },
+    {
+      "id": "H-PI3",
+      "probe": "import: rule items on the seed",
+      "ran": true,
+      "predicted": "verified share >= 0.50; every refuted item has a correction or baseline entry; every unexercised item a reason",
+      "observed": {
+        "items": 119,
+        "verdicts": {
+          "unexercised": 118,
+          "verified": 1
+        },
+        "verified_share": 0.0084,
+        "refuted": [],
+        "refuted_without_correction": [],
+        "unexercised_without_reason": []
+      },
+      "pass": false,
+      "evidence": {
+        "in_predicted_range": {
+          "share": false,
+          "refuted": true
+        },
+        "unexercised": {
+          "T1 Book": "no probe reached it",
+          "T1 Note": "no probe reached it",
+          "T1 Shelf": "no probe reached it",
+          "T1 User": "no probe reached it",
+          "T2 User.password": "no 2xx answer returned a User row",
+          "T3 Book.author max_len 120": "no probe reached it",
+          "T3 Book.title max_len 120": "no probe reached it",
+          "T3 Note.body max_len 2000": "no probe reached it",
+          "T3 Shelf.description max_len 500": "no probe reached it",
+          "T3 Shelf.name max_len 80": "no probe reached it",
+          "T4 Book.status": "no route writes Book.status through a parameter (every stored value is listed)",
+          "T5 Book (id)": "no route creates Book rows",
+          "T5 Note (id)": "no route creates Note rows",
+          "T5 Shelf (id)": "no route can repeat the key: no create route of Shelf takes (id) or stamps it from the caller",
+          "T5 User (id)": "no route can repeat the key: no create route of User takes (id) or stamps it from the caller",
+          "R1 GET /health": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+          "R3 GET /health 503 database unavailable": "unreachable-by-probe: no example triggers it",
+          "R1 POST /login": "no callers: no user of any role was logged in, so no probe shows who is admitted",
+          "R3 POST /login 422 username and password are required": "unreachable-by-probe: no example triggers it",
+          "R3 POST /login 500 could not look up the user": "unreachable-by-probe: no example triggers it",
+          "R3 POST /login 401 invalid username or password": "unreachable-by-probe: no example triggers it",
+          "R3 POST /login 5xx": "no probe got past the auth check to the handler (answers [401])",
+          "R1 GET /me": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+          "R3 GET /me 500 could not load the user": "unreachable-by-probe: no example triggers it",
+          "R3 GET /me 5xx": "no probe got past the auth check to the handler (answers [401])",
+          "R1 GET /shelves": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+          "R2 GET /shelves": "no probe reached it",
+          "R3 GET /shelves 500 could not load the shelves": "unreachable-by-probe: no example triggers it",
+          "R3 GET /shelves 5xx": "no probe got past the auth check to the handler (answers [401])",
+          "R1 POST /shelves": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+          "R2 POST /shelves": "no probe reached it",
+          "R3 POST /shelves 422 name is required (1 to 80 characters) and description at most 500": "unreachable-by-probe: no example triggers it",
+          "R3 POST /shelves 500 could not create the shelf": "unreachable-by-probe: no example triggers it",
+          "R3 POST /shelves 422": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+          "R3 POST /shelves 5xx": "no probe got past the auth check to the handler (answers [401])",
+          "R1 GET /shelves/{id}": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+          "R2 GET /shelves/{id}": "no probe reached it",
+          "R3 GET /shelves/{id} 400 shelf id must be a positive integer": "unreachable-by-probe: no example triggers it",
+          "R3 GET /shelves/{id} 404 shelf not found": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+          "R3 GET /shelves/{id} 500 could not load the shelf": "unreachable-by-probe: no example triggers it",
+          "R3 GET /shelves/{id} 403 shelf belongs to another user": "no probe reached it",
+          "R3 GET /shelves/{id} 500 could not load the books of the shelf": "unreachable-by-probe: no example triggers it",
+          "R3 GET /shelves/{id} 5xx": "no probe got past the auth check to the handler (answers [401])",
+          "R1 DELETE /shelves/{id}": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+          "R2 DELETE /shelves/{id}": "no probe reached it",
+          "R3 DELETE /shelves/{id} 400 shelf id must be a positive integer": "unreachable-by-probe: no example triggers it",
+          "R3 DELETE /shelves/{id} 404 shelf not found": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+          "R3 DELETE /shelves/{id} 500 could not load the shelf": "unreachable-by-probe: no example triggers it",
+          "R3 DELETE /shelves/{id} 403 shelf belongs to another user": "no probe reached it",
+          "R3 DELETE /shelves/{id} 500 could not count the books of the shelf": "unreachable-by-probe: no example triggers it",
+          "R3 DELETE /shelves/{id} 409 shelf still has books": "unreachable-by-probe: no example triggers it",
+          "R3 DELETE /shelves/{id} 500 could not delete the shelf": "unreachable-by-probe: no example triggers it",
+          "R3 DELETE /shelves/{id} 5xx": "no probe got past the auth check to the handler (answers [401])",
+          "R1 POST /shelves/{id}/books": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+          "R2 POST /shelves/{id}/books": "no probe reached it",
+          "R3 POST /shelves/{id}/books 400 shelf id must be a positive integer": "unreachable-by-probe: no example triggers it",
+          "R3 POST /shelves/{id}/books 404 shelf not found": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+          "R3 POST /shelves/{id}/books 500 could not load the shelf": "unreachable-by-probe: no example triggers it",
+          "R3 POST /shelves/{id}/books 403 shelf belongs to another user": "no probe reached it",
+          "R3 POST /shelves/{id}/books 422 title and author are required (1 to 120 characters each)": "unreachable-by-probe: no example triggers it",
+          "R3 POST /shelves/{id}/books 500 could not create the book": "unreachable-by-probe: no example triggers it",
+          "R3 POST /shelves/{id}/books 422": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+          "R3 POST /shelves/{id}/books 5xx": "no probe got past the auth check to the handler (answers [401])",
+          "R1 GET /books/{id}": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+          "R3 GET /books/{id} 400 book id must be a positive integer": "unreachable-by-probe: no example triggers it",
+          "R3 GET /books/{id} 404 book not found": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+          "R3 GET /books/{id} 500 could not load the book": "unreachable-by-probe: no example triggers it",
+          "R3 GET /books/{id} 403 book belongs to another user": "unreachable-by-probe: no example triggers it",
+          "R3 GET /books/{id} 5xx": "no probe got past the auth check to the handler (answers [401])",
+          "R1 PATCH /books/{id}": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+          "R3 PATCH /books/{id} 400 book id must be a positive integer": "unreachable-by-probe: no example triggers it",
+          "R3 PATCH /books/{id} 404 book not found": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+          "R3 PATCH /books/{id} 500 could not load the book": "unreachable-by-probe: no example triggers it",
+          "R3 PATCH /books/{id} 403 book belongs to another user": "unreachable-by-probe: no example triggers it",
+          "R3 PATCH /books/{id} 422 send a title and/or an author of 1 to 120 characters": "unreachable-by-probe: no example triggers it",
+          "R3 PATCH /books/{id} 500 could not update the book": "unreachable-by-probe: no example triggers it",
+          "R3 PATCH /books/{id} 5xx": "no probe got past the auth check to the handler (answers [401])",
+          "R1 POST /books/{id}/start": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+          "R3 POST /books/{id}/start 400 book id must be a positive integer": "unreachable-by-probe: no example triggers it",
+          "R3 POST /books/{id}/start 404 book not found": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+          "R3 POST /books/{id}/start 500 could not load the book": "unreachable-by-probe: no example triggers it",
+          "R3 POST /books/{id}/start 403 book belongs to another user": "unreachable-by-probe: no example triggers it",
+          "R3 POST /books/{id}/start 500 could not start the book": "unreachable-by-probe: no example triggers it",
+          "R3 POST /books/{id}/start 409 only a queued book can be started": "unreachable-by-probe: no example triggers it",
+          "R3 POST /books/{id}/start 5xx": "no probe got past the auth check to the handler (answers [401])",
+          "R1 POST /books/{id}/finish": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+          "R3 POST /books/{id}/finish 400 book id must be a positive integer": "unreachable-by-probe: no example triggers it",
+          "R3 POST /books/{id}/finish 404 book not found": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+          "R3 POST /books/{id}/finish 500 could not load the book": "unreachable-by-probe: no example triggers it",
+          "R3 POST /books/{id}/finish 403 book belongs to another user": "unreachable-by-probe: no example triggers it",
+          "R3 POST /books/{id}/finish 422 rating, when sent, must be a whole number from 1 to 5": "unreachable-by-probe: no example triggers it",
+          "R3 POST /books/{id}/finish 500 could not finish the book": "unreachable-by-probe: no example triggers it",
+          "R3 POST /books/{id}/finish 409 only a book being read can be finished": "unreachable-by-probe: no example triggers it",
+          "R3 POST /books/{id}/finish 5xx": "no probe got past the auth check to the handler (answers [401])",
+          "R1 GET /books/{id}/notes": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+          "R3 GET /books/{id}/notes 400 book id must be a positive integer": "unreachable-by-probe: no example triggers it",
+          "R3 GET /books/{id}/notes 404 book not found": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+          "R3 GET /books/{id}/notes 500 could not load the book": "unreachable-by-probe: no example triggers it",
+          "R3 GET /books/{id}/notes 403 book belongs to another user": "unreachable-by-probe: no example triggers it",
+          "R3 GET /books/{id}/notes 500 could not load the notes": "unreachable-by-probe: no example triggers it",
+          "R3 GET /books/{id}/notes 5xx": "no probe got past the auth check to the handler (answers [401])",
+          "R1 POST /books/{id}/notes": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+          "R3 POST /books/{id}/notes 400 book id must be a positive integer": "unreachable-by-probe: no example triggers it",
+          "R3 POST /books/{id}/notes 404 book not found": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+          "R3 POST /books/{id}/notes 500 could not load the book": "unreachable-by-probe: no example triggers it",
+          "R3 POST /books/{id}/notes 403 book belongs to another user": "unreachable-by-probe: no example triggers it",
+          "R3 POST /books/{id}/notes 422 body is required (1 to 2000 characters)": "unreachable-by-probe: no example triggers it",
+          "R3 POST /books/{id}/notes 500 could not create the note": "unreachable-by-probe: no example triggers it",
+          "R3 POST /books/{id}/notes 422": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+          "R3 POST /books/{id}/notes 5xx": "no probe got past the auth check to the handler (answers [401])",
+          "R1 DELETE /notes/{id}": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+          "R2 DELETE /notes/{id}": "no probe reached it",
+          "R3 DELETE /notes/{id} 400 note id must be a positive integer": "unreachable-by-probe: no example triggers it",
+          "R3 DELETE /notes/{id} 404 note not found": "no probe confirmed or contradicted it: the caller was refused (401); the probe never reached the rule",
+          "R3 DELETE /notes/{id} 500 could not load the note": "unreachable-by-probe: no example triggers it",
+          "R3 DELETE /notes/{id} 403 note belongs to another user": "no probe reached it",
+          "R3 DELETE /notes/{id} 500 could not delete the note": "unreachable-by-probe: no example triggers it",
+          "R3 DELETE /notes/{id} 5xx": "no probe got past the auth check to the handler (answers [401])"
+        }
+      },
+      "gated": true,
+      "arm": "H"
+    },
+    {
+      "id": "H-PI4",
+      "probe": "the corrected spec re-probed on variant2",
+      "ran": true,
+      "predicted": ">= 0.95 retained on variant2",
+      "observed": {
+        "seed_verified": 1,
+        "still_verified": 1,
+        "fraction": 1.0,
+        "lost": {}
+      },
+      "pass": true,
+      "evidence": {},
+      "gated": true,
+      "arm": "H"
+    },
+    {
+      "id": "H-PI5",
+      "probe": "import: proposals",
+      "ran": true,
+      "predicted": "the truth machine's first edge proposed (p 0.7)",
+      "observed": {
+        "count": 1,
+        "machines": {
+          "Book.status": {
+            "first_edge": [
+              "queued",
+              "reading"
+            ],
+            "proposed_edges": [],
+            "first_edge_proposed": false
+          }
+        }
+      },
+      "pass": false,
+      "evidence": {},
+      "gated": false,
+      "arm": "H"
+    },
+    {
+      "id": "H-PI7",
+      "probe": "the import 10x into separate scratch dirs",
+      "ran": true,
+      "predicted": "the import 10x: identical (10/10)",
+      "observed": {
+        "identical": 10,
+        "of": 10
+      },
+      "pass": true,
+      "evidence": {},
+      "gated": true,
+      "arm": "H"
+    },
+    {
+      "id": "H-PR3",
+      "probe": "layer R with the imported candidate_spec.py",
+      "ran": true,
+      "predicted": "R with the imported spec: identical after the correction map",
+      "observed": {
+        "items_import": 119,
+        "items_rerun": 119,
+        "differences [import, rerun]": {}
+      },
+      "pass": true,
+      "evidence": {},
+      "gated": true,
+      "arm": "H"
+    },
+    {
+      "id": "H-PA1",
+      "probe": "derive_go_policy: private columns and owners within the truth",
+      "ran": true,
+      "predicted": "private columns within truth private; owners within truth owners",
+      "observed": {
+        "private": {
+          "User": [
+            "password"
+          ]
+        },
+        "owners": {
+          "Note": "user_id",
+          "Shelf": "user_id"
+        },
+        "public_columns_marked_private": {},
+        "owners_not_in_truth": {}
+      },
+      "pass": true,
+      "evidence": {},
+      "gated": true,
+      "arm": "H"
+    },
+    {
+      "id": "H-PA0",
+      "probe": "layer A on the original under go_spec_policy of its candidate spec",
+      "ran": true,
+      "predicted": "layer A on the original under go_spec_policy: 0 findings outside the baseline",
+      "observed": {
+        "total": 5,
+        "outside_baseline": [],
+        "baseline": [
+          "GO801|GET /books/:id|Shelf",
+          "GO801|PATCH /books/:id|Shelf",
+          "GO801|POST /books/:id/finish|Shelf",
+          "GO801|POST /books/:id/notes|Shelf",
+          "GO801|POST /books/:id/start|Shelf"
+        ]
+      },
+      "pass": true,
+      "evidence": {},
+      "gated": true,
+      "arm": "H"
+    },
+    {
+      "id": "H-JUDGE",
+      "probe": "share of the truth's owner-scoped routes judged by layer A (complete reach)",
+      "ran": true,
+      "predicted": "share of truth owner-scoped routes judged by layer A >= 0.75",
+      "observed": {
+        "owner_scoped_routes": 10,
+        "judged": 10,
+        "share": 1.0,
+        "not_judged": [],
+        "not_in_the_checker's_route_list": []
+      },
+      "pass": true,
+      "evidence": {
+        "reading": "owner-scoped = the non-Public truth routes with a refusal of cause not_owned or not_found (the truth schema has no per-route table)"
+      },
+      "gated": true,
+      "arm": "H"
+    },
+    {
+      "id": "H-X",
+      "probe": "wall time of the import (binary prebuilt)",
+      "ran": true,
+      "predicted": "wall time of the import <= 180 s",
+      "observed": {
+        "wall_s": 5.5
+      },
+      "pass": true,
+      "evidence": {},
+      "gated": true,
+      "arm": "H"
+    },
+    {
+      "id": "PB-X",
+      "probe": "default gocheck extract byte-identical to 978b468",
+      "ran": true,
+      "predicted": "default gocheck extract on the 7 round-1 dirs, goapp and fixtures/runs: 9 of 9 identical",
+      "observed": {
+        "identical_to_base": 9,
+        "of": 9
+      },
+      "pass": true,
+      "evidence": {
+        "rows": [
+          {
+            "dir": "tests/gocheck/fixtures/goextract",
+            "base": "f74727094a25cc1d",
+            "now": "f74727094a25cc1d",
+            "same_as_base": true
+          },
+          {
+            "dir": "tests/gocheck/fixtures/app",
+            "base": "6c38c5d5f04ff8ab",
+            "now": "6c38c5d5f04ff8ab",
+            "same_as_base": true
+          },
+          {
+            "dir": "tests/gocheck/fixtures/partial",
+            "base": "4b67b2e431c23403",
+            "now": "4b67b2e431c23403",
+            "same_as_base": true
+          },
+          {
+            "dir": "tests/gocheck/fixtures/goextract_workflow",
+            "base": "ee3b906bd4e4e799",
+            "now": "ee3b906bd4e4e799",
+            "same_as_base": true
+          },
+          {
+            "dir": "tests/spec/fixtures/implementation/app",
+            "base": "e10d5447c6cce57d",
+            "now": "e10d5447c6cce57d",
+            "same_as_base": true
+          },
+          {
+            "dir": "lattice/studio/mock/appmap/app",
+            "base": "e10d5447c6cce57d",
+            "now": "e10d5447c6cce57d",
+            "same_as_base": true
+          },
+          {
+            "dir": "tests/spec/goapp",
+            "base": "3c7670fc6e211212",
+            "now": "3c7670fc6e211212",
+            "same_as_base": true
+          },
+          {
+            "dir": "tests/gocheck/fixtures/runs",
+            "base": "ce107e4cf1f00533",
+            "now": "ce107e4cf1f00533",
+            "same_as_base": true
+          },
+          {
+            "dir": "tests/gocheck/fixtures/goparity2",
+            "base": "c364a68d0ba4abb1",
+            "now": "c364a68d0ba4abb1",
+            "same_as_base": true
+          }
+        ],
+        "reading": "the registered 'the 7 round-1 dirs, goapp and fixtures/runs' counts goapp twice (it is the 7th round-1 dir): the 9 are the 7, fixtures/runs and fixtures/goparity2"
+      },
+      "gated": true,
+      "arm": "X"
+    },
+    {
+      "id": "PB-F",
+      "probe": "section 8's frozen table at 978b468; existing fixtures, tests and round-2 freeze data unchanged",
+      "ran": true,
+      "predicted": "section 8's frozen table at 978b468: all identical",
+      "observed": {
+        "files": 38,
+        "prereg_value_differs_from_978b468": [],
+        "changed_since_978b468": [],
+        "existing_fixture_files_changed": [],
+        "round2_data_changed": [],
+        "existing_test_files_changed": [],
+        "declared_test_edits_in_place": [
+          "tests/gocheck/test_go_derive.py",
+          "tests/gocheck/test_gocheck_rules.py",
+          "tests/importer/test_go_rules2.py"
+        ]
+      },
+      "pass": true,
+      "evidence": {
+        "rows": [
+          {
+            "file": "lattice/spec/check.py",
+            "prereg": "1c1e84e278e8",
+            "base": "1c1e84e278e8",
+            "now": "1c1e84e278e8"
+          },
+          {
+            "file": "lattice/spec/probes.py",
+            "prereg": "7f4fca836922",
+            "base": "7f4fca836922",
+            "now": "7f4fca836922"
+          },
+          {
+            "file": "lattice/spec/process.py",
+            "prereg": "047be55e9f42",
+            "base": "047be55e9f42",
+            "now": "047be55e9f42"
+          },
+          {
+            "file": "lattice/spec/__main__.py",
+            "prereg": "81beadf5b804",
+            "base": "81beadf5b804",
+            "now": "81beadf5b804"
+          },
+          {
+            "file": "lattice/spec/appmap.py",
+            "prereg": "c7e2d5fe2589",
+            "base": "c7e2d5fe2589",
+            "now": "c7e2d5fe2589"
+          },
+          {
+            "file": "lattice/spec/ask.py",
+            "prereg": "c8e1e7d24020",
+            "base": "c8e1e7d24020",
+            "now": "c8e1e7d24020"
+          },
+          {
+            "file": "lattice/spec/impact_tier3.py",
+            "prereg": "22228513beba",
+            "base": "22228513beba",
+            "now": "22228513beba"
+          },
+          {
+            "file": "lattice/importer/emit_spec.py",
+            "prereg": "c166e7313184",
+            "base": "c166e7313184",
+            "now": "c166e7313184"
+          },
+          {
+            "file": "lattice/importer/suite.py",
+            "prereg": "e40bca823dd3",
+            "base": "e40bca823dd3",
+            "now": "e40bca823dd3"
+          },
+          {
+            "file": "lattice/importer/lift.py",
+            "prereg": "1e964e24aee0",
+            "base": "1e964e24aee0",
+            "now": "1e964e24aee0"
+          },
+          {
+            "file": "lattice/importer/profile_gen.py",
+            "prereg": "414fc40431f6",
+            "base": "414fc40431f6",
+            "now": "414fc40431f6"
+          },
+          {
+            "file": "lattice/importer/cli.py",
+            "prereg": "803d1d80ac72",
+            "base": "803d1d80ac72",
+            "now": "803d1d80ac72"
+          },
+          {
+            "file": "lattice/importer/review.py",
+            "prereg": "b548263a7d3e",
+            "base": "b548263a7d3e",
+            "now": "b548263a7d3e"
+          },
+          {
+            "file": "lattice/importer/report.py",
+            "prereg": "0955a69a0d57",
+            "base": "0955a69a0d57",
+            "now": "0955a69a0d57"
+          },
+          {
+            "file": "lattice/importer/mine.py",
+            "prereg": "b3399f96dd67",
+            "base": "b3399f96dd67",
+            "now": "b3399f96dd67"
+          },
+          {
+            "file": "lattice/importer/workflow_run.py",
+            "prereg": "9a3da5a40fc0",
+            "base": "9a3da5a40fc0",
+            "now": "9a3da5a40fc0"
+          },
+          {
+            "file": "lattice/importer/workflows.py",
+            "prereg": "5eba7e8ab6ac",
+            "base": "5eba7e8ab6ac",
+            "now": "5eba7e8ab6ac"
+          },
+          {
+            "file": "lattice/importer/frontends/go_gin.py",
+            "prereg": "9f24e9bb5ac8",
+            "base": "9f24e9bb5ac8",
+            "now": "9f24e9bb5ac8"
+          },
+          {
+            "file": "lattice/importer/frontends/__init__.py",
+            "prereg": "ae5cfcbb2272",
+            "base": "ae5cfcbb2272",
+            "now": "ae5cfcbb2272"
+          },
+          {
+            "file": "lattice/gocheck/src/goextract_closure.go",
+            "prereg": "b4ea9b8ffc45",
+            "base": "b4ea9b8ffc45",
+            "now": "b4ea9b8ffc45"
+          },
+          {
+            "file": "lattice/gocheck/src/goextract_assemble.go",
+            "prereg": "69e4c0350c62",
+            "base": "69e4c0350c62",
+            "now": "69e4c0350c62"
+          },
+          {
+            "file": "lattice/gocheck/src/goextract_grpc.go",
+            "prereg": "3f181be7e7c5",
+            "base": "3f181be7e7c5",
+            "now": "3f181be7e7c5"
+          },
+          {
+            "file": "lattice/gocheck/src/*.go except routes.go, reach.go, owner.go, goextract_owner.go, goextract_raise.go",
+            "prereg": "80d2acc27424",
+            "base": "80d2acc27424",
+            "now": "80d2acc27424"
+          },
+          {
+            "file": "lattice/pycheck/derive.py",
+            "prereg": "63fe9d219364",
+            "base": "63fe9d219364",
+            "now": "63fe9d219364"
+          },
+          {
+            "file": "lattice/pycheck/checks.py",
+            "prereg": "14603fcc11ae",
+            "base": "14603fcc11ae",
+            "now": "14603fcc11ae"
+          },
+          {
+            "file": "dogfood/go_parity_probes.py",
+            "prereg": "a9fe24c9c8a6",
+            "base": "a9fe24c9c8a6",
+            "now": "a9fe24c9c8a6"
+          },
+          {
+            "file": "dogfood/go_parity_mutants.py",
+            "prereg": "f9f73a3cb760",
+            "base": "f9f73a3cb760",
+            "now": "f9f73a3cb760"
+          },
+          {
+            "file": "dogfood/go_parity_probes2.py",
+            "prereg": "f654c40efe1f",
+            "base": "f654c40efe1f",
+            "now": "f654c40efe1f"
+          },
+          {
+            "file": "dogfood/go_parity_mutants2.py",
+            "prereg": "9d894fd89957",
+            "base": "9d894fd89957",
+            "now": "9d894fd89957"
+          },
+          {
+            "file": "dogfood/go_parity_s3.py",
+            "prereg": "cd32e3e6853f",
+            "base": "cd32e3e6853f",
+            "now": "cd32e3e6853f"
+          },
+          {
+            "file": "dogfood/go_parity_s3_mutants.py",
+            "prereg": "6bae418297d9",
+            "base": "6bae418297d9",
+            "now": "6bae418297d9"
+          },
+          {
+            "file": "tests/spec/go_harness.py",
+            "prereg": "061d3823255b",
+            "base": "061d3823255b",
+            "now": "061d3823255b"
+          },
+          {
+            "file": "tests/spec/go_harness_rb.py",
+            "prereg": "d69467ca7d66",
+            "base": "d69467ca7d66",
+            "now": "d69467ca7d66"
+          },
+          {
+            "file": "tests/spec/gogin_harness.py",
+            "prereg": "1fb26ead614b",
+            "base": "1fb26ead614b",
+            "now": "1fb26ead614b"
+          },
+          {
+            "file": "tests/spec/gotickets_harness.py",
+            "prereg": "00afd4ea4146",
+            "base": "00afd4ea4146",
+            "now": "00afd4ea4146"
+          },
+          {
+            "file": "tests/spec/goapp/**",
+            "prereg": "60a66b5262a7",
+            "base": "60a66b5262a7",
+            "now": "60a66b5262a7"
+          },
+          {
+            "file": "tests/spec/goginapp/**",
+            "prereg": "a5a56b17e5ac",
+            "base": "a5a56b17e5ac",
+            "now": "a5a56b17e5ac"
+          },
+          {
+            "file": "tests/spec/gotickets/**",
+            "prereg": "f75d1e3f4857",
+            "base": "f75d1e3f4857",
+            "now": "f75d1e3f4857"
+          }
+        ],
+        "reading": "a row whose prereg value differs from the 978b468 archive is listed in prereg_value_differs_from_978b468 and fails; files added by this round are not listed (changed_vs_base lists differing existing files only); the three declared test edits (DECLARED_TEST_EDITS, by sha256) are listed in declared_test_edits_in_place and do not fail the row"
+      },
+      "gated": true,
+      "arm": "P"
+    },
+    {
+      "id": "PB-G",
+      "probe": "Go layer A, workflows and inventory against 978b468",
+      "ran": true,
+      "predicted": "layer A findings and notes identical except the routes Amendment 2 lists",
+      "observed": {
+        "layer_a_differences": {
+          "fx/goextract [derived]": {
+            "only_base": [],
+            "only_now": [
+              "GO801|DELETE /api/items/:id|Item"
+            ]
+          }
+        },
+        "differences_not_in_pbg_allowed_json": [],
+        "workflows_and_inventory": {
+          "workflows --static": {
+            "same": true,
+            "rc": [
+              0,
+              0
+            ]
+          },
+          "inventory": {
+            "same": true,
+            "rc": [
+              0,
+              0
+            ]
+          }
+        },
+        "modules": 21
+      },
+      "pass": true,
+      "evidence": {
+        "reading": "a layer-A difference passes only if dogfood/g3_standin/pbg_allowed.json (the routes K1/K2 turn complete, listed in Amendment 2) names its finding key; test_process_runtime.py's reports are PB-T's"
+      },
+      "gated": true,
+      "arm": "P"
+    },
+    {
+      "id": "PB-P",
+      "probe": "Python outputs byte-identical to base",
+      "ran": true,
+      "predicted": "all identical",
+      "observed": {
+        "control: the base twice, after the normaliser, is identical": true,
+        "control differing files": [],
+        "rules import (multivendor) identical to base after the normaliser": true,
+        "differing files": [],
+        "report.json has no inferences key": true,
+        "no go_policy.json for a Python import": true,
+        "pycheck derive_policy(multivendor) identical": true
+      },
+      "pass": true,
+      "evidence": {
+        "reading": "the pre-registration's `spec_policy on the pycheck fixtures` names a function that does not exist at this commit; derive_policy is its nearest (layer A's Python policy)"
+      },
+      "gated": true,
+      "arm": "P"
+    },
+    {
+      "id": "PB-P2",
+      "probe": "a Python import with a decoy studio.toml [app] app",
+      "ran": true,
+      "predicted": "report.json app_factory is the Python make_app, as without the decoy",
+      "observed": {
+        "plain": {
+          "rc": 0,
+          "app_factory": "bench.import_repos.multivendor:make_app",
+          "stderr": ""
+        },
+        "decoy": {
+          "rc": 0,
+          "app_factory": "bench.import_repos.multivendor:make_app",
+          "stderr": ""
+        },
+        "base_with_decoy": {
+          "rc": 0,
+          "app_factory": "bench.import_repos.multivendor:make_app",
+          "stderr": ""
+        }
+      },
+      "pass": true,
+      "evidence": {},
+      "gated": true,
+      "arm": "P"
+    },
+    {
+      "id": "PB-N",
+      "probe": "stack-neutral outputs identical to 978b468",
+      "ran": true,
+      "predicted": "stack-neutral outputs identical",
+      "observed": {
+        "pytest_base": [
+          "607 passed",
+          "1 skipped"
+        ],
+        "pytest_now": [
+          "607 passed",
+          "1 skipped"
+        ],
+        "same_pytest_ids": true,
+        "exports": {
+          "goginapp": {
+            "same": true,
+            "rc": [
+              0,
+              0
+            ],
+            "sha256": "7560c50c8e65c5ac",
+            "err": ""
+          },
+          "gotickets": {
+            "same": true,
+            "rc": [
+              0,
+              0
+            ],
+            "sha256": "7560c50c8e65c5ac",
+            "err": ""
+          }
+        }
+      },
+      "pass": true,
+      "evidence": {
+        "reading": "the contracts exported for goginapp's and gotickets' imported specs are compared by exporting the same candidate_spec.py with both trees (K3 changes what the import itself writes: declared in prereg section 8)"
+      },
+      "gated": true,
+      "arm": "P"
+    },
+    {
+      "id": "PB-H",
+      "probe": "help texts and MCP tools/list identical to 978b468",
+      "ran": true,
+      "predicted": "help texts and MCP tools/list identical",
+      "observed": {
+        "lattice --help": {
+          "same": true,
+          "rc": [
+            0,
+            0
+          ]
+        },
+        "python -m lattice.importer --help": {
+          "same": true,
+          "rc": [
+            0,
+            0
+          ]
+        },
+        "python -m lattice.spec --help": {
+          "same": true,
+          "rc": [
+            0,
+            0
+          ]
+        },
+        "python -m lattice.spec check --help": {
+          "same": true,
+          "rc": [
+            0,
+            0
+          ]
+        },
+        "MCP tools/list": {
+          "same": true
+        }
+      },
+      "pass": true,
+      "evidence": {},
+      "gated": true,
+      "arm": "P"
+    },
+    {
+      "id": "PB-T",
+      "probe": "pytest tests/importer tests/pycheck tests/gocheck tests/spec tests/mcp tests/studio",
+      "ran": true,
+      "predicted": "the same failing, skipped and error ids as 978b468, plus the new tests passing",
+      "observed": {
+        "base": [
+          "2 failed",
+          "3326 passed",
+          "36 skipped"
+        ],
+        "now": [
+          "2 failed",
+          "3503 passed",
+          "36 skipped"
+        ],
+        "wall_s": 1110.9,
+        "failed_only_now": [],
+        "failed_only_base": [],
+        "errors_only_now": [],
+        "errors_only_base": [],
+        "counts_base": {
+          "failed": 2,
+          "skipped": 36
+        },
+        "counts_now": {
+          "failed": 2,
+          "skipped": 36
+        }
+      },
+      "pass": true,
+      "evidence": {
+        "reading": "the failing ids are compared exactly; a new test that passes adds to the passed count only"
+      },
+      "gated": true,
+      "arm": "P"
+    },
+    {
+      "id": "PB-D",
+      "probe": "dogfood/studio check (layers DX, venv python)",
+      "ran": true,
+      "predicted": "passes",
+      "observed": {
+        "base": [
+          0,
+          "  2.96s one_rebuild_at_a_time_and_stop (start 0.26, db 0.00, steps 2.68, 14 requests)",
+          ""
+        ],
+        "now": [
+          0,
+          "  2.90s land_is_409_when_nothing_waits (start 0.26, db 0.00, steps 2.61, 11 requests)",
+          ""
+        ]
+      },
+      "pass": true,
+      "evidence": {
+        "reading": "check.sh is `uv run python -m lattice.spec check ...`; the venv python is used instead (J1 deviation 10)"
+      },
+      "gated": true,
+      "arm": "P"
+    },
+    {
+      "id": "PW",
+      "probe": "snapshots (sha256, mode, mtime, listing with hidden files) of the fixtures and copies; docker/claude shims",
+      "ran": true,
+      "predicted": "snapshots of every fixture and copy: 0 changed; 0 docker/claude shim calls outside M-R1",
+      "observed": {
+        "changed": [],
+        "shim_calls": [],
+        "shim_calls_of_the_test_suites_reported": 116
+      },
+      "pass": true,
+      "evidence": {
+        "reading": "the shim calls counted are those made before the first row that runs a test suite (PB-N, PB-T, PB-D): the library's own container sweep (`docker ps` for its lattice.owner label) runs in those, as in round 2, where PW ran before them",
+        "suite_calls": [
+          "docker info --format {{.ServerVersion}}",
+          "docker ps -a --filter label=lattice.owner=apply-31629-83d15a283726 --format {{.Names}}",
+          "docker ps -a --filter label=lattice.owner=apply-39123-91d76a3138d7 --format {{.Names}}",
+          "docker ps -a --filter label=lattice.owner=apply-43735-c9d7dfa201cb --format {{.Names}}",
+          "docker ps -a --filter label=lattice.owner=apply-47859-278e019454aa --format {{.Names}}",
+          "docker ps -a --filter label=lattice.owner=apply-90209-d99b9d2997cf --format {{.Names}}"
+        ]
+      },
+      "gated": true,
+      "arm": "P"
+    }
+  ]
+}

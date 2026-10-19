@@ -1,0 +1,151 @@
+{
+  "s4": "/Users/vivekgade/Documents/lattice-g3/tests/spec/shelfie",
+  "s4_tree_sha256": "99b201eed7ebf771860f4ffa4b41f4b4dd852c75da4a934a87e8ba062518c0f0",
+  "mutants_md_sha256": "4e2ea01cdcfc52b2a6b142676c2b1a3f00d6d1382c0818553fc1b6ea69285105",
+  "truth_sha256": "0855ff58d741b85d11c38d96d558b3e8c31c9fbc6d997c4949d24d6585c8501a",
+  "patch_sha256": {
+    "m01.diff": "28529f7b5d4f06b426a53fa70a73987d11fd10252eb57a7ee140b472ac58b800",
+    "m02.diff": "84488cfa587708834120d404cd9889c0257ef28eebc855a7c9cc56581790d57e",
+    "m03.diff": "0e2ac5acb00c5565c01ffd4068f9813e75df1a468197c5e2e29b16acdf97a858",
+    "m04.diff": "3a59a9358d64c486e89922716c8c1162fc082435cec6160cd41c03ad8758fefd",
+    "m05.diff": "79fbfe09a61c808bf901a5e256504d92aa5cde5577ebc39e0cb5779dc6ea221c",
+    "m06.diff": "893902cf73c7d3b75ec6a25b41bd2c5d897ddbd4138531c16807668a24987f00",
+    "m07.diff": "d767fed1e193add93e4c7e3c33ba99e8ae261fb1e8edd5c236619d95a17318b6",
+    "m08.diff": "bc509f8b107bc6fd1a116540161cc2fecd6414950345a24c0eec3372a287bf56",
+    "m09.diff": "ae807c032a0aacea1cefd4b005d79a2fca8f5ba012a23588adabfb0b610a615d",
+    "m10.diff": "edfc459a8ec41c76a7522f8a8b3f11a6beae398013a53e97952be8416f1c99e1",
+    "m11.diff": "60369d9f6c9469bc7f130d0a8c0b1f374b77fd53b3dcff155eba9db371176978",
+    "m12.diff": "3320ae916efd3c7649280fe3d3c22e2b5be6944ddfedb7e27c5e2371c51dc3d1",
+    "m13.diff": "ae126b4d8161ef08ddfa8f9d0a8aa65f1fe510a7669e2c60f8594fe19ba7cb41",
+    "m14.diff": "04cbdcb0324106e85c7bd099ee33497c0985e80ebdd922e57f8017e7830855ea",
+    "m15.diff": "08afdf63296f837b69169ace4e724bfc41ab6aba9468f95be4b16dcaa3c0b54d",
+    "m16.diff": "067c7a9efd75072bb760f383e80e6f80fb1e85be69da9bca8f95702ee9c32df7"
+  },
+  "control": {
+    "passes": false,
+    "go801_go802_on_hm_routes": [
+      "GO801|POST /books/:id/finish|Shelf",
+      "GO801|POST /books/:id/start|Shelf"
+    ],
+    "registered_r_items_refuted": [],
+    "pristine_copy_new_findings": [],
+    "pristine_copy_equals_s4": true,
+    "r_available": true,
+    "layer_a_original_total": 5,
+    "layer_a_original_outside_baseline": [],
+    "original_finding_keys": [
+      "GO801|GET /books/:id|Shelf",
+      "GO801|PATCH /books/:id|Shelf",
+      "GO801|POST /books/:id/finish|Shelf",
+      "GO801|POST /books/:id/notes|Shelf",
+      "GO801|POST /books/:id/start|Shelf"
+    ],
+    "r_items": 119,
+    "r_verified": 1,
+    "r_items_unstable_between_two_runs": [],
+    "binary_injection": {
+      "harness_binary_env": "shelfie_BIN",
+      "works": true,
+      "detail": "make_app starts /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/g3-run/hmut/mut/control/bin"
+    }
+  },
+  "rows": [],
+  "gate": {
+    "killed": 0,
+    "of": 16,
+    "need": 13,
+    "predicted": [
+      12,
+      15
+    ],
+    "classes": {
+      "HM1-4": {
+        "killed": 0,
+        "of": 4,
+        "need": 3,
+        "pass": false
+      },
+      "HM5-6": {
+        "killed": 0,
+        "of": 2,
+        "need": 2,
+        "pass": false
+      },
+      "HM7-8": {
+        "killed": 0,
+        "of": 2,
+        "need": 2,
+        "pass": false
+      },
+      "HM9-10": {
+        "killed": 0,
+        "of": 2,
+        "need": 2,
+        "pass": false
+      }
+    },
+    "not_run": [
+      "HM1",
+      "HM2",
+      "HM3",
+      "HM4",
+      "HM5",
+      "HM6",
+      "HM7",
+      "HM8",
+      "HM9",
+      "HM10",
+      "HM11",
+      "HM12",
+      "HM13",
+      "HM14",
+      "HM15",
+      "HM16"
+    ],
+    "verdict": "incomplete",
+    "survivors": []
+  },
+  "judged": false,
+  "reading": "the control does not pass: no mutant is judged",
+  "wall_s": 10.6,
+  "runner": "go_parity_hmut3",
+  "runner_sha256": "829517a84fbcb0cd091f420f43e29e756f1f0365c8a6bae68aff8d45ce4f72f8",
+  "kind": "scored",
+  "run_id": "cfccc5aa1f29",
+  "base_ref": "978b468",
+  "lattice_file": "/Users/vivekgade/Documents/lattice-g3/lattice/__init__.py",
+  "freeze": {
+    "file": "/Users/vivekgade/Documents/lattice-g3/docs/results/data/2026-10-18-go-parity-round3/freeze4.sha256",
+    "list_sha256": "8867f67751124447868253d29ccba3841c2c0819db69308d5c221bfa5ed118fb",
+    "entries": 65,
+    "mismatches": 0,
+    "running_script_listed": true,
+    "required_files_listed": 38,
+    "lattice_file": "/Users/vivekgade/Documents/lattice-g3/lattice/__init__.py",
+    "import_subprocess_lattice_file": "/Users/vivekgade/Documents/lattice-g3/lattice/__init__.py"
+  },
+  "only": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16
+  ],
+  "timings": {
+    "import_S4_s": 5.1785110828932375
+  },
+  "python": "3.14.0",
+  "fixtures_changed": [],
+  "shim_calls": []
+}
