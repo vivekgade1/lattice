@@ -187,6 +187,12 @@ func plural(s string) string {
 		return s + "es"
 	case strings.HasSuffix(s, "y") && len(s) > 1 && !strings.ContainsRune("aeiou", rune(s[len(s)-2])):
 		return s[:len(s)-1] + "ies"
+	case strings.HasSuffix(s, "lf") || strings.HasSuffix(s, "rf"):
+		// jinzhu/inflection `([lr])f$` -> `${1}ves`: shelf -> shelves, wolf -> wolves
+		return s[:len(s)-1] + "ves"
+	case strings.HasSuffix(s, "fe") && len(s) > 2 && s[len(s)-3] != 'f':
+		// `([^f])fe$` -> `${1}ves`: knife -> knives, life -> lives
+		return s[:len(s)-2] + "ves"
 	}
 	return s + "s"
 }

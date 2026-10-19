@@ -36,7 +36,9 @@ target); what each cannot see is listed with it.
   whose ``Model``/``Table``/destination is the table's struct) -- directly or in the
   helpers it calls -- while nothing it runs (the handler, its middleware, those helpers)
   filters, compares or sets the owner column: the column in a GORM call's arguments (a
-  condition string, a map or struct condition), its field compared with ``==``/``!=``,
+  condition string, a map or struct condition), its field compared with ``==``/``!=``
+  (or a name holding it: ``owner := row.UserID``, or the result a module helper returns
+  as ``return book, shelf.UserID, nil`` and the caller binds, then compares),
   assigned, or set in a model literal. A table owned through a parent needs that
   evidence on the parent. Admin-only: the spec says so, a middleware of the route or an
   ``if`` of the handler names an admin concept. Silent when the route calls code the

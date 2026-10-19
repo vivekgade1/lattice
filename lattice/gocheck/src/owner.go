@@ -64,9 +64,85 @@ func (c *checker) mentionsColumn(fns []*Func, table, column string) bool {
 		sel, ok := unparen(x).(*ast.SelectorExpr)
 		return ok && fields[sel.Sel.Name]
 	}
+	// a value read from the owner field and carried to the comparison: `owner := row.UserID`,
+	// or `_, owner, _ := helper(...)` where `helper` returns the owner field at that result
+	// (`return book, shelf.UserID, nil`); a comparison of that name counts as a comparison of
+	// the field
+	returns := map[*Func]map[int]bool{}
+	returnsField := func(callee *Func) map[int]bool {
+		if got, ok := returns[callee]; ok {
+			return got
+		}
+		returns[callee] = nil
+		if callee.Body == nil {
+			return nil
+		}
+		ce := c.m.EnvOf(callee)
+		var out map[int]bool
+		ast.Inspect(callee.Body, func(n ast.Node) bool {
+			switch v := n.(type) {
+			case *ast.FuncLit:
+				return false
+			case *ast.ReturnStmt:
+				for i, r := range v.Results {
+					if isField(r) {
+						if out == nil {
+							out = map[int]bool{}
+						}
+						out[i] = true
+						continue
+					}
+					if id, ok := unparen(r).(*ast.Ident); ok {
+						for _, val := range ce.valuesOf(id.Name) {
+							if isField(val) {
+								if out == nil {
+									out = map[int]bool{}
+								}
+								out[i] = true
+							}
+						}
+					}
+				}
+			}
+			return true
+		})
+		returns[callee] = out
+		return out
+	}
 	found := false
 	for _, fn := range fns {
 		e := c.m.EnvOf(fn)
+		carried := map[string]bool{}
+		ast.Inspect(fn.Body, func(n ast.Node) bool {
+			switch v := n.(type) {
+			case *ast.FuncLit:
+				return false
+			case *ast.AssignStmt:
+				if len(v.Lhs) == len(v.Rhs) {
+					for i, l := range v.Lhs {
+						if id, ok := l.(*ast.Ident); ok && isField(v.Rhs[i]) {
+							carried[id.Name] = true
+						}
+					}
+				} else if len(v.Rhs) == 1 {
+					if call, ok := unparen(v.Rhs[0]).(*ast.CallExpr); ok {
+						if callee := c.m.Callee(e, call); callee != nil {
+							got := returnsField(callee)
+							for i, l := range v.Lhs {
+								if id, ok := l.(*ast.Ident); ok && got[i] {
+									carried[id.Name] = true
+								}
+							}
+						}
+					}
+				}
+			}
+			return true
+		})
+		isCarried := func(x ast.Expr) bool {
+			id, ok := unparen(x).(*ast.Ident)
+			return ok && carried[id.Name]
+		}
 		inArgs := func(args []ast.Expr) {
 			for _, a := range args {
 				ast.Inspect(a, func(n ast.Node) bool {
@@ -105,7 +181,7 @@ func (c *checker) mentionsColumn(fns []*Func, table, column string) bool {
 					inArgs(v.Args)
 				}
 			case *ast.BinaryExpr:
-				if (v.Op == token.EQL || v.Op == token.NEQ) && (isField(v.X) || isField(v.Y)) {
+				if (v.Op == token.EQL || v.Op == token.NEQ) && (isField(v.X) || isField(v.Y) || isCarried(v.X) || isCarried(v.Y)) {
 					found = true
 				}
 			case *ast.AssignStmt:
