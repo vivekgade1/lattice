@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-18",
+  "node": "w-e (RUN node, Spike E Streak arm)",
+  "freeze_check": {
+    "source": "docs/results/data/2026-10-17-implement-verify/freeze.sha256",
+    "result": "all 7 lines match the files in worktree lattice-ea (branch np-e-arm, 978b468)",
+    "sha256": {
+      "lattice/studio/implement.py": "cab8265427f6d88663c372c319a51b0f7980f905fbbd7aebf4975f44c43fc60d",
+      "lattice/spec/impact_tier4.py": "b9f88bae84552451d73234adae003ea8dad57b451759b88ed28a8303be976c11",
+      "dogfood/implement_probes.py": "44fa0d1daf26b79bf12e9b96f5b2f0f38f8ee162fe053a51e8cd4151a189e679",
+      "dogfood/implement_mutants.py": "370a6e31cd876f9f538af4c42642a1ca61e8a339dd5c328f8d1d33aa7b5c4820",
+      "tests/spec/test_impact_tier4.py": "98fcd43d030117eb95637e380d8d1b3fdbf13a081b483338e38454101dd74196",
+      "tests/studio/test_implement.py": "b19be20b5b0ac3789d09910585dc61cf589e2b9790deb9195eecfc0b1a55fdd3",
+      "tests/spec/fixtures/implement/ms.py": "591a03ed87c3d2721e507ace6c6d371923173f0f4dcd4602ce768fcece4b49e7"
+    }
+  },
+  "runner_defects": {
+    "file": "dogfood/implement_probes.py",
+    "argparse": "ap.add_argument('--stage', choices=('core',), default='core') at line 1081: '--stage streak' is rejected",
+    "not_run_rows": "not_run_rows() (lines 1069-1077) hard-codes PAg-MS and SO/SO3/SA/SL/SG as NOT RUN with the container-era reasons; no probe function, no --streak-ref/--changeset/--agent/--subset/--usd-cap/--parallel flags exist",
+    "docstring": "lines 14-15 say the Streak arm and PAg-MS are recorded NOT RUN, never described as passed",
+    "results_doc_confirms": "docs/results/2026-10-17-implement-verify-results.md section 9 last paragraph: '--stage streak is not implemented in implement_probes.py'"
+  },
+  "inputs_checked": {
+    "streak": "~/Documents/streak build/streak a0679e9 present (read-only; status shows the pre-existing ' M studio.toml' only)",
+    "changeset": "scratchpad/impact/changeset: 21 change dirs c01..c21 + READY; shasum -a 256 MANIFEST.sha256 = 52e0e541e2e2f1347f38d0c3f2000d68ecbe94d64e884d6bc02dfff7d523caa3 (matches the brief); c15 ref.diff is 0 bytes as the prereg says",
+    "planted_set": "found at scratchpad/e-planted (not scratchpad/impact/e-planted); not needed by the Spike E prereg; not hashed",
+    "docker": "daemon 29.4.0 up; pre-existing containers cyclops-scheduler, cyclops-ui, cyclops-stream (no lattice.owner label, not started by this node, not touched)"
+  },
+  "arms": {
+    "SO": "NOT RUN (no runner)", "SO3": "NOT RUN (no runner)", "SA": "NOT RUN (no runner)",
+    "SL": "NOT RUN (no runner)", "SG": "NOT RUN (no runner)", "PAg-MS": "NOT RUN (no runner)"
+  },
+  "model_calls": 0, "usd": 0.0, "containers_started": 0, "streak_writes": 0
+}

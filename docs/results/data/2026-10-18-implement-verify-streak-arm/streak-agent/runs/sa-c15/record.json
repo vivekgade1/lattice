@@ -1,0 +1,40 @@
+{
+ "agent": "claude",
+ "arm": "sa",
+ "change": "c15",
+ "claude": {
+  "calls": 0,
+  "not_logged_in": false,
+  "usage_limit": false
+ },
+ "cost_usd": 0.0,
+ "d": {
+  "rc": 0,
+  "seconds": 107.1,
+  "timed_out": false
+ },
+ "drift": {
+  "changed": [],
+  "new": [],
+  "removed": []
+ },
+ "eid": "i4ae1f8b4d3",
+ "empty_ref": true,
+ "implement": {
+  "rc": 0,
+  "seconds": 54.7,
+  "timed_out": false
+ },
+ "job": "sa-c15",
+ "leaked_containers": [],
+ "pnm": {
+  "applicable": false,
+  "head_unchanged": true,
+  "ok": true
+ },
+ "rc": 0,
+ "seconds": 163.4,
+ "token": "implp-sa-c15-1b7553",
+ "usd_cap": 4.82,
+ "worktrees_left": 0
+}

@@ -1,0 +1,1995 @@
+{
+ "diff": {
+  "rules": {
+   "added": [
+    {
+     "id": "R135",
+     "text": "Retry of failed pushes: at every nudger check after the user's daily pass of that local day, each of today's `failed` nudges (not dismissed, of a non-archived, non-deleted habit) is sent again to every device of the user, in habit id order, while `push_enabled` is true, the user has a device, the local time is outside the quiet hours and fewer than 3 of the user's nudges for that day are `sent`; it becomes `sent` (reason null) if at least one send succeeded, and otherwise stays `failed`."
+    }
+   ],
+   "changed": [],
+   "removed": [],
+   "unchanged": 148
+  },
+  "targets": {
+   "added": [
+    "scenario:nudger_retries_failed_pushes"
+   ],
+   "modified": [
+    "machine:Nudge.delivery"
+   ],
+   "removed": []
+  }
+ },
+ "input": {
+  "app": {
+   "configured": true,
+   "layers": "ACD"
+  },
+  "base": {
+   "requirements": "dcac6deb3ad3ec4ab7381af040cb86064aae00eb3ed38c05237657156fbad7b1",
+   "spec": "28dfc2e6c6a2aa27168079740d28a94de7f3efcb7cf8234d795d48b7960f5624",
+   "trace": "627a2b3f4c9cfafc3ad6cd5edb01f355fb76b53c248c629e7a77fd1bd8ee82ed"
+  },
+  "candidate": {
+   "requirements": "5e724cf22f9b55b524594cff433828c3132c77bf8ef6ba6346860ea075393e39",
+   "spec": "a30c8194ada5167bcc5b23034d6a265d3071b38f8722849cd6a916a4856cbd12",
+   "trace": "81010997a5f82df574c013cd4b624bb82edb694449d5314d6ff84891bd5312e6"
+  },
+  "change": null,
+  "inventory": {
+   "extract_sha256": "d51ef75340d54682a8bd2c3f40220e50c2ef31ae0eab17ef3ca68c9a39f89adc",
+   "stale": false,
+   "workflows_sha256": "af1383dbf5d51f876c61a282f23a2fb60d79f536af7542dfe48387e6f1c573a0"
+  },
+  "kind": "candidate",
+  "notes": []
+ },
+ "schema": "lattice.impact/1",
+ "summary": {
+  "kinds": {
+   "check_failure": 1,
+   "closure": 12,
+   "direct": 9
+  },
+  "note": "Which workflows fail is mostly not decidable before the change exists: a flow records the answers the app gives today, so it passes today by construction. Before an implementation only a changed invariant (tier 1, observed) and an exact-prefix contradiction (tier 2, determined) decide a workflow; every other flow listed is tier 3 'may_fail' (static, with unknowns), settled by tier 4 (Spike E, observed after the change).",
+  "tiers": {
+   "1": {
+    "failing": 1,
+    "flows": 0,
+    "resolved": 0
+   },
+   "2": {
+    "decidable": 0,
+    "determined": 0,
+    "flows": 0,
+    "undecidable": 3
+   },
+   "3": {
+    "flows": 2,
+    "locations": 21,
+    "unread": 1
+   }
+  },
+  "workflows": {
+   "t1_fail": 0,
+   "t2_fail": 0,
+   "t3_may_fail": 2
+  }
+ },
+ "tier1": {
+  "baseline": {
+   "failing": [],
+   "run": true,
+   "source": "run"
+  },
+  "counts": {
+   "baseline_drift": 0,
+   "by_label": {
+    "not_built_yet": 1
+   },
+   "by_layer": {
+    "D": 1
+   },
+   "failing": 1,
+   "flows_run": 59,
+   "resolved": 0,
+   "workflow_fails": 0
+  },
+  "failing": [
+   {
+    "also_fails_on_base": false,
+    "case": "nudger_retries_failed_pushes / step 4",
+    "code": null,
+    "endpoint": "service nudger",
+    "evidence": [
+     {
+      "at": "check:D:nudger_retries_failed_pushes / step 4",
+      "kind": "check",
+      "what": "[D silent] service nudger (nudger_retries_failed_pushes / step 4)"
+     },
+     {
+      "at": "spec:spec.py:1621",
+      "kind": "spec",
+      "what": "nudger_retries_failed_pushes step 4"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t1-726c02990f",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "D",
+    "line": 1621,
+    "observation": "runtime",
+    "problems": [
+     "service nudger did not bring about nudges where {'habit_id': '00000000-0000-4000-8000-000000000100', 'for_date': '2026-03-04'} count=1 equals {'kind': 'behind', 'delivery': 'sent', 'delivery_reason': None} within 30s (last observed: {\"nudges where {'habit_id': '00000000-0000-4000-8000-000000000100', 'for_date': '2026-03-04'}\": 1})",
+     "db nudges where {'habit_id': '00000000-0000-4000-8000-000000000100', 'for_date': '2026-03-04'}: delivery is 'failed', expected 'sent'"
+    ],
+    "rule": "scenario: nudger_retries_failed_pushes",
+    "rules": [
+     "R135"
+    ],
+    "summary": "[D silent] service nudger (nudger_retries_failed_pushes / step 4)",
+    "target": "scenario:nudger_retries_failed_pushes",
+    "tier": 1,
+    "verdict": "silent"
+   }
+  ],
+  "flows": [],
+  "flows_note": null,
+  "layers": "ACD",
+  "resolved": []
+ },
+ "tier2": {
+  "corpus": {
+   "baseline": "run",
+   "environment": null,
+   "flow_steps": 167,
+   "flows_note": null,
+   "scenario_steps": 462
+  },
+  "decidability": [
+   {
+    "kind": "target",
+    "reason": "invariant_or_machine",
+    "state": "undecidable",
+    "subject": "machine:Nudge.delivery"
+   },
+   {
+    "kind": "target",
+    "reason": "await_in_prefix",
+    "state": "undecidable",
+    "subject": "scenario:nudger_retries_failed_pushes"
+   },
+   {
+    "kind": "added",
+    "reason": "invariant_or_machine",
+    "state": "undecidable",
+    "subject": "rule:R135"
+   }
+  ],
+  "determined": [],
+  "flows": [],
+  "runtime_replay": {
+   "status": "not_applicable: 0 programs"
+  }
+ },
+ "tier3": {
+  "counts": {
+   "by_kind": {
+    "closure": 12,
+    "direct": 9,
+    "insertion": 0,
+    "table_peer": 0
+   },
+   "files": 7,
+   "flows_may_fail": 2,
+   "locations": 21,
+   "seeds": {
+    "machines": 1,
+    "routes": 2,
+    "tables": 0
+   },
+   "unread": 1
+  },
+  "external": {
+   "count": 0
+  },
+  "files": [
+   "internal/account/devices.go",
+   "internal/account/routes.go",
+   "internal/db/changeseq.go",
+   "internal/httpapi/body.go",
+   "internal/httpapi/registry.go",
+   "internal/nudges/nudger.go",
+   "internal/period/period.go"
+  ],
+  "flows": [
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2818e45412",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-c47cd54aa2",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/devices"
+    ],
+    "rules": [
+     "R135"
+    ],
+    "target": "flow:wf-2818e45412",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-801d529a0f",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-3641486afb",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "POST /v1/devices"
+    ],
+    "rules": [
+     "R135"
+    ],
+    "target": "flow:wf-801d529a0f",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   }
+  ],
+  "locations": [
+   {
+    "end_line": 32,
+    "evidence": [
+     {
+      "at": "code:internal/account/devices.go:29",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/account/devices.go",
+    "id": "t3-fd44db9851",
+    "kind": "closure",
+    "line": 29,
+    "rules": [
+     "R135"
+    ],
+    "symbol": "deviceBody",
+    "target": "scenario:nudger_retries_failed_pushes",
+    "tier": 3,
+    "via": [
+     "rule:R135 -> scenario:nudger_retries_failed_pushes / step 2 -> route:POST /v1/devices -> call:streak/internal/account:deviceBody -> code:internal/account/devices.go:29",
+     "scenario:nudger_retries_failed_pushes / step 3 -> route:POST /v1/devices -> call:streak/internal/account:deviceBody -> code:internal/account/devices.go:29"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 44,
+    "evidence": [
+     {
+      "at": "code:internal/account/devices.go:35",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/account/devices.go",
+    "id": "t3-928024b9d1",
+    "kind": "closure",
+    "line": 35,
+    "rules": [
+     "R135"
+    ],
+    "symbol": "requiredStr",
+    "target": "scenario:nudger_retries_failed_pushes",
+    "tier": 3,
+    "via": [
+     "rule:R135 -> scenario:nudger_retries_failed_pushes / step 2 -> route:POST /v1/devices -> call:streak/internal/account:requiredStr -> code:internal/account/devices.go:35",
+     "scenario:nudger_retries_failed_pushes / step 3 -> route:POST /v1/devices -> call:streak/internal/account:requiredStr -> code:internal/account/devices.go:35"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/account/devices.go:36",
+      "kind": "code",
+      "what": "param platform"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param app_version"
+     }
+    ],
+    "file": "internal/account/devices.go",
+    "id": "t3-a2c05734f5",
+    "kind": "direct",
+    "line": 36,
+    "rules": [
+     "R135"
+    ],
+    "symbol": null,
+    "target": "scenario:nudger_retries_failed_pushes",
+    "tier": 3,
+    "via": [
+     "rule:R135 -> scenario:nudger_retries_failed_pushes / step 2 -> route:POST /v1/devices -> param:app_version -> code:internal/account/devices.go:36",
+     "rule:R135 -> scenario:nudger_retries_failed_pushes / step 2 -> route:POST /v1/devices -> param:platform -> code:internal/account/devices.go:36",
+     "rule:R135 -> scenario:nudger_retries_failed_pushes / step 2 -> route:POST /v1/devices -> param:push_token -> code:internal/account/devices.go:36",
+     "rule:R135 -> scenario:nudger_retries_failed_pushes / step 2 -> route:POST /v1/devices -> param:timezone -> code:internal/account/devices.go:36",
+     "scenario:nudger_retries_failed_pushes / step 3 -> route:POST /v1/devices -> param:app_version -> code:internal/account/devices.go:36"
+    ],
+    "what": "param platform"
+   },
+   {
+    "end_line": 134,
+    "evidence": [
+     {
+      "at": "code:internal/account/devices.go:47",
+      "kind": "code",
+      "what": "handler declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler declaration"
+     }
+    ],
+    "file": "internal/account/devices.go",
+    "id": "t3-28d0eb8d11",
+    "kind": "direct",
+    "line": 47,
+    "rules": [
+     "R135"
+    ],
+    "symbol": "postDevice",
+    "target": "scenario:nudger_retries_failed_pushes",
+    "tier": 3,
+    "via": [
+     "rule:R135 -> scenario:nudger_retries_failed_pushes / step 2 -> route:POST /v1/devices -> handler:account.handler.postDevice -> code:internal/account/devices.go:47",
+     "scenario:nudger_retries_failed_pushes / step 3 -> route:POST /v1/devices -> handler:account.handler.postDevice -> code:internal/account/devices.go:47"
+    ],
+    "what": "handler declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/account/devices.go:53",
+      "kind": "code",
+      "what": "param installation_id"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param installation_id"
+     }
+    ],
+    "file": "internal/account/devices.go",
+    "id": "t3-af3b47a413",
+    "kind": "direct",
+    "line": 53,
+    "rules": [
+     "R135"
+    ],
+    "symbol": null,
+    "target": "scenario:nudger_retries_failed_pushes",
+    "tier": 3,
+    "via": [
+     "rule:R135 -> scenario:nudger_retries_failed_pushes / step 2 -> route:POST /v1/devices -> param:installation_id -> code:internal/account/devices.go:53",
+     "scenario:nudger_retries_failed_pushes / step 3 -> route:POST /v1/devices -> param:installation_id -> code:internal/account/devices.go:53"
+    ],
+    "what": "param installation_id"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/account/routes.go:21",
+      "kind": "code",
+      "what": "route registration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route registration"
+     }
+    ],
+    "file": "internal/account/routes.go",
+    "id": "t3-137e2e556b",
+    "kind": "direct",
+    "line": 21,
+    "rules": [
+     "R135"
+    ],
+    "symbol": null,
+    "target": "scenario:nudger_retries_failed_pushes",
+    "tier": 3,
+    "via": [
+     "rule:R135 -> scenario:nudger_retries_failed_pushes / step 1 -> route:PUT /v1/me -> registered -> code:internal/account/routes.go:21",
+     "scenario:nudger_retries_failed_pushes / step 1 -> route:PUT /v1/me -> registered -> code:internal/account/routes.go:21"
+    ],
+    "what": "route registration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/account/routes.go:23",
+      "kind": "code",
+      "what": "route registration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route registration"
+     }
+    ],
+    "file": "internal/account/routes.go",
+    "id": "t3-ec1105b5c2",
+    "kind": "direct",
+    "line": 23,
+    "rules": [
+     "R135"
+    ],
+    "symbol": null,
+    "target": "scenario:nudger_retries_failed_pushes",
+    "tier": 3,
+    "via": [
+     "rule:R135 -> scenario:nudger_retries_failed_pushes / step 2 -> route:POST /v1/devices -> registered -> code:internal/account/routes.go:23",
+     "scenario:nudger_retries_failed_pushes / step 3 -> route:POST /v1/devices -> registered -> code:internal/account/routes.go:23"
+    ],
+    "what": "route registration"
+   },
+   {
+    "end_line": 58,
+    "evidence": [
+     {
+      "at": "code:internal/account/routes.go:45",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/account/routes.go",
+    "id": "t3-7a1fc268b0",
+    "kind": "closure",
+    "line": 45,
+    "rules": [
+     "R135"
+    ],
+    "symbol": "me",
+    "target": "scenario:nudger_retries_failed_pushes",
+    "tier": 3,
+    "via": [
+     "rule:R135 -> scenario:nudger_retries_failed_pushes / step 1 -> route:PUT /v1/me -> call:streak/internal/account:handler.me -> code:internal/account/routes.go:45",
+     "scenario:nudger_retries_failed_pushes / step 1 -> route:PUT /v1/me -> call:streak/internal/account:handler.me -> code:internal/account/routes.go:45"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 131,
+    "evidence": [
+     {
+      "at": "code:internal/account/routes.go:73",
+      "kind": "code",
+      "what": "handler declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler declaration"
+     }
+    ],
+    "file": "internal/account/routes.go",
+    "id": "t3-98d3659247",
+    "kind": "direct",
+    "line": 73,
+    "rules": [
+     "R135"
+    ],
+    "symbol": "put",
+    "target": "scenario:nudger_retries_failed_pushes",
+    "tier": 3,
+    "via": [
+     "rule:R135 -> scenario:nudger_retries_failed_pushes / step 1 -> route:PUT /v1/me -> handler:account.handler.put -> code:internal/account/routes.go:73",
+     "scenario:nudger_retries_failed_pushes / step 1 -> route:PUT /v1/me -> handler:account.handler.put -> code:internal/account/routes.go:73"
+    ],
+    "what": "handler declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/account/routes.go:96",
+      "kind": "code",
+      "what": "param nudge_time"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "param nudge_time"
+     }
+    ],
+    "file": "internal/account/routes.go",
+    "id": "t3-79f4f77ab8",
+    "kind": "direct",
+    "line": 96,
+    "rules": [
+     "R135"
+    ],
+    "symbol": null,
+    "target": "scenario:nudger_retries_failed_pushes",
+    "tier": 3,
+    "via": [
+     "rule:R135 -> scenario:nudger_retries_failed_pushes / step 1 -> route:PUT /v1/me -> param:nudge_time -> code:internal/account/routes.go:96",
+     "scenario:nudger_retries_failed_pushes / step 1 -> route:PUT /v1/me -> param:nudge_time -> code:internal/account/routes.go:96"
+    ],
+    "what": "param nudge_time"
+   },
+   {
+    "end_line": 20,
+    "evidence": [
+     {
+      "at": "code:internal/db/changeseq.go:13",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/changeseq.go",
+    "id": "t3-465a763983",
+    "kind": "closure",
+    "line": 13,
+    "rules": [
+     "R135"
+    ],
+    "symbol": "LockUser",
+    "target": "scenario:nudger_retries_failed_pushes",
+    "tier": 3,
+    "via": [
+     "rule:R135 -> scenario:nudger_retries_failed_pushes / step 1 -> route:PUT /v1/me -> call:streak/internal/db:LockUser -> code:internal/db/changeseq.go:13",
+     "scenario:nudger_retries_failed_pushes / step 1 -> route:PUT /v1/me -> call:streak/internal/db:LockUser -> code:internal/db/changeseq.go:13"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 37,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/body.go:21",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/body.go",
+    "id": "t3-08063edfe0",
+    "kind": "closure",
+    "line": 21,
+    "rules": [
+     "R135"
+    ],
+    "symbol": "ReadBody",
+    "target": "scenario:nudger_retries_failed_pushes",
+    "tier": 3,
+    "via": [
+     "rule:R135 -> scenario:nudger_retries_failed_pushes / step 1 -> route:PUT /v1/me -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "rule:R135 -> scenario:nudger_retries_failed_pushes / step 2 -> route:POST /v1/devices -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "scenario:nudger_retries_failed_pushes / step 1 -> route:PUT /v1/me -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21",
+     "scenario:nudger_retries_failed_pushes / step 3 -> route:POST /v1/devices -> call:streak/internal/httpapi:ReadBody -> code:internal/httpapi/body.go:21"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 41,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:37",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-09c8025732",
+    "kind": "closure",
+    "line": 37,
+    "rules": [
+     "R135"
+    ],
+    "symbol": "CallerOf",
+    "target": "scenario:nudger_retries_failed_pushes",
+    "tier": 3,
+    "via": [
+     "rule:R135 -> scenario:nudger_retries_failed_pushes / step 1 -> route:PUT /v1/me -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "rule:R135 -> scenario:nudger_retries_failed_pushes / step 2 -> route:POST /v1/devices -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "scenario:nudger_retries_failed_pushes / step 1 -> route:PUT /v1/me -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "scenario:nudger_retries_failed_pushes / step 3 -> route:POST /v1/devices -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 47,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:45",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-d7e0a7a726",
+    "kind": "closure",
+    "line": 45,
+    "rules": [
+     "R135"
+    ],
+    "symbol": "Now",
+    "target": "scenario:nudger_retries_failed_pushes",
+    "tier": 3,
+    "via": [
+     "rule:R135 -> scenario:nudger_retries_failed_pushes / step 2 -> route:POST /v1/devices -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "scenario:nudger_retries_failed_pushes / step 3 -> route:POST /v1/devices -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 56,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:50",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-27a7544d23",
+    "kind": "closure",
+    "line": 50,
+    "rules": [
+     "R135"
+    ],
+    "symbol": "NowCtx",
+    "target": "scenario:nudger_retries_failed_pushes",
+    "tier": 3,
+    "via": [
+     "rule:R135 -> scenario:nudger_retries_failed_pushes / step 2 -> route:POST /v1/devices -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "scenario:nudger_retries_failed_pushes / step 3 -> route:POST /v1/devices -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 67,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:67",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-580cf76855",
+    "kind": "closure",
+    "line": 67,
+    "rules": [
+     "R135"
+    ],
+    "symbol": "Q",
+    "target": "scenario:nudger_retries_failed_pushes",
+    "tier": 3,
+    "via": [
+     "rule:R135 -> scenario:nudger_retries_failed_pushes / step 1 -> route:PUT /v1/me -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R135 -> scenario:nudger_retries_failed_pushes / step 2 -> route:POST /v1/devices -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "scenario:nudger_retries_failed_pushes / step 1 -> route:PUT /v1/me -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "scenario:nudger_retries_failed_pushes / step 3 -> route:POST /v1/devices -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 73,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:71",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-f5a9b52f6e",
+    "kind": "closure",
+    "line": 71,
+    "rules": [
+     "R135"
+    ],
+    "symbol": "Tx",
+    "target": "scenario:nudger_retries_failed_pushes",
+    "tier": 3,
+    "via": [
+     "rule:R135 -> scenario:nudger_retries_failed_pushes / step 1 -> route:PUT /v1/me -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "rule:R135 -> scenario:nudger_retries_failed_pushes / step 2 -> route:POST /v1/devices -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "scenario:nudger_retries_failed_pushes / step 1 -> route:PUT /v1/me -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71",
+     "scenario:nudger_retries_failed_pushes / step 3 -> route:POST /v1/devices -> call:streak/internal/httpapi:Deps.Tx -> code:internal/httpapi/registry.go:71"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/nudges/nudger.go:125",
+      "kind": "code",
+      "what": "edge evidence nudges.delivery"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "edge evidence nudges.delivery"
+     }
+    ],
+    "file": "internal/nudges/nudger.go",
+    "id": "t3-18897ae837",
+    "kind": "direct",
+    "line": 125,
+    "rules": [
+     "R123",
+     "R127",
+     "R135"
+    ],
+    "symbol": null,
+    "target": "machine:Nudge.delivery",
+    "tier": 3,
+    "via": [
+     "machine:Nudge.delivery -> machine writes -> machine edge -> code:internal/nudges/nudger.go:125",
+     "rule:R135 -> machine:Nudge.delivery -> machine edge -> code:internal/nudges/nudger.go:125"
+    ],
+    "what": "edge evidence nudges.delivery"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/nudges/nudger.go:180",
+      "kind": "code",
+      "what": "write of nudges.delivery"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "edge evidence nudges.delivery"
+     }
+    ],
+    "file": "internal/nudges/nudger.go",
+    "id": "t3-6201044f8e",
+    "kind": "direct",
+    "line": 180,
+    "rules": [
+     "R123",
+     "R127",
+     "R135"
+    ],
+    "symbol": null,
+    "target": "machine:Nudge.delivery",
+    "tier": 3,
+    "via": [
+     "machine:Nudge.delivery -> machine writes -> machine edge -> code:internal/nudges/nudger.go:180",
+     "machine:Nudge.delivery -> machine writes -> status_write:nudges.decideDeliveries -> code:internal/nudges/nudger.go:180",
+     "rule:R135 -> machine:Nudge.delivery -> machine edge -> code:internal/nudges/nudger.go:180",
+     "rule:R135 -> machine:Nudge.delivery -> status_write:nudges.decideDeliveries -> code:internal/nudges/nudger.go:180"
+    ],
+    "what": "write of nudges.delivery"
+   },
+   {
+    "end_line": 112,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:97",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-21d779a624",
+    "kind": "closure",
+    "line": 97,
+    "rules": [
+     "R135"
+    ],
+    "symbol": "Location",
+    "target": "scenario:nudger_retries_failed_pushes",
+    "tier": 3,
+    "via": [
+     "rule:R135 -> scenario:nudger_retries_failed_pushes / step 1 -> route:PUT /v1/me -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "rule:R135 -> scenario:nudger_retries_failed_pushes / step 2 -> route:POST /v1/devices -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "scenario:nudger_retries_failed_pushes / step 1 -> route:PUT /v1/me -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "scenario:nudger_retries_failed_pushes / step 3 -> route:POST /v1/devices -> call:streak/internal/period:Location -> code:internal/period/period.go:97"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 118,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:115",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-60109aca14",
+    "kind": "closure",
+    "line": 115,
+    "rules": [
+     "R135"
+    ],
+    "symbol": "ValidZone",
+    "target": "scenario:nudger_retries_failed_pushes",
+    "tier": 3,
+    "via": [
+     "rule:R135 -> scenario:nudger_retries_failed_pushes / step 1 -> route:PUT /v1/me -> call:streak/internal/period:ValidZone -> code:internal/period/period.go:115",
+     "rule:R135 -> scenario:nudger_retries_failed_pushes / step 2 -> route:POST /v1/devices -> call:streak/internal/period:ValidZone -> code:internal/period/period.go:115",
+     "scenario:nudger_retries_failed_pushes / step 1 -> route:PUT /v1/me -> call:streak/internal/period:ValidZone -> code:internal/period/period.go:115",
+     "scenario:nudger_retries_failed_pushes / step 3 -> route:POST /v1/devices -> call:streak/internal/period:ValidZone -> code:internal/period/period.go:115"
+    ],
+    "what": "call declaration"
+   }
+  ],
+  "stale": false,
+  "unread": [
+   {
+    "file": "internal/httpapi/registry.go",
+    "kind": "extract_unread",
+    "line": 51,
+    "reason": "interface dispatch: `d.Clock.Now(ctx)` has no single implementation in the module",
+    "what": "call"
+   }
+  ]
+ },
+ "tier4": {
+  "before": {
+   "failing_count": 1,
+   "flows_run": 59,
+   "matches_report": true
+  },
+  "counts": {
+   "failing_after": 0,
+   "flow_before_failed": 0,
+   "flow_changed": 0,
+   "flow_unchanged": 59,
+   "flows_run": 59,
+   "may_fail_unbacked": 0,
+   "regressions": 0,
+   "resolved": 1,
+   "still_failing": 0,
+   "t2_contradicted": 0,
+   "unexpected_regressions": 0,
+   "unreported": 0,
+   "workflow_fails": 0
+  },
+  "failing": [],
+  "flows": [
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-087fea1dbb",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-087fea1dbb",
+    "id": "t4-2931f10e3c",
+    "kind": "flow_unchanged",
+    "name": "create habits > read habits",
+    "rules": [],
+    "target": "flow:wf-087fea1dbb",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-09db39abfe",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-09db39abfe",
+    "id": "t4-9f50a6c59b",
+    "kind": "flow_unchanged",
+    "name": "create habits > read history",
+    "rules": [],
+    "target": "flow:wf-09db39abfe",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-0c6bdd7ab0",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-0c6bdd7ab0",
+    "id": "t4-1c885f053a",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read home",
+    "rules": [],
+    "target": "flow:wf-0c6bdd7ab0",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-11a98b3683",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-11a98b3683",
+    "id": "t4-e2d97e665d",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read completions",
+    "rules": [],
+    "target": "flow:wf-11a98b3683",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-12302559ed",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-12302559ed",
+    "id": "t4-2a985ce4a1",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read nudges",
+    "rules": [],
+    "target": "flow:wf-12302559ed",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-1e4314104c",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-1e4314104c",
+    "id": "t4-a859fd5339",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read habits",
+    "rules": [],
+    "target": "flow:wf-1e4314104c",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-21a2d02394",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-21a2d02394",
+    "id": "t4-58f062be50",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read history",
+    "rules": [],
+    "target": "flow:wf-21a2d02394",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2610c56483",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-2610c56483",
+    "id": "t4-4273ca9643",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read me",
+    "rules": [],
+    "target": "flow:wf-2610c56483",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2818e45412",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-2818e45412",
+    "id": "t4-3dfaac23ef",
+    "kind": "flow_unchanged",
+    "name": "create devices > delete devices",
+    "rules": [],
+    "target": "flow:wf-2818e45412",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2d3eecc464",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-2d3eecc464",
+    "id": "t4-61040e7738",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits",
+    "rules": [],
+    "target": "flow:wf-2d3eecc464",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2da750f4e8",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-2da750f4e8",
+    "id": "t4-f46b2b1605",
+    "kind": "flow_unchanged",
+    "name": "create habits > create batch",
+    "rules": [],
+    "target": "flow:wf-2da750f4e8",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2f54cb544b",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-2f54cb544b",
+    "id": "t4-7522d9c875",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read me",
+    "rules": [],
+    "target": "flow:wf-2f54cb544b",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3c5a04e0ae",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-3c5a04e0ae",
+    "id": "t4-3d86bfdff2",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read habits",
+    "rules": [],
+    "target": "flow:wf-3c5a04e0ae",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3d2436d2dd",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-3d2436d2dd",
+    "id": "t4-4a533ffe22",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read progress",
+    "rules": [],
+    "target": "flow:wf-3d2436d2dd",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3de8783507",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-3de8783507",
+    "id": "t4-bc43a91eb1",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read completions",
+    "rules": [],
+    "target": "flow:wf-3de8783507",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-45bfc39e84",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-45bfc39e84",
+    "id": "t4-8426b794fa",
+    "kind": "flow_unchanged",
+    "name": "create habits > read completions",
+    "rules": [],
+    "target": "flow:wf-45bfc39e84",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-4dfc4c5bed",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-4dfc4c5bed",
+    "id": "t4-b84f0fc36c",
+    "kind": "flow_unchanged",
+    "name": "create habits > read habits",
+    "rules": [],
+    "target": "flow:wf-4dfc4c5bed",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-4e49f96210",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-4e49f96210",
+    "id": "t4-999bed9b4b",
+    "kind": "flow_unchanged",
+    "name": "create habits > create batch",
+    "rules": [],
+    "target": "flow:wf-4e49f96210",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-52994a9544",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-52994a9544",
+    "id": "t4-abfc048024",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read history",
+    "rules": [],
+    "target": "flow:wf-52994a9544",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-597f2899e4",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-597f2899e4",
+    "id": "t4-2a3cf2a10a",
+    "kind": "flow_unchanged",
+    "name": "create habits > read completions",
+    "rules": [],
+    "target": "flow:wf-597f2899e4",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5a6bab46c9",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-5a6bab46c9",
+    "id": "t4-eb2b3781a6",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read sync",
+    "rules": [],
+    "target": "flow:wf-5a6bab46c9",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5cf3da443e",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-5cf3da443e",
+    "id": "t4-ac14b64d75",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read progress",
+    "rules": [],
+    "target": "flow:wf-5cf3da443e",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5eebdfc88b",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-5eebdfc88b",
+    "id": "t4-27855b8b1f",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read progress",
+    "rules": [],
+    "target": "flow:wf-5eebdfc88b",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-6a4cc7a302",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-6a4cc7a302",
+    "id": "t4-0ce52aaf22",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read home > dismiss nudges",
+    "rules": [],
+    "target": "flow:wf-6a4cc7a302",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-6c2282fd50",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-6c2282fd50",
+    "id": "t4-3a619fc723",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read habits",
+    "rules": [],
+    "target": "flow:wf-6c2282fd50",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-717a23507f",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-717a23507f",
+    "id": "t4-b81dbf0d6b",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read nudges",
+    "rules": [],
+    "target": "flow:wf-717a23507f",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-80123a60e5",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-80123a60e5",
+    "id": "t4-85854f059f",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read habits",
+    "rules": [],
+    "target": "flow:wf-80123a60e5",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-801d529a0f",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-801d529a0f",
+    "id": "t4-021eb02164",
+    "kind": "flow_unchanged",
+    "name": "create devices > delete devices",
+    "rules": [],
+    "target": "flow:wf-801d529a0f",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-8ae8af75df",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-8ae8af75df",
+    "id": "t4-0a37afe047",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read habits",
+    "rules": [],
+    "target": "flow:wf-8ae8af75df",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-8b2744d526",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-8b2744d526",
+    "id": "t4-37a77c8aa0",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits",
+    "rules": [],
+    "target": "flow:wf-8b2744d526",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-9ead6d0f00",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-9ead6d0f00",
+    "id": "t4-c4dd5a2aa1",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read history",
+    "rules": [],
+    "target": "flow:wf-9ead6d0f00",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a1793fed29",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-a1793fed29",
+    "id": "t4-f6bc0e569c",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits",
+    "rules": [],
+    "target": "flow:wf-a1793fed29",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a7ae5cb208",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-a7ae5cb208",
+    "id": "t4-42fc47ef3a",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions",
+    "rules": [],
+    "target": "flow:wf-a7ae5cb208",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a8966be4b8",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-a8966be4b8",
+    "id": "t4-d631ce2518",
+    "kind": "flow_unchanged",
+    "name": "create register > create login",
+    "rules": [],
+    "target": "flow:wf-a8966be4b8",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a9ac9b88a4",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-a9ac9b88a4",
+    "id": "t4-8358111868",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read sync",
+    "rules": [],
+    "target": "flow:wf-a9ac9b88a4",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b2acc9eac6",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-b2acc9eac6",
+    "id": "t4-2d00866129",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read completions",
+    "rules": [],
+    "target": "flow:wf-b2acc9eac6",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b595a756b6",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-b595a756b6",
+    "id": "t4-15fb9d99ca",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read home",
+    "rules": [],
+    "target": "flow:wf-b595a756b6",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b95fd71de1",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-b95fd71de1",
+    "id": "t4-190be5927b",
+    "kind": "flow_unchanged",
+    "name": "create habits > read home",
+    "rules": [],
+    "target": "flow:wf-b95fd71de1",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-bd46b71ee2",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-bd46b71ee2",
+    "id": "t4-782b4c8124",
+    "kind": "flow_unchanged",
+    "name": "create habits > read progress",
+    "rules": [],
+    "target": "flow:wf-bd46b71ee2",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-c00e2afaf3",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-c00e2afaf3",
+    "id": "t4-12f8c801ce",
+    "kind": "flow_unchanged",
+    "name": "create habits > read habits",
+    "rules": [],
+    "target": "flow:wf-c00e2afaf3",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-c675dd6cb3",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-c675dd6cb3",
+    "id": "t4-eab24d3d4a",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read sync",
+    "rules": [],
+    "target": "flow:wf-c675dd6cb3",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-cc7886ea28",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-cc7886ea28",
+    "id": "t4-6809546514",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits",
+    "rules": [],
+    "target": "flow:wf-cc7886ea28",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ce853d194f",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-ce853d194f",
+    "id": "t4-4229965607",
+    "kind": "flow_unchanged",
+    "name": "create habits > read sync",
+    "rules": [],
+    "target": "flow:wf-ce853d194f",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-cf27dadc73",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-cf27dadc73",
+    "id": "t4-5878e34622",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read home",
+    "rules": [],
+    "target": "flow:wf-cf27dadc73",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d06e3e8777",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-d06e3e8777",
+    "id": "t4-5adba447a9",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read nudges",
+    "rules": [],
+    "target": "flow:wf-d06e3e8777",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d2b6d84725",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-d2b6d84725",
+    "id": "t4-3a0e360245",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions",
+    "rules": [],
+    "target": "flow:wf-d2b6d84725",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d2fcd76bcd",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-d2fcd76bcd",
+    "id": "t4-d72cb23ad9",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read habits",
+    "rules": [],
+    "target": "flow:wf-d2fcd76bcd",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d650036584",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-d650036584",
+    "id": "t4-90d71c9f07",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read habits",
+    "rules": [],
+    "target": "flow:wf-d650036584",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d8340207d1",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-d8340207d1",
+    "id": "t4-ec4c4095bf",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read home",
+    "rules": [],
+    "target": "flow:wf-d8340207d1",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-dbac494b10",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-dbac494b10",
+    "id": "t4-77f0d4d3d3",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read progress",
+    "rules": [],
+    "target": "flow:wf-dbac494b10",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-de433cd704",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-de433cd704",
+    "id": "t4-be16adb885",
+    "kind": "flow_unchanged",
+    "name": "create habits > read progress",
+    "rules": [],
+    "target": "flow:wf-de433cd704",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-e3249cec66",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-e3249cec66",
+    "id": "t4-6c01f475dc",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > update habits > delete completions > delete habits",
+    "rules": [],
+    "target": "flow:wf-e3249cec66",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ee191140a0",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-ee191140a0",
+    "id": "t4-296f29670e",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read completions",
+    "rules": [],
+    "target": "flow:wf-ee191140a0",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f679309f8a",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-f679309f8a",
+    "id": "t4-c14e92707a",
+    "kind": "flow_unchanged",
+    "name": "create habits > read history",
+    "rules": [],
+    "target": "flow:wf-f679309f8a",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f67bf44692",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-f67bf44692",
+    "id": "t4-cbeeb59799",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits",
+    "rules": [],
+    "target": "flow:wf-f67bf44692",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f961306c88",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-f961306c88",
+    "id": "t4-ae246762f6",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read habits",
+    "rules": [],
+    "target": "flow:wf-f961306c88",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-fc7d0a0772",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-fc7d0a0772",
+    "id": "t4-ba3450bf06",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits",
+    "rules": [],
+    "target": "flow:wf-fc7d0a0772",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-fcf46753f5",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-fcf46753f5",
+    "id": "t4-c232b8a7d9",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read history",
+    "rules": [],
+    "target": "flow:wf-fcf46753f5",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ffaa047bf2",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-ffaa047bf2",
+    "id": "t4-8a0632bb11",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read sync",
+    "rules": [],
+    "target": "flow:wf-ffaa047bf2",
+    "tier": 4
+   }
+  ],
+  "implementation": {
+   "branch_build": "rebuild/i16dcd76eae",
+   "branch_spec": "implement/i16dcd76eae",
+   "build_tree": "fce7fd503be6fd8171cc71978d7a7a4f786be727",
+   "diff_sha256": "6c52b8e4e3e7b708ef3b8d8bab327807ecb793d8e8b82ff8827a28d516cdb28b",
+   "files": [
+    "internal/nudges/nudger.go"
+   ],
+   "spec_tree": "37873d2fae5cd552e3358a76413c424f5d926ae4"
+  },
+  "notes": [],
+  "owner": {
+   "checked": [
+    "branch",
+    "cached",
+    "head",
+    "refs",
+    "stash",
+    "status",
+    "worktrees"
+   ],
+   "untouched": true
+  },
+  "rebuild": {
+   "agent": "oracle",
+   "gates": [
+    {
+     "command": "./check.sh",
+     "exit_code": 0
+    }
+   ],
+   "model": null,
+   "rounds": 1,
+   "status": "passed"
+  },
+  "regressions": [],
+  "resolved": [
+   {
+    "case": "nudger_retries_failed_pushes / step 4",
+    "endpoint": "service nudger",
+    "evidence": [
+     {
+      "at": "check:D:nudger_retries_failed_pushes / step 4",
+      "kind": "check",
+      "what": "[D silent] service nudger (nudger_retries_failed_pushes / step 4)"
+     }
+    ],
+    "id": "t4-dc5fd65266",
+    "kind": "resolved",
+    "layer": "D",
+    "rule": "scenario: nudger_retries_failed_pushes",
+    "rules": [
+     "R135"
+    ],
+    "summary": "[D silent] service nudger (nudger_retries_failed_pushes / step 4)",
+    "target": "scenario:nudger_retries_failed_pushes",
+    "tier": 4
+   }
+  ],
+  "still_failing": [],
+  "t2_check": [],
+  "t2_confirmed": true,
+  "t3_vs_edit": {
+   "declarations": {
+    "listed": [
+     "internal/account/devices.go:deviceBody",
+     "internal/account/devices.go:handler.postDevice",
+     "internal/account/devices.go:requiredStr",
+     "internal/account/routes.go:Register",
+     "internal/account/routes.go:handler.me",
+     "internal/account/routes.go:handler.put",
+     "internal/db/changeseq.go:LockUser",
+     "internal/httpapi/body.go:ReadBody",
+     "internal/httpapi/registry.go:CallerOf",
+     "internal/httpapi/registry.go:Deps.Now",
+     "internal/httpapi/registry.go:Deps.NowCtx",
+     "internal/httpapi/registry.go:Deps.Q",
+     "internal/httpapi/registry.go:Deps.Tx",
+     "internal/period/period.go:Location",
+     "internal/period/period.go:ValidZone"
+    ],
+    "precision": 0.0,
+    "recall": 0.0,
+    "touched": [
+     "internal/nudges/nudger.go:passFor"
+    ]
+   },
+   "files": {
+    "hit": [
+     "internal/nudges/nudger.go"
+    ],
+    "listed": [
+     "internal/account/devices.go",
+     "internal/account/routes.go",
+     "internal/db/changeseq.go",
+     "internal/httpapi/body.go",
+     "internal/httpapi/registry.go",
+     "internal/nudges/nudger.go",
+     "internal/period/period.go"
+    ],
+    "missed": [],
+    "precision": 0.143,
+    "recall": 1.0,
+    "touched": [
+     "internal/nudges/nudger.go"
+    ]
+   },
+   "status": "run"
+  },
+  "verdict": "pass"
+ },
+ "tiers": {
+  "1": "run",
+  "2": "run",
+  "3": "run",
+  "4": "run"
+ }
+}

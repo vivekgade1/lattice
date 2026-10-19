@@ -1,0 +1,1467 @@
+[
+  {
+    "id": "SO",
+    "observed": {
+      "builds": 19,
+      "changes": 21,
+      "claude_cli_calls": 0,
+      "controls": 2,
+      "controls_nothing_to_build": "2/2",
+      "errors": [],
+      "flow_changes": {
+        "c03": 2,
+        "c08": 6
+      },
+      "flow_changes_total": 8,
+      "gate": {
+        "matches_report": "21/21",
+        "regression_zero": "21/21",
+        "resolved_exact": "19/19",
+        "unreported_zero": "21/21"
+      },
+      "passed": true,
+      "per_change": [
+        {
+          "change": "c01",
+          "counts_consistent": true,
+          "empty_ref": false,
+          "failing_after": 0,
+          "flow_changes": [],
+          "kind": "K1",
+          "matches_report": true,
+          "ok_expected": true,
+          "ok_matches": true,
+          "ok_regression": true,
+          "ok_resolved": true,
+          "ok_unreported": true,
+          "owner_untouched": true,
+          "rc": 0,
+          "rebuild_status": "passed",
+          "regressions": 0,
+          "resolved": 6,
+          "resolved_exact": true,
+          "resolved_matches_meta": true,
+          "rounds": 1,
+          "state": "run",
+          "still_failing": 0,
+          "t1_failing": 6,
+          "unreported": 0,
+          "verdict": "pass",
+          "workflow_fails": 0
+        },
+        {
+          "change": "c02",
+          "counts_consistent": true,
+          "empty_ref": false,
+          "failing_after": 0,
+          "flow_changes": [],
+          "kind": "K2",
+          "matches_report": true,
+          "ok_expected": true,
+          "ok_matches": true,
+          "ok_regression": true,
+          "ok_resolved": true,
+          "ok_unreported": true,
+          "owner_untouched": true,
+          "rc": 0,
+          "rebuild_status": "passed",
+          "regressions": 0,
+          "resolved": 1,
+          "resolved_exact": true,
+          "resolved_matches_meta": true,
+          "rounds": 1,
+          "state": "run",
+          "still_failing": 0,
+          "t1_failing": 1,
+          "unreported": 0,
+          "verdict": "pass",
+          "workflow_fails": 0
+        },
+        {
+          "change": "c03",
+          "counts_consistent": true,
+          "empty_ref": false,
+          "failing_after": 0,
+          "flow_changes": [
+            {
+              "flow": "wf-2818e45412",
+              "reported_as": "t3_may_fail",
+              "spec_backed": true
+            },
+            {
+              "flow": "wf-801d529a0f",
+              "reported_as": "t3_may_fail",
+              "spec_backed": true
+            }
+          ],
+          "kind": "K3",
+          "matches_report": true,
+          "ok_expected": true,
+          "ok_matches": true,
+          "ok_regression": true,
+          "ok_resolved": true,
+          "ok_unreported": true,
+          "owner_untouched": true,
+          "rc": 0,
+          "rebuild_status": "passed",
+          "regressions": 0,
+          "resolved": 3,
+          "resolved_exact": true,
+          "resolved_matches_meta": true,
+          "rounds": 1,
+          "state": "run",
+          "still_failing": 0,
+          "t1_failing": 3,
+          "unreported": 0,
+          "verdict": "pass",
+          "workflow_fails": 0
+        },
+        {
+          "change": "c04",
+          "counts_consistent": true,
+          "empty_ref": false,
+          "failing_after": 0,
+          "flow_changes": [],
+          "kind": "K4",
+          "matches_report": true,
+          "ok_expected": true,
+          "ok_matches": true,
+          "ok_regression": true,
+          "ok_resolved": true,
+          "ok_unreported": true,
+          "owner_untouched": true,
+          "rc": 0,
+          "rebuild_status": "passed",
+          "regressions": 0,
+          "resolved": 12,
+          "resolved_exact": true,
+          "resolved_matches_meta": true,
+          "rounds": 1,
+          "state": "run",
+          "still_failing": 0,
+          "t1_failing": 12,
+          "unreported": 0,
+          "verdict": "pass",
+          "workflow_fails": 0
+        },
+        {
+          "change": "c05",
+          "counts_consistent": true,
+          "empty_ref": false,
+          "failing_after": 0,
+          "flow_changes": [],
+          "kind": "K5",
+          "matches_report": true,
+          "ok_expected": true,
+          "ok_matches": true,
+          "ok_regression": true,
+          "ok_resolved": true,
+          "ok_unreported": true,
+          "owner_untouched": true,
+          "rc": 0,
+          "rebuild_status": "passed",
+          "regressions": 0,
+          "resolved": 1,
+          "resolved_exact": true,
+          "resolved_matches_meta": true,
+          "rounds": 1,
+          "state": "run",
+          "still_failing": 0,
+          "t1_failing": 1,
+          "unreported": 0,
+          "verdict": "pass",
+          "workflow_fails": 0
+        },
+        {
+          "change": "c06",
+          "counts_consistent": true,
+          "empty_ref": false,
+          "failing_after": 0,
+          "flow_changes": [],
+          "kind": "K6",
+          "matches_report": true,
+          "ok_expected": true,
+          "ok_matches": true,
+          "ok_regression": true,
+          "ok_resolved": true,
+          "ok_unreported": true,
+          "owner_untouched": true,
+          "rc": 0,
+          "rebuild_status": "passed",
+          "regressions": 0,
+          "resolved": 2,
+          "resolved_exact": true,
+          "resolved_matches_meta": true,
+          "rounds": 1,
+          "state": "run",
+          "still_failing": 0,
+          "t1_failing": 2,
+          "unreported": 0,
+          "verdict": "pass",
+          "workflow_fails": 0
+        },
+        {
+          "change": "c07",
+          "counts_consistent": true,
+          "empty_ref": false,
+          "failing_after": 0,
+          "flow_changes": [],
+          "kind": "K7",
+          "matches_report": true,
+          "ok_expected": true,
+          "ok_matches": true,
+          "ok_regression": true,
+          "ok_resolved": true,
+          "ok_unreported": true,
+          "owner_untouched": true,
+          "rc": 0,
+          "rebuild_status": "passed",
+          "regressions": 0,
+          "resolved": 1,
+          "resolved_exact": true,
+          "resolved_matches_meta": true,
+          "rounds": 1,
+          "state": "run",
+          "still_failing": 0,
+          "t1_failing": 1,
+          "unreported": 0,
+          "verdict": "pass",
+          "workflow_fails": 0
+        },
+        {
+          "change": "c08",
+          "counts_consistent": true,
+          "empty_ref": false,
+          "failing_after": 0,
+          "flow_changes": [
+            {
+              "flow": "wf-11a98b3683",
+              "reported_as": "t3_may_fail",
+              "spec_backed": true
+            },
+            {
+              "flow": "wf-3de8783507",
+              "reported_as": "t3_may_fail",
+              "spec_backed": true
+            },
+            {
+              "flow": "wf-45bfc39e84",
+              "reported_as": "t3_may_fail",
+              "spec_backed": true
+            },
+            {
+              "flow": "wf-597f2899e4",
+              "reported_as": "t3_may_fail",
+              "spec_backed": false
+            },
+            {
+              "flow": "wf-b2acc9eac6",
+              "reported_as": "t3_may_fail",
+              "spec_backed": true
+            },
+            {
+              "flow": "wf-ee191140a0",
+              "reported_as": "t3_may_fail",
+              "spec_backed": true
+            }
+          ],
+          "kind": "K8",
+          "matches_report": true,
+          "ok_expected": true,
+          "ok_matches": true,
+          "ok_regression": true,
+          "ok_resolved": true,
+          "ok_unreported": true,
+          "owner_untouched": true,
+          "rc": 0,
+          "rebuild_status": "passed",
+          "regressions": 0,
+          "resolved": 1,
+          "resolved_exact": true,
+          "resolved_matches_meta": true,
+          "rounds": 1,
+          "state": "run",
+          "still_failing": 0,
+          "t1_failing": 1,
+          "unreported": 0,
+          "verdict": "needs_owner",
+          "workflow_fails": 0
+        },
+        {
+          "change": "c09",
+          "counts_consistent": true,
+          "empty_ref": false,
+          "failing_after": 0,
+          "flow_changes": [],
+          "kind": "K9",
+          "matches_report": true,
+          "ok_expected": true,
+          "ok_matches": true,
+          "ok_regression": true,
+          "ok_resolved": true,
+          "ok_unreported": true,
+          "owner_untouched": true,
+          "rc": 0,
+          "rebuild_status": "passed",
+          "regressions": 0,
+          "resolved": 4,
+          "resolved_exact": true,
+          "resolved_matches_meta": true,
+          "rounds": 1,
+          "state": "run",
+          "still_failing": 0,
+          "t1_failing": 4,
+          "unreported": 0,
+          "verdict": "pass",
+          "workflow_fails": 0
+        },
+        {
+          "change": "c10",
+          "counts_consistent": true,
+          "empty_ref": false,
+          "failing_after": 0,
+          "flow_changes": [],
+          "kind": "K10",
+          "matches_report": true,
+          "ok_expected": true,
+          "ok_matches": true,
+          "ok_regression": true,
+          "ok_resolved": true,
+          "ok_unreported": true,
+          "owner_untouched": true,
+          "rc": 0,
+          "rebuild_status": "passed",
+          "regressions": 0,
+          "resolved": 2,
+          "resolved_exact": true,
+          "resolved_matches_meta": true,
+          "rounds": 1,
+          "state": "run",
+          "still_failing": 0,
+          "t1_failing": 2,
+          "unreported": 0,
+          "verdict": "pass",
+          "workflow_fails": 0
+        },
+        {
+          "change": "c11",
+          "counts_consistent": true,
+          "empty_ref": false,
+          "failing_after": 0,
+          "flow_changes": [],
+          "kind": "K11",
+          "matches_report": true,
+          "ok_expected": true,
+          "ok_matches": true,
+          "ok_regression": true,
+          "ok_resolved": true,
+          "ok_unreported": true,
+          "owner_untouched": true,
+          "rc": 0,
+          "rebuild_status": "passed",
+          "regressions": 0,
+          "resolved": 2,
+          "resolved_exact": true,
+          "resolved_matches_meta": true,
+          "rounds": 1,
+          "state": "run",
+          "still_failing": 0,
+          "t1_failing": 2,
+          "unreported": 0,
+          "verdict": "pass",
+          "workflow_fails": 0
+        },
+        {
+          "change": "c12",
+          "counts_consistent": true,
+          "empty_ref": false,
+          "failing_after": 0,
+          "flow_changes": [],
+          "kind": "K12",
+          "matches_report": true,
+          "ok_expected": true,
+          "ok_matches": true,
+          "ok_regression": true,
+          "ok_resolved": true,
+          "ok_unreported": true,
+          "owner_untouched": true,
+          "rc": 0,
+          "rebuild_status": "passed",
+          "regressions": 0,
+          "resolved": 1,
+          "resolved_exact": true,
+          "resolved_matches_meta": true,
+          "rounds": 1,
+          "state": "run",
+          "still_failing": 0,
+          "t1_failing": 1,
+          "unreported": 0,
+          "verdict": "pass",
+          "workflow_fails": 0
+        },
+        {
+          "change": "c13",
+          "counts_consistent": true,
+          "empty_ref": false,
+          "failing_after": 0,
+          "flow_changes": [],
+          "kind": "K13",
+          "matches_report": true,
+          "ok_expected": true,
+          "ok_matches": true,
+          "ok_regression": true,
+          "ok_resolved": true,
+          "ok_unreported": true,
+          "owner_untouched": true,
+          "rc": 0,
+          "rebuild_status": "passed",
+          "regressions": 0,
+          "resolved": 1,
+          "resolved_exact": true,
+          "resolved_matches_meta": true,
+          "rounds": 1,
+          "state": "run",
+          "still_failing": 0,
+          "t1_failing": 1,
+          "unreported": 0,
+          "verdict": "pass",
+          "workflow_fails": 0
+        },
+        {
+          "change": "c14",
+          "counts_consistent": true,
+          "empty_ref": false,
+          "failing_after": 0,
+          "flow_changes": [],
+          "kind": "K14",
+          "matches_report": true,
+          "ok_expected": true,
+          "ok_matches": true,
+          "ok_regression": true,
+          "ok_resolved": true,
+          "ok_unreported": true,
+          "owner_untouched": true,
+          "rc": 0,
+          "rebuild_status": "passed",
+          "regressions": 0,
+          "resolved": 2,
+          "resolved_exact": true,
+          "resolved_matches_meta": true,
+          "rounds": 1,
+          "state": "run",
+          "still_failing": 0,
+          "t1_failing": 2,
+          "unreported": 0,
+          "verdict": "pass",
+          "workflow_fails": 0
+        },
+        {
+          "change": "c15",
+          "counts_consistent": true,
+          "empty_ref": true,
+          "failing_after": 0,
+          "flow_changes": [],
+          "kind": "K15",
+          "matches_report": true,
+          "ok_expected": true,
+          "ok_matches": true,
+          "ok_regression": true,
+          "ok_resolved": null,
+          "ok_unreported": true,
+          "owner_untouched": true,
+          "rc": 0,
+          "rebuild_status": null,
+          "regressions": 0,
+          "resolved": 0,
+          "resolved_exact": true,
+          "resolved_matches_meta": true,
+          "rounds": null,
+          "state": "run",
+          "still_failing": 0,
+          "t1_failing": 0,
+          "unreported": 0,
+          "verdict": "nothing_to_build",
+          "workflow_fails": 0
+        },
+        {
+          "change": "c16",
+          "counts_consistent": true,
+          "empty_ref": false,
+          "failing_after": 0,
+          "flow_changes": [],
+          "kind": "K2",
+          "matches_report": true,
+          "ok_expected": true,
+          "ok_matches": true,
+          "ok_regression": true,
+          "ok_resolved": true,
+          "ok_unreported": true,
+          "owner_untouched": true,
+          "rc": 0,
+          "rebuild_status": "passed",
+          "regressions": 0,
+          "resolved": 1,
+          "resolved_exact": true,
+          "resolved_matches_meta": true,
+          "rounds": 1,
+          "state": "run",
+          "still_failing": 0,
+          "t1_failing": 1,
+          "unreported": 0,
+          "verdict": "pass",
+          "workflow_fails": 0
+        },
+        {
+          "change": "c17",
+          "counts_consistent": true,
+          "empty_ref": false,
+          "failing_after": 0,
+          "flow_changes": [],
+          "kind": "K10",
+          "matches_report": true,
+          "ok_expected": true,
+          "ok_matches": true,
+          "ok_regression": true,
+          "ok_resolved": true,
+          "ok_unreported": true,
+          "owner_untouched": true,
+          "rc": 0,
+          "rebuild_status": "passed",
+          "regressions": 0,
+          "resolved": 1,
+          "resolved_exact": true,
+          "resolved_matches_meta": true,
+          "rounds": 1,
+          "state": "run",
+          "still_failing": 0,
+          "t1_failing": 1,
+          "unreported": 0,
+          "verdict": "pass",
+          "workflow_fails": 0
+        },
+        {
+          "change": "c18",
+          "counts_consistent": true,
+          "empty_ref": false,
+          "failing_after": 0,
+          "flow_changes": [],
+          "kind": "K12",
+          "matches_report": true,
+          "ok_expected": true,
+          "ok_matches": true,
+          "ok_regression": true,
+          "ok_resolved": true,
+          "ok_unreported": true,
+          "owner_untouched": true,
+          "rc": 0,
+          "rebuild_status": "passed",
+          "regressions": 0,
+          "resolved": 1,
+          "resolved_exact": true,
+          "resolved_matches_meta": true,
+          "rounds": 1,
+          "state": "run",
+          "still_failing": 0,
+          "t1_failing": 1,
+          "unreported": 0,
+          "verdict": "pass",
+          "workflow_fails": 0
+        },
+        {
+          "change": "c19",
+          "counts_consistent": true,
+          "empty_ref": false,
+          "failing_after": 0,
+          "flow_changes": [],
+          "kind": "K14",
+          "matches_report": true,
+          "ok_expected": false,
+          "ok_matches": true,
+          "ok_regression": true,
+          "ok_resolved": true,
+          "ok_unreported": true,
+          "owner_untouched": true,
+          "rc": 0,
+          "rebuild_status": "passed",
+          "regressions": 0,
+          "resolved": 2,
+          "resolved_exact": true,
+          "resolved_matches_meta": true,
+          "rounds": 3,
+          "state": "run",
+          "still_failing": 0,
+          "t1_failing": 2,
+          "unreported": 0,
+          "verdict": "pass",
+          "workflow_fails": 0
+        },
+        {
+          "change": "c20",
+          "counts_consistent": true,
+          "empty_ref": false,
+          "failing_after": 0,
+          "flow_changes": [],
+          "kind": "K4",
+          "matches_report": true,
+          "ok_expected": false,
+          "ok_matches": true,
+          "ok_regression": true,
+          "ok_resolved": true,
+          "ok_unreported": true,
+          "owner_untouched": true,
+          "rc": 0,
+          "rebuild_status": "passed",
+          "regressions": 0,
+          "resolved": 3,
+          "resolved_exact": true,
+          "resolved_matches_meta": true,
+          "rounds": 3,
+          "state": "run",
+          "still_failing": 0,
+          "t1_failing": 3,
+          "unreported": 0,
+          "verdict": "pass",
+          "workflow_fails": 0
+        },
+        {
+          "change": "c21",
+          "counts_consistent": true,
+          "empty_ref": true,
+          "failing_after": 0,
+          "flow_changes": [],
+          "kind": "K11",
+          "matches_report": true,
+          "ok_expected": true,
+          "ok_matches": true,
+          "ok_regression": true,
+          "ok_resolved": null,
+          "ok_unreported": true,
+          "owner_untouched": true,
+          "rc": 0,
+          "rebuild_status": null,
+          "regressions": 0,
+          "resolved": 0,
+          "resolved_exact": true,
+          "resolved_matches_meta": true,
+          "rounds": null,
+          "state": "run",
+          "still_failing": 0,
+          "t1_failing": 0,
+          "unreported": 0,
+          "verdict": "nothing_to_build",
+          "workflow_fails": 0
+        }
+      ],
+      "prediction_hits": {
+        "controls_nothing_to_build": true,
+        "flow_changes_by_change": true,
+        "flow_reported_as_all_t3_may_fail": true,
+        "rebuild_round1_builds": false,
+        "spec_backed_2_to_8_of_8": true,
+        "verdict_fail_0": true,
+        "verdict_needs_owner_0_to_2": true,
+        "verdict_pass_17_to_19": true
+      },
+      "round1_builds": "17/19",
+      "spec_backed": "7/8",
+      "verdicts": {
+        "needs_owner": 1,
+        "nothing_to_build": 2,
+        "pass": 18
+      }
+    },
+    "pass": true,
+    "predicted": {
+      "controls": "c15 and c21 (empty ref.diff) nothing_to_build",
+      "flow_changes": {
+        "c03": 2,
+        "c08": 6
+      },
+      "flow_reported_as": "all t3_may_fail, 0 unreported, 0 workflow_fails",
+      "rebuild_round1_builds": "all builds pass in round 1 (19/19)",
+      "spec_backed": "2-8 of 8",
+      "verdicts": "pass 17-19, needs_owner 0-2, fail 0"
+    },
+    "probe": "Streak, oracle: 21 held-out changes, the frozen D engine for the report, --agent oracle --ref-diff <c>/ref.diff",
+    "ran": true
+  },
+  {
+    "id": "SO3",
+    "observed": {
+      "declarations_equal": "3/19",
+      "declarations_equal_u0": "16/19",
+      "file_exact": "21/21",
+      "micro_file_recall": 0.864,
+      "micro_file_recall_matches_D": true,
+      "micro_file_recall_n": "19/22",
+      "micro_file_recall_predicted": 0.864,
+      "passed": true,
+      "per_change": [
+        {
+          "change": "c01",
+          "declarations": {
+            "equal": false,
+            "only_in_tier4": [],
+            "only_in_truth": [
+              "internal/habits/routes.go:Register"
+            ],
+            "precision": 0.017,
+            "recall": 1.0
+          },
+          "declarations_u0": {
+            "equal": true,
+            "only_in_tier4": [],
+            "only_in_truth": [],
+            "precision": 0.017,
+            "recall": 1.0
+          },
+          "edited": 1,
+          "empty_ref": false,
+          "file_exact": true,
+          "hit_edited": 1,
+          "only_in_tier4": [],
+          "only_in_truth": [],
+          "other_files_touched": [],
+          "precision": 0.071,
+          "recall": 1.0,
+          "t3_listed": 14,
+          "touched": [
+            "internal/habits/routes.go"
+          ],
+          "truth": [
+            "internal/habits/routes.go"
+          ]
+        },
+        {
+          "change": "c02",
+          "declarations": {
+            "equal": false,
+            "only_in_tier4": [],
+            "only_in_truth": [
+              "internal/completions/routes.go:Register"
+            ],
+            "precision": 0.024,
+            "recall": 1.0
+          },
+          "declarations_u0": {
+            "equal": true,
+            "only_in_tier4": [],
+            "only_in_truth": [],
+            "precision": 0.024,
+            "recall": 1.0
+          },
+          "edited": 1,
+          "empty_ref": false,
+          "file_exact": true,
+          "hit_edited": 1,
+          "only_in_tier4": [],
+          "only_in_truth": [],
+          "other_files_touched": [],
+          "precision": 0.1,
+          "recall": 1.0,
+          "t3_listed": 10,
+          "touched": [
+            "internal/completions/routes.go"
+          ],
+          "truth": [
+            "internal/completions/routes.go"
+          ]
+        },
+        {
+          "change": "c03",
+          "declarations": {
+            "equal": false,
+            "only_in_tier4": [],
+            "only_in_truth": [
+              "internal/account/devices.go:requiredStr"
+            ],
+            "precision": 0.158,
+            "recall": 0.75
+          },
+          "declarations_u0": {
+            "equal": true,
+            "only_in_tier4": [],
+            "only_in_truth": [],
+            "precision": 0.158,
+            "recall": 0.75
+          },
+          "edited": 2,
+          "empty_ref": false,
+          "file_exact": true,
+          "hit_edited": 2,
+          "only_in_tier4": [],
+          "only_in_truth": [],
+          "other_files_touched": [],
+          "precision": 0.25,
+          "recall": 1.0,
+          "t3_listed": 8,
+          "touched": [
+            "internal/account/devices.go",
+            "internal/db/models.go"
+          ],
+          "truth": [
+            "internal/account/devices.go",
+            "internal/db/models.go"
+          ]
+        },
+        {
+          "change": "c04",
+          "declarations": {
+            "equal": true,
+            "only_in_tier4": [],
+            "only_in_truth": [],
+            "precision": 0.026,
+            "recall": 0.5
+          },
+          "declarations_u0": {
+            "equal": true,
+            "only_in_tier4": [],
+            "only_in_truth": [],
+            "precision": 0.026,
+            "recall": 0.5
+          },
+          "edited": 1,
+          "empty_ref": false,
+          "file_exact": true,
+          "hit_edited": 1,
+          "only_in_tier4": [],
+          "only_in_truth": [],
+          "other_files_touched": [],
+          "precision": 0.125,
+          "recall": 1.0,
+          "t3_listed": 8,
+          "touched": [
+            "internal/progress/compute.go"
+          ],
+          "truth": [
+            "internal/progress/compute.go"
+          ]
+        },
+        {
+          "change": "c05",
+          "declarations": {
+            "equal": false,
+            "only_in_tier4": [],
+            "only_in_truth": [
+              "internal/nudges/nudger.go:Loop",
+              "internal/nudges/nudger.go:decideDeliveries"
+            ],
+            "precision": 0.0,
+            "recall": 0.0
+          },
+          "declarations_u0": {
+            "equal": false,
+            "only_in_tier4": [],
+            "only_in_truth": [
+              "internal/nudges/nudger.go:decideDeliveries"
+            ],
+            "precision": 0.0,
+            "recall": 0.0
+          },
+          "edited": 1,
+          "empty_ref": false,
+          "file_exact": true,
+          "hit_edited": 1,
+          "only_in_tier4": [],
+          "only_in_truth": [],
+          "other_files_touched": [],
+          "precision": 0.143,
+          "recall": 1.0,
+          "t3_listed": 7,
+          "touched": [
+            "internal/nudges/nudger.go"
+          ],
+          "truth": [
+            "internal/nudges/nudger.go"
+          ]
+        },
+        {
+          "change": "c06",
+          "declarations": {
+            "equal": false,
+            "only_in_tier4": [],
+            "only_in_truth": [
+              "internal/nudges/nudger.go:decideDeliveries",
+              "internal/nudges/nudger.go:passFor"
+            ],
+            "precision": 0.0,
+            "recall": null
+          },
+          "declarations_u0": {
+            "equal": false,
+            "only_in_tier4": [],
+            "only_in_truth": [
+              "internal/nudges/nudger.go:decideDeliveries"
+            ],
+            "precision": 0.0,
+            "recall": null
+          },
+          "edited": 1,
+          "empty_ref": false,
+          "file_exact": true,
+          "hit_edited": 1,
+          "only_in_tier4": [],
+          "only_in_truth": [],
+          "other_files_touched": [],
+          "precision": 0.071,
+          "recall": 1.0,
+          "t3_listed": 14,
+          "touched": [
+            "internal/nudges/nudger.go"
+          ],
+          "truth": [
+            "internal/nudges/nudger.go"
+          ]
+        },
+        {
+          "change": "c07",
+          "declarations": {
+            "equal": false,
+            "only_in_tier4": [],
+            "only_in_truth": [
+              "internal/account/devices.go:handler.postDevice"
+            ],
+            "precision": 0.25,
+            "recall": 1.0
+          },
+          "declarations_u0": {
+            "equal": true,
+            "only_in_tier4": [],
+            "only_in_truth": [],
+            "precision": 0.25,
+            "recall": 1.0
+          },
+          "edited": 1,
+          "empty_ref": false,
+          "file_exact": true,
+          "hit_edited": 1,
+          "only_in_tier4": [],
+          "only_in_truth": [],
+          "other_files_touched": [],
+          "precision": 0.333,
+          "recall": 1.0,
+          "t3_listed": 3,
+          "touched": [
+            "internal/account/devices.go"
+          ],
+          "truth": [
+            "internal/account/devices.go"
+          ]
+        },
+        {
+          "change": "c08",
+          "declarations": {
+            "equal": false,
+            "only_in_tier4": [],
+            "only_in_truth": [
+              "internal/completions/routes.go:handler.create",
+              "internal/completions/routes.go:handler.remove"
+            ],
+            "precision": 0.08,
+            "recall": 1.0
+          },
+          "declarations_u0": {
+            "equal": true,
+            "only_in_tier4": [],
+            "only_in_truth": [],
+            "precision": 0.08,
+            "recall": 1.0
+          },
+          "edited": 1,
+          "empty_ref": false,
+          "file_exact": true,
+          "hit_edited": 1,
+          "only_in_tier4": [],
+          "only_in_truth": [],
+          "other_files_touched": [],
+          "precision": 0.125,
+          "recall": 1.0,
+          "t3_listed": 8,
+          "touched": [
+            "internal/completions/routes.go"
+          ],
+          "truth": [
+            "internal/completions/routes.go"
+          ]
+        },
+        {
+          "change": "c09",
+          "declarations": {
+            "equal": false,
+            "only_in_tier4": [],
+            "only_in_truth": [
+              "internal/account/devices.go:handler.deleteDevice",
+              "internal/account/devices.go:handler.postDevice"
+            ],
+            "precision": 0.083,
+            "recall": 1.0
+          },
+          "declarations_u0": {
+            "equal": true,
+            "only_in_tier4": [],
+            "only_in_truth": [],
+            "precision": 0.083,
+            "recall": 1.0
+          },
+          "edited": 2,
+          "empty_ref": false,
+          "file_exact": true,
+          "hit_edited": 2,
+          "only_in_tier4": [],
+          "only_in_truth": [],
+          "other_files_touched": [],
+          "precision": 0.4,
+          "recall": 1.0,
+          "t3_listed": 5,
+          "touched": [
+            "internal/account/devices.go",
+            "internal/account/routes.go"
+          ],
+          "truth": [
+            "internal/account/devices.go",
+            "internal/account/routes.go"
+          ]
+        },
+        {
+          "change": "c10",
+          "declarations": {
+            "equal": true,
+            "only_in_tier4": [],
+            "only_in_truth": [],
+            "precision": 0.022,
+            "recall": 1.0
+          },
+          "declarations_u0": {
+            "equal": true,
+            "only_in_tier4": [],
+            "only_in_truth": [],
+            "precision": 0.022,
+            "recall": 1.0
+          },
+          "edited": 1,
+          "empty_ref": false,
+          "file_exact": true,
+          "hit_edited": 1,
+          "only_in_tier4": [],
+          "only_in_truth": [],
+          "other_files_touched": [],
+          "precision": 0.091,
+          "recall": 1.0,
+          "t3_listed": 11,
+          "touched": [
+            "internal/completions/routes.go"
+          ],
+          "truth": [
+            "internal/completions/routes.go"
+          ]
+        },
+        {
+          "change": "c11",
+          "declarations": {
+            "equal": false,
+            "only_in_tier4": [],
+            "only_in_truth": [
+              "internal/completions/routes.go:Input"
+            ],
+            "precision": 0.018,
+            "recall": 1.0
+          },
+          "declarations_u0": {
+            "equal": true,
+            "only_in_tier4": [],
+            "only_in_truth": [],
+            "precision": 0.018,
+            "recall": 1.0
+          },
+          "edited": 1,
+          "empty_ref": false,
+          "file_exact": true,
+          "hit_edited": 1,
+          "only_in_tier4": [],
+          "only_in_truth": [],
+          "other_files_touched": [],
+          "precision": 0.067,
+          "recall": 1.0,
+          "t3_listed": 15,
+          "touched": [
+            "internal/completions/routes.go"
+          ],
+          "truth": [
+            "internal/completions/routes.go"
+          ]
+        },
+        {
+          "change": "c12",
+          "declarations": {
+            "equal": false,
+            "only_in_tier4": [],
+            "only_in_truth": [
+              "internal/progress/routes.go:Register"
+            ],
+            "precision": 0.038,
+            "recall": 1.0
+          },
+          "declarations_u0": {
+            "equal": true,
+            "only_in_tier4": [],
+            "only_in_truth": [],
+            "precision": 0.038,
+            "recall": 1.0
+          },
+          "edited": 1,
+          "empty_ref": false,
+          "file_exact": true,
+          "hit_edited": 1,
+          "only_in_tier4": [],
+          "only_in_truth": [],
+          "other_files_touched": [],
+          "precision": 0.167,
+          "recall": 1.0,
+          "t3_listed": 6,
+          "touched": [
+            "internal/progress/routes.go"
+          ],
+          "truth": [
+            "internal/progress/routes.go"
+          ]
+        },
+        {
+          "change": "c13",
+          "declarations": {
+            "equal": false,
+            "only_in_tier4": [],
+            "only_in_truth": [
+              "internal/sync/routes.go:Register"
+            ],
+            "precision": 0.067,
+            "recall": 1.0
+          },
+          "declarations_u0": {
+            "equal": true,
+            "only_in_tier4": [],
+            "only_in_truth": [],
+            "precision": 0.067,
+            "recall": 1.0
+          },
+          "edited": 1,
+          "empty_ref": false,
+          "file_exact": true,
+          "hit_edited": 1,
+          "only_in_tier4": [],
+          "only_in_truth": [],
+          "other_files_touched": [],
+          "precision": 0.2,
+          "recall": 1.0,
+          "t3_listed": 5,
+          "touched": [
+            "internal/sync/routes.go"
+          ],
+          "truth": [
+            "internal/sync/routes.go"
+          ]
+        },
+        {
+          "change": "c14",
+          "declarations": {
+            "equal": false,
+            "only_in_tier4": [],
+            "only_in_truth": [
+              "internal/nudges/nudger.go:Deps",
+              "internal/nudges/nudger.go:RunDailyPass"
+            ],
+            "precision": 0.0,
+            "recall": null
+          },
+          "declarations_u0": {
+            "equal": true,
+            "only_in_tier4": [],
+            "only_in_truth": [],
+            "precision": 0.0,
+            "recall": null
+          },
+          "edited": 1,
+          "empty_ref": false,
+          "file_exact": true,
+          "hit_edited": 0,
+          "only_in_tier4": [],
+          "only_in_truth": [],
+          "other_files_touched": [],
+          "precision": 0.0,
+          "recall": 0.0,
+          "t3_listed": 10,
+          "touched": [
+            "internal/nudges/nudger.go"
+          ],
+          "truth": [
+            "internal/nudges/nudger.go"
+          ]
+        },
+        {
+          "change": "c15",
+          "empty_ref": true,
+          "file_exact": true,
+          "status": "not_applicable: no edit"
+        },
+        {
+          "change": "c16",
+          "declarations": {
+            "equal": false,
+            "only_in_tier4": [],
+            "only_in_truth": [
+              "internal/habits/routes.go:Register"
+            ],
+            "precision": 0.028,
+            "recall": 1.0
+          },
+          "declarations_u0": {
+            "equal": true,
+            "only_in_tier4": [],
+            "only_in_truth": [],
+            "precision": 0.028,
+            "recall": 1.0
+          },
+          "edited": 1,
+          "empty_ref": false,
+          "file_exact": true,
+          "hit_edited": 1,
+          "only_in_tier4": [],
+          "only_in_truth": [],
+          "other_files_touched": [],
+          "precision": 0.125,
+          "recall": 1.0,
+          "t3_listed": 8,
+          "touched": [
+            "internal/habits/routes.go"
+          ],
+          "truth": [
+            "internal/habits/routes.go"
+          ]
+        },
+        {
+          "change": "c17",
+          "declarations": {
+            "equal": true,
+            "only_in_tier4": [],
+            "only_in_truth": [],
+            "precision": 0.038,
+            "recall": 1.0
+          },
+          "declarations_u0": {
+            "equal": true,
+            "only_in_tier4": [],
+            "only_in_truth": [],
+            "precision": 0.038,
+            "recall": 1.0
+          },
+          "edited": 1,
+          "empty_ref": false,
+          "file_exact": true,
+          "hit_edited": 1,
+          "only_in_tier4": [],
+          "only_in_truth": [],
+          "other_files_touched": [],
+          "precision": 0.167,
+          "recall": 1.0,
+          "t3_listed": 6,
+          "touched": [
+            "internal/progress/routes.go"
+          ],
+          "truth": [
+            "internal/progress/routes.go"
+          ]
+        },
+        {
+          "change": "c18",
+          "declarations": {
+            "equal": false,
+            "only_in_tier4": [],
+            "only_in_truth": [
+              "internal/auth/routes.go:validEmail"
+            ],
+            "precision": 0.0,
+            "recall": 0.0
+          },
+          "declarations_u0": {
+            "equal": true,
+            "only_in_tier4": [],
+            "only_in_truth": [],
+            "precision": 0.0,
+            "recall": 0.0
+          },
+          "edited": 2,
+          "empty_ref": false,
+          "file_exact": true,
+          "hit_edited": 1,
+          "only_in_tier4": [],
+          "only_in_truth": [],
+          "other_files_touched": [],
+          "precision": 0.25,
+          "recall": 0.5,
+          "t3_listed": 4,
+          "touched": [
+            "internal/account/routes.go",
+            "internal/auth/routes.go"
+          ],
+          "truth": [
+            "internal/account/routes.go",
+            "internal/auth/routes.go"
+          ]
+        },
+        {
+          "change": "c19",
+          "declarations": {
+            "equal": false,
+            "only_in_tier4": [],
+            "only_in_truth": [
+              "internal/nudges/nudger.go:decideDeliveries"
+            ],
+            "precision": 0.0,
+            "recall": null
+          },
+          "declarations_u0": {
+            "equal": false,
+            "only_in_tier4": [],
+            "only_in_truth": [
+              "internal/nudges/nudger.go:decideDeliveries"
+            ],
+            "precision": 0.0,
+            "recall": null
+          },
+          "edited": 1,
+          "empty_ref": false,
+          "file_exact": true,
+          "hit_edited": 0,
+          "only_in_tier4": [],
+          "only_in_truth": [],
+          "other_files_touched": [],
+          "precision": 0.0,
+          "recall": 0.0,
+          "t3_listed": 7,
+          "touched": [
+            "internal/nudges/nudger.go"
+          ],
+          "truth": [
+            "internal/nudges/nudger.go"
+          ]
+        },
+        {
+          "change": "c20",
+          "declarations": {
+            "equal": false,
+            "only_in_tier4": [],
+            "only_in_truth": [
+              "internal/account/routes.go:PrefsJSON",
+              "internal/account/routes.go:handler.me"
+            ],
+            "precision": 0.0,
+            "recall": 0.0
+          },
+          "declarations_u0": {
+            "equal": true,
+            "only_in_tier4": [],
+            "only_in_truth": [],
+            "precision": 0.0,
+            "recall": 0.0
+          },
+          "edited": 1,
+          "empty_ref": false,
+          "file_exact": true,
+          "hit_edited": 1,
+          "only_in_tier4": [],
+          "only_in_truth": [],
+          "other_files_touched": [],
+          "precision": 0.2,
+          "recall": 1.0,
+          "t3_listed": 5,
+          "touched": [
+            "internal/account/routes.go"
+          ],
+          "truth": [
+            "internal/account/routes.go"
+          ]
+        },
+        {
+          "change": "c21",
+          "empty_ref": true,
+          "file_exact": true,
+          "status": "not_applicable: no edit"
+        }
+      ]
+    },
+    "pass": true,
+    "predicted": "file sets equal per change; micro file recall 0.864 (D measured)",
+    "probe": "t3_vs_edit vs D's PT3 truth (same edits, D's impact_truth go/parser tool)",
+    "ran": true
+  },
+  {
+    "id": "SO-rep",
+    "observed": [
+      {
+        "change": "c01",
+        "differing_keys": [
+          "rebuild"
+        ],
+        "equal": false
+      },
+      {
+        "change": "c03",
+        "differing_keys": [],
+        "equal": true
+      },
+      {
+        "change": "c08",
+        "differing_keys": [],
+        "equal": true
+      }
+    ],
+    "pass": null,
+    "predicted": "equal",
+    "probe": "determinism of the before/after runs: the same change twice, canonical Tier 4 bytes (report-only; prereg risk 4)",
+    "ran": true
+  },
+  {
+    "id": "SL",
+    "observed": {
+      "fault": {
+        "containers_at_fault": 1,
+        "leaked": [],
+        "rc": 3,
+        "state": "not_run:error: SideError: the after run exited 1: /spec/check.py\", line 2250, in _on_server\n    _run_layers(spec, report, run, app_factory, dbs, opts)\n    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/vivekgade/Documents/lattice-ea/lattice/spec/check.py\", line 2333, in _run_layers\n    _run_scenario(spec, scenario, report, app_factory, make_db, monitor, login, runtime,\n    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                  harness, clock)  # fmt: skip\n                  ^^^^^^^^^^^^^^^\n  File \"/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/w-e-run/s/jobs/fault-c14/fault/sitecustomize.py\", line 32, in boom\n    raise RuntimeError(\"injected fault in the after run\")\nRuntimeError: injected fault in the after run"
+      },
+      "leaked_after_stage": [],
+      "leaked_per_run": {},
+      "runs": 24
+    },
+    "pass": true,
+    "predicted": "0",
+    "probe": "LEAK on the Streak arm: lattice- containers per change and after the stage, plus a fault run (the after run raises)",
+    "ran": true
+  },
+  {
+    "id": "SG",
+    "observed": {
+      "failing": [],
+      "passed": true,
+      "runs": "25/25",
+      "streak_after": {
+        "branch": "main",
+        "head": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "status": [
+          " M studio.toml"
+        ]
+      },
+      "streak_before": {
+        "branch": "main",
+        "head": "a0db033af7c51d90fda4ff1d35e10d2f3aa90662",
+        "status": [
+          " M studio.toml"
+        ]
+      },
+      "streak_checkout_unchanged": true
+    },
+    "pass": true,
+    "predicted": "all 0",
+    "probe": "PG and PNM on every Streak run (scratch clone); the owner's Streak checkout git status --short unchanged",
+    "ran": true
+  }
+]

@@ -1,0 +1,3348 @@
+{
+ "diff": {
+  "rules": {
+   "added": [],
+   "changed": [
+    {
+     "new": "R95",
+     "new_text": "`GET /v1/habits/{id}/progress` answers 200 `{habit_id, period, period_start, period_end, target, done, days_elapsed, days_left, rate_per_day, rate_per_period, required_per_day, required_per_period, projected, status}`, computed exactly by the rules of this section, all dates being local dates of the user.",
+     "old": "R95",
+     "old_text": "`GET /v1/habits/{id}/progress` answers 200 `{habit_id, period, period_start, period_end, target, done, days_elapsed, days_remaining, rate_per_day, rate_per_period, required_per_day, required_per_period, projected, status}`, computed exactly by the rules of this section, all dates being local dates of the user."
+    },
+    {
+     "new": "R100",
+     "new_text": "`days_elapsed` = `E = t - as + 1` (today included) and `days_left` = `R = ae - t` (days after today).",
+     "old": "R100",
+     "old_text": "`days_elapsed` = `E = t - as + 1` (today included) and `days_remaining` = `R = ae - t` (days after today)."
+    },
+    {
+     "new": "R107",
+     "new_text": "A habit that has not started (`t < start_date`) answers the period containing `start_date`, with `D = 0`, `days_elapsed = 0`, `days_left = A`, `C = A`, both current rates 0, `projected = 0`, the required rates `h(target, A)` and `h(target*L, A)`, and `status = \"not_started\"`.",
+     "old": "R107",
+     "old_text": "A habit that has not started (`t < start_date`) answers the period containing `start_date`, with `D = 0`, `days_elapsed = 0`, `days_remaining = A`, `C = A`, both current rates 0, `projected = 0`, the required rates `h(target, A)` and `h(target*L, A)`, and `status = \"not_started\"`."
+    },
+    {
+     "new": "R108",
+     "new_text": "A habit whose `end_date` is before today answers the period containing `end_date`, computed as if `t = end_date` with `open_today = 0` (so `days_left = 0`, `C = 0`), and its status is `achieved` or `unreachable`.",
+     "old": "R108",
+     "old_text": "A habit whose `end_date` is before today answers the period containing `end_date`, computed as if `t = end_date` with `open_today = 0` (so `days_remaining = 0`, `C = 0`), and its status is `achieved` or `unreachable`."
+    },
+    {
+     "new": "R109",
+     "new_text": "Example (user in America/New_York, clock 2026-03-04T12:00:00Z, so today is Wednesday 2026-03-04): a weekly habit with target 3 started 2026-03-02 with one check-in dated 2026-03-02 answers `period_start` 2026-03-02, `period_end` 2026-03-08, `target` 3, `done` 1, `days_elapsed` 3, `days_left` 4, `rate_per_day` 0.33, `rate_per_period` 2.33, `required_per_day` 0.4, `required_per_period` 2.8, `projected` 2, `status` `behind`.",
+     "old": "R109",
+     "old_text": "Example (user in America/New_York, clock 2026-03-04T12:00:00Z, so today is Wednesday 2026-03-04): a weekly habit with target 3 started 2026-03-02 with one check-in dated 2026-03-02 answers `period_start` 2026-03-02, `period_end` 2026-03-08, `target` 3, `done` 1, `days_elapsed` 3, `days_remaining` 4, `rate_per_day` 0.33, `rate_per_period` 2.33, `required_per_day` 0.4, `required_per_period` 2.8, `projected` 2, `status` `behind`."
+    },
+    {
+     "new": "R112",
+     "new_text": "Example (same user and clock): a monthly habit with target 10 started 2026-03-01 with check-ins dated March 1, 2 and 3 has `target` 10, `done` 3, `days_elapsed` 4, `days_left` 27, `projected` 23 and `status` `on_track`.",
+     "old": "R112",
+     "old_text": "Example (same user and clock): a monthly habit with target 10 started 2026-03-01 with check-ins dated March 1, 2 and 3 has `target` 10, `done` 3, `days_elapsed` 4, `days_remaining` 27, `projected` 23 and `status` `on_track`."
+    },
+    {
+     "new": "R113",
+     "new_text": "Example (timezone): at clock 2026-03-09T02:00:00Z it is still Sunday 2026-03-08 22:00 in America/New_York, so that user's current week is 2026-03-02 to 2026-03-08 with `days_left` 0, while for a user in UTC it is Monday 2026-03-09 and a new week.",
+     "old": "R113",
+     "old_text": "Example (timezone): at clock 2026-03-09T02:00:00Z it is still Sunday 2026-03-08 22:00 in America/New_York, so that user's current week is 2026-03-02 to 2026-03-08 with `days_remaining` 0, while for a user in UTC it is Monday 2026-03-09 and a new week."
+    }
+   ],
+   "removed": [],
+   "unchanged": 141
+  },
+  "targets": {
+   "added": [],
+   "modified": [
+    "scenario:home_lists_habits_with_progress",
+    "scenario:progress_after_end_date",
+    "scenario:progress_check_in_today_closes_today",
+    "scenario:progress_end_date_inside_the_period",
+    "scenario:progress_example_behind",
+    "scenario:progress_example_monthly_on_track",
+    "scenario:progress_example_pro_rated_start",
+    "scenario:progress_example_unreachable",
+    "scenario:progress_follows_the_test_clock",
+    "scenario:progress_not_started",
+    "scenario:progress_period_bounds",
+    "scenario:progress_timezone_example"
+   ],
+   "removed": []
+  }
+ },
+ "input": {
+  "app": {
+   "configured": true,
+   "layers": "ACD"
+  },
+  "base": {
+   "requirements": "dcac6deb3ad3ec4ab7381af040cb86064aae00eb3ed38c05237657156fbad7b1",
+   "spec": "28dfc2e6c6a2aa27168079740d28a94de7f3efcb7cf8234d795d48b7960f5624",
+   "trace": "627a2b3f4c9cfafc3ad6cd5edb01f355fb76b53c248c629e7a77fd1bd8ee82ed"
+  },
+  "candidate": {
+   "requirements": "a08b570fceca61e6597c2bd821c188b45b3b3c0ce6e00c1707374b7d317bd50e",
+   "spec": "d843203f3f567144ef6ec5a2349e8013b1841fc9a47bac0248e2462ba85544ff",
+   "trace": "bc6df3f3bb2a3432754483b03fd4ab0c8d1a2f8b92bce71266e9c557ebbfd0e9"
+  },
+  "change": null,
+  "inventory": {
+   "extract_sha256": "d51ef75340d54682a8bd2c3f40220e50c2ef31ae0eab17ef3ca68c9a39f89adc",
+   "stale": false,
+   "workflows_sha256": "af1383dbf5d51f876c61a282f23a2fb60d79f536af7542dfe48387e6f1c573a0"
+  },
+  "kind": "candidate",
+  "notes": []
+ },
+ "schema": "lattice.impact/1",
+ "summary": {
+  "kinds": {
+   "check_failure": 12,
+   "closure": 34,
+   "direct": 4
+  },
+  "note": "Which workflows fail is mostly not decidable before the change exists: a flow records the answers the app gives today, so it passes today by construction. Before an implementation only a changed invariant (tier 1, observed) and an exact-prefix contradiction (tier 2, determined) decide a workflow; every other flow listed is tier 3 'may_fail' (static, with unknowns), settled by tier 4 (Spike E, observed after the change).",
+  "tiers": {
+   "1": {
+    "failing": 12,
+    "flows": 0,
+    "resolved": 0
+   },
+   "2": {
+    "decidable": 0,
+    "determined": 0,
+    "flows": 0,
+    "undecidable": 19
+   },
+   "3": {
+    "flows": 16,
+    "locations": 38,
+    "unread": 16
+   }
+  },
+  "workflows": {
+   "t1_fail": 0,
+   "t2_fail": 0,
+   "t3_may_fail": 16
+  }
+ },
+ "tier1": {
+  "baseline": {
+   "failing": [],
+   "run": true,
+   "source": "run"
+  },
+  "counts": {
+   "baseline_drift": 0,
+   "by_label": {
+    "not_built_yet": 12
+   },
+   "by_layer": {
+    "D": 12
+   },
+   "failing": 12,
+   "flows_run": 59,
+   "resolved": 0,
+   "workflow_fails": 0
+  },
+  "failing": [
+   {
+    "also_fails_on_base": false,
+    "case": "home_lists_habits_with_progress / step 1",
+    "code": null,
+    "endpoint": "GET /v1/home",
+    "evidence": [
+     {
+      "at": "check:D:home_lists_habits_with_progress / step 1",
+      "kind": "check",
+      "what": "[D silent] GET /v1/home as ann (home_lists_habits_with_progress / step 1)"
+     },
+     {
+      "at": "spec:spec.py:1391",
+      "kind": "spec",
+      "what": "home_lists_habits_with_progress step 1"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t1-417608f208",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "D",
+    "line": 1391,
+    "observation": "runtime",
+    "problems": [
+     "body: expected {'today': '2026-03-04', 'habits': [{'id': '00000000-0000-4000-8000-000000000100', 'name': 'a', 'version': 1, 'progress': {'habit_id': '00000000-0000-4000-8000-000000000100', 'period': 'week', 'period_start': '2026-03-02', 'period_end': '2026-03-08', 'target': 3, 'done': 1, 'days_elapsed': 3, 'days_left': 4, 'rate_per_day': 0.33, 'rate_per_period': 2.33, 'required_per_day': 0.4, 'required_per_period': 2.8, 'projected': 2, 'status': 'behind'}}, {'id': '00000000-0000-4000-8000-000000000103', 'name': 'd', 'progress': {'habit_id': '00000000-0000-4000-8000-000000000103', 'done': 0, 'status': 'behind'}}], 'nudges': [{'id': '00000000-0000-4000-8000-000000000501', 'habit_id': '00000000-0000-4000-8000-000000000100', 'kind': 'behind', 'message': 'Behind: do 2 more in the next 5 day(s). Needs 2.80 per week, you are at 2.33.'}, {'id': '00000000-0000-4000-8000-000000000500', 'habit_id': '00000000-0000-4000-8000-000000000103', 'kind': 'behind', 'message': 'm500'}]} within {'habits': [{'id': '00000000-0000-4000-8000-000000000100', 'name': 'a', 'description': None, 'target_count': 3, 'period': 'week', 'start_date': '2026-03-02', 'end_date': None, 'archived': False, 'version': 1, 'created_at': '2026-03-01T00:00:00Z', 'updated_at': '2026-03-01T00:00:00Z', 'progress': {'habit_id': '00000000-0000-4000-8000-000000000100', 'period': 'week', 'period_start': '2026-03-02', 'period_end': '2026-03-08', 'target': 3, 'done': 1, 'days_elapsed': 3, 'days_remaining': 4, 'rate_per_day': 0.33, 'rate_per_period': 2.33, 'required_per_day': 0.4, 'required_per_period': 2.8, 'projected': 2, 'status': 'behind'}}, {'id': '00000000-0000-4000-8000-000000000103', 'name': 'd', 'description': None, 'target_count': 3, 'period': 'week', 'start_date': '2026-03-02', 'end_date': None, 'archived': False, 'version': 1, 'created_at': '2026-03-01T00:00:00Z', 'updated_at': '2026-03-01T00:00:00Z', 'progress': {'habit_id': '00000000-0000-4000-8000-000000000103', 'period': 'week', 'period_start': '2026-03-02', 'period_end': '2026-03-08', 'target': 3, 'done': 0, 'days_elapsed': 3, 'days_remaining': 4, 'rate_per_day': 0, 'rate_per_period': 0, 'required_per_day': 0.6, 'required_per_period': 4.2, 'projected': 0, 'status': 'behind'}}], 'nudges': [{'id': '00000000-0000-4000-8000-000000000501', 'habit_id': '00000000-0000-4000-8000-000000000100', 'for_date': '2026-03-04', 'kind': 'behind', 'message': 'Behind: do 2 more in the next 5 day(s). Needs 2.80 per week, you are at 2.33.', 'delivery': 'pending', 'delivery_reason': None, 'dismissed_at': None}, {'id': '00000000-0000-4000-8000-000000000500', 'habit_id': '00000000-0000-4000-8000-000000000103', 'for_date': '2026-03-04', 'kind': 'behind', 'message': 'm500', 'delivery': 'pending', 'delivery_reason': None, 'dismissed_at': None}], 'today': '2026-03-04'}"
+    ],
+    "rule": "scenario: home_lists_habits_with_progress",
+    "rules": [
+     "R114"
+    ],
+    "summary": "[D silent] GET /v1/home as ann (home_lists_habits_with_progress / step 1)",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 1,
+    "verdict": "silent"
+   },
+   {
+    "also_fails_on_base": false,
+    "case": "progress_after_end_date / step 1",
+    "code": null,
+    "endpoint": "GET /v1/habits/00000000-0000-4000-8000-000000000100/progress",
+    "evidence": [
+     {
+      "at": "check:D:progress_after_end_date / step 1",
+      "kind": "check",
+      "what": "[D silent] GET /v1/habits/00000000-0000-4000-8000-000000000100/progress as ann (progress_after_end_date / step 1)"
+     },
+     {
+      "at": "spec:spec.py:1322",
+      "kind": "spec",
+      "what": "progress_after_end_date step 1"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t1-3a85984057",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "D",
+    "line": 1322,
+    "observation": "runtime",
+    "problems": [
+     "body: expected {'period_start': '2026-02-23', 'period_end': '2026-03-01', 'target': 2, 'done': 1, 'days_elapsed': 3, 'days_left': 0, 'rate_per_day': 0.33, 'rate_per_period': 2.33, 'required_per_day': None, 'required_per_period': None, 'projected': 1, 'status': 'unreachable'} within {'habit_id': '00000000-0000-4000-8000-000000000100', 'period': 'week', 'period_start': '2026-02-23', 'period_end': '2026-03-01', 'target': 2, 'done': 1, 'days_elapsed': 3, 'days_remaining': 0, 'rate_per_day': 0.33, 'rate_per_period': 2.33, 'required_per_day': None, 'required_per_period': None, 'projected': 1, 'status': 'unreachable'}"
+    ],
+    "rule": "scenario: progress_after_end_date",
+    "rules": [
+     "R105",
+     "R108"
+    ],
+    "summary": "[D silent] GET /v1/habits/00000000-0000-4000-8000-000000000100/progress as ann (progress_after_end_date / step 1)",
+    "target": "scenario:progress_after_end_date",
+    "tier": 1,
+    "verdict": "silent"
+   },
+   {
+    "also_fails_on_base": false,
+    "case": "progress_check_in_today_closes_today / step 1",
+    "code": null,
+    "endpoint": "GET /v1/habits/00000000-0000-4000-8000-000000000100/progress",
+    "evidence": [
+     {
+      "at": "check:D:progress_check_in_today_closes_today / step 1",
+      "kind": "check",
+      "what": "[D silent] GET /v1/habits/00000000-0000-4000-8000-000000000100/progress as ann (progress_check_in_today_closes_today / step 1)"
+     },
+     {
+      "at": "code:internal/progress/routes.go:19",
+      "kind": "code",
+      "what": "registration of GET /v1/habits/00000000-0000-4000-8000-000000000100/progress"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t1-89baa43291",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "D",
+    "line": 19,
+    "observation": "runtime",
+    "problems": [
+     "body: expected {'habit_id': '00000000-0000-4000-8000-000000000100', 'done': 1, 'days_elapsed': 3, 'days_left': 4, 'required_per_day': 0.5, 'required_per_period': 3.5, 'projected': 2, 'status': 'behind'} within {'habit_id': '00000000-0000-4000-8000-000000000100', 'period': 'week', 'period_start': '2026-03-02', 'period_end': '2026-03-08', 'target': 3, 'done': 1, 'days_elapsed': 3, 'days_remaining': 4, 'rate_per_day': 0.33, 'rate_per_period': 2.33, 'required_per_day': 0.5, 'required_per_period': 3.5, 'projected': 2, 'status': 'behind'}"
+    ],
+    "rule": "scenario: progress_check_in_today_closes_today",
+    "rules": [
+     "R101"
+    ],
+    "summary": "[D silent] GET /v1/habits/00000000-0000-4000-8000-000000000100/progress as ann (progress_check_in_today_closes_today / step 1)",
+    "target": "scenario:progress_check_in_today_closes_today",
+    "tier": 1,
+    "verdict": "silent"
+   },
+   {
+    "also_fails_on_base": false,
+    "case": "progress_end_date_inside_the_period / step 1",
+    "code": null,
+    "endpoint": "GET /v1/habits/00000000-0000-4000-8000-000000000100/progress",
+    "evidence": [
+     {
+      "at": "check:D:progress_end_date_inside_the_period / step 1",
+      "kind": "check",
+      "what": "[D silent] GET /v1/habits/00000000-0000-4000-8000-000000000100/progress as ann (progress_end_date_inside_the_period / step 1)"
+     },
+     {
+      "at": "code:internal/progress/routes.go:19",
+      "kind": "code",
+      "what": "registration of GET /v1/habits/00000000-0000-4000-8000-000000000100/progress"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t1-2e6f33d875",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "D",
+    "line": 19,
+    "observation": "runtime",
+    "problems": [
+     "body: expected {'habit_id': '00000000-0000-4000-8000-000000000100', 'period_start': '2026-03-02', 'period_end': '2026-03-08', 'target': 2, 'done': 0, 'days_elapsed': 3, 'days_left': 1, 'required_per_day': 1.0, 'required_per_period': 7.0, 'projected': 0, 'status': 'behind'} within {'habit_id': '00000000-0000-4000-8000-000000000100', 'period': 'week', 'period_start': '2026-03-02', 'period_end': '2026-03-08', 'target': 2, 'done': 0, 'days_elapsed': 3, 'days_remaining': 1, 'rate_per_day': 0, 'rate_per_period': 0, 'required_per_day': 1, 'required_per_period': 7, 'projected': 0, 'status': 'behind'}"
+    ],
+    "rule": "scenario: progress_end_date_inside_the_period",
+    "rules": [
+     "R97",
+     "R98"
+    ],
+    "summary": "[D silent] GET /v1/habits/00000000-0000-4000-8000-000000000100/progress as ann (progress_end_date_inside_the_period / step 1)",
+    "target": "scenario:progress_end_date_inside_the_period",
+    "tier": 1,
+    "verdict": "silent"
+   },
+   {
+    "also_fails_on_base": false,
+    "case": "progress_example_behind / step 1",
+    "code": null,
+    "endpoint": "GET /v1/habits/00000000-0000-4000-8000-000000000100/progress",
+    "evidence": [
+     {
+      "at": "check:D:progress_example_behind / step 1",
+      "kind": "check",
+      "what": "[D silent] GET /v1/habits/00000000-0000-4000-8000-000000000100/progress as ann (progress_example_behind / step 1)"
+     },
+     {
+      "at": "code:internal/progress/routes.go:19",
+      "kind": "code",
+      "what": "registration of GET /v1/habits/00000000-0000-4000-8000-000000000100/progress"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t1-eb9838449c",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "D",
+    "line": 19,
+    "observation": "runtime",
+    "problems": [
+     "body: expected {'habit_id': '00000000-0000-4000-8000-000000000100', 'period': 'week', 'period_start': '2026-03-02', 'period_end': '2026-03-08', 'target': 3, 'done': 1, 'days_elapsed': 3, 'days_left': 4, 'rate_per_day': 0.33, 'rate_per_period': 2.33, 'required_per_day': 0.4, 'required_per_period': 2.8, 'projected': 2, 'status': 'behind'} within {'habit_id': '00000000-0000-4000-8000-000000000100', 'period': 'week', 'period_start': '2026-03-02', 'period_end': '2026-03-08', 'target': 3, 'done': 1, 'days_elapsed': 3, 'days_remaining': 4, 'rate_per_day': 0.33, 'rate_per_period': 2.33, 'required_per_day': 0.4, 'required_per_period': 2.8, 'projected': 2, 'status': 'behind'}"
+    ],
+    "rule": "scenario: progress_example_behind",
+    "rules": [
+     "R44",
+     "R46",
+     "R95",
+     "R96",
+     "R99",
+     "R100",
+     "R101",
+     "R104",
+     "R106",
+     "R109"
+    ],
+    "summary": "[D silent] GET /v1/habits/00000000-0000-4000-8000-000000000100/progress as ann (progress_example_behind / step 1)",
+    "target": "scenario:progress_example_behind",
+    "tier": 1,
+    "verdict": "silent"
+   },
+   {
+    "also_fails_on_base": false,
+    "case": "progress_example_monthly_on_track / step 1",
+    "code": null,
+    "endpoint": "GET /v1/habits/00000000-0000-4000-8000-000000000100/progress",
+    "evidence": [
+     {
+      "at": "check:D:progress_example_monthly_on_track / step 1",
+      "kind": "check",
+      "what": "[D silent] GET /v1/habits/00000000-0000-4000-8000-000000000100/progress as ann (progress_example_monthly_on_track / step 1)"
+     },
+     {
+      "at": "code:internal/progress/routes.go:19",
+      "kind": "code",
+      "what": "registration of GET /v1/habits/00000000-0000-4000-8000-000000000100/progress"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t1-bde1088378",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "D",
+    "line": 19,
+    "observation": "runtime",
+    "problems": [
+     "body: expected {'habit_id': '00000000-0000-4000-8000-000000000100', 'period': 'month', 'period_start': '2026-03-01', 'period_end': '2026-03-31', 'target': 10, 'done': 3, 'days_elapsed': 4, 'days_left': 27, 'rate_per_day': 0.75, 'rate_per_period': 23.25, 'required_per_day': 0.25, 'required_per_period': 7.75, 'projected': 23, 'status': 'on_track'} within {'habit_id': '00000000-0000-4000-8000-000000000100', 'period': 'month', 'period_start': '2026-03-01', 'period_end': '2026-03-31', 'target': 10, 'done': 3, 'days_elapsed': 4, 'days_remaining': 27, 'rate_per_day': 0.75, 'rate_per_period': 23.25, 'required_per_day': 0.25, 'required_per_period': 7.75, 'projected': 23, 'status': 'on_track'}"
+    ],
+    "rule": "scenario: progress_example_monthly_on_track",
+    "rules": [
+     "R46",
+     "R95",
+     "R99",
+     "R102",
+     "R103",
+     "R104",
+     "R112"
+    ],
+    "summary": "[D silent] GET /v1/habits/00000000-0000-4000-8000-000000000100/progress as ann (progress_example_monthly_on_track / step 1)",
+    "target": "scenario:progress_example_monthly_on_track",
+    "tier": 1,
+    "verdict": "silent"
+   },
+   {
+    "also_fails_on_base": false,
+    "case": "progress_example_pro_rated_start / step 1",
+    "code": null,
+    "endpoint": "GET /v1/habits/00000000-0000-4000-8000-000000000100/progress",
+    "evidence": [
+     {
+      "at": "check:D:progress_example_pro_rated_start / step 1",
+      "kind": "check",
+      "what": "[D silent] GET /v1/habits/00000000-0000-4000-8000-000000000100/progress as ann (progress_example_pro_rated_start / step 1)"
+     },
+     {
+      "at": "code:internal/progress/routes.go:19",
+      "kind": "code",
+      "what": "registration of GET /v1/habits/00000000-0000-4000-8000-000000000100/progress"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t1-7d142b55ff",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "D",
+    "line": 19,
+    "observation": "runtime",
+    "problems": [
+     "body: expected {'habit_id': '00000000-0000-4000-8000-000000000100', 'period_start': '2026-03-02', 'period_end': '2026-03-08', 'target': 3, 'done': 0, 'days_elapsed': 1, 'days_left': 4, 'rate_per_day': 0, 'rate_per_period': 0, 'required_per_day': 0.6, 'required_per_period': 4.2, 'projected': 0, 'status': 'on_track'} within {'habit_id': '00000000-0000-4000-8000-000000000100', 'period': 'week', 'period_start': '2026-03-02', 'period_end': '2026-03-08', 'target': 3, 'done': 0, 'days_elapsed': 1, 'days_remaining': 4, 'rate_per_day': 0, 'rate_per_period': 0, 'required_per_day': 0.6, 'required_per_period': 4.2, 'projected': 0, 'status': 'on_track'}"
+    ],
+    "rule": "scenario: progress_example_pro_rated_start",
+    "rules": [
+     "R97",
+     "R98",
+     "R106",
+     "R110"
+    ],
+    "summary": "[D silent] GET /v1/habits/00000000-0000-4000-8000-000000000100/progress as ann (progress_example_pro_rated_start / step 1)",
+    "target": "scenario:progress_example_pro_rated_start",
+    "tier": 1,
+    "verdict": "silent"
+   },
+   {
+    "also_fails_on_base": false,
+    "case": "progress_example_unreachable / step 1",
+    "code": null,
+    "endpoint": "GET /v1/habits/00000000-0000-4000-8000-000000000100/progress",
+    "evidence": [
+     {
+      "at": "check:D:progress_example_unreachable / step 1",
+      "kind": "check",
+      "what": "[D silent] GET /v1/habits/00000000-0000-4000-8000-000000000100/progress as ann (progress_example_unreachable / step 1)"
+     },
+     {
+      "at": "code:internal/progress/routes.go:19",
+      "kind": "code",
+      "what": "registration of GET /v1/habits/00000000-0000-4000-8000-000000000100/progress"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t1-62746c1c8e",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "D",
+    "line": 19,
+    "observation": "runtime",
+    "problems": [
+     "body: expected {'habit_id': '00000000-0000-4000-8000-000000000100', 'target': 6, 'done': 0, 'days_elapsed': 3, 'days_left': 4, 'required_per_day': 1.2, 'required_per_period': 8.4, 'projected': 0, 'status': 'unreachable'} within {'habit_id': '00000000-0000-4000-8000-000000000100', 'period': 'week', 'period_start': '2026-03-02', 'period_end': '2026-03-08', 'target': 6, 'done': 0, 'days_elapsed': 3, 'days_remaining': 4, 'rate_per_day': 0, 'rate_per_period': 0, 'required_per_day': 1.2, 'required_per_period': 8.4, 'projected': 0, 'status': 'unreachable'}"
+    ],
+    "rule": "scenario: progress_example_unreachable",
+    "rules": [
+     "R101",
+     "R105",
+     "R106",
+     "R111"
+    ],
+    "summary": "[D silent] GET /v1/habits/00000000-0000-4000-8000-000000000100/progress as ann (progress_example_unreachable / step 1)",
+    "target": "scenario:progress_example_unreachable",
+    "tier": 1,
+    "verdict": "silent"
+   },
+   {
+    "also_fails_on_base": false,
+    "case": "progress_follows_the_test_clock / step 3",
+    "code": null,
+    "endpoint": "GET /v1/habits/00000000-0000-4000-8000-000000000100/progress",
+    "evidence": [
+     {
+      "at": "check:D:progress_follows_the_test_clock / step 3",
+      "kind": "check",
+      "what": "[D silent] GET /v1/habits/00000000-0000-4000-8000-000000000100/progress as ann (progress_follows_the_test_clock / step 3)"
+     },
+     {
+      "at": "spec:spec.py:1353",
+      "kind": "spec",
+      "what": "progress_follows_the_test_clock step 3"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t1-b492ac3765",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "D",
+    "line": 1353,
+    "observation": "runtime",
+    "problems": [
+     "body: expected {'period_start': '2026-02-23', 'period_end': '2026-03-01', 'target': 3, 'done': 2, 'days_elapsed': 7, 'days_left': 0, 'projected': 2, 'status': 'behind'} within {'habit_id': '00000000-0000-4000-8000-000000000100', 'period': 'week', 'period_start': '2026-02-23', 'period_end': '2026-03-01', 'target': 3, 'done': 2, 'days_elapsed': 7, 'days_remaining': 0, 'rate_per_day': 0.29, 'rate_per_period': 2, 'required_per_day': 1, 'required_per_period': 7, 'projected': 2, 'status': 'behind'}"
+    ],
+    "rule": "scenario: progress_follows_the_test_clock",
+    "rules": [
+     "R44",
+     "R45",
+     "R48",
+     "R99"
+    ],
+    "summary": "[D silent] GET /v1/habits/00000000-0000-4000-8000-000000000100/progress as ann (progress_follows_the_test_clock / step 3)",
+    "target": "scenario:progress_follows_the_test_clock",
+    "tier": 1,
+    "verdict": "silent"
+   },
+   {
+    "also_fails_on_base": false,
+    "case": "progress_not_started / step 1",
+    "code": null,
+    "endpoint": "GET /v1/habits/00000000-0000-4000-8000-000000000100/progress",
+    "evidence": [
+     {
+      "at": "check:D:progress_not_started / step 1",
+      "kind": "check",
+      "what": "[D silent] GET /v1/habits/00000000-0000-4000-8000-000000000100/progress as ann (progress_not_started / step 1)"
+     },
+     {
+      "at": "code:internal/progress/routes.go:19",
+      "kind": "code",
+      "what": "registration of GET /v1/habits/00000000-0000-4000-8000-000000000100/progress"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t1-1a2f4bbb25",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "D",
+    "line": 19,
+    "observation": "runtime",
+    "problems": [
+     "body: expected {'habit_id': '00000000-0000-4000-8000-000000000100', 'period_start': '2026-03-09', 'period_end': '2026-03-15', 'target': 3, 'done': 0, 'days_elapsed': 0, 'days_left': 5, 'rate_per_day': 0, 'rate_per_period': 0, 'required_per_day': 0.6, 'required_per_period': 4.2, 'projected': 0, 'status': 'not_started'} within {'habit_id': '00000000-0000-4000-8000-000000000100', 'period': 'week', 'period_start': '2026-03-09', 'period_end': '2026-03-15', 'target': 3, 'done': 0, 'days_elapsed': 0, 'days_remaining': 5, 'rate_per_day': 0, 'rate_per_period': 0, 'required_per_day': 0.6, 'required_per_period': 4.2, 'projected': 0, 'status': 'not_started'}"
+    ],
+    "rule": "scenario: progress_not_started",
+    "rules": [
+     "R106",
+     "R107"
+    ],
+    "summary": "[D silent] GET /v1/habits/00000000-0000-4000-8000-000000000100/progress as ann (progress_not_started / step 1)",
+    "target": "scenario:progress_not_started",
+    "tier": 1,
+    "verdict": "silent"
+   },
+   {
+    "also_fails_on_base": false,
+    "case": "progress_period_bounds / step 1",
+    "code": null,
+    "endpoint": "GET /v1/habits/00000000-0000-4000-8000-000000000100/progress",
+    "evidence": [
+     {
+      "at": "check:D:progress_period_bounds / step 1",
+      "kind": "check",
+      "what": "[D silent] GET /v1/habits/00000000-0000-4000-8000-000000000100/progress as ann (progress_period_bounds / step 1)"
+     },
+     {
+      "at": "spec:spec.py:1337",
+      "kind": "spec",
+      "what": "progress_period_bounds step 1"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t1-42c179c867",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "D",
+    "line": 1337,
+    "observation": "runtime",
+    "problems": [
+     "body: expected {'period_start': '2026-03-01', 'period_end': '2026-03-31', 'target': 10, 'days_elapsed': 4, 'days_left': 27} within {'habit_id': '00000000-0000-4000-8000-000000000100', 'period': 'month', 'period_start': '2026-03-01', 'period_end': '2026-03-31', 'target': 10, 'done': 0, 'days_elapsed': 4, 'days_remaining': 27, 'rate_per_day': 0, 'rate_per_period': 0, 'required_per_day': 0.36, 'required_per_period': 11.07, 'projected': 0, 'status': 'behind'}"
+    ],
+    "rule": "scenario: progress_period_bounds",
+    "rules": [
+     "R46",
+     "R96",
+     "R100"
+    ],
+    "summary": "[D silent] GET /v1/habits/00000000-0000-4000-8000-000000000100/progress as ann (progress_period_bounds / step 1)",
+    "target": "scenario:progress_period_bounds",
+    "tier": 1,
+    "verdict": "silent"
+   },
+   {
+    "also_fails_on_base": false,
+    "case": "progress_timezone_example / step 2",
+    "code": null,
+    "endpoint": "GET /v1/habits/00000000-0000-4000-8000-000000000100/progress",
+    "evidence": [
+     {
+      "at": "check:D:progress_timezone_example / step 2",
+      "kind": "check",
+      "what": "[D silent] GET /v1/habits/00000000-0000-4000-8000-000000000100/progress as ann (progress_timezone_example / step 2)"
+     },
+     {
+      "at": "spec:spec.py:1367",
+      "kind": "spec",
+      "what": "progress_timezone_example step 2"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t1-821915d036",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "D",
+    "line": 1367,
+    "observation": "runtime",
+    "problems": [
+     "body: expected {'period_start': '2026-02-23', 'period_end': '2026-03-01', 'days_elapsed': 7, 'days_left': 0} within {'habit_id': '00000000-0000-4000-8000-000000000100', 'period': 'week', 'period_start': '2026-02-23', 'period_end': '2026-03-01', 'target': 3, 'done': 0, 'days_elapsed': 7, 'days_remaining': 0, 'rate_per_day': 0, 'rate_per_period': 0, 'required_per_day': 3, 'required_per_period': 21, 'projected': 0, 'status': 'unreachable'}"
+    ],
+    "rule": "scenario: progress_timezone_example",
+    "rules": [
+     "R45",
+     "R113"
+    ],
+    "summary": "[D silent] GET /v1/habits/00000000-0000-4000-8000-000000000100/progress as ann (progress_timezone_example / step 2)",
+    "target": "scenario:progress_timezone_example",
+    "tier": 1,
+    "verdict": "silent"
+   }
+  ],
+  "flows": [],
+  "flows_note": null,
+  "layers": "ACD",
+  "resolved": []
+ },
+ "tier2": {
+  "corpus": {
+   "baseline": "run",
+   "environment": null,
+   "flow_steps": 167,
+   "flows_note": null,
+   "scenario_steps": 462
+  },
+  "decidability": [
+   {
+    "kind": "target",
+    "reason": "compatible_expectation",
+    "state": "undecidable",
+    "subject": "scenario:home_lists_habits_with_progress"
+   },
+   {
+    "kind": "target",
+    "reason": "compatible_expectation",
+    "state": "undecidable",
+    "subject": "scenario:progress_after_end_date"
+   },
+   {
+    "kind": "target",
+    "reason": "compatible_expectation",
+    "state": "undecidable",
+    "subject": "scenario:progress_check_in_today_closes_today"
+   },
+   {
+    "kind": "target",
+    "reason": "compatible_expectation",
+    "state": "undecidable",
+    "subject": "scenario:progress_end_date_inside_the_period"
+   },
+   {
+    "kind": "target",
+    "reason": "compatible_expectation",
+    "state": "undecidable",
+    "subject": "scenario:progress_example_behind"
+   },
+   {
+    "kind": "target",
+    "reason": "compatible_expectation",
+    "state": "undecidable",
+    "subject": "scenario:progress_example_monthly_on_track"
+   },
+   {
+    "kind": "target",
+    "reason": "compatible_expectation",
+    "state": "undecidable",
+    "subject": "scenario:progress_example_pro_rated_start"
+   },
+   {
+    "kind": "target",
+    "reason": "compatible_expectation",
+    "state": "undecidable",
+    "subject": "scenario:progress_example_unreachable"
+   },
+   {
+    "kind": "target",
+    "reason": "compatible_expectation",
+    "state": "undecidable",
+    "subject": "scenario:progress_follows_the_test_clock"
+   },
+   {
+    "kind": "target",
+    "reason": "compatible_expectation",
+    "state": "undecidable",
+    "subject": "scenario:progress_not_started"
+   },
+   {
+    "kind": "target",
+    "reason": "compatible_expectation",
+    "state": "undecidable",
+    "subject": "scenario:progress_period_bounds"
+   },
+   {
+    "kind": "target",
+    "reason": "compatible_expectation",
+    "state": "undecidable",
+    "subject": "scenario:progress_timezone_example"
+   },
+   {
+    "kind": "changed",
+    "reason": "compatible_expectation",
+    "state": "undecidable",
+    "subject": "rule:R95"
+   },
+   {
+    "kind": "changed",
+    "reason": "compatible_expectation",
+    "state": "undecidable",
+    "subject": "rule:R100"
+   },
+   {
+    "kind": "changed",
+    "reason": "compatible_expectation",
+    "state": "undecidable",
+    "subject": "rule:R107"
+   },
+   {
+    "kind": "changed",
+    "reason": "compatible_expectation",
+    "state": "undecidable",
+    "subject": "rule:R108"
+   },
+   {
+    "kind": "changed",
+    "reason": "compatible_expectation",
+    "state": "undecidable",
+    "subject": "rule:R109"
+   },
+   {
+    "kind": "changed",
+    "reason": "compatible_expectation",
+    "state": "undecidable",
+    "subject": "rule:R112"
+   },
+   {
+    "kind": "changed",
+    "reason": "compatible_expectation",
+    "state": "undecidable",
+    "subject": "rule:R113"
+   }
+  ],
+  "determined": [],
+  "flows": [],
+  "runtime_replay": {
+   "status": "not_applicable: 0 programs"
+  }
+ },
+ "tier3": {
+  "counts": {
+   "by_kind": {
+    "closure": 34,
+    "direct": 4,
+    "insertion": 0,
+    "table_peer": 0
+   },
+   "files": 8,
+   "flows_may_fail": 16,
+   "locations": 38,
+   "seeds": {
+    "machines": 0,
+    "routes": 2,
+    "tables": 0
+   },
+   "unread": 16
+  },
+  "external": {
+   "count": 0
+  },
+  "files": [
+   "internal/db/bodies.go",
+   "internal/db/owned.go",
+   "internal/home/routes.go",
+   "internal/httpapi/body.go",
+   "internal/httpapi/registry.go",
+   "internal/period/period.go",
+   "internal/progress/compute.go",
+   "internal/progress/routes.go"
+  ],
+  "flows": [
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-053146a70c",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-1d4e335a28",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/home"
+    ],
+    "rules": [
+     "R114"
+    ],
+    "target": "flow:wf-053146a70c",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-0c6bdd7ab0",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-21a88b6845",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/home"
+    ],
+    "rules": [
+     "R114"
+    ],
+    "target": "flow:wf-0c6bdd7ab0",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3d2436d2dd",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-77f023f9be",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits/{}/progress"
+    ],
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113"
+    ],
+    "target": "flow:wf-3d2436d2dd",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5cf3da443e",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-2e7e2f3abb",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits/{}/progress"
+    ],
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113"
+    ],
+    "target": "flow:wf-5cf3da443e",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5eebdfc88b",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-7222172aef",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits/{}/progress"
+    ],
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113"
+    ],
+    "target": "flow:wf-5eebdfc88b",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-6a4cc7a302",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-c73f5e93eb",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/home"
+    ],
+    "rules": [
+     "R114"
+    ],
+    "target": "flow:wf-6a4cc7a302",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-9f87f3f1d9",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-c92e4f9277",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/home"
+    ],
+    "rules": [
+     "R114"
+    ],
+    "target": "flow:wf-9f87f3f1d9",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b595a756b6",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-f1f0e18e26",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/home"
+    ],
+    "rules": [
+     "R114"
+    ],
+    "target": "flow:wf-b595a756b6",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b95fd71de1",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-99087e6218",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/home"
+    ],
+    "rules": [
+     "R114"
+    ],
+    "target": "flow:wf-b95fd71de1",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-bd46b71ee2",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-c670ea4b3d",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits/{}/progress"
+    ],
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113"
+    ],
+    "target": "flow:wf-bd46b71ee2",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-c71e6bbb49",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-8fbb8d0615",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/home"
+    ],
+    "rules": [
+     "R114"
+    ],
+    "target": "flow:wf-c71e6bbb49",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-cf27dadc73",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-cfb4e69155",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/home"
+    ],
+    "rules": [
+     "R114"
+    ],
+    "target": "flow:wf-cf27dadc73",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d8340207d1",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-dcd5fc224e",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/home"
+    ],
+    "rules": [
+     "R114"
+    ],
+    "target": "flow:wf-d8340207d1",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-da24bc5b11",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-cd181d9b67",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits/{}/progress"
+    ],
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113"
+    ],
+    "target": "flow:wf-da24bc5b11",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-dbac494b10",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-20af7f05e8",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits/{}/progress"
+    ],
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113"
+    ],
+    "target": "flow:wf-dbac494b10",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-de433cd704",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-dfe2c8ee93",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits/{}/progress"
+    ],
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113"
+    ],
+    "target": "flow:wf-de433cd704",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   }
+  ],
+  "locations": [
+   {
+    "end_line": 16,
+    "evidence": [
+     {
+      "at": "code:internal/db/bodies.go:16",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/bodies.go",
+    "id": "t3-879650e89c",
+    "kind": "closure",
+    "line": 16,
+    "rules": [
+     "R114"
+    ],
+    "symbol": "Instant",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/db:Instant -> code:internal/db/bodies.go:16",
+     "scenario:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/db:Instant -> code:internal/db/bodies.go:16"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 25,
+    "evidence": [
+     {
+      "at": "code:internal/db/bodies.go:19",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/bodies.go",
+    "id": "t3-4e09374799",
+    "kind": "closure",
+    "line": 19,
+    "rules": [
+     "R114"
+    ],
+    "symbol": "InstantPtr",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/db:InstantPtr -> code:internal/db/bodies.go:19",
+     "scenario:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/db:InstantPtr -> code:internal/db/bodies.go:19"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 48,
+    "evidence": [
+     {
+      "at": "code:internal/db/bodies.go:43",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/bodies.go",
+    "id": "t3-18d4359797",
+    "kind": "closure",
+    "line": 43,
+    "rules": [
+     "R114"
+    ],
+    "symbol": "HabitBody",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/db:HabitBody -> code:internal/db/bodies.go:43",
+     "scenario:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/db:HabitBody -> code:internal/db/bodies.go:43"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 83,
+    "evidence": [
+     {
+      "at": "code:internal/db/bodies.go:79",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/bodies.go",
+    "id": "t3-f2e0d99105",
+    "kind": "closure",
+    "line": 79,
+    "rules": [
+     "R114"
+    ],
+    "symbol": "NudgeBody",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/db:NudgeBody -> code:internal/db/bodies.go:79",
+     "scenario:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/db:NudgeBody -> code:internal/db/bodies.go:79"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 21,
+    "evidence": [
+     {
+      "at": "code:internal/db/owned.go:14",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/owned.go",
+    "id": "t3-b92d0901b1",
+    "kind": "closure",
+    "line": 14,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113"
+    ],
+    "symbol": "OwnedHabit",
+    "target": "scenario:progress_after_end_date",
+    "tier": 3,
+    "via": [
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14",
+     "check:progress_example_monthly_on_track / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/home/routes.go:18",
+      "kind": "code",
+      "what": "route registration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route registration"
+     }
+    ],
+    "file": "internal/home/routes.go",
+    "id": "t3-4959d44f60",
+    "kind": "direct",
+    "line": 18,
+    "rules": [
+     "R114"
+    ],
+    "symbol": null,
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> registered -> code:internal/home/routes.go:18",
+     "scenario:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> registered -> code:internal/home/routes.go:18"
+    ],
+    "what": "route registration"
+   },
+   {
+    "end_line": 64,
+    "evidence": [
+     {
+      "at": "code:internal/home/routes.go:29",
+      "kind": "code",
+      "what": "handler declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler declaration"
+     }
+    ],
+    "file": "internal/home/routes.go",
+    "id": "t3-653f706b31",
+    "kind": "direct",
+    "line": 29,
+    "rules": [
+     "R114"
+    ],
+    "symbol": "home",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> handler:home.handler.home -> code:internal/home/routes.go:29",
+     "scenario:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> handler:home.handler.home -> code:internal/home/routes.go:29"
+    ],
+    "what": "handler declaration"
+   },
+   {
+    "end_line": 139,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/body.go:134",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/body.go",
+    "id": "t3-5b40074b55",
+    "kind": "closure",
+    "line": 134,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113"
+    ],
+    "symbol": "CanonicalUUID",
+    "target": "scenario:progress_after_end_date",
+    "tier": 3,
+    "via": [
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134",
+     "check:progress_example_monthly_on_track / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 148,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/body.go:142",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/body.go",
+    "id": "t3-1a5f238574",
+    "kind": "closure",
+    "line": 142,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113"
+    ],
+    "symbol": "PathUUID",
+    "target": "scenario:progress_after_end_date",
+    "tier": 3,
+    "via": [
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142",
+     "check:progress_example_monthly_on_track / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 41,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:37",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-073ad4de8f",
+    "kind": "closure",
+    "line": 37,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113",
+     "R114"
+    ],
+    "symbol": "CallerOf",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 47,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:45",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-1091f62881",
+    "kind": "closure",
+    "line": 45,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113",
+     "R114"
+    ],
+    "symbol": "Now",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 56,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:50",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-873ab4eb96",
+    "kind": "closure",
+    "line": 50,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113",
+     "R114"
+    ],
+    "symbol": "NowCtx",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 64,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:59",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-6c943e1bc7",
+    "kind": "closure",
+    "line": 59,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113",
+     "R114"
+    ],
+    "symbol": "Today",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59",
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 67,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:67",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-7afbeb95ab",
+    "kind": "closure",
+    "line": 67,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113",
+     "R114"
+    ],
+    "symbol": "Q",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 55,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:55",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-42e3869dcf",
+    "kind": "closure",
+    "line": 55,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113",
+     "R114"
+    ],
+    "symbol": "FormatDate",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 64,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:58",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-46fe2e6e9d",
+    "kind": "closure",
+    "line": 58,
+    "rules": [
+     "R114"
+    ],
+    "symbol": "FormatDatePtr",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/period:FormatDatePtr -> code:internal/period/period.go:58",
+     "scenario:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/period:FormatDatePtr -> code:internal/period/period.go:58"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 67,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:67",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-fef2c1ab0b",
+    "kind": "closure",
+    "line": 67,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113",
+     "R114"
+    ],
+    "symbol": "Date",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/period:Date -> code:internal/period/period.go:67",
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:Date -> code:internal/period/period.go:67",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:Date -> code:internal/period/period.go:67",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:Date -> code:internal/period/period.go:67",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:Date -> code:internal/period/period.go:67"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 70,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:70",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-cb954ea669",
+    "kind": "closure",
+    "line": 70,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113",
+     "R114"
+    ],
+    "symbol": "AddDays",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70",
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 73,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:73",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-f878192f6b",
+    "kind": "closure",
+    "line": 73,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113",
+     "R114"
+    ],
+    "symbol": "Days",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/period:Days -> code:internal/period/period.go:73",
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:Days -> code:internal/period/period.go:73",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:Days -> code:internal/period/period.go:73",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:Days -> code:internal/period/period.go:73",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:Days -> code:internal/period/period.go:73"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 81,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:76",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-4950cfeaa4",
+    "kind": "closure",
+    "line": 76,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113",
+     "R114"
+    ],
+    "symbol": "Min",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/period:Min -> code:internal/period/period.go:76",
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:Min -> code:internal/period/period.go:76",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:Min -> code:internal/period/period.go:76",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:Min -> code:internal/period/period.go:76",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:Min -> code:internal/period/period.go:76"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 89,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:84",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-25ceeb9a96",
+    "kind": "closure",
+    "line": 84,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113",
+     "R114"
+    ],
+    "symbol": "Max",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/period:Max -> code:internal/period/period.go:84",
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:Max -> code:internal/period/period.go:84",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:Max -> code:internal/period/period.go:84",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:Max -> code:internal/period/period.go:84",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:Max -> code:internal/period/period.go:84"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 112,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:97",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-0551f48632",
+    "kind": "closure",
+    "line": 97,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113",
+     "R114"
+    ],
+    "symbol": "Location",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:Location -> code:internal/period/period.go:97"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 129,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:122",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-62e425b4be",
+    "kind": "closure",
+    "line": 122,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113",
+     "R114"
+    ],
+    "symbol": "Today",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/period:Today -> code:internal/period/period.go:122",
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:Today -> code:internal/period/period.go:122",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:Today -> code:internal/period/period.go:122",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:Today -> code:internal/period/period.go:122",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:Today -> code:internal/period/period.go:122"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 142,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:132",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-ebe9ba6774",
+    "kind": "closure",
+    "line": 132,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113",
+     "R114"
+    ],
+    "symbol": "Start",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/period:Start -> code:internal/period/period.go:132",
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:Start -> code:internal/period/period.go:132",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:Start -> code:internal/period/period.go:132",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:Start -> code:internal/period/period.go:132",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:Start -> code:internal/period/period.go:132"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 155,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:145",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-08006b6797",
+    "kind": "closure",
+    "line": 145,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113",
+     "R114"
+    ],
+    "symbol": "End",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/period:End -> code:internal/period/period.go:145",
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:End -> code:internal/period/period.go:145",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:End -> code:internal/period/period.go:145",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:End -> code:internal/period/period.go:145",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/period:End -> code:internal/period/period.go:145"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 23,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:23",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-191fd5cd78",
+    "kind": "closure",
+    "line": 23,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113",
+     "R114"
+    ],
+    "symbol": "L",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/progress:Window.L -> code:internal/progress/compute.go:23",
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:Window.L -> code:internal/progress/compute.go:23",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:Window.L -> code:internal/progress/compute.go:23",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:Window.L -> code:internal/progress/compute.go:23",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:Window.L -> code:internal/progress/compute.go:23"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 26,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:26",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-404949a417",
+    "kind": "closure",
+    "line": 26,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113",
+     "R114"
+    ],
+    "symbol": "A",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/progress:Window.A -> code:internal/progress/compute.go:26",
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:Window.A -> code:internal/progress/compute.go:26",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:Window.A -> code:internal/progress/compute.go:26",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:Window.A -> code:internal/progress/compute.go:26",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:Window.A -> code:internal/progress/compute.go:26"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 37,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:30",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-37e8aa4551",
+    "kind": "closure",
+    "line": 30,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113",
+     "R114"
+    ],
+    "symbol": "ActiveWindow",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/progress:ActiveWindow -> code:internal/progress/compute.go:30",
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:ActiveWindow -> code:internal/progress/compute.go:30",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:ActiveWindow -> code:internal/progress/compute.go:30",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:ActiveWindow -> code:internal/progress/compute.go:30",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:ActiveWindow -> code:internal/progress/compute.go:30"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 51,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:40",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-50dcda38be",
+    "kind": "closure",
+    "line": 40,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113",
+     "R114"
+    ],
+    "symbol": "WindowFor",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/progress:WindowFor -> code:internal/progress/compute.go:40",
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:WindowFor -> code:internal/progress/compute.go:40",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:WindowFor -> code:internal/progress/compute.go:40",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:WindowFor -> code:internal/progress/compute.go:40",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:WindowFor -> code:internal/progress/compute.go:40"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 60,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:55",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-08464ade08",
+    "kind": "closure",
+    "line": 55,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113",
+     "R114"
+    ],
+    "symbol": "ProRate",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/progress:ProRate -> code:internal/progress/compute.go:55",
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:ProRate -> code:internal/progress/compute.go:55",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:ProRate -> code:internal/progress/compute.go:55",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:ProRate -> code:internal/progress/compute.go:55",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:ProRate -> code:internal/progress/compute.go:55"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 63,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:63",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-9527fc9af9",
+    "kind": "closure",
+    "line": 63,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113",
+     "R114"
+    ],
+    "symbol": "Hundredths",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/progress:Hundredths -> code:internal/progress/compute.go:63",
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:Hundredths -> code:internal/progress/compute.go:63",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:Hundredths -> code:internal/progress/compute.go:63",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:Hundredths -> code:internal/progress/compute.go:63",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:Hundredths -> code:internal/progress/compute.go:63"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 65,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:65",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-96e4c092a9",
+    "kind": "closure",
+    "line": 65,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113",
+     "R114"
+    ],
+    "symbol": "rate",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/progress:rate -> code:internal/progress/compute.go:65",
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:rate -> code:internal/progress/compute.go:65",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:rate -> code:internal/progress/compute.go:65",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:rate -> code:internal/progress/compute.go:65",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:rate -> code:internal/progress/compute.go:65"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 97,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:97",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-7152d429ea",
+    "kind": "closure",
+    "line": 97,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113",
+     "R114"
+    ],
+    "symbol": "ptr",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/progress:ptr -> code:internal/progress/compute.go:97",
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:ptr -> code:internal/progress/compute.go:97",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:ptr -> code:internal/progress/compute.go:97",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:ptr -> code:internal/progress/compute.go:97",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:ptr -> code:internal/progress/compute.go:97"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 152,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:101",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-1d2056ea0c",
+    "kind": "closure",
+    "line": 101,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113",
+     "R114"
+    ],
+    "symbol": "Compute",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/progress:Compute -> code:internal/progress/compute.go:101",
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:Compute -> code:internal/progress/compute.go:101",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:Compute -> code:internal/progress/compute.go:101",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:Compute -> code:internal/progress/compute.go:101",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:Compute -> code:internal/progress/compute.go:101"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/progress/routes.go:19",
+      "kind": "code",
+      "what": "route registration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route registration"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t3-3686192a77",
+    "kind": "direct",
+    "line": 19,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113"
+    ],
+    "symbol": null,
+    "target": "scenario:progress_after_end_date",
+    "tier": 3,
+    "via": [
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> registered -> code:internal/progress/routes.go:19",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> registered -> code:internal/progress/routes.go:19",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> registered -> code:internal/progress/routes.go:19",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> registered -> code:internal/progress/routes.go:19",
+     "check:progress_example_monthly_on_track / step 1 -> route:GET /v1/habits/{}/progress -> registered -> code:internal/progress/routes.go:19"
+    ],
+    "what": "route registration"
+   },
+   {
+    "end_line": 32,
+    "evidence": [
+     {
+      "at": "code:internal/progress/routes.go:26",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t3-173248d509",
+    "kind": "closure",
+    "line": 26,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113",
+     "R114"
+    ],
+    "symbol": "liveDates",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/progress:liveDates -> code:internal/progress/routes.go:26",
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:liveDates -> code:internal/progress/routes.go:26",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:liveDates -> code:internal/progress/routes.go:26",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:liveDates -> code:internal/progress/routes.go:26",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:liveDates -> code:internal/progress/routes.go:26"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 42,
+    "evidence": [
+     {
+      "at": "code:internal/progress/routes.go:35",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t3-087da02d7d",
+    "kind": "closure",
+    "line": 35,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113",
+     "R114"
+    ],
+    "symbol": "Of",
+    "target": "scenario:home_lists_habits_with_progress",
+    "tier": 3,
+    "via": [
+     "check:home_lists_habits_with_progress / step 1 -> route:GET /v1/home -> call:streak/internal/progress:Of -> code:internal/progress/routes.go:35",
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:Of -> code:internal/progress/routes.go:35",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:Of -> code:internal/progress/routes.go:35",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:Of -> code:internal/progress/routes.go:35",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> call:streak/internal/progress:Of -> code:internal/progress/routes.go:35"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 65,
+    "evidence": [
+     {
+      "at": "code:internal/progress/routes.go:45",
+      "kind": "code",
+      "what": "handler declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler declaration"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t3-5221b868fd",
+    "kind": "direct",
+    "line": 45,
+    "rules": [
+     "R44",
+     "R45",
+     "R46",
+     "R48",
+     "R95",
+     "R96",
+     "R97",
+     "R98",
+     "R99",
+     "R100",
+     "R101",
+     "R102",
+     "R103",
+     "R104",
+     "R105",
+     "R106",
+     "R107",
+     "R108",
+     "R109",
+     "R110",
+     "R111",
+     "R112",
+     "R113"
+    ],
+    "symbol": "progress",
+    "target": "scenario:progress_after_end_date",
+    "tier": 3,
+    "via": [
+     "check:progress_after_end_date / step 1 -> route:GET /v1/habits/{}/progress -> handler:progress.handler.progress -> code:internal/progress/routes.go:45",
+     "check:progress_check_in_today_closes_today / step 1 -> route:GET /v1/habits/{}/progress -> handler:progress.handler.progress -> code:internal/progress/routes.go:45",
+     "check:progress_end_date_inside_the_period / step 1 -> route:GET /v1/habits/{}/progress -> handler:progress.handler.progress -> code:internal/progress/routes.go:45",
+     "check:progress_example_behind / step 1 -> route:GET /v1/habits/{}/progress -> handler:progress.handler.progress -> code:internal/progress/routes.go:45",
+     "check:progress_example_monthly_on_track / step 1 -> route:GET /v1/habits/{}/progress -> handler:progress.handler.progress -> code:internal/progress/routes.go:45"
+    ],
+    "what": "handler declaration"
+   }
+  ],
+  "stale": false,
+  "unread": [
+   {
+    "file": "internal/httpapi/registry.go",
+    "kind": "extract_unread",
+    "line": 51,
+    "reason": "interface dispatch: `d.Clock.Now(ctx)` has no single implementation in the module",
+    "what": "call"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of GET /v1/home is not read from the code",
+    "what": "scenario:home_lists_habits_with_progress / step 1"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of GET /v1/habits/{}/progress is not read from the code",
+    "what": "scenario:progress_after_end_date / step 1"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of GET /v1/habits/{}/progress is not read from the code",
+    "what": "scenario:progress_after_end_date / step 2"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of GET /v1/habits/{}/progress is not read from the code",
+    "what": "scenario:progress_check_in_today_closes_today / step 1"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of GET /v1/habits/{}/progress is not read from the code",
+    "what": "scenario:progress_end_date_inside_the_period / step 1"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of GET /v1/habits/{}/progress is not read from the code",
+    "what": "scenario:progress_example_behind / step 1"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of GET /v1/habits/{}/progress is not read from the code",
+    "what": "scenario:progress_example_monthly_on_track / step 1"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of GET /v1/habits/{}/progress is not read from the code",
+    "what": "scenario:progress_example_pro_rated_start / step 1"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of GET /v1/habits/{}/progress is not read from the code",
+    "what": "scenario:progress_example_unreachable / step 1"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of GET /v1/habits/{}/progress is not read from the code",
+    "what": "scenario:progress_follows_the_test_clock / step 3"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of GET /v1/habits/{}/progress is not read from the code",
+    "what": "scenario:progress_not_started / step 1"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of GET /v1/habits/{}/progress is not read from the code",
+    "what": "scenario:progress_period_bounds / step 1"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of GET /v1/habits/{}/progress is not read from the code",
+    "what": "scenario:progress_period_bounds / step 2"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of GET /v1/habits/{}/progress is not read from the code",
+    "what": "scenario:progress_timezone_example / step 2"
+   },
+   {
+    "file": null,
+    "kind": "response_shape_not_extracted",
+    "line": null,
+    "reason": "the response body of GET /v1/habits/{}/progress is not read from the code",
+    "what": "scenario:progress_timezone_example / step 3"
+   }
+  ]
+ },
+ "tier4": null,
+ "tiers": {
+  "1": "run",
+  "2": "run",
+  "3": "run",
+  "4": "not_run:spike_e"
+ }
+}

@@ -1,0 +1,39 @@
+{
+  "agent": "claude",
+  "args": {
+    "agent": "claude",
+    "allow_other_changeset": "False",
+    "changeset": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/impact/changeset",
+    "dry_run": "False",
+    "engine_timeout": "3000",
+    "fault_change": "c14",
+    "gate": "project",
+    "job_timeout": "10800",
+    "keep": "False",
+    "only": "",
+    "out": "docs/results/data/2026-10-18-implement-verify-streak-arm/streak-agent",
+    "owner_prefix": "implp-",
+    "parallel": "4",
+    "repeat": "3",
+    "repeat_changes": "['c01', 'c03', 'c08']",
+    "scratch": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/w-e-run/sa",
+    "stage": "streak",
+    "streak": "/Users/vivekgade/Documents/streak",
+    "streak_ref": "a0679e9",
+    "subset": "K1,K2,K5,K9,K10,K15",
+    "usd_cap": "12.0",
+    "workflows": "/Users/vivekgade/Documents/lattice-ea/docs/results/data/2026-10-15-workflow-layer/workflows.json"
+  },
+  "containers_with_our_tokens_at_end": [],
+  "engine_files_differing_from_prereg_hashes": {
+    "lattice/spec/appmap.py": "DIFFERS",
+    "lattice/spec/check.py": "DIFFERS",
+    "lattice/spec/impact_report.py": "DIFFERS",
+    "lattice/spec/impact_tier2.py": "DIFFERS",
+    "lattice/spec/implementation.py": "DIFFERS"
+  },
+  "manifest_sha256": "52e0e541e2e2f1347f38d0c3f2000d68ecbe94d64e884d6bc02dfff7d523caa3",
+  "runner_sha256": "a7364973789829439b969611001be794c995b0e0dc1b1574c2d4f32e60302ed4",
+  "seconds": 1465,
+  "streak_ref": "a0679e9"
+}

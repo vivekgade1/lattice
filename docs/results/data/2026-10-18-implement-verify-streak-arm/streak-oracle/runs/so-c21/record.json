@@ -1,0 +1,39 @@
+{
+ "agent": "claude",
+ "arm": "so",
+ "change": "c21",
+ "claude": {
+  "calls": 0,
+  "not_logged_in": false,
+  "usage_limit": false
+ },
+ "cost_usd": 0.0,
+ "d": {
+  "rc": 0,
+  "seconds": 104.3,
+  "timed_out": false
+ },
+ "drift": {
+  "changed": [],
+  "new": [],
+  "removed": []
+ },
+ "eid": "ic749668bbf",
+ "empty_ref": true,
+ "implement": {
+  "rc": 0,
+  "seconds": 56.3,
+  "timed_out": false
+ },
+ "job": "so-c21",
+ "leaked_containers": [],
+ "pnm": {
+  "applicable": false,
+  "head_unchanged": true,
+  "ok": true
+ },
+ "rc": 0,
+ "seconds": 162.0,
+ "token": "implp-so-c21-276f43",
+ "worktrees_left": 0
+}

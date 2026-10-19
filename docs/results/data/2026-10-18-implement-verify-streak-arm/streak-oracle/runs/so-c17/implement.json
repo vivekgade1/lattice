@@ -1,0 +1,2491 @@
+{
+ "diff": {
+  "rules": {
+   "added": [],
+   "changed": [
+    {
+     "new": "R148",
+     "new_text": "A habit that has not started (today before `start_date`) answers 422 with code `habit_not_started`; a started habit with no past period answers 200 `{\"items\": []}`.",
+     "old": "R148",
+     "old_text": "A habit that has not started (today before `start_date`) answers 409 with code `habit_not_started`; a started habit with no past period answers 200 `{\"items\": []}`."
+    }
+   ],
+   "removed": [],
+   "unchanged": 147
+  },
+  "targets": {
+   "added": [],
+   "modified": [
+    "scenario:history_empty_and_not_started"
+   ],
+   "removed": []
+  }
+ },
+ "input": {
+  "app": {
+   "configured": true,
+   "layers": "ACD"
+  },
+  "base": {
+   "requirements": "dcac6deb3ad3ec4ab7381af040cb86064aae00eb3ed38c05237657156fbad7b1",
+   "spec": "28dfc2e6c6a2aa27168079740d28a94de7f3efcb7cf8234d795d48b7960f5624",
+   "trace": "627a2b3f4c9cfafc3ad6cd5edb01f355fb76b53c248c629e7a77fd1bd8ee82ed"
+  },
+  "candidate": {
+   "requirements": "9e37c2286a2c689682782949f1b5b5f7bf98a0d6e6d173d5dad17b43f1ebfd4b",
+   "spec": "bd5e21d48a22f22236028167baa9bddfa8bae036c84e08b02174a9ae61d9c560",
+   "trace": "a7b5ffabb567fbbce5e3f834daa243ed8704b416ef9383f6f18a164004eea54c"
+  },
+  "change": null,
+  "inventory": {
+   "extract_sha256": "d51ef75340d54682a8bd2c3f40220e50c2ef31ae0eab17ef3ca68c9a39f89adc",
+   "stale": false,
+   "workflows_sha256": "af1383dbf5d51f876c61a282f23a2fb60d79f536af7542dfe48387e6f1c573a0"
+  },
+  "kind": "candidate",
+  "notes": []
+ },
+ "schema": "lattice.impact/1",
+ "summary": {
+  "kinds": {
+   "check_failure": 1,
+   "closure": 24,
+   "direct": 5,
+   "scenario_fails": 1
+  },
+  "note": "Which workflows fail is mostly not decidable before the change exists: a flow records the answers the app gives today, so it passes today by construction. Before an implementation only a changed invariant (tier 1, observed) and an exact-prefix contradiction (tier 2, determined) decide a workflow; every other flow listed is tier 3 'may_fail' (static, with unknowns), settled by tier 4 (Spike E, observed after the change).",
+  "tiers": {
+   "1": {
+    "failing": 1,
+    "flows": 0,
+    "resolved": 0
+   },
+   "2": {
+    "decidable": 2,
+    "determined": 1,
+    "flows": 0,
+    "undecidable": 0
+   },
+   "3": {
+    "flows": 7,
+    "locations": 29,
+    "unread": 1
+   }
+  },
+  "workflows": {
+   "t1_fail": 0,
+   "t2_fail": 0,
+   "t3_may_fail": 7
+  }
+ },
+ "tier1": {
+  "baseline": {
+   "failing": [],
+   "run": true,
+   "source": "run"
+  },
+  "counts": {
+   "baseline_drift": 0,
+   "by_label": {
+    "not_built_yet": 1
+   },
+   "by_layer": {
+    "D": 1
+   },
+   "failing": 1,
+   "flows_run": 59,
+   "resolved": 0,
+   "workflow_fails": 0
+  },
+  "failing": [
+   {
+    "also_fails_on_base": false,
+    "case": "history_empty_and_not_started / step 2",
+    "code": null,
+    "endpoint": "GET /v1/habits/00000000-0000-4000-8000-000000000101/history",
+    "evidence": [
+     {
+      "at": "check:D:history_empty_and_not_started / step 2",
+      "kind": "check",
+      "what": "[D silent] GET /v1/habits/00000000-0000-4000-8000-000000000101/history as ann (history_empty_and_not_started / step 2)"
+     },
+     {
+      "at": "spec:spec.py:1737",
+      "kind": "spec",
+      "what": "history_empty_and_not_started step 2"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t1-39d5972db4",
+    "kind": "check_failure",
+    "label": "not_built_yet",
+    "layer": "D",
+    "line": 1737,
+    "observation": "runtime",
+    "problems": [
+     "status: expected 422, got 409"
+    ],
+    "rule": "scenario: history_empty_and_not_started",
+    "rules": [
+     "R148"
+    ],
+    "summary": "[D silent] GET /v1/habits/00000000-0000-4000-8000-000000000101/history as ann (history_empty_and_not_started / step 2)",
+    "target": "scenario:history_empty_and_not_started",
+    "tier": 1,
+    "verdict": "silent"
+   }
+  ],
+  "flows": [],
+  "flows_note": null,
+  "layers": "ACD",
+  "resolved": []
+ },
+ "tier2": {
+  "corpus": {
+   "baseline": "run",
+   "environment": null,
+   "flow_steps": 167,
+   "flows_note": null,
+   "scenario_steps": 462
+  },
+  "decidability": [
+   {
+    "claims": [
+     "scenario:history_empty_and_not_started fails at step <= 2"
+    ],
+    "kind": "target",
+    "state": "determined",
+    "subject": "scenario:history_empty_and_not_started"
+   },
+   {
+    "claims": [
+     "scenario:history_empty_and_not_started fails at step <= 2"
+    ],
+    "kind": "changed",
+    "state": "determined",
+    "subject": "rule:R148"
+   }
+  ],
+  "determined": [
+   {
+    "against": {
+     "expect": {
+      "body": {
+       "error": {
+        "code": "habit_not_started"
+       }
+      },
+      "db": null,
+      "status": 409
+     },
+     "provenance": "run",
+     "source": "scenario:history_empty_and_not_started",
+     "step": 2
+    },
+    "candidate_expect": {
+     "body": {
+      "error": {
+       "code": "habit_not_started"
+      }
+     },
+     "db": null,
+     "status": 422
+    },
+    "claim": "scenario:history_empty_and_not_started fails at step <= 2",
+    "evidence": [
+     {
+      "at": "spec:spec.py:1737",
+      "kind": "spec",
+      "what": "candidate step 2 expects status 422, body {\"error\":{\"code\":\"habit_not_started\"}}"
+     },
+     {
+      "at": "spec:base/spec.py:1737",
+      "kind": "spec",
+      "what": "scenario:history_empty_and_not_started step 2 passed on the app and expects status 409, body {\"error\":{\"code\":\"habit_not_started\"}}"
+     }
+    ],
+    "file": "spec.py",
+    "id": "t2-eca06b2e58",
+    "kind": "scenario_fails",
+    "line": 1737,
+    "rules": [
+     "R148"
+    ],
+    "status": "determined",
+    "step": 2,
+    "target": "scenario:history_empty_and_not_started",
+    "tier": 2,
+    "why": "status:409->422"
+   }
+  ],
+  "flows": [],
+  "runtime_replay": {
+   "status": "not_applicable: 0 programs"
+  }
+ },
+ "tier3": {
+  "counts": {
+   "by_kind": {
+    "closure": 24,
+    "direct": 5,
+    "insertion": 0,
+    "table_peer": 0
+   },
+   "files": 6,
+   "flows_may_fail": 7,
+   "locations": 29,
+   "seeds": {
+    "machines": 0,
+    "routes": 1,
+    "tables": 0
+   },
+   "unread": 1
+  },
+  "external": {
+   "count": 0
+  },
+  "files": [
+   "internal/db/owned.go",
+   "internal/httpapi/body.go",
+   "internal/httpapi/registry.go",
+   "internal/period/period.go",
+   "internal/progress/compute.go",
+   "internal/progress/routes.go"
+  ],
+  "flows": [
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-09db39abfe",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-d6665f1a53",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits/{}/history"
+    ],
+    "rules": [
+     "R148"
+    ],
+    "target": "flow:wf-09db39abfe",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-21a2d02394",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-1c1f2dfb70",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits/{}/history"
+    ],
+    "rules": [
+     "R148"
+    ],
+    "target": "flow:wf-21a2d02394",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-52994a9544",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-3b00e94478",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits/{}/history"
+    ],
+    "rules": [
+     "R148"
+    ],
+    "target": "flow:wf-52994a9544",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-9ead6d0f00",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-4930ed50ec",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits/{}/history"
+    ],
+    "rules": [
+     "R148"
+    ],
+    "target": "flow:wf-9ead6d0f00",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ebadb4a811",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-67a173a761",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits/{}/history"
+    ],
+    "rules": [
+     "R148"
+    ],
+    "target": "flow:wf-ebadb4a811",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f679309f8a",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-5a9ef4cdb8",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits/{}/history"
+    ],
+    "rules": [
+     "R148"
+    ],
+    "target": "flow:wf-f679309f8a",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-fcf46753f5",
+      "kind": "extract",
+      "what": "a step on a route the change touches: may fail, not a claim"
+     }
+    ],
+    "file": null,
+    "id": "t3-51ac312067",
+    "kind": "may_fail",
+    "line": null,
+    "routes": [
+     "GET /v1/habits/{}/history"
+    ],
+    "rules": [
+     "R148"
+    ],
+    "target": "flow:wf-fcf46753f5",
+    "tier": 3,
+    "why_no_line": "a flow is a recorded request sequence, not a code location"
+   }
+  ],
+  "locations": [
+   {
+    "end_line": 21,
+    "evidence": [
+     {
+      "at": "code:internal/db/owned.go:14",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/db/owned.go",
+    "id": "t3-35f26e3ef2",
+    "kind": "closure",
+    "line": 14,
+    "rules": [
+     "R148"
+    ],
+    "symbol": "OwnedHabit",
+    "target": "scenario:access__history__as_ann",
+    "tier": 3,
+    "via": [
+     "check:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14",
+     "rule:R148 -> scenario:access__history__as_ann / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14",
+     "scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/db:OwnedHabit -> code:internal/db/owned.go:14"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 139,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/body.go:134",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/body.go",
+    "id": "t3-365c47b0d1",
+    "kind": "closure",
+    "line": 134,
+    "rules": [
+     "R148"
+    ],
+    "symbol": "CanonicalUUID",
+    "target": "scenario:access__history__as_ann",
+    "tier": 3,
+    "via": [
+     "check:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134",
+     "rule:R148 -> scenario:access__history__as_ann / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134",
+     "scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:CanonicalUUID -> code:internal/httpapi/body.go:134"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 148,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/body.go:142",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/body.go",
+    "id": "t3-9965df7831",
+    "kind": "closure",
+    "line": 142,
+    "rules": [
+     "R148"
+    ],
+    "symbol": "PathUUID",
+    "target": "scenario:access__history__as_ann",
+    "tier": 3,
+    "via": [
+     "check:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142",
+     "rule:R148 -> scenario:access__history__as_ann / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142",
+     "scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:PathUUID -> code:internal/httpapi/body.go:142"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 41,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:37",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-cfa1da845f",
+    "kind": "closure",
+    "line": 37,
+    "rules": [
+     "R148"
+    ],
+    "symbol": "CallerOf",
+    "target": "scenario:access__history__as_ann",
+    "tier": 3,
+    "via": [
+     "check:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "rule:R148 -> scenario:access__history__as_ann / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37",
+     "scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:CallerOf -> code:internal/httpapi/registry.go:37"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 47,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:45",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-3b106b7ede",
+    "kind": "closure",
+    "line": 45,
+    "rules": [
+     "R148"
+    ],
+    "symbol": "Now",
+    "target": "scenario:access__history__as_ann",
+    "tier": 3,
+    "via": [
+     "check:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "rule:R148 -> scenario:access__history__as_ann / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45",
+     "scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:Deps.Now -> code:internal/httpapi/registry.go:45"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 56,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:50",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-f6a851ac28",
+    "kind": "closure",
+    "line": 50,
+    "rules": [
+     "R148"
+    ],
+    "symbol": "NowCtx",
+    "target": "scenario:access__history__as_ann",
+    "tier": 3,
+    "via": [
+     "check:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "rule:R148 -> scenario:access__history__as_ann / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50",
+     "scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:Deps.NowCtx -> code:internal/httpapi/registry.go:50"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 64,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:59",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-ae9d00431d",
+    "kind": "closure",
+    "line": 59,
+    "rules": [
+     "R148"
+    ],
+    "symbol": "Today",
+    "target": "scenario:access__history__as_ann",
+    "tier": 3,
+    "via": [
+     "check:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59",
+     "rule:R148 -> scenario:access__history__as_ann / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59",
+     "scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:Deps.Today -> code:internal/httpapi/registry.go:59"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 67,
+    "evidence": [
+     {
+      "at": "code:internal/httpapi/registry.go:67",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/httpapi/registry.go",
+    "id": "t3-ae6d51169a",
+    "kind": "closure",
+    "line": 67,
+    "rules": [
+     "R148"
+    ],
+    "symbol": "Q",
+    "target": "scenario:access__history__as_ann",
+    "tier": 3,
+    "via": [
+     "check:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R148 -> scenario:access__history__as_ann / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67",
+     "scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/httpapi:Deps.Q -> code:internal/httpapi/registry.go:67"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 55,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:55",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-ea324c9723",
+    "kind": "closure",
+    "line": 55,
+    "rules": [
+     "R148"
+    ],
+    "symbol": "FormatDate",
+    "target": "scenario:access__history__as_ann",
+    "tier": 3,
+    "via": [
+     "check:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "rule:R148 -> scenario:access__history__as_ann / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55",
+     "scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:FormatDate -> code:internal/period/period.go:55"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 67,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:67",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-b36cdcf255",
+    "kind": "closure",
+    "line": 67,
+    "rules": [
+     "R148"
+    ],
+    "symbol": "Date",
+    "target": "scenario:access__history__as_ann",
+    "tier": 3,
+    "via": [
+     "check:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Date -> code:internal/period/period.go:67",
+     "rule:R148 -> scenario:access__history__as_ann / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Date -> code:internal/period/period.go:67",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Date -> code:internal/period/period.go:67",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Date -> code:internal/period/period.go:67",
+     "scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Date -> code:internal/period/period.go:67"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 70,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:70",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-130b1dcdd5",
+    "kind": "closure",
+    "line": 70,
+    "rules": [
+     "R148"
+    ],
+    "symbol": "AddDays",
+    "target": "scenario:access__history__as_ann",
+    "tier": 3,
+    "via": [
+     "check:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70",
+     "rule:R148 -> scenario:access__history__as_ann / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70",
+     "scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:AddDays -> code:internal/period/period.go:70"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 73,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:73",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-751b25a32d",
+    "kind": "closure",
+    "line": 73,
+    "rules": [
+     "R148"
+    ],
+    "symbol": "Days",
+    "target": "scenario:access__history__as_ann",
+    "tier": 3,
+    "via": [
+     "check:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Days -> code:internal/period/period.go:73",
+     "rule:R148 -> scenario:access__history__as_ann / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Days -> code:internal/period/period.go:73",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Days -> code:internal/period/period.go:73",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Days -> code:internal/period/period.go:73",
+     "scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Days -> code:internal/period/period.go:73"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 81,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:76",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-26290a0e44",
+    "kind": "closure",
+    "line": 76,
+    "rules": [
+     "R148"
+    ],
+    "symbol": "Min",
+    "target": "scenario:access__history__as_ann",
+    "tier": 3,
+    "via": [
+     "check:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Min -> code:internal/period/period.go:76",
+     "rule:R148 -> scenario:access__history__as_ann / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Min -> code:internal/period/period.go:76",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Min -> code:internal/period/period.go:76",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Min -> code:internal/period/period.go:76",
+     "scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Min -> code:internal/period/period.go:76"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 89,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:84",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-e786154867",
+    "kind": "closure",
+    "line": 84,
+    "rules": [
+     "R148"
+    ],
+    "symbol": "Max",
+    "target": "scenario:access__history__as_ann",
+    "tier": 3,
+    "via": [
+     "check:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Max -> code:internal/period/period.go:84",
+     "rule:R148 -> scenario:access__history__as_ann / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Max -> code:internal/period/period.go:84",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Max -> code:internal/period/period.go:84",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Max -> code:internal/period/period.go:84",
+     "scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Max -> code:internal/period/period.go:84"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 112,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:97",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-5b424d708a",
+    "kind": "closure",
+    "line": 97,
+    "rules": [
+     "R148"
+    ],
+    "symbol": "Location",
+    "target": "scenario:access__history__as_ann",
+    "tier": 3,
+    "via": [
+     "check:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "rule:R148 -> scenario:access__history__as_ann / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Location -> code:internal/period/period.go:97",
+     "scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Location -> code:internal/period/period.go:97"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 129,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:122",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-a626ca05d7",
+    "kind": "closure",
+    "line": 122,
+    "rules": [
+     "R148"
+    ],
+    "symbol": "Today",
+    "target": "scenario:access__history__as_ann",
+    "tier": 3,
+    "via": [
+     "check:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Today -> code:internal/period/period.go:122",
+     "rule:R148 -> scenario:access__history__as_ann / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Today -> code:internal/period/period.go:122",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Today -> code:internal/period/period.go:122",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Today -> code:internal/period/period.go:122",
+     "scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Today -> code:internal/period/period.go:122"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 142,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:132",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-1054248f14",
+    "kind": "closure",
+    "line": 132,
+    "rules": [
+     "R148"
+    ],
+    "symbol": "Start",
+    "target": "scenario:access__history__as_ann",
+    "tier": 3,
+    "via": [
+     "check:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Start -> code:internal/period/period.go:132",
+     "rule:R148 -> scenario:access__history__as_ann / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Start -> code:internal/period/period.go:132",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Start -> code:internal/period/period.go:132",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Start -> code:internal/period/period.go:132",
+     "scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Start -> code:internal/period/period.go:132"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 155,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:145",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-ef79d2b336",
+    "kind": "closure",
+    "line": 145,
+    "rules": [
+     "R148"
+    ],
+    "symbol": "End",
+    "target": "scenario:access__history__as_ann",
+    "tier": 3,
+    "via": [
+     "check:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:End -> code:internal/period/period.go:145",
+     "rule:R148 -> scenario:access__history__as_ann / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:End -> code:internal/period/period.go:145",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:End -> code:internal/period/period.go:145",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:End -> code:internal/period/period.go:145",
+     "scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:End -> code:internal/period/period.go:145"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 161,
+    "evidence": [
+     {
+      "at": "code:internal/period/period.go:161",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/period/period.go",
+    "id": "t3-3ced7c745c",
+    "kind": "closure",
+    "line": 161,
+    "rules": [
+     "R148"
+    ],
+    "symbol": "Previous",
+    "target": "scenario:access__history__as_ann",
+    "tier": 3,
+    "via": [
+     "check:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Previous -> code:internal/period/period.go:161",
+     "rule:R148 -> scenario:access__history__as_ann / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Previous -> code:internal/period/period.go:161",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Previous -> code:internal/period/period.go:161",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Previous -> code:internal/period/period.go:161",
+     "scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/period:Previous -> code:internal/period/period.go:161"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 37,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:30",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-4c3799ecb5",
+    "kind": "closure",
+    "line": 30,
+    "rules": [
+     "R148"
+    ],
+    "symbol": "ActiveWindow",
+    "target": "scenario:access__history__as_ann",
+    "tier": 3,
+    "via": [
+     "check:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/progress:ActiveWindow -> code:internal/progress/compute.go:30",
+     "rule:R148 -> scenario:access__history__as_ann / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/progress:ActiveWindow -> code:internal/progress/compute.go:30",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/progress:ActiveWindow -> code:internal/progress/compute.go:30",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/progress:ActiveWindow -> code:internal/progress/compute.go:30",
+     "scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/progress:ActiveWindow -> code:internal/progress/compute.go:30"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 60,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:55",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-2a7a3e0784",
+    "kind": "closure",
+    "line": 55,
+    "rules": [
+     "R148"
+    ],
+    "symbol": "ProRate",
+    "target": "scenario:access__history__as_ann",
+    "tier": 3,
+    "via": [
+     "check:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/progress:ProRate -> code:internal/progress/compute.go:55",
+     "rule:R148 -> scenario:access__history__as_ann / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/progress:ProRate -> code:internal/progress/compute.go:55",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/progress:ProRate -> code:internal/progress/compute.go:55",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/progress:ProRate -> code:internal/progress/compute.go:55",
+     "scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/progress:ProRate -> code:internal/progress/compute.go:55"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 181,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:162",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-67f85c5695",
+    "kind": "closure",
+    "line": 162,
+    "rules": [
+     "R148"
+    ],
+    "symbol": "TargetAt",
+    "target": "scenario:access__history__as_ann",
+    "tier": 3,
+    "via": [
+     "check:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/progress:TargetAt -> code:internal/progress/compute.go:162",
+     "rule:R148 -> scenario:access__history__as_ann / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/progress:TargetAt -> code:internal/progress/compute.go:162",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/progress:TargetAt -> code:internal/progress/compute.go:162",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/progress:TargetAt -> code:internal/progress/compute.go:162",
+     "scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/progress:TargetAt -> code:internal/progress/compute.go:162"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 195,
+    "evidence": [
+     {
+      "at": "code:internal/progress/compute.go:195",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/compute.go",
+    "id": "t3-1d4bdba995",
+    "kind": "closure",
+    "line": 195,
+    "rules": [
+     "R148"
+    ],
+    "symbol": "History",
+    "target": "scenario:access__history__as_ann",
+    "tier": 3,
+    "via": [
+     "check:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/progress:History -> code:internal/progress/compute.go:195",
+     "rule:R148 -> scenario:access__history__as_ann / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/progress:History -> code:internal/progress/compute.go:195",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/progress:History -> code:internal/progress/compute.go:195",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/progress:History -> code:internal/progress/compute.go:195",
+     "scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/progress:History -> code:internal/progress/compute.go:195"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/progress/routes.go:20",
+      "kind": "code",
+      "what": "route registration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "route registration"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t3-fb73c62c9f",
+    "kind": "direct",
+    "line": 20,
+    "rules": [
+     "R148"
+    ],
+    "symbol": null,
+    "target": "scenario:access__history__as_ann",
+    "tier": 3,
+    "via": [
+     "check:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> registered -> code:internal/progress/routes.go:20",
+     "rule:R148 -> scenario:access__history__as_ann / step 1 -> route:GET /v1/habits/{}/history -> registered -> code:internal/progress/routes.go:20",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 1 -> route:GET /v1/habits/{}/history -> registered -> code:internal/progress/routes.go:20",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> registered -> code:internal/progress/routes.go:20",
+     "scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> registered -> code:internal/progress/routes.go:20"
+    ],
+    "what": "route registration"
+   },
+   {
+    "end_line": 32,
+    "evidence": [
+     {
+      "at": "code:internal/progress/routes.go:26",
+      "kind": "code",
+      "what": "call declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "call declaration"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t3-f445158a1b",
+    "kind": "closure",
+    "line": 26,
+    "rules": [
+     "R148"
+    ],
+    "symbol": "liveDates",
+    "target": "scenario:access__history__as_ann",
+    "tier": 3,
+    "via": [
+     "check:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/progress:liveDates -> code:internal/progress/routes.go:26",
+     "rule:R148 -> scenario:access__history__as_ann / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/progress:liveDates -> code:internal/progress/routes.go:26",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 1 -> route:GET /v1/habits/{}/history -> call:streak/internal/progress:liveDates -> code:internal/progress/routes.go:26",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/progress:liveDates -> code:internal/progress/routes.go:26",
+     "scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> call:streak/internal/progress:liveDates -> code:internal/progress/routes.go:26"
+    ],
+    "what": "call declaration"
+   },
+   {
+    "end_line": 113,
+    "evidence": [
+     {
+      "at": "code:internal/progress/routes.go:68",
+      "kind": "code",
+      "what": "handler declaration"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "handler declaration"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t3-3b5f1f847a",
+    "kind": "direct",
+    "line": 68,
+    "rules": [
+     "R148"
+    ],
+    "symbol": "history",
+    "target": "scenario:access__history__as_ann",
+    "tier": 3,
+    "via": [
+     "check:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> handler:progress.handler.history -> code:internal/progress/routes.go:68",
+     "rule:R148 -> scenario:access__history__as_ann / step 1 -> route:GET /v1/habits/{}/history -> handler:progress.handler.history -> code:internal/progress/routes.go:68",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 1 -> route:GET /v1/habits/{}/history -> handler:progress.handler.history -> code:internal/progress/routes.go:68",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> handler:progress.handler.history -> code:internal/progress/routes.go:68",
+     "scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> handler:progress.handler.history -> code:internal/progress/routes.go:68"
+    ],
+    "what": "handler declaration"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/progress/routes.go:70",
+      "kind": "code",
+      "what": "raise 422 validation_failed"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 validation_failed"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t3-37350a78c1",
+    "kind": "direct",
+    "line": 70,
+    "rules": [
+     "R148"
+    ],
+    "symbol": null,
+    "target": "scenario:access__history__as_ann",
+    "tier": 3,
+    "via": [
+     "check:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> raise:422 validation_failed -> code:internal/progress/routes.go:70",
+     "rule:R148 -> scenario:access__history__as_ann / step 1 -> route:GET /v1/habits/{}/history -> raise:422 validation_failed -> code:internal/progress/routes.go:70",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 1 -> route:GET /v1/habits/{}/history -> raise:422 validation_failed -> code:internal/progress/routes.go:70",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> raise:422 validation_failed -> code:internal/progress/routes.go:70",
+     "scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> raise:422 validation_failed -> code:internal/progress/routes.go:70"
+    ],
+    "what": "raise 422 validation_failed"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/progress/routes.go:78",
+      "kind": "code",
+      "what": "raise 422 validation_failed"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 422 validation_failed"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t3-bd69e4ea6c",
+    "kind": "direct",
+    "line": 78,
+    "rules": [
+     "R148"
+    ],
+    "symbol": null,
+    "target": "scenario:access__history__as_ann",
+    "tier": 3,
+    "via": [
+     "check:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> raise:422 validation_failed -> code:internal/progress/routes.go:78",
+     "rule:R148 -> scenario:access__history__as_ann / step 1 -> route:GET /v1/habits/{}/history -> raise:422 validation_failed -> code:internal/progress/routes.go:78",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 1 -> route:GET /v1/habits/{}/history -> raise:422 validation_failed -> code:internal/progress/routes.go:78",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> raise:422 validation_failed -> code:internal/progress/routes.go:78",
+     "scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> raise:422 validation_failed -> code:internal/progress/routes.go:78"
+    ],
+    "what": "raise 422 validation_failed"
+   },
+   {
+    "evidence": [
+     {
+      "at": "code:internal/progress/routes.go:92",
+      "kind": "code",
+      "what": "raise 409 habit_not_started"
+     },
+     {
+      "at": "extract.json",
+      "kind": "extract",
+      "what": "raise 409 habit_not_started"
+     }
+    ],
+    "file": "internal/progress/routes.go",
+    "id": "t3-fe7b682878",
+    "kind": "direct",
+    "line": 92,
+    "rules": [
+     "R148"
+    ],
+    "symbol": null,
+    "target": "scenario:access__history__as_ann",
+    "tier": 3,
+    "via": [
+     "check:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> raise:409 habit_not_started -> code:internal/progress/routes.go:92",
+     "rule:R148 -> scenario:access__history__as_ann / step 1 -> route:GET /v1/habits/{}/history -> raise:409 habit_not_started -> code:internal/progress/routes.go:92",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 1 -> route:GET /v1/habits/{}/history -> raise:409 habit_not_started -> code:internal/progress/routes.go:92",
+     "rule:R148 -> scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> raise:409 habit_not_started -> code:internal/progress/routes.go:92",
+     "scenario:history_empty_and_not_started / step 2 -> route:GET /v1/habits/{}/history -> raise:409 habit_not_started -> code:internal/progress/routes.go:92"
+    ],
+    "what": "raise 409 habit_not_started"
+   }
+  ],
+  "stale": false,
+  "unread": [
+   {
+    "file": "internal/httpapi/registry.go",
+    "kind": "extract_unread",
+    "line": 51,
+    "reason": "interface dispatch: `d.Clock.Now(ctx)` has no single implementation in the module",
+    "what": "call"
+   }
+  ]
+ },
+ "tier4": {
+  "before": {
+   "failing_count": 1,
+   "flows_run": 59,
+   "matches_report": true
+  },
+  "counts": {
+   "failing_after": 0,
+   "flow_before_failed": 0,
+   "flow_changed": 0,
+   "flow_unchanged": 59,
+   "flows_run": 59,
+   "may_fail_unbacked": 0,
+   "regressions": 0,
+   "resolved": 1,
+   "still_failing": 0,
+   "t2_contradicted": 0,
+   "unexpected_regressions": 0,
+   "unreported": 0,
+   "workflow_fails": 0
+  },
+  "failing": [],
+  "flows": [
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-087fea1dbb",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-087fea1dbb",
+    "id": "t4-2931f10e3c",
+    "kind": "flow_unchanged",
+    "name": "create habits > read habits",
+    "rules": [],
+    "target": "flow:wf-087fea1dbb",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-09db39abfe",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-09db39abfe",
+    "id": "t4-9f50a6c59b",
+    "kind": "flow_unchanged",
+    "name": "create habits > read history",
+    "rules": [],
+    "target": "flow:wf-09db39abfe",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-0c6bdd7ab0",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-0c6bdd7ab0",
+    "id": "t4-1c885f053a",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read home",
+    "rules": [],
+    "target": "flow:wf-0c6bdd7ab0",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-11a98b3683",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-11a98b3683",
+    "id": "t4-e2d97e665d",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read completions",
+    "rules": [],
+    "target": "flow:wf-11a98b3683",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-12302559ed",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-12302559ed",
+    "id": "t4-2a985ce4a1",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read nudges",
+    "rules": [],
+    "target": "flow:wf-12302559ed",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-1e4314104c",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-1e4314104c",
+    "id": "t4-a859fd5339",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read habits",
+    "rules": [],
+    "target": "flow:wf-1e4314104c",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-21a2d02394",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-21a2d02394",
+    "id": "t4-58f062be50",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read history",
+    "rules": [],
+    "target": "flow:wf-21a2d02394",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2610c56483",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-2610c56483",
+    "id": "t4-4273ca9643",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read me",
+    "rules": [],
+    "target": "flow:wf-2610c56483",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2818e45412",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-2818e45412",
+    "id": "t4-3dfaac23ef",
+    "kind": "flow_unchanged",
+    "name": "create devices > delete devices",
+    "rules": [],
+    "target": "flow:wf-2818e45412",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2d3eecc464",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-2d3eecc464",
+    "id": "t4-61040e7738",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits",
+    "rules": [],
+    "target": "flow:wf-2d3eecc464",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2da750f4e8",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-2da750f4e8",
+    "id": "t4-f46b2b1605",
+    "kind": "flow_unchanged",
+    "name": "create habits > create batch",
+    "rules": [],
+    "target": "flow:wf-2da750f4e8",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-2f54cb544b",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-2f54cb544b",
+    "id": "t4-7522d9c875",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read me",
+    "rules": [],
+    "target": "flow:wf-2f54cb544b",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3c5a04e0ae",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-3c5a04e0ae",
+    "id": "t4-3d86bfdff2",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read habits",
+    "rules": [],
+    "target": "flow:wf-3c5a04e0ae",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3d2436d2dd",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-3d2436d2dd",
+    "id": "t4-4a533ffe22",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read progress",
+    "rules": [],
+    "target": "flow:wf-3d2436d2dd",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-3de8783507",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-3de8783507",
+    "id": "t4-bc43a91eb1",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read completions",
+    "rules": [],
+    "target": "flow:wf-3de8783507",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-45bfc39e84",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-45bfc39e84",
+    "id": "t4-8426b794fa",
+    "kind": "flow_unchanged",
+    "name": "create habits > read completions",
+    "rules": [],
+    "target": "flow:wf-45bfc39e84",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-4dfc4c5bed",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-4dfc4c5bed",
+    "id": "t4-b84f0fc36c",
+    "kind": "flow_unchanged",
+    "name": "create habits > read habits",
+    "rules": [],
+    "target": "flow:wf-4dfc4c5bed",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-4e49f96210",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-4e49f96210",
+    "id": "t4-999bed9b4b",
+    "kind": "flow_unchanged",
+    "name": "create habits > create batch",
+    "rules": [],
+    "target": "flow:wf-4e49f96210",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-52994a9544",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-52994a9544",
+    "id": "t4-abfc048024",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read history",
+    "rules": [],
+    "target": "flow:wf-52994a9544",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-597f2899e4",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-597f2899e4",
+    "id": "t4-2a3cf2a10a",
+    "kind": "flow_unchanged",
+    "name": "create habits > read completions",
+    "rules": [],
+    "target": "flow:wf-597f2899e4",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5a6bab46c9",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-5a6bab46c9",
+    "id": "t4-eb2b3781a6",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read sync",
+    "rules": [],
+    "target": "flow:wf-5a6bab46c9",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5cf3da443e",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-5cf3da443e",
+    "id": "t4-ac14b64d75",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read progress",
+    "rules": [],
+    "target": "flow:wf-5cf3da443e",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-5eebdfc88b",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-5eebdfc88b",
+    "id": "t4-27855b8b1f",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read progress",
+    "rules": [],
+    "target": "flow:wf-5eebdfc88b",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-6a4cc7a302",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-6a4cc7a302",
+    "id": "t4-0ce52aaf22",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read home > dismiss nudges",
+    "rules": [],
+    "target": "flow:wf-6a4cc7a302",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-6c2282fd50",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-6c2282fd50",
+    "id": "t4-3a619fc723",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read habits",
+    "rules": [],
+    "target": "flow:wf-6c2282fd50",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-717a23507f",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-717a23507f",
+    "id": "t4-b81dbf0d6b",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read nudges",
+    "rules": [],
+    "target": "flow:wf-717a23507f",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-80123a60e5",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-80123a60e5",
+    "id": "t4-85854f059f",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read habits",
+    "rules": [],
+    "target": "flow:wf-80123a60e5",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-801d529a0f",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-801d529a0f",
+    "id": "t4-021eb02164",
+    "kind": "flow_unchanged",
+    "name": "create devices > delete devices",
+    "rules": [],
+    "target": "flow:wf-801d529a0f",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-8ae8af75df",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-8ae8af75df",
+    "id": "t4-0a37afe047",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read habits",
+    "rules": [],
+    "target": "flow:wf-8ae8af75df",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-8b2744d526",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-8b2744d526",
+    "id": "t4-37a77c8aa0",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits",
+    "rules": [],
+    "target": "flow:wf-8b2744d526",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-9ead6d0f00",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-9ead6d0f00",
+    "id": "t4-c4dd5a2aa1",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read history",
+    "rules": [],
+    "target": "flow:wf-9ead6d0f00",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a1793fed29",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-a1793fed29",
+    "id": "t4-f6bc0e569c",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits",
+    "rules": [],
+    "target": "flow:wf-a1793fed29",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a7ae5cb208",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-a7ae5cb208",
+    "id": "t4-42fc47ef3a",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions",
+    "rules": [],
+    "target": "flow:wf-a7ae5cb208",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a8966be4b8",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-a8966be4b8",
+    "id": "t4-d631ce2518",
+    "kind": "flow_unchanged",
+    "name": "create register > create login",
+    "rules": [],
+    "target": "flow:wf-a8966be4b8",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-a9ac9b88a4",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-a9ac9b88a4",
+    "id": "t4-8358111868",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read sync",
+    "rules": [],
+    "target": "flow:wf-a9ac9b88a4",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b2acc9eac6",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-b2acc9eac6",
+    "id": "t4-2d00866129",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read completions",
+    "rules": [],
+    "target": "flow:wf-b2acc9eac6",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b595a756b6",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-b595a756b6",
+    "id": "t4-15fb9d99ca",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read home",
+    "rules": [],
+    "target": "flow:wf-b595a756b6",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-b95fd71de1",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-b95fd71de1",
+    "id": "t4-190be5927b",
+    "kind": "flow_unchanged",
+    "name": "create habits > read home",
+    "rules": [],
+    "target": "flow:wf-b95fd71de1",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-bd46b71ee2",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-bd46b71ee2",
+    "id": "t4-782b4c8124",
+    "kind": "flow_unchanged",
+    "name": "create habits > read progress",
+    "rules": [],
+    "target": "flow:wf-bd46b71ee2",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-c00e2afaf3",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-c00e2afaf3",
+    "id": "t4-12f8c801ce",
+    "kind": "flow_unchanged",
+    "name": "create habits > read habits",
+    "rules": [],
+    "target": "flow:wf-c00e2afaf3",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-c675dd6cb3",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-c675dd6cb3",
+    "id": "t4-eab24d3d4a",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read sync",
+    "rules": [],
+    "target": "flow:wf-c675dd6cb3",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-cc7886ea28",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-cc7886ea28",
+    "id": "t4-6809546514",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits",
+    "rules": [],
+    "target": "flow:wf-cc7886ea28",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ce853d194f",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-ce853d194f",
+    "id": "t4-4229965607",
+    "kind": "flow_unchanged",
+    "name": "create habits > read sync",
+    "rules": [],
+    "target": "flow:wf-ce853d194f",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-cf27dadc73",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-cf27dadc73",
+    "id": "t4-5878e34622",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read home",
+    "rules": [],
+    "target": "flow:wf-cf27dadc73",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d06e3e8777",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-d06e3e8777",
+    "id": "t4-5adba447a9",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read nudges",
+    "rules": [],
+    "target": "flow:wf-d06e3e8777",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d2b6d84725",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-d2b6d84725",
+    "id": "t4-3a0e360245",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions",
+    "rules": [],
+    "target": "flow:wf-d2b6d84725",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d2fcd76bcd",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-d2fcd76bcd",
+    "id": "t4-d72cb23ad9",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read habits",
+    "rules": [],
+    "target": "flow:wf-d2fcd76bcd",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d650036584",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-d650036584",
+    "id": "t4-90d71c9f07",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read habits",
+    "rules": [],
+    "target": "flow:wf-d650036584",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-d8340207d1",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-d8340207d1",
+    "id": "t4-ec4c4095bf",
+    "kind": "flow_unchanged",
+    "name": "create habits > delete habits > read home",
+    "rules": [],
+    "target": "flow:wf-d8340207d1",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-dbac494b10",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-dbac494b10",
+    "id": "t4-77f0d4d3d3",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read progress",
+    "rules": [],
+    "target": "flow:wf-dbac494b10",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-de433cd704",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-de433cd704",
+    "id": "t4-be16adb885",
+    "kind": "flow_unchanged",
+    "name": "create habits > read progress",
+    "rules": [],
+    "target": "flow:wf-de433cd704",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-e3249cec66",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-e3249cec66",
+    "id": "t4-6c01f475dc",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > update habits > delete completions > delete habits",
+    "rules": [],
+    "target": "flow:wf-e3249cec66",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ee191140a0",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-ee191140a0",
+    "id": "t4-296f29670e",
+    "kind": "flow_unchanged",
+    "name": "create habits > update habits > read completions",
+    "rules": [],
+    "target": "flow:wf-ee191140a0",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f679309f8a",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-f679309f8a",
+    "id": "t4-c14e92707a",
+    "kind": "flow_unchanged",
+    "name": "create habits > read history",
+    "rules": [],
+    "target": "flow:wf-f679309f8a",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f67bf44692",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-f67bf44692",
+    "id": "t4-cbeeb59799",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits",
+    "rules": [],
+    "target": "flow:wf-f67bf44692",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-f961306c88",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-f961306c88",
+    "id": "t4-ae246762f6",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read habits",
+    "rules": [],
+    "target": "flow:wf-f961306c88",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-fc7d0a0772",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-fc7d0a0772",
+    "id": "t4-ba3450bf06",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits",
+    "rules": [],
+    "target": "flow:wf-fc7d0a0772",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-fcf46753f5",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-fcf46753f5",
+    "id": "t4-c232b8a7d9",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > read history",
+    "rules": [],
+    "target": "flow:wf-fcf46753f5",
+    "tier": 4
+   },
+   {
+    "evidence": [
+     {
+      "at": "flow:wf-ffaa047bf2",
+      "kind": "check",
+      "what": "passes before and after"
+     }
+    ],
+    "flow": "wf-ffaa047bf2",
+    "id": "t4-8a0632bb11",
+    "kind": "flow_unchanged",
+    "name": "create habits > completions habits > delete completions > read sync",
+    "rules": [],
+    "target": "flow:wf-ffaa047bf2",
+    "tier": 4
+   }
+  ],
+  "implementation": {
+   "branch_build": "rebuild/i45c5fe88e0",
+   "branch_spec": "implement/i45c5fe88e0",
+   "build_tree": "278a31b75dfb17d1e231b00f881edc547ac084fe",
+   "diff_sha256": "1cb0a8c912304058d4667a7d04b69d423e657f13b79bb40d51cab049e9ccb737",
+   "files": [
+    "internal/progress/routes.go"
+   ],
+   "spec_tree": "376055cb43d1f745c77450644e8148087ecd1013"
+  },
+  "notes": [],
+  "owner": {
+   "checked": [
+    "branch",
+    "cached",
+    "head",
+    "refs",
+    "stash",
+    "status",
+    "worktrees"
+   ],
+   "untouched": true
+  },
+  "rebuild": {
+   "agent": "oracle",
+   "gates": [
+    {
+     "command": "./check.sh",
+     "exit_code": 0
+    }
+   ],
+   "model": null,
+   "rounds": 1,
+   "status": "passed"
+  },
+  "regressions": [],
+  "resolved": [
+   {
+    "case": "history_empty_and_not_started / step 2",
+    "endpoint": "GET /v1/habits/00000000-0000-4000-8000-000000000101/history",
+    "evidence": [
+     {
+      "at": "check:D:history_empty_and_not_started / step 2",
+      "kind": "check",
+      "what": "[D silent] GET /v1/habits/00000000-0000-4000-8000-000000000101/history as ann (history_empty_and_not_started / step 2)"
+     }
+    ],
+    "id": "t4-72e79e7a2e",
+    "kind": "resolved",
+    "layer": "D",
+    "rule": "scenario: history_empty_and_not_started",
+    "rules": [
+     "R148"
+    ],
+    "summary": "[D silent] GET /v1/habits/00000000-0000-4000-8000-000000000101/history as ann (history_empty_and_not_started / step 2)",
+    "target": "scenario:history_empty_and_not_started",
+    "tier": 4
+   }
+  ],
+  "still_failing": [],
+  "t2_check": [
+   {
+    "claim": "scenario:history_empty_and_not_started fails at step <= 2",
+    "confirmed": true,
+    "evidence": [
+     {
+      "at": "check:D:scenario:history_empty_and_not_started",
+      "kind": "check",
+      "what": "fails before the build"
+     }
+    ],
+    "id": "t4-495bce958c",
+    "kind": "t2_scenario_claim",
+    "rules": [
+     "R148"
+    ],
+    "target": "scenario:history_empty_and_not_started",
+    "tier": 4
+   }
+  ],
+  "t2_confirmed": true,
+  "t3_vs_edit": {
+   "declarations": {
+    "listed": [
+     "internal/db/owned.go:OwnedHabit",
+     "internal/httpapi/body.go:CanonicalUUID",
+     "internal/httpapi/body.go:PathUUID",
+     "internal/httpapi/registry.go:CallerOf",
+     "internal/httpapi/registry.go:Deps.Now",
+     "internal/httpapi/registry.go:Deps.NowCtx",
+     "internal/httpapi/registry.go:Deps.Q",
+     "internal/httpapi/registry.go:Deps.Today",
+     "internal/period/period.go:AddDays",
+     "internal/period/period.go:Date",
+     "internal/period/period.go:Days",
+     "internal/period/period.go:End",
+     "internal/period/period.go:FormatDate",
+     "internal/period/period.go:Location",
+     "internal/period/period.go:Max",
+     "internal/period/period.go:Min",
+     "internal/period/period.go:Previous",
+     "internal/period/period.go:Start",
+     "internal/period/period.go:Today",
+     "internal/progress/compute.go:ActiveWindow",
+     "internal/progress/compute.go:History",
+     "internal/progress/compute.go:ProRate",
+     "internal/progress/compute.go:TargetAt",
+     "internal/progress/routes.go:Register",
+     "internal/progress/routes.go:handler.history",
+     "internal/progress/routes.go:liveDates"
+    ],
+    "precision": 0.038,
+    "recall": 1.0,
+    "touched": [
+     "internal/progress/routes.go:handler.history"
+    ]
+   },
+   "files": {
+    "hit": [
+     "internal/progress/routes.go"
+    ],
+    "listed": [
+     "internal/db/owned.go",
+     "internal/httpapi/body.go",
+     "internal/httpapi/registry.go",
+     "internal/period/period.go",
+     "internal/progress/compute.go",
+     "internal/progress/routes.go"
+    ],
+    "missed": [],
+    "precision": 0.167,
+    "recall": 1.0,
+    "touched": [
+     "internal/progress/routes.go"
+    ]
+   },
+   "status": "run"
+  },
+  "verdict": "pass"
+ },
+ "tiers": {
+  "1": "run",
+  "2": "run",
+  "3": "run",
+  "4": "run"
+ }
+}
