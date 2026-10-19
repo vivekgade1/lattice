@@ -1,0 +1,71 @@
+{
+ "_note": "Amendment 2's list (prereg section 8): the layer-A differences K1 and K2 cause on the existing modules, by module and policy. PB-G passes only for these keys. `_routes_changed` documents the routes whose reach became complete or whose root changed (a dump of 978b468 and of this tree, derived policy per module).",
+ "fx/goextract": {
+  "derived": [
+   "GO801|DELETE /api/items/:id|Item"
+  ]
+ },
+ "_routes_changed": {
+  "fx_goextract": [
+   "DELETE /api/items/:id: skipped -> judged (root Handle.func1 -> removeItem.func1)",
+   "GET /api/stats: skipped -> judged (root Handle.func1 -> stats.func1)"
+  ],
+  "fx_goparity3": [
+   "GET /m1/w/:id: skipped -> judged (root GetWidgetM1.func1 -> GetWidgetM1.func1)",
+   "GET /w1/:id: skipped -> judged (root Handle.func1 -> handler.getW1)",
+   "GET /w2/:id: skipped -> judged (root Handle.func1 -> handler.getW2)",
+   "GET /w4/:id: skipped -> skipped (root HandleMsg.func1 -> handler.getW4)"
+  ],
+  "jobsched": [
+   "DELETE /applications/:id/members/:user_id: skipped -> judged (root App.deleteMember -> App.deleteMember)",
+   "GET /applications: skipped -> judged (root App.listApplications -> App.listApplications)",
+   "GET /applications/:id: skipped -> judged (root App.getApplication -> App.getApplication)",
+   "GET /applications/:id/jobs/:job_id/runs: skipped -> judged (root App.listRuns -> App.listRuns)",
+   "GET /applications/:id/members/:user_id: skipped -> judged (root App.getMember -> App.getMember)",
+   "GET /applications/:id/runs/:run_id: skipped -> judged (root App.getRun -> App.getRun)",
+   "GET /users/me: skipped -> judged (root App.me -> App.me)",
+   "POST /auth/login: skipped -> judged (root App.login -> App.login)"
+  ],
+  "spec_goginapp": [
+   "POST /login: skipped -> judged (root Login.func1 -> Login.func1)"
+  ],
+  "spec_gotickets": [
+   "GET /handoffs: skipped -> judged (root ListHandoffs.func1 -> ListHandoffs.func1)",
+   "GET /me: skipped -> judged (root Me.func1 -> Me.func1)",
+   "GET /tickets: skipped -> judged (root ListTickets.func1 -> ListTickets.func1)",
+   "GET /tickets/:tid: skipped -> judged (root GetTicket.func1 -> GetTicket.func1)",
+   "POST /login: skipped -> judged (root Login.func1 -> Login.func1)",
+   "POST /queues/:qid/tickets: skipped -> judged (root CreateTicket.func1 -> CreateTicket.func1)",
+   "POST /tickets/:tid/close: skipped -> judged (root CloseTicket.func1 -> CloseTicket.func1)",
+   "POST /tickets/:tid/handoffs: skipped -> judged (root CreateHandoff.func1 -> CreateHandoff.func1)",
+   "POST /tickets/:tid/reopen: skipped -> judged (root ReopenTicket.func1 -> ReopenTicket.func1)"
+  ],
+  "streak": [
+   "DELETE /devices/:id: skipped -> judged (root Handle.func1 -> handler.deleteDevice)",
+   "DELETE /habits/:id: skipped -> skipped (root Handle.func1 -> handler.remove)",
+   "DELETE /habits/:id/completions/:cid: skipped -> skipped (root Handle.func1 -> handler.remove)",
+   "DELETE /me: skipped -> judged (root Handle.func1 -> handler.remove)",
+   "GET /habits: skipped -> skipped (root Handle.func1 -> handler.list)",
+   "GET /habits/:id: skipped -> judged (root Handle.func1 -> handler.get)",
+   "GET /habits/:id/completions: skipped -> skipped (root Handle.func1 -> handler.list)",
+   "GET /habits/:id/history: skipped -> skipped (root Handle.func1 -> handler.history)",
+   "GET /habits/:id/progress: skipped -> skipped (root Handle.func1 -> handler.progress)",
+   "GET /home: skipped -> skipped (root Handle.func1 -> handler.home)",
+   "GET /me: skipped -> judged (root Handle.func1 -> handler.get)",
+   "GET /nudges: skipped -> skipped (root Handle.func1 -> handler.list)",
+   "GET /sync: skipped -> judged (root Handle.func1 -> handler.sync)",
+   "PATCH /habits/:id: skipped -> skipped (root Handle.func1 -> handler.patch)",
+   "POST /auth/login: skipped -> skipped (root Handle.func1 -> handler.login)",
+   "POST /auth/logout: skipped -> skipped (root Handle.func1 -> handler.logout)",
+   "POST /auth/refresh: skipped -> skipped (root Handle.func1 -> handler.refresh)",
+   "POST /auth/register: skipped -> skipped (root Handle.func1 -> handler.register)",
+   "POST /completions/batch: skipped -> skipped (root Handle.func1 -> handler.batch)",
+   "POST /devices: skipped -> skipped (root Handle.func1 -> handler.postDevice)",
+   "POST /habits: skipped -> skipped (root Handle.func1 -> handler.create)",
+   "POST /habits/:id/completions: skipped -> skipped (root Handle.func1 -> handler.create)",
+   "POST /nudges/:id/dismiss: skipped -> skipped (root Handle.func1 -> handler.dismiss)",
+   "PUT /me: skipped -> judged (root Handle.func1 -> handler.put)",
+   "PUT /test/clock: skipped -> skipped (root Handle.func1 -> setTestClock.func1)"
+  ]
+ }
+}
