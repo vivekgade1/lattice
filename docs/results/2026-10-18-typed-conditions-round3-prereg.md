@@ -425,3 +425,13 @@ that agree with the truth cells; disagreements are findings, not edits); the set
 was not tuned on it) but not for the builder of the runner; PS rows are report-only as registered ("not part of this round's gate"),
 the gate verdict of Spike H is unchanged. The author's one truth correction made after a run and before the manifest (R56 on
 `m_restore_limit_skipped`) is disclosed. Transition forms for Streak are not expressible (a form-language limit, a finding).
+
+## Amendment (library fix before the Streak scored run, orchestrator, 2026-10-18)
+The Streak runner's preflight found that the round-3 library generates `Habit.deleted_at == None` for four row-limit forms
+(F28, F29, F33, F35), refused by the validator (S008) and by `forms check` (F004); the strict G could not run. A minimal fix
+(+8/-1 in `lattice/spec/forms.py` only: `None` in a row_limit `where` object types against a nullable column and is generated as
+`is_null(...)`; NOT NULL columns and wrongly typed literals still give F004; generated output for forms without None is
+byte-identical, pinned by sha256 in `tests/spec/test_forms_none_literal.py`) was made BEFORE any Streak scored run. The
+Streak arm is therefore run on the fixed library; the pre-fix refusal is finding one of the arm. `forms.py` sha256 after the fix
+`3e2cb2f9...4c54`; the runner (sha256 in `FREEZE`) is frozen with the library hashes it depends on. The round 1-3 frozen
+runners pin the old library hash and cannot run on this tree; their regression is the unit tests.
