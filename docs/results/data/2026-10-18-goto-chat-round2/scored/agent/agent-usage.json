@@ -1,0 +1,73 @@
+{
+ "model": "sonnet",
+ "max_turns": 12,
+ "session_timeout_s": 600,
+ "usd_cap": 8.0,
+ "arms": {
+  "smoke": {
+   "wall_s": 19.2,
+   "n_events": 17,
+   "tools": [
+    "mcp__lattice__spec_ask",
+    "mcp__lattice__workflow_find",
+    "mcp__lattice__model_get",
+    "Grep",
+    "Read"
+   ],
+   "partial_text_events": 0,
+   "cost_usd": 0.3919019,
+   "turns": 6,
+   "input_tokens": 10,
+   "output_tokens": 1545,
+   "cache_read_tokens": 315199,
+   "cache_creation_tokens": 86228,
+   "routed": false,
+   "routed_kind": null,
+   "check": {
+    "kept": 28,
+    "supported": 0,
+    "labelled": 0,
+    "replaced_item": 0,
+    "replaced_tier3": 0,
+    "replaced_quote": 0,
+    "replaced_replay": 0,
+    "replaced_element": 1,
+    "withheld": 1,
+    "appended": 0,
+    "speculative_hedge": 0,
+    "unknown_id": 0
+   },
+   "status": "ok",
+   "cap": 0.35,
+   "within_cap": false
+  }
+ },
+ "notes": [],
+ "status": "partial",
+ "stopped": "smoke question: ok $0.392 (cap 0.35)",
+ "asked": 0,
+ "ok": 0,
+ "of": 64,
+ "routed": 0,
+ "spent_usd_list_estimate": 0.391902,
+ "ledger_entries": 1,
+ "per_arm_usd": {
+  "smoke": 0.3919,
+  "gated": 0,
+  "ablation": 0,
+  "oneshot": 0,
+  "observe": 0
+ },
+ "input_tokens": 0,
+ "output_tokens": 0,
+ "cache_read_tokens": 0,
+ "cache_creation_tokens": 0,
+ "turns": 0,
+ "wall_s": 0,
+ "partial_text_events": 0,
+ "change_impact_calls": 0,
+ "per_question": {},
+ "ablation": {},
+ "oneshot": {},
+ "observe": {}
+}

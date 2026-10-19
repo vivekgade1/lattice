@@ -1,0 +1,12 @@
+{
+ "cap": 8.0,
+ "spent": 0.391902,
+ "entries": [
+  {
+   "arm": "smoke",
+   "qid": "smoke",
+   "usd": 0.391902,
+   "status": "ok"
+  }
+ ]
+}

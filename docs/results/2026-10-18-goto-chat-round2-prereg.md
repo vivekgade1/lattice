@@ -546,3 +546,12 @@ and H questions, as built. (7) A machine state NAME such as `failed` (not a clai
 exempt only in the report-only lenient count; the question set's wording therefore tests whether the model/checker can say it as a quoted
 state name, and a miss is reported, not excused. (8)-(11) accepted as disclosed. The unused first draft `chat2-questions/candidates/` (a guard
 hook blocked its deletion) is excluded from the manifest and ignored.
+
+## Amendment 3 (orchestrator ruling on the smoke overshoot, 2026-10-18, after the qset stage and before the gated arm)
+The smoke question (a round-1 development question, not part of the 64) cost USD 0.392 on the CLI's list estimate against its USD 0.35
+guard (12% over, a cache-creation cost the cap could not foresee) and the runner stopped by design. **Waived:** the smoke guard exists to
+catch a runaway session, not to forbid a 12% estimate difference; the registered USD 8.00 total cap is the binding budget and the ledger
+already carries USD 0.392 of it. The gated 64, ablation, one-shot and the 2 observe questions run in that order while budget remains. G1
+(30/30) and G2 (16/16, 0 claims, 0 model calls) passed on the blind set; the stage's own scorer call failed only because it looked for the
+round-1 scorer beside the question directory, and the collected, unchanged answer files were scored once with `--r1-scorer` pointing at the
+hash-checked `frozen-r1/goto_score.py` (disclosed; no rerun of the stage). The builder's accidental `claude` CLI launch is disclosed.
