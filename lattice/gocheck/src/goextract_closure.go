@@ -105,6 +105,7 @@ type closureInfo struct {
 	bearer   bool
 	authHdr  bool
 	bcrypt   *bcryptUse
+	plainPw  *bcryptUse // a plain (constant-time or ==) compare of a stored password column: the login of an app that does not hash
 	jsonTok  string
 	encoding string
 	admin    bool
