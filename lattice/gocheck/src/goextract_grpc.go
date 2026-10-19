@@ -16,6 +16,7 @@ import (
 	"go/ast"
 	"go/token"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 )
@@ -116,6 +117,20 @@ type xInterceptor struct {
 	Prefix  []string `json:"public_prefix,omitempty"`
 	Reason  string   `json:"reason,omitempty"`
 	Chained bool     `json:"chained"`
+
+	Option *xOptGate `json:"option,omitempty"` // E4b: the skip condition reads a method option
+	codes  []xCode   // E3d: the codes the refusal answers
+}
+
+// xOptGate is a skip condition `<read of the extension> ==|!= <Enum>_<Value>` (E4b); Guard is a literal
+// namespace prefix whose methods the audience helper answers the skip value for (negated when Neg).
+type xOptGate struct {
+	Ext   string `json:"extension"`
+	Op    string `json:"op"`
+	Value string `json:"value"`
+	Zero  string `json:"zero"`
+	Guard string `json:"guard_prefix,omitempty"`
+	Neg   bool   `json:"guard_negated,omitempty"`
 }
 
 type xRegistration struct {
@@ -157,6 +172,9 @@ type grpcDesc struct {
 	streams []string
 	file    string
 	line    int
+	setLit  bool    // E1.3: Methods was replaced by a literal: an rpc outside it is not served
+	setBad  bool    // E1.3: Methods was built in a way that is not read
+	wrap    []*Func // E1.4: the functions assigned to the Handler of the copied methods
 }
 
 type grpcReg struct {
@@ -218,6 +236,9 @@ func (g *gx) descOf(f *File, e *Env, x ast.Expr) *grpcDesc {
 	x = unparen(x)
 	if u, ok := x.(*ast.UnaryExpr); ok && u.Op == token.AND {
 		x = unparen(u.X)
+	}
+	if c, ok := x.(*ast.CallExpr); ok {
+		return g.descFromFunc(e, c, 0)
 	}
 	var lit *ast.CompositeLit
 	var lf *File
@@ -484,12 +505,14 @@ func (w *grpcWalk) scan(fn *Func) {
 func (w *grpcWalk) built(fn *Func, e *Env, x ast.Expr, call bool) {
 	switch t := unparen(x).(type) {
 	case *ast.Ident:
-		if _, local := e.lookup(t.Name); !local && fn.File.Pkg.Types[t.Name] != nil {
+		if _, local := e.lookup(t.Name); !local && !call && fn.File.Pkg.Types[t.Name] != nil {
 			w.inst[t.Name] = true
 		}
 	case *ast.SelectorExpr:
 		if path, ok := impPath(fn.File, e, t.X); ok && w.g.m.ByImport[path] != nil {
-			w.inst[t.Sel.Name] = w.g.m.ByImport[path].Types[t.Sel.Name] != nil
+			if !call { // Q13: a conversion T(f) no longer counts as building T
+				w.inst[t.Sel.Name] = w.g.m.ByImport[path].Types[t.Sel.Name] != nil
+			}
 		} else if call && !ok {
 			w.dyn[t.Sel.Name] = true
 		}
@@ -559,21 +582,27 @@ func (w *grpcWalk) callSites(fn *Func, all bool) (out []site) {
 	return
 }
 
-// argsFor answers what the calls pass for parameter name of fn (or of the function fn is a literal in).
-func (w *grpcWalk) argsFor(fn *Func, name string, all bool) (out []ee) {
+// paramOf answers the function around fn (fn itself, else its parents) that has a parameter name, and its index.
+func paramOf(fn *Func, name string) (*Func, int) {
 	for o := fn; o != nil; o = o.Parent {
 		for i, p := range o.Params() {
-			if p.name != name {
-				continue
+			if p.name == name {
+				return o, i
 			}
-			_, variadic := p.typ.(*ast.Ellipsis)
-			out = []ee{} // a parameter nobody passes is no value
-			for _, s := range w.callSites(o, all) {
-				for j := i; j < len(s.c.Args) && (variadic || j == i); j++ {
-					out = append(out, ee{s.e, s.c.Args[j]})
-				}
+		}
+	}
+	return nil, -1
+}
+
+// argsFor answers what the calls pass for parameter name of fn (or of the function fn is a literal in).
+func (w *grpcWalk) argsFor(fn *Func, name string, all bool) (out []ee) {
+	if o, i := paramOf(fn, name); o != nil {
+		_, variadic := o.Params()[i].typ.(*ast.Ellipsis)
+		out = []ee{} // a parameter nobody passes is no value
+		for _, s := range w.callSites(o, all) {
+			for j := i; j < len(s.c.Args) && (variadic || j == i); j++ {
+				out = append(out, ee{s.e, s.c.Args[j]})
 			}
-			return
 		}
 	}
 	return
@@ -667,7 +696,9 @@ func (g *gx) findGrpcRegistrations(w *grpcWalk) (regs []*grpcReg, dropped []xExc
 			}
 			r.impl, r.fn, r.e, r.call = call.Args[1], fn, e, call
 			rs := []*grpcReg{r}
-			if dp, ip := paramAt(fn, call.Args[0]), paramAt(fn, call.Args[1]); fn.Lit == nil && (ip >= 0 || dp >= 0 && r.desc == nil) {
+			if os := g.optionRegs(w, r, call, fn); os != nil {
+				rs = os // E2
+			} else if dp, ip := paramAt(fn, call.Args[0]), paramAt(fn, call.Args[1]); fn.Lit == nil && (ip >= 0 || dp >= 0 && r.desc == nil) {
 				rs = nil // D1.1: a descriptor or impl that is a parameter is read at each wired call of the helper
 				for _, s := range w.callSites(fn, false) {
 					c := *r
@@ -720,6 +751,83 @@ func (g *gx) findGrpcRegistrations(w *grpcWalk) (regs []*grpcReg, dropped []xExc
 		uniq = append(uniq, r)
 	}
 	return uniq, dropped, unknown
+}
+
+// optionRegs (E2) reads `RegisterService(e.desc, e.impl)` (or `Register<X>Server(r, e.impl)`) in a builder
+// that ranges over a field its option functions fill as one registration per wired call of those
+// options, descriptor by descOf (E1) and implementation by implType (D1.2). nil: the call has no such shape.
+func (g *gx) optionRegs(w *grpcWalk, r *grpcReg, call *ast.CallExpr, fn *Func) (rs []*grpcReg) {
+	e := g.m.EnvOf(fn)
+	impl, _ := unparen(call.Args[1]).(*ast.SelectorExpr)
+	desc, _ := unparen(call.Args[0]).(*ast.SelectorExpr)
+	if impl == nil || r.svc && desc == nil {
+		return nil
+	}
+	var rng *ast.RangeStmt
+	ast.Inspect(fn.Body, func(n ast.Node) bool {
+		if s, ok := n.(*ast.RangeStmt); ok && g.src(s.Value) == g.src(impl.X) {
+			rng = s
+		}
+		return rng == nil
+	})
+	if rng == nil {
+		return nil
+	}
+	fs, _ := unparen(rng.X).(*ast.SelectorExpr)
+	if fs == nil {
+		return nil
+	}
+	bt, et := g.m.Infer(e, fs.X).deref().rowTypeAny(), g.m.Infer(e, impl.X).deref().rowTypeAny()
+	if bt == nil || et == nil {
+		return nil
+	}
+	rs = []*grpcReg{}
+	for _, fl := range w.fieldFlows(bt, fs.Sel.Name) {
+		cl, _ := unparen(fl.x).(*ast.CompositeLit)
+		if cl == nil {
+			return nil
+		}
+		ix, dx := fieldExpr(cl, et, impl.Sel.Name), ast.Expr(nil)
+		if desc != nil {
+			dx = fieldExpr(cl, et, desc.Sel.Name)
+		}
+		if ix == nil || r.svc && dx == nil {
+			return nil
+		}
+		// each entry value is fixed in the option function, or one of its parameters: read at each wired call
+		owner, di, ii := (*Func)(nil), -1, -1
+		if id, ok := unparen(ix).(*ast.Ident); ok {
+			owner, ii = paramOf(fl.e.fn, id.Name)
+		}
+		if id, ok := unparen(dx).(*ast.Ident); ok && dx != nil {
+			if o, i := paramOf(fl.e.fn, id.Name); o != nil {
+				owner, di = o, i
+			}
+		}
+		sites := []site{{fn: fl.e.fn, e: fl.e}}
+		if owner != nil {
+			sites = w.callSites(owner, false)
+		}
+		for _, s := range sites {
+			c := *r
+			c.fn, c.e, c.call, c.impl = s.fn, s.e, s.c, ix
+			if c.call == nil {
+				c.call = call
+			}
+			c.via = fmt.Sprintf("%s via %s:%d", r.via, fn.File.Rel, g.line(call.Pos()))
+			if ii >= 0 && ii < len(s.c.Args) {
+				c.impl = s.c.Args[ii]
+			}
+			if r.svc {
+				c.desc = g.descOf(fl.e.fn.File, fl.e, dx)
+				if di >= 0 && di < len(s.c.Args) {
+					c.desc = g.descOf(s.fn.File, s.e, s.c.Args[di])
+				}
+			}
+			rs = append(rs, &c)
+		}
+	}
+	return rs
 }
 
 // implType answers the struct type a registration's second argument is.
@@ -835,10 +943,13 @@ func (g *gx) findGrpc() {
 
 	gr.Gateway = g.findGateways(gr.Services)
 
-	run := &grpcRun{memo: map[*Func]*errSrc{}, busy: map[*Func]bool{}}
 	var recs []*routeRec
 	for _, svc := range gr.Services {
 		reg := byService[svc.Name]
+		run := &grpcRun{memo: map[*Func]*errSrc{}, busy: map[*Func]bool{}}
+		if reg != nil && reg.desc != nil && len(reg.desc.wrap) > 0 {
+			run.tab = w.sentTable(reg.desc.wrap...) // E1.4: the wrapper translates this service's errors only
+		}
 		var ti *TypeInfo
 		if reg != nil {
 			ti = g.implType(reg.e, reg.impl, 0)
@@ -862,6 +973,15 @@ func (g *gx) findGrpc() {
 				continue
 			case reg == nil:
 				r.State = "not_registered"
+				continue
+			case reg.desc != nil && reg.desc.setBad:
+				r.State = "unread"
+				x := xUnread{File: reg.desc.file, Line: reg.desc.line, What: "descriptor_methods_not_literal", Reason: "the Methods of the copied descriptor of " + svc.Name + " are not a literal set"}
+				r.Unread = append(r.Unread, x)
+				g.addUnread(x.File, x.Line, x.What, x.Reason)
+				continue
+			case reg.desc != nil && reg.desc.setLit && !slices.Contains(reg.desc.methods, r.Name):
+				r.State = "not_registered" // the registered descriptor does not serve it
 				continue
 			case ti == nil:
 				r.State = "unread"
@@ -893,7 +1013,7 @@ func (g *gx) findGrpc() {
 			g.fillRPC(r, h, ci, es, run)
 		}
 	}
-	g.rpcAuth(gr, ics, run)
+	g.rpcAuth(gr, ics, &grpcRun{memo: map[*Func]*errSrc{}, busy: map[*Func]bool{}})
 
 	// state writes rooted at the rpcs: the existing finder, run once more with the rpcs as the
 	// route list, then merged in place of the roots the HTTP run gave the same writes
@@ -930,11 +1050,9 @@ func (g *gx) findGrpc() {
 	g.res.Grpc = gr
 }
 
-// fillRPC fills the closure-derived facts of one implemented rpc.
-func (g *gx) fillRPC(r *xRPC, h *Func, ci *closureInfo, es *errSrc, run *grpcRun) {
-	es = g.translated(es)
-	sort.SliceStable(es.codes, func(i, j int) bool {
-		a, b := es.codes[i], es.codes[j]
+func sortCodes(cs []xCode) {
+	sort.SliceStable(cs, func(i, j int) bool {
+		a, b := cs[i], cs[j]
 		if a.Number != b.Number {
 			return a.Number < b.Number
 		}
@@ -943,6 +1061,12 @@ func (g *gx) fillRPC(r *xRPC, h *Func, ci *closureInfo, es *errSrc, run *grpcRun
 		}
 		return a.Line < b.Line
 	})
+}
+
+// fillRPC fills the closure-derived facts of one implemented rpc.
+func (g *gx) fillRPC(r *xRPC, h *Func, ci *closureInfo, es *errSrc, run *grpcRun) {
+	es = g.translated(es, run)
+	sortCodes(es.codes)
 	r.Codes = es.codes
 	for _, c := range es.codes {
 		if c.Kind == "plain_error" {
@@ -963,6 +1087,7 @@ func (g *gx) fillRPC(r *xRPC, h *Func, ci *closureInfo, es *errSrc, run *grpcRun
 	sort.Strings(r.Tables)
 	r.OwnerUses = ci.owners
 	r.Writes = g.rpcWrites(ci)
+	g.fillSQL(r, ci) // E5
 	for c := range ci.calls {
 		r.Calls = append(r.Calls, c)
 	}

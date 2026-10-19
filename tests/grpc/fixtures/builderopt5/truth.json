@@ -1,0 +1,47 @@
+{
+  "schema": "lattice.grpc.builderopt5-truth/1",
+  "written": "2026-10-18",
+  "note": "hand-written before any round-5 extractor code ran, by reading the Go (the fixture is read, not run). Each case is a module under this directory. An rpc entry is a state string or an object of the facts compared exactly (state, codes, unread = a grpc_code_not_literal item, auth, tables, writes as table:op, custom_options).",
+  "cases": {
+    "main": {
+      "why": "One and Two are registered by the builder New from two WithService option calls (One after an append, Two inside a helper's slice literal); Parked is only given to WithParked, whose stored field no builder ranges over: it registers nothing; Absent is never given",
+      "rpcs": {
+        "builderopt5.v1.One/Get": {
+          "state": "implemented",
+          "codes": [
+            "NOT_FOUND"
+          ]
+        },
+        "builderopt5.v1.One/Put": {
+          "state": "implemented",
+          "codes": []
+        },
+        "builderopt5.v1.Two/Get": {
+          "state": "implemented",
+          "codes": [
+            "INVALID_ARGUMENT"
+          ]
+        },
+        "builderopt5.v1.Two/Put": {
+          "state": "implemented",
+          "codes": []
+        },
+        "builderopt5.v1.Parked/Get": "not_registered",
+        "builderopt5.v1.Parked/Put": "not_registered",
+        "builderopt5.v1.Absent/Get": "not_registered",
+        "builderopt5.v1.Absent/Put": "not_registered"
+      }
+    },
+    "unres": {
+      "why": "the second WithService is given a descriptor read from a map by an environment key: that stored entry cannot be resolved, so (D1.3) nothing may be said about a declared service no resolved registration names",
+      "rpcs": {
+        "builderopt5.v1.Fine/Get": "implemented",
+        "builderopt5.v1.Fine/Put": "implemented",
+        "builderopt5.v1.Dyn/Get": "unread",
+        "builderopt5.v1.Dyn/Put": "unread",
+        "builderopt5.v1.Orphaned/Get": "unread",
+        "builderopt5.v1.Orphaned/Put": "unread"
+      }
+    }
+  }
+}

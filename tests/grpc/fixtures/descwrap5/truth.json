@@ -1,0 +1,97 @@
+{
+  "schema": "lattice.grpc.descwrap5-truth/1",
+  "written": "2026-10-18",
+  "note": "hand-written before any round-5 extractor code ran, by reading the Go (the fixture is read, not run). Each case is a module under this directory. An rpc entry is a state string or an object of the facts compared exactly (state, codes, unread = a grpc_code_not_literal item, auth, tables, writes as table:op, custom_options).",
+  "cases": {
+    "main": {
+      "why": "Ptr: pointer return of the generated descriptor; Copy: value copy, modified, returned as &d; Alias: a copy of Template with ServiceName assigned a literal, so Alias is registered and Template is not; Absent: never registered",
+      "rpcs": {
+        "descwrap5.v1.Ptr/Get": {
+          "state": "implemented",
+          "codes": [
+            "NOT_FOUND"
+          ]
+        },
+        "descwrap5.v1.Ptr/Put": {
+          "state": "implemented",
+          "codes": []
+        },
+        "descwrap5.v1.Copy/Get": {
+          "state": "implemented",
+          "codes": [
+            "INVALID_ARGUMENT"
+          ]
+        },
+        "descwrap5.v1.Copy/Put": {
+          "state": "implemented",
+          "codes": []
+        },
+        "descwrap5.v1.Alias/Get": {
+          "state": "implemented",
+          "codes": [
+            "ALREADY_EXISTS"
+          ]
+        },
+        "descwrap5.v1.Alias/Put": {
+          "state": "implemented",
+          "codes": []
+        },
+        "descwrap5.v1.Template/Get": "not_registered",
+        "descwrap5.v1.Template/Put": "not_registered",
+        "descwrap5.v1.Absent/Get": "not_registered",
+        "descwrap5.v1.Absent/Put": "not_registered"
+      }
+    },
+    "namedyn": {
+      "why": "a copy whose ServiceName is read from the environment is never taken as the original's: Dyn is unread, and (D1.3) so is the declared service nothing else registers",
+      "rpcs": {
+        "descwrap5.v1.Plain/Get": "implemented",
+        "descwrap5.v1.Plain/Put": "implemented",
+        "descwrap5.v1.Dyn/Get": "unread",
+        "descwrap5.v1.Dyn/Put": "unread",
+        "descwrap5.v1.Spare/Get": "unread",
+        "descwrap5.v1.Spare/Put": "unread"
+      }
+    },
+    "methods": {
+      "why": "Rng/Apd: Methods rebuilt by ranging over the original (index and append forms) keep the generated set; Lit: a literal of one method serves only Get; Opaque: Methods filtered through a function is not a literal set",
+      "rpcs": {
+        "descwrap5.v1.Rng/Get": "implemented",
+        "descwrap5.v1.Rng/Put": "implemented",
+        "descwrap5.v1.Apd/Get": "implemented",
+        "descwrap5.v1.Apd/Put": "implemented",
+        "descwrap5.v1.Lit/Get": "implemented",
+        "descwrap5.v1.Lit/Put": "not_registered",
+        "descwrap5.v1.Opaque/Get": "unread",
+        "descwrap5.v1.Opaque/Put": "unread"
+      }
+    },
+    "wrapper": {
+      "why": "the wrapper of Eq's descriptor copy translates domain errors through codeFor (NotFound, InvalidArgument); Raw is registered plainly and the same sentinel errors stay plain (UNKNOWN): the translation is for the wrapped service only",
+      "rpcs": {
+        "descwrap5.v1.Eq/Get": {
+          "state": "implemented",
+          "codes": [
+            "NOT_FOUND"
+          ]
+        },
+        "descwrap5.v1.Eq/Put": {
+          "state": "implemented",
+          "codes": [
+            "INVALID_ARGUMENT"
+          ]
+        },
+        "descwrap5.v1.Raw/Get": {
+          "state": "implemented",
+          "codes": [
+            "UNKNOWN"
+          ]
+        },
+        "descwrap5.v1.Raw/Put": {
+          "state": "implemented",
+          "codes": []
+        }
+      }
+    }
+  }
+}

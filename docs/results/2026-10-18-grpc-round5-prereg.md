@@ -801,3 +801,16 @@ reporting, authentication, and where the schema lives). Work only inside this di
 14. P5-REH on toolshed as delivered is acceptable; its rows are reported as PD5-TOOL, post hoc.
 15. The independent re-run of HO5 and SG is run by a separate opus verifier from the committed ledger and freezes; re-running
     the pure scorer on saved raw output is free, runner runs are not.
+
+## Amendment 2 (Stage B build node's disclosures and orchestrator rulings, 2026-10-18, before the freeze)
+**Declared changes (accepted):** E3d interceptor codes change three frozen round-4 tests' observations on the notes app N
+(`tests/grpc/test_extract_notes.py::test_extract_matches_the_truth`, `::test_model_lists_rpcs_as_routes_and_bindings_on_the_rpc`,
+`tests/grpc/test_proto_reader.py::test_validation_bounds_are_exact`); as in round 4, the orchestrator updates those expectations
+to the accepted E3d behaviour (only the interceptor codes may change) and says so. E3b, E1 and E2 also change codes and states
+on kilnworks, harborline and toolshed beyond section 13's list (undeclared in P5-BC-EXT): these are **declared now, post hoc**,
+and P5-BC's undeclared-diff rows are reported as such (the corpora are development data). The evalSentinel synthetic host (D3 of
+the build report) is accepted as a disclosed addition. **Budget:** P5-BUDGET FAILS and stays failed (Go group 924 vs 650); the
+round cannot pass in full, and the table says so. **NOT RUN, to be run by the orchestrator's node with the driver environment:** the
+MySQL halves of P5-HAPI and P5-REH (pymysql was not importable in the builder's environment), PR4-ALL, the real Arm L run.
+PF5-LEAK failed on a stray `notesapp` binary under Stage A's bridgecache (not Stage B's); the orchestrator removes it and the row is
+re-measured. Accidents disclosed: one mistaken `git stash` popped within seconds; stray `.venv` directories created and removed.

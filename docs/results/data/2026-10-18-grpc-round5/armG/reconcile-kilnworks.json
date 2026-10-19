@@ -1,0 +1,90 @@
+{
+ "kiln.v1.Catalog/ListStudios": {
+  "code": "OK",
+  "answered": true
+ },
+ "kiln.v1.Catalog/ListGlazes": {
+  "code": "OK",
+  "answered": true
+ },
+ "kiln.v1.Catalog/LookupGlaze": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "kiln.v1.Passport/SignIn": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "kiln.v1.Passport/WhoAmI": {
+  "code": "OK",
+  "answered": true
+ },
+ "kiln.v1.Passport/SignOff": {
+  "code": "OK",
+  "answered": true
+ },
+ "kiln.v1.Passport/StepDown": {
+  "code": "OK",
+  "answered": true,
+  "isolated": true
+ },
+ "kiln.v1.Projects/OpenProject": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "kiln.v1.Projects/GetProject": {
+  "code": "NOT_FOUND",
+  "answered": true
+ },
+ "kiln.v1.Projects/ListProjects": {
+  "code": "OK",
+  "answered": true
+ },
+ "kiln.v1.Projects/ArchiveProject": {
+  "code": "NOT_FOUND",
+  "answered": true
+ },
+ "kiln.v1.Projects/TransferProject": {
+  "code": "UNIMPLEMENTED",
+  "answered": false
+ },
+ "kiln.v1.Pieces/AddPiece": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "kiln.v1.Pieces/GetPiece": {
+  "code": "NOT_FOUND",
+  "answered": true
+ },
+ "kiln.v1.Pieces/FirePiece": {
+  "code": "NOT_FOUND",
+  "answered": true
+ },
+ "kiln.v1.Pieces/ApplyGlaze": {
+  "code": "INVALID_ARGUMENT",
+  "answered": true
+ },
+ "kiln.v1.Pieces/RemovePiece": {
+  "code": "NOT_FOUND",
+  "answered": true
+ },
+ "kiln.v1.Billing/QuoteFiring": {
+  "code": "UNIMPLEMENTED",
+  "answered": false,
+  "route": false
+ },
+ "kiln.v1.Billing/PayQuote": {
+  "code": "UNIMPLEMENTED",
+  "answered": false,
+  "route": false
+ },
+ "(absent)": {
+  "code": "UNIMPLEMENTED",
+  "answered": false
+ },
+ "order": {
+  "disagreed": [
+   "kiln.v1.Passport/StepDown"
+  ]
+ }
+}

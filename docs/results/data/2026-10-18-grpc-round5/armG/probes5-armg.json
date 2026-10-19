@@ -1,0 +1,3030 @@
+{
+ "schema": "lattice.grpc-probes5/1",
+ "arm": "G",
+ "self_test": false,
+ "library_sha256": {
+  "dogfood/grpc_contract4.py": "6666ac9bedc8dfb49edd18177091c40ece5dcf3b149a097e82bdf004a4a04610",
+  "dogfood/grpc_contract5.py": "f71b9e5d1b6b9caf7ccd25d7548121dde74afeaf1ca9a8257c9978178c372681",
+  "dogfood/grpc_flow_scorer.py": "8d896ee0ad1c22fd46ff9f38876c08e8df03b756906f0b40bcaadf0a0446fdd3",
+  "dogfood/grpc_probes.py": "5406bbbea96872396f5b8c58042992fa230b0fbf8440148a3d67f1c7abedfee2",
+  "dogfood/grpc_probes2.py": "0193add7bd620dbf2af90cddf66a8bccca85ba1ade5b06f048bd711c952755fa",
+  "dogfood/grpc_probes3.py": "244e5e688287774daad66198134697c4b67443a8e71316ad4a2df84a97d3a978",
+  "dogfood/grpc_probes4.py": "82aca97b4d508d0537a567914be537b2529cc219a6d9effb630c0d1bfdf1350b",
+  "dogfood/grpc_probes5.py": "ef05f9368a1c96f2a36d4631c10a6a8532422632dffa9e1b77361263355ead40",
+  "dogfood/grpc_scorer3.py": "019db509ded84f48ef95e7bfe7788a949305611a35ab3ae15706303298ea50be",
+  "dogfood/grpc_scorer4.py": "e963747ae1545e68a31b8b740fd259b687a6121a4712667d239287683a2bae90",
+  "dogfood/grpc_scorer5.py": "991cb1dc46623e58d6c457bb5c86277311b32ca6cb7a32f3513eca40ec569ec3",
+  "dogfood/grpc_scorer5_cases.json": "f6afbfd58f06b91aa190bec0e9c9aa1f4e50666a193ea368362ed933741e22e7",
+  "dogfood/grpc_truth5.py": "b08a0759bb49f2ce1c41942cb6f5ee7cc8a4ec9e7d6855c8294608a3440f099b",
+  "lattice/gocheck/src/goextract_grpc.go": "97e7faa108cd5b963ea9386edf56b0cf459800faece1e2ac7a749332657d1f20",
+  "lattice/gocheck/src/goextract_grpc_auth.go": "28b383b1531a333fedaa8b6125b6377c95d17a38e0969588fd865946c412186f",
+  "lattice/gocheck/src/goextract_grpc_codes.go": "3042cf24a2677764854ca3522b23881245ef19e2c306b327b95a514495d84ee2",
+  "lattice/gocheck/src/goextract_proto.go": "d021cb314387f8015934f7227cf720c7445863a5f2e73191fe27c1aa9bdb85f6",
+  "lattice/gocheck/src/goextract_sqlraw.go": "7cf2766a22f955a534828d32fd5cb6e18981be5713767c06fe0bbb508aea8507",
+  "lattice/importer/frontends/go_grpc.py": "1d882e5c8b6fb30b1aa3e202eaf9eba09ed462459ed376281d4737bfcb06579f",
+  "lattice/importer/outside.py": "5d7a5ed767b7060d10c8508c8ee930f5af6b570f8e9f3c4a22f0352a91f74328",
+  "lattice/importer/transport.py": "04979019468e5d4fd9dc33c7d98ef62c32c5ae41fd5211421ec43ca4cca9ae4a",
+  "lattice/importer/workflows.py": "5eba7e8ab6ac62ba8ba4cea31088faab9e149e921a952c6a4837e37b92638098",
+  "lattice/mcp/guard.py": "ba60ca31f3b43cbc6bd50d51421acd860807590d0a68d2a2593081d67505dfb8",
+  "lattice/spec/grpc.py": "a7ceb5cf5f5f89156c046605ef7783e6a8cafe95b459e3c8bfdb28ea21d62549",
+  "lattice/spec/process.py": "047be55e9f421700efab2441525121c8387167fb53edcd5991ebdc4592cdebf1",
+  "lattice/studio/rebuild.py": "3659f41e9e798db83aa24e52add3e7e6c0b7d166c951e66163d3dc8addb688bb"
+ },
+ "frozen_before": {
+  "named_frozen": {
+   "lattice/importer/workflows.py": {
+    "base": "5eba7e8ab6ac62ba",
+    "now": "5eba7e8ab6ac62ba",
+    "same": true
+   },
+   "lattice/importer/transport.py": {
+    "base": "04979019468e5d4f",
+    "now": "04979019468e5d4f",
+    "same": true
+   },
+   "lattice/spec/process.py": {
+    "base": "047be55e9f421700",
+    "now": "047be55e9f421700",
+    "same": true
+   },
+   "lattice/importer/outside.py": {
+    "base": "5d7a5ed767b7060d",
+    "now": "5d7a5ed767b7060d",
+    "same": true
+   },
+   "dogfood/grpc_contract4.py": {
+    "base": "6666ac9bedc8dfb4",
+    "now": "6666ac9bedc8dfb4",
+    "same": true
+   },
+   "dogfood/grpc_flow_scorer.py": {
+    "base": "8d896ee0ad1c22fd",
+    "now": "8d896ee0ad1c22fd",
+    "same": true
+   },
+   "dogfood/grpc_probes.py": {
+    "base": "5406bbbea9687239",
+    "now": "5406bbbea9687239",
+    "same": true
+   },
+   "dogfood/grpc_probes2.py": {
+    "base": "0193add7bd620dbf",
+    "now": "0193add7bd620dbf",
+    "same": true
+   },
+   "dogfood/grpc_probes3.py": {
+    "base": "244e5e688287774d",
+    "now": "244e5e688287774d",
+    "same": true
+   },
+   "dogfood/grpc_probes4.py": {
+    "base": "82aca97b4d508d05",
+    "now": "82aca97b4d508d05",
+    "same": true
+   },
+   "dogfood/grpc_scorer3.py": {
+    "base": "019db509ded84f48",
+    "now": "019db509ded84f48",
+    "same": true
+   },
+   "dogfood/grpc_scorer4.py": {
+    "base": "e963747ae1545e68",
+    "now": "e963747ae1545e68",
+    "same": true
+   }
+  },
+  "frozen_files_changed": [],
+  "unexpected_untracked": [],
+  "tracked_changed_vs_base": [
+   "dogfood/grpc_contract5.py",
+   "dogfood/grpc_probes5.py",
+   "dogfood/grpc_scorer5.py",
+   "dogfood/grpc_scorer5_cases.json",
+   "dogfood/grpc_truth5.py",
+   "lattice/gocheck/src/goextract_grpc.go",
+   "lattice/gocheck/src/goextract_proto.go",
+   "lattice/importer/frontends/go_grpc.py",
+   "lattice/mcp/guard.py",
+   "lattice/spec/grpc.py",
+   "lattice/studio/rebuild.py",
+   "tests/grpc/fixtures/harness5/mysql/buf.gen.yaml",
+   "tests/grpc/fixtures/harness5/mysql/buf.yaml",
+   "tests/grpc/fixtures/harness5/mysql/cmd/ledgerd/main.go",
+   "tests/grpc/fixtures/harness5/mysql/freeze.sha256",
+   "tests/grpc/fixtures/harness5/mysql/gen/ledger/v1/ledger.pb.go",
+   "tests/grpc/fixtures/harness5/mysql/gen/ledger/v1/ledger_grpc.pb.go",
+   "tests/grpc/fixtures/harness5/mysql/go.mod",
+   "tests/grpc/fixtures/harness5/mysql/go.sum",
+   "tests/grpc/fixtures/harness5/mysql/harness.py",
+   "tests/grpc/fixtures/harness5/mysql/internal/serve/accounts.go",
+   "tests/grpc/fixtures/harness5/mysql/internal/serve/entries.go",
+   "tests/grpc/fixtures/harness5/mysql/internal/serve/gate.go",
+   "tests/grpc/fixtures/harness5/mysql/internal/store/store.go",
+   "tests/grpc/fixtures/harness5/mysql/proto/ledger/v1/ledger.proto",
+   "tests/grpc/fixtures/harness5/mysql/spec.py",
+   "tests/grpc/fixtures/harness5/mysql/studio.toml",
+   "tests/grpc/fixtures/harness5/mysql/truth.json",
+   "tests/grpc/fixtures/harness5/sqlite/buf.gen.yaml",
+   "tests/grpc/fixtures/harness5/sqlite/buf.yaml",
+   "tests/grpc/fixtures/harness5/sqlite/cmd/ledgerd/main.go",
+   "tests/grpc/fixtures/harness5/sqlite/freeze.sha256",
+   "tests/grpc/fixtures/harness5/sqlite/gen/ledger/v1/ledger.pb.go",
+   "tests/grpc/fixtures/harness5/sqlite/gen/ledger/v1/ledger_grpc.pb.go",
+   "tests/grpc/fixtures/harness5/sqlite/go.mod",
+   "tests/grpc/fixtures/harness5/sqlite/go.sum",
+   "tests/grpc/fixtures/harness5/sqlite/harness.py",
+   "tests/grpc/fixtures/harness5/sqlite/internal/serve/accounts.go",
+   "tests/grpc/fixtures/harness5/sqlite/internal/serve/entries.go",
+   "tests/grpc/fixtures/harness5/sqlite/internal/serve/gate.go",
+   "tests/grpc/fixtures/harness5/sqlite/internal/store/store.go",
+   "tests/grpc/fixtures/harness5/sqlite/proto/ledger/v1/ledger.proto",
+   "tests/grpc/fixtures/harness5/sqlite/studio.toml",
+   "tests/grpc/fixtures/harness5/sqlite/truth.json",
+   "tests/grpc/fixtures/toybuild5/.gitignore",
+   "tests/grpc/fixtures/toybuild5/CONTEXT.md",
+   "tests/grpc/fixtures/toybuild5/REQUIREMENTS.md",
+   "tests/grpc/fixtures/toybuild5/buf.gen.yaml",
+   "tests/grpc/fixtures/toybuild5/buf.yaml",
+   "tests/grpc/fixtures/toybuild5/check.sh",
+   "tests/grpc/fixtures/toybuild5/generate.sh",
+   "tests/grpc/fixtures/toybuild5/go.mod",
+   "tests/grpc/fixtures/toybuild5/go.sum",
+   "tests/grpc/fixtures/toybuild5/harness.py",
+   "tests/grpc/fixtures/toybuild5/main.go",
+   "tests/grpc/fixtures/toybuild5/proto/toy/v1/shelf.proto",
+   "tests/grpc/fixtures/toybuild5/pyproject.toml",
+   "tests/grpc/fixtures/toybuild5/shelf.go",
+   "tests/grpc/fixtures/toybuild5/spec.py",
+   "tests/grpc/fixtures/toybuild5/spec.trace.json",
+   "tests/grpc/fixtures/toybuild5/studio.toml",
+   "tests/grpc/fixtures/truth5/probe-flows.json",
+   "tests/grpc/test_ledger5.py",
+   "tests/grpc/test_truth5.py"
+  ],
+  "staged": [],
+  "budgets": {
+   "lattice/spec/grpc.py": {
+    "insertions+deletions": 6,
+    "budget": 6,
+    "ok": true
+   },
+   "lattice/importer/frontends/go_grpc.py": {
+    "insertions+deletions": 2,
+    "budget": 20,
+    "ok": true
+   },
+   "lattice/studio/rebuild.py": {
+    "insertions+deletions": 82,
+    "budget": 90,
+    "ok": true
+   },
+   "lattice/mcp/guard.py": {
+    "insertions+deletions": 4,
+    "budget": 30,
+    "ok": true
+   },
+   "lattice/gocheck/src/goextract_proto.go": {
+    "insertions+deletions": 34,
+    "budget": 40,
+    "ok": true
+   },
+   "goextract_grpc*.go (3 files, total, vs S0)": {
+    "insertions+deletions": 924,
+    "budget": 650,
+    "ok": false
+   },
+   "goextract_sqlraw.go": {
+    "lines": 248,
+    "budget": 300,
+    "ok": true
+   },
+   "cap goextract_grpc.go": {
+    "lines": 1138,
+    "budget": 1200,
+    "ok": true
+   },
+   "cap goextract_grpc_auth.go": {
+    "lines": 1006,
+    "budget": 1200,
+    "ok": true
+   },
+   "cap goextract_grpc_codes.go": {
+    "lines": 1010,
+    "budget": 1200,
+    "ok": true
+   }
+  },
+  "deskd_freeze_ok": true,
+  "deskd_files_changed": [],
+  "kilnworks_freeze_ok": true,
+  "kilnworks_files_changed": [],
+  "harborline_freeze_ok": true,
+  "harborline_files_changed": [],
+  "dev_truth_hashes_changed": [],
+  "ok": false
+ },
+ "frozen_after": {
+  "named_frozen": {
+   "lattice/importer/workflows.py": {
+    "base": "5eba7e8ab6ac62ba",
+    "now": "5eba7e8ab6ac62ba",
+    "same": true
+   },
+   "lattice/importer/transport.py": {
+    "base": "04979019468e5d4f",
+    "now": "04979019468e5d4f",
+    "same": true
+   },
+   "lattice/spec/process.py": {
+    "base": "047be55e9f421700",
+    "now": "047be55e9f421700",
+    "same": true
+   },
+   "lattice/importer/outside.py": {
+    "base": "5d7a5ed767b7060d",
+    "now": "5d7a5ed767b7060d",
+    "same": true
+   },
+   "dogfood/grpc_contract4.py": {
+    "base": "6666ac9bedc8dfb4",
+    "now": "6666ac9bedc8dfb4",
+    "same": true
+   },
+   "dogfood/grpc_flow_scorer.py": {
+    "base": "8d896ee0ad1c22fd",
+    "now": "8d896ee0ad1c22fd",
+    "same": true
+   },
+   "dogfood/grpc_probes.py": {
+    "base": "5406bbbea9687239",
+    "now": "5406bbbea9687239",
+    "same": true
+   },
+   "dogfood/grpc_probes2.py": {
+    "base": "0193add7bd620dbf",
+    "now": "0193add7bd620dbf",
+    "same": true
+   },
+   "dogfood/grpc_probes3.py": {
+    "base": "244e5e688287774d",
+    "now": "244e5e688287774d",
+    "same": true
+   },
+   "dogfood/grpc_probes4.py": {
+    "base": "82aca97b4d508d05",
+    "now": "82aca97b4d508d05",
+    "same": true
+   },
+   "dogfood/grpc_scorer3.py": {
+    "base": "019db509ded84f48",
+    "now": "019db509ded84f48",
+    "same": true
+   },
+   "dogfood/grpc_scorer4.py": {
+    "base": "e963747ae1545e68",
+    "now": "e963747ae1545e68",
+    "same": true
+   }
+  },
+  "frozen_files_changed": [],
+  "unexpected_untracked": [],
+  "tracked_changed_vs_base": [
+   "dogfood/grpc_contract5.py",
+   "dogfood/grpc_probes5.py",
+   "dogfood/grpc_scorer5.py",
+   "dogfood/grpc_scorer5_cases.json",
+   "dogfood/grpc_truth5.py",
+   "lattice/gocheck/src/goextract_grpc.go",
+   "lattice/gocheck/src/goextract_proto.go",
+   "lattice/importer/frontends/go_grpc.py",
+   "lattice/mcp/guard.py",
+   "lattice/spec/grpc.py",
+   "lattice/studio/rebuild.py",
+   "tests/grpc/fixtures/harness5/mysql/buf.gen.yaml",
+   "tests/grpc/fixtures/harness5/mysql/buf.yaml",
+   "tests/grpc/fixtures/harness5/mysql/cmd/ledgerd/main.go",
+   "tests/grpc/fixtures/harness5/mysql/freeze.sha256",
+   "tests/grpc/fixtures/harness5/mysql/gen/ledger/v1/ledger.pb.go",
+   "tests/grpc/fixtures/harness5/mysql/gen/ledger/v1/ledger_grpc.pb.go",
+   "tests/grpc/fixtures/harness5/mysql/go.mod",
+   "tests/grpc/fixtures/harness5/mysql/go.sum",
+   "tests/grpc/fixtures/harness5/mysql/harness.py",
+   "tests/grpc/fixtures/harness5/mysql/internal/serve/accounts.go",
+   "tests/grpc/fixtures/harness5/mysql/internal/serve/entries.go",
+   "tests/grpc/fixtures/harness5/mysql/internal/serve/gate.go",
+   "tests/grpc/fixtures/harness5/mysql/internal/store/store.go",
+   "tests/grpc/fixtures/harness5/mysql/proto/ledger/v1/ledger.proto",
+   "tests/grpc/fixtures/harness5/mysql/spec.py",
+   "tests/grpc/fixtures/harness5/mysql/studio.toml",
+   "tests/grpc/fixtures/harness5/mysql/truth.json",
+   "tests/grpc/fixtures/harness5/sqlite/buf.gen.yaml",
+   "tests/grpc/fixtures/harness5/sqlite/buf.yaml",
+   "tests/grpc/fixtures/harness5/sqlite/cmd/ledgerd/main.go",
+   "tests/grpc/fixtures/harness5/sqlite/freeze.sha256",
+   "tests/grpc/fixtures/harness5/sqlite/gen/ledger/v1/ledger.pb.go",
+   "tests/grpc/fixtures/harness5/sqlite/gen/ledger/v1/ledger_grpc.pb.go",
+   "tests/grpc/fixtures/harness5/sqlite/go.mod",
+   "tests/grpc/fixtures/harness5/sqlite/go.sum",
+   "tests/grpc/fixtures/harness5/sqlite/harness.py",
+   "tests/grpc/fixtures/harness5/sqlite/internal/serve/accounts.go",
+   "tests/grpc/fixtures/harness5/sqlite/internal/serve/entries.go",
+   "tests/grpc/fixtures/harness5/sqlite/internal/serve/gate.go",
+   "tests/grpc/fixtures/harness5/sqlite/internal/store/store.go",
+   "tests/grpc/fixtures/harness5/sqlite/proto/ledger/v1/ledger.proto",
+   "tests/grpc/fixtures/harness5/sqlite/studio.toml",
+   "tests/grpc/fixtures/harness5/sqlite/truth.json",
+   "tests/grpc/fixtures/toybuild5/.gitignore",
+   "tests/grpc/fixtures/toybuild5/CONTEXT.md",
+   "tests/grpc/fixtures/toybuild5/REQUIREMENTS.md",
+   "tests/grpc/fixtures/toybuild5/buf.gen.yaml",
+   "tests/grpc/fixtures/toybuild5/buf.yaml",
+   "tests/grpc/fixtures/toybuild5/check.sh",
+   "tests/grpc/fixtures/toybuild5/generate.sh",
+   "tests/grpc/fixtures/toybuild5/go.mod",
+   "tests/grpc/fixtures/toybuild5/go.sum",
+   "tests/grpc/fixtures/toybuild5/harness.py",
+   "tests/grpc/fixtures/toybuild5/main.go",
+   "tests/grpc/fixtures/toybuild5/proto/toy/v1/shelf.proto",
+   "tests/grpc/fixtures/toybuild5/pyproject.toml",
+   "tests/grpc/fixtures/toybuild5/shelf.go",
+   "tests/grpc/fixtures/toybuild5/spec.py",
+   "tests/grpc/fixtures/toybuild5/spec.trace.json",
+   "tests/grpc/fixtures/toybuild5/studio.toml",
+   "tests/grpc/fixtures/truth5/probe-flows.json",
+   "tests/grpc/test_ledger5.py",
+   "tests/grpc/test_truth5.py"
+  ],
+  "staged": [],
+  "budgets": {
+   "lattice/spec/grpc.py": {
+    "insertions+deletions": 6,
+    "budget": 6,
+    "ok": true
+   },
+   "lattice/importer/frontends/go_grpc.py": {
+    "insertions+deletions": 2,
+    "budget": 20,
+    "ok": true
+   },
+   "lattice/studio/rebuild.py": {
+    "insertions+deletions": 82,
+    "budget": 90,
+    "ok": true
+   },
+   "lattice/mcp/guard.py": {
+    "insertions+deletions": 4,
+    "budget": 30,
+    "ok": true
+   },
+   "lattice/gocheck/src/goextract_proto.go": {
+    "insertions+deletions": 34,
+    "budget": 40,
+    "ok": true
+   },
+   "goextract_grpc*.go (3 files, total, vs S0)": {
+    "insertions+deletions": 924,
+    "budget": 650,
+    "ok": false
+   },
+   "goextract_sqlraw.go": {
+    "lines": 248,
+    "budget": 300,
+    "ok": true
+   },
+   "cap goextract_grpc.go": {
+    "lines": 1138,
+    "budget": 1200,
+    "ok": true
+   },
+   "cap goextract_grpc_auth.go": {
+    "lines": 1006,
+    "budget": 1200,
+    "ok": true
+   },
+   "cap goextract_grpc_codes.go": {
+    "lines": 1010,
+    "budget": 1200,
+    "ok": true
+   }
+  },
+  "deskd_freeze_ok": true,
+  "deskd_files_changed": [],
+  "kilnworks_freeze_ok": true,
+  "kilnworks_files_changed": [],
+  "harborline_freeze_ok": true,
+  "harborline_files_changed": [],
+  "dev_truth_hashes_changed": [],
+  "ok": false
+ },
+ "probes": [
+  {
+   "id": "PR5-N",
+   "prediction": "byte-equal to round 2",
+   "pass_rule": "exact",
+   "status": "PASS",
+   "observed": {
+    "implemented answered": "10/10",
+    "bytes equal round 1": true,
+    "extra keys": []
+   },
+   "detail": {
+    "notes.v1.Accounts/Register": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true
+    },
+    "notes.v1.Accounts/Login": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true
+    },
+    "notes.v1.Accounts/Me": {
+     "code": "OK",
+     "answered": true
+    },
+    "notes.v1.Notes/CreateNote": {
+     "code": "INVALID_ARGUMENT",
+     "answered": true
+    },
+    "notes.v1.Notes/GetNote": {
+     "code": "NOT_FOUND",
+     "answered": true
+    },
+    "notes.v1.Notes/ListNotes": {
+     "code": "OK",
+     "answered": true
+    },
+    "notes.v1.Notes/UpdateNote": {
+     "code": "NOT_FOUND",
+     "answered": true
+    },
+    "notes.v1.Notes/PublishNote": {
+     "code": "NOT_FOUND",
+     "answered": true
+    },
+    "notes.v1.Notes/ArchiveNote": {
+     "code": "NOT_FOUND",
+     "answered": true
+    },
+    "notes.v1.Notes/DeleteNote": {
+     "code": "NOT_FOUND",
+     "answered": true
+    },
+    "notes.v1.Notes/ShareNote": {
+     "code": "UNIMPLEMENTED",
+     "answered": false
+    },
+    "(absent)": {
+     "code": "UNIMPLEMENTED",
+     "answered": false
+    }
+   }
+  },
+  {
+   "id": "PR5-DESK",
+   "prediction": "19/19 non-streaming truth rpcs + absent covered; Reports/Backlog UNIMPLEMENTED from the library; 0 auth_refused",
+   "pass_rule": "S5 coverage 1.00, agreement 1.00",
+   "status": "PASS",
+   "observed": {
+    "S5 coverage": 1.0,
+    "S5 agreement": 1.0,
+    "S5 by class": {
+     "absent": "1/1",
+     "implemented": "17/17",
+     "not_registered": "1/1",
+     "unimplemented": "1/1"
+    },
+    "denominator": 20,
+    "Reports/Backlog from the library": {
+     "code": "UNIMPLEMENTED",
+     "answered": false,
+     "route": false
+    },
+    "auth_refused": [],
+    "order disagreed": [],
+    "seconds": 1.52
+   },
+   "detail": {
+    "S5": {
+     "denominator": 20,
+     "covered": 20,
+     "coverage": 1.0,
+     "agreement": 1.0,
+     "by_class": {
+      "absent": "1/1",
+      "implemented": "17/17",
+      "not_registered": "1/1",
+      "unimplemented": "1/1"
+     },
+     "wrong": [],
+     "missing": [],
+     "supplementary_calls": 0,
+     "reason": "",
+     "pass": true
+    },
+    "output": {
+     "desk.v1.Identity/SignUp": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Identity/SignIn": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Identity/WhoAmI": {
+      "code": "OK",
+      "answered": true
+     },
+     "desk.v1.Identity/SignOut": {
+      "code": "OK",
+      "answered": true
+     },
+     "desk.v1.Queues/ListQueues": {
+      "code": "OK",
+      "answered": true
+     },
+     "desk.v1.Queues/GetQueue": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/OpenTicket": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/GetTicket": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/ListTickets": {
+      "code": "OK",
+      "answered": true
+     },
+     "desk.v1.Tickets/UpdateTicket": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/HoldTicket": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/ResolveTicket": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/ReopenTicket": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/CloseTicket": {
+      "code": "PERMISSION_DENIED",
+      "answered": true
+     },
+     "desk.v1.Tickets/DeleteTicket": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/AddRemark": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/ListRemarks": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "desk.v1.Tickets/MergeTickets": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "desk.v1.Reports/Backlog": {
+      "code": "UNIMPLEMENTED",
+      "answered": false,
+      "route": false
+     },
+     "(absent)": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     }
+    }
+   }
+  },
+  {
+   "id": "PR5-SESS",
+   "prediction": "as round 2: Stub UNIMPLEMENTED, 0 login_failed, 4 disagreements isolated",
+   "pass_rule": "exact; bytes equal to the merge commit's `reconcile`",
+   "status": "PASS",
+   "observed": {
+    "codes equal the truth (alone)": true,
+    "login_failed": 0,
+    "disagreed": [
+     "sessions.v1.Sessions/DeleteMe",
+     "sessions.v1.Sessions/Secret",
+     "sessions.v1.Sessions/SignOut",
+     "sessions.v1.Sessions/Stub"
+    ],
+    "bytes equal the merge commit": true
+   },
+   "detail": null
+  },
+  {
+   "id": "PF5-N",
+   "prediction": "N 17/17 verified, identical counts to round 2",
+   "pass_rule": "identical counts to round 2",
+   "status": "PASS",
+   "observed": {
+    "recovered": 17,
+    "recovered_by_status": {
+     "verified": 17,
+     "unverified": 0,
+     "failed": 0,
+     "unbound": 0
+    },
+    "verified": 17,
+    "verified_but_failing": 0,
+    "failing_codes": {},
+    "unbound_reasons": {},
+    "in 15-20 (p)": true,
+    "seconds": 2.2,
+    "differences from round 2": {}
+   },
+   "detail": {
+    "score": {
+     "pass": true,
+     "reasons": [],
+     "recovered": 17,
+     "recovered_by_status": {
+      "verified": 17,
+      "unverified": 0,
+      "failed": 0,
+      "unbound": 0
+     },
+     "verified": 17,
+     "verified_but_failing": 0,
+     "edge_recall": {
+      "num": 0,
+      "den": 0,
+      "bound": null,
+      "gated": false,
+      "value": null,
+      "pass": true
+     },
+     "coverage": {
+      "num": 0,
+      "den": 0,
+      "bound": null,
+      "gated": false,
+      "value": null,
+      "pass": true
+     },
+     "exact": {
+      "num": 0,
+      "den": 0
+     },
+     "truth_defects": [],
+     "failing_codes": {},
+     "unbound_reasons": {}
+    },
+    "vbf ids": []
+   }
+  },
+  {
+   "id": "PF5-DESK",
+   "prediction": "deskd 41 recovered / 20 verified, edge recall 21/34, coverage 4/7, as round 2",
+   "pass_rule": "identical counts to round 2",
+   "status": "PASS",
+   "observed": {
+    "recovered": 41,
+    "recovered_by_status": {
+     "verified": 20,
+     "unverified": 0,
+     "failed": 21,
+     "unbound": 0
+    },
+    "verified": 20,
+    "verified_but_failing": 0,
+    "edge_recall": {
+     "num": 21,
+     "den": 34,
+     "bound": 0.3,
+     "gated": true,
+     "value": 0.6176,
+     "pass": true
+    },
+    "coverage": {
+     "num": 4,
+     "den": 7,
+     "bound": 2,
+     "gated": true,
+     "value": 0.5714,
+     "pass": true
+    },
+    "exact": {
+     "num": 0,
+     "den": 7
+    },
+    "failing_codes": {
+     "FAILED_PRECONDITION": 1,
+     "INVALID_ARGUMENT": 19,
+     "PERMISSION_DENIED": 1
+    },
+    "unbound_reasons": {},
+    "truth_flows_passing": 7,
+    "seconds": 3.5,
+    "differences from round 2": {}
+   },
+   "detail": {
+    "score": {
+     "pass": true,
+     "reasons": [],
+     "recovered": 41,
+     "recovered_by_status": {
+      "verified": 20,
+      "unverified": 0,
+      "failed": 21,
+      "unbound": 0
+     },
+     "verified": 20,
+     "verified_but_failing": 0,
+     "edge_recall": {
+      "num": 21,
+      "den": 34,
+      "bound": 0.3,
+      "gated": true,
+      "value": 0.6176,
+      "pass": true
+     },
+     "coverage": {
+      "num": 4,
+      "den": 7,
+      "bound": 2,
+      "gated": true,
+      "value": 0.5714,
+      "pass": true
+     },
+     "exact": {
+      "num": 0,
+      "den": 7
+     },
+     "truth_defects": [],
+     "failing_codes": {
+      "FAILED_PRECONDITION": 1,
+      "INVALID_ARGUMENT": 19,
+      "PERMISSION_DENIED": 1
+     },
+     "unbound_reasons": {},
+     "truth_flows_passing": 7,
+     "recovered_by_kind_status": {
+      "after_delete": {
+       "failed": 3,
+       "verified": 3
+      },
+      "lifecycle": {
+       "verified": 2
+      },
+      "owner_chain": {
+       "verified": 1
+      },
+      "owner_guard": {
+       "failed": 7,
+       "verified": 8
+      },
+      "pair": {
+       "failed": 11,
+       "verified": 6
+      }
+     }
+    },
+    "vbf ids": [],
+    "truth flow failures": []
+   }
+  },
+  {
+   "id": "PF5-LEAK",
+   "prediction": "0",
+   "pass_rule": "0",
+   "status": "FAIL",
+   "observed": {
+    "live processes+bridges after reconcile and flows": 0,
+    "after a forced startup failure (reconcile raises, flows fail)": 0,
+    "reconcile raised": "ProcessStartError",
+    "flows of the broken app": [
+     "failed"
+    ],
+    "stray app or bridge processes in /proc": 1,
+    "containers labelled lattice.owner=w-gr": []
+   },
+   "detail": [
+    "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/gr5-a/bridgec"
+   ]
+  },
+  {
+   "id": "PR4-ALL",
+   "prediction": "every round-4 PASS row PASS or declared",
+   "pass_rule": "all",
+   "status": "NOT RUN",
+   "observed": "--pr4all-from (round 4's runner outputs for arm 0 and G, run un-nested at round-5 code) was not given",
+   "detail": null
+  },
+  {
+   "id": "PD5-KILN/RPC (post hoc, tuned-on, never gated)",
+   "prediction": "RPC 1.0/1.0; CODES recall 0.80-0.95 (E3d adds interceptor codes), precision 0.90-1.00; AUTH 0 wrong, unclear 0-0.2; TABLES 1.0; REC 1.0; FLOWS 17/7, 11/33, 6/9",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "recall": 1.0,
+    "precision": 1.0,
+    "truth rpcs": 20,
+    "extracted rpcs": 20,
+    "matched": 20,
+    "truth states": {
+     "implemented": 16,
+     "not_registered": 2,
+     "streaming": 1,
+     "unimplemented": 1
+    },
+    "streaming reported not supported": [
+     "kiln.v1.Pieces/TailKiln"
+    ],
+    "streaming not supported (all)": true,
+    "model endpoints": 17,
+    "would_pass": true
+   },
+   "detail": {
+    "missed (truth, state)": [],
+    "extra (extract, state)": []
+   }
+  },
+  {
+   "id": "PD5-KILN/SAFE (post hoc, tuned-on, never gated)",
+   "prediction": "RPC 1.0/1.0; CODES recall 0.80-0.95 (E3d adds interceptor codes), precision 0.90-1.00; AUTH 0 wrong, unclear 0-0.2; TABLES 1.0; REC 1.0; FLOWS 17/7, 11/33, 6/9",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "confident-wrong": 0,
+    "checked": 20,
+    "would_pass": true
+   },
+   "detail": {
+    "wrong": []
+   }
+  },
+  {
+   "id": "PD5-KILN/CODES (post hoc, tuned-on, never gated)",
+   "prediction": "RPC 1.0/1.0; CODES recall 0.80-0.95 (E3d adds interceptor codes), precision 0.90-1.00; AUTH 0 wrong, unclear 0-0.2; TABLES 1.0; REC 1.0; FLOWS 17/7, 11/33, 6/9",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "recall": 1.0,
+    "precision": 0.7018,
+    "truth": 40,
+    "extracted": 57,
+    "matched": 40,
+    "unknown_extras": [
+     "kiln.v1.Pieces/ApplyGlaze:UNKNOWN",
+     "kiln.v1.Pieces/RemovePiece:UNKNOWN"
+    ],
+    "unread_rpcs": [],
+    "would_pass": false
+   },
+   "detail": {
+    "missed": [],
+    "extra": [
+     "kiln.v1.Catalog/ListStudios:UNAUTHENTICATED",
+     "kiln.v1.Catalog/LookupGlaze:UNAUTHENTICATED",
+     "kiln.v1.Passport/SignOff:UNAUTHENTICATED",
+     "kiln.v1.Passport/StepDown:UNAUTHENTICATED",
+     "kiln.v1.Passport/WhoAmI:INTERNAL",
+     "kiln.v1.Passport/WhoAmI:UNAUTHENTICATED",
+     "kiln.v1.Pieces/AddPiece:UNAUTHENTICATED",
+     "kiln.v1.Pieces/ApplyGlaze:UNAUTHENTICATED",
+     "kiln.v1.Pieces/ApplyGlaze:UNKNOWN",
+     "kiln.v1.Pieces/FirePiece:UNAUTHENTICATED",
+     "kiln.v1.Pieces/GetPiece:UNAUTHENTICATED",
+     "kiln.v1.Pieces/RemovePiece:UNAUTHENTICATED",
+     "kiln.v1.Pieces/RemovePiece:UNKNOWN",
+     "kiln.v1.Projects/ArchiveProject:UNAUTHENTICATED",
+     "kiln.v1.Projects/GetProject:UNAUTHENTICATED",
+     "kiln.v1.Projects/ListProjects:UNAUTHENTICATED",
+     "kiln.v1.Projects/OpenProject:UNAUTHENTICATED"
+    ]
+   }
+  },
+  {
+   "id": "PD5-KILN/AUTH (post hoc, tuned-on, never gated)",
+   "prediction": "RPC 1.0/1.0; CODES recall 0.80-0.95 (E3d adds interceptor codes), precision 0.90-1.00; AUTH 0 wrong, unclear 0-0.2; TABLES 1.0; REC 1.0; FLOWS 17/7, 11/33, 6/9",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "denominator": 17,
+    "unclear": 0,
+    "unclear_share": 0.0,
+    "reason": "",
+    "wrong": [],
+    "would_pass": true
+   },
+   "detail": {
+    "unclear rpcs": [],
+    "row": {
+     "denominator": 17,
+     "wrong": [],
+     "unclear": 0,
+     "unclear_share": 0.0,
+     "unclear_rpcs": [],
+     "reason": "",
+     "pass": true
+    }
+   }
+  },
+  {
+   "id": "PD5-KILN/TABLES (post hoc, tuned-on, never gated)",
+   "prediction": "RPC 1.0/1.0; CODES recall 0.80-0.95 (E3d adds interceptor codes), precision 0.90-1.00; AUTH 0 wrong, unclear 0-0.2; TABLES 1.0; REC 1.0; FLOWS 17/7, 11/33, 6/9",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "recall": 1.0,
+    "precision": 1.0,
+    "truth": 7,
+    "extracted": 7,
+    "tables_source": "go",
+    "would_pass": true
+   },
+   "detail": {
+    "missed": [],
+    "extra": []
+   }
+  },
+  {
+   "id": "PD5-KILN/REC (post hoc, tuned-on, never gated)",
+   "prediction": "RPC 1.0/1.0; CODES recall 0.80-0.95 (E3d adds interceptor codes), precision 0.90-1.00; AUTH 0 wrong, unclear 0-0.2; TABLES 1.0; REC 1.0; FLOWS 17/7, 11/33, 6/9",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "S5 coverage": 1.0,
+    "S5 agreement": 1.0,
+    "S5 by class": {
+     "absent": "1/1",
+     "implemented": "16/16",
+     "not_registered": "2/2",
+     "unimplemented": "1/1"
+    },
+    "S5 reason": "",
+    "supplementary_calls": 0,
+    "S6": "not_exercised",
+    "auth_refused on truth-implemented non-public rpcs": [],
+    "order disagreed": [
+     "kiln.v1.Passport/StepDown"
+    ],
+    "all disagreements resolved isolated": true,
+    "rpcs answered by the library": 20,
+    "seconds": 1.55,
+    "login_failed on truth-implemented non-public rpcs": [],
+    "would_pass": true
+   },
+   "detail": {
+    "S5": {
+     "denominator": 20,
+     "covered": 20,
+     "coverage": 1.0,
+     "agreement": 1.0,
+     "by_class": {
+      "absent": "1/1",
+      "implemented": "16/16",
+      "not_registered": "2/2",
+      "unimplemented": "1/1"
+     },
+     "wrong": [],
+     "missing": [],
+     "supplementary_calls": 0,
+     "reason": "",
+     "pass": true
+    },
+    "S6": {
+     "status": "not_exercised",
+     "pass": true,
+     "effectful": [],
+     "reason": ""
+    },
+    "library output rpcs not in truth": [],
+    "codes": {
+     "kiln.v1.Catalog/ListStudios": {
+      "code": "OK",
+      "answered": true
+     },
+     "kiln.v1.Catalog/ListGlazes": {
+      "code": "OK",
+      "answered": true
+     },
+     "kiln.v1.Catalog/LookupGlaze": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "kiln.v1.Passport/SignIn": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "kiln.v1.Passport/WhoAmI": {
+      "code": "OK",
+      "answered": true
+     },
+     "kiln.v1.Passport/SignOff": {
+      "code": "OK",
+      "answered": true
+     },
+     "kiln.v1.Passport/StepDown": {
+      "code": "OK",
+      "answered": true,
+      "isolated": true
+     },
+     "kiln.v1.Projects/OpenProject": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "kiln.v1.Projects/GetProject": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "kiln.v1.Projects/ListProjects": {
+      "code": "OK",
+      "answered": true
+     },
+     "kiln.v1.Projects/ArchiveProject": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "kiln.v1.Projects/TransferProject": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "kiln.v1.Pieces/AddPiece": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "kiln.v1.Pieces/GetPiece": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "kiln.v1.Pieces/FirePiece": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "kiln.v1.Pieces/ApplyGlaze": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "kiln.v1.Pieces/RemovePiece": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "kiln.v1.Billing/QuoteFiring": {
+      "code": "UNIMPLEMENTED",
+      "answered": false,
+      "route": false
+     },
+     "kiln.v1.Billing/PayQuote": {
+      "code": "UNIMPLEMENTED",
+      "answered": false,
+      "route": false
+     },
+     "(absent)": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "order": {
+      "disagreed": [
+       "kiln.v1.Passport/StepDown"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "PD5-KILN/FLOWS (post hoc, tuned-on, never gated)",
+   "prediction": "RPC 1.0/1.0; CODES recall 0.80-0.95 (E3d adds interceptor codes), precision 0.90-1.00; AUTH 0 wrong, unclear 0-0.2; TABLES 1.0; REC 1.0; FLOWS 17/7, 11/33, 6/9",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "truth_flows": 9,
+    "truth_flows_passing": 7,
+    "truth_replay_failures": {
+     "link_unresolved": 2
+    },
+    "truth_edges_total": 33,
+    "recovered": 17,
+    "recovered_by_status": {
+     "verified": 7,
+     "unverified": 0,
+     "failed": 10,
+     "unbound": 0
+    },
+    "recovered_by_kind_status": {
+     "after_delete": {
+      "failed": 1
+     },
+     "owner_chain": {
+      "verified": 1,
+      "failed": 1
+     },
+     "owner_guard": {
+      "failed": 4,
+      "verified": 3
+     },
+     "pair": {
+      "verified": 3,
+      "failed": 4
+     }
+    },
+    "verified": 7,
+    "verified_but_failing": 0,
+    "edge_recall": {
+     "num": 7,
+     "den": 22,
+     "bound": 0.3,
+     "gated": true,
+     "value": 0.3182,
+     "pass": true
+    },
+    "coverage": {
+     "num": 4,
+     "den": 7,
+     "bound": 2,
+     "gated": true,
+     "value": 0.5714,
+     "pass": true
+    },
+    "exact": {
+     "num": 0,
+     "den": 7
+    },
+    "failing_codes": {
+     "NOT_FOUND": 10
+    },
+    "unbound_reasons": {},
+    "reasons": [],
+    "seconds": 1.1,
+    "would_pass": true
+   },
+   "detail": {
+    "score": {
+     "pass": true,
+     "reasons": [],
+     "recovered": 17,
+     "recovered_by_status": {
+      "verified": 7,
+      "unverified": 0,
+      "failed": 10,
+      "unbound": 0
+     },
+     "verified": 7,
+     "verified_but_failing": 0,
+     "edge_recall": {
+      "num": 7,
+      "den": 22,
+      "bound": 0.3,
+      "gated": true,
+      "value": 0.3182,
+      "pass": true
+     },
+     "coverage": {
+      "num": 4,
+      "den": 7,
+      "bound": 2,
+      "gated": true,
+      "value": 0.5714,
+      "pass": true
+     },
+     "exact": {
+      "num": 0,
+      "den": 7
+     },
+     "truth_defects": [
+      "lookup_open_add_fire_glaze_fire",
+      "archive_closes_the_project"
+     ],
+     "failing_codes": {
+      "NOT_FOUND": 10
+     },
+     "unbound_reasons": {},
+     "truth_flows": 9,
+     "truth_flows_passing": 7,
+     "truth_replay_share": 0.7778,
+     "truth_replay_failures": {
+      "link_unresolved": 2
+     },
+     "truth_edges_total": 33,
+     "recovered_by_kind_status": {
+      "after_delete": {
+       "failed": 1
+      },
+      "owner_chain": {
+       "verified": 1,
+       "failed": 1
+      },
+      "owner_guard": {
+       "failed": 4,
+       "verified": 3
+      },
+      "pair": {
+       "verified": 3,
+       "failed": 4
+      }
+     }
+    },
+    "vbf ids": [],
+    "truth replay": [
+     {
+      "name": "lookup_open_add_fire_glaze_fire",
+      "ok": false,
+      "step": 1,
+      "reason": "link_unresolved",
+      "code": null,
+      "expected": "OK",
+      "detail": "no value at step 0 field slug"
+     },
+     {
+      "name": "another_potters_project_is_invisible",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "glazing_another_potters_piece_is_refused",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "sign_off_revokes_the_session",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "lead_rushes_then_steps_down",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "potter_cannot_rush_a_seeded_piece",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "archive_closes_the_project",
+      "ok": false,
+      "step": 1,
+      "reason": "link_unresolved",
+      "code": null,
+      "expected": "OK",
+      "detail": "no value at step 0 field slug"
+     },
+     {
+      "name": "studio_keys_closed_unknown_open",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "removed_piece_is_gone",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     }
+    ],
+    "not verified": [
+     {
+      "id": "rf-ece55f162b",
+      "kind": "after_delete",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-e69bed0631",
+      "kind": "owner_chain",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-076642ad81",
+      "kind": "owner_guard",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-1cbb239392",
+      "kind": "owner_guard",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-70db70f48e",
+      "kind": "owner_guard",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-9f142dd77a",
+      "kind": "owner_guard",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-365377a179",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-49ed9cfdc4",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-baf1bcb697",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     },
+     {
+      "id": "rf-f7e45551e2",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 1 (kiln.v1.Pieces/AddPiece) answered NOT_FOUND"
+     }
+    ]
+   }
+  },
+  {
+   "id": "PD5-HARBOR/RPC (post hoc, tuned-on, never gated)",
+   "prediction": "RPC 1.0/1.0; SAFE 0; CODES 0.45-0.80 / 0.90-1.00; AUTH 0 wrong, unclear 0-0.1; TABLES 1.0; REC 1.0/1.0; FLOWS recovered 1-40, verified 0-8, edge 0.00-0.50, coverage 0-5 of 8; SQLT recall 0.60-1.00",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "recall": 1.0,
+    "precision": 1.0,
+    "truth rpcs": 25,
+    "extracted rpcs": 25,
+    "matched": 25,
+    "truth states": {
+     "implemented": 21,
+     "not_registered": 2,
+     "streaming": 1,
+     "unimplemented": 1
+    },
+    "streaming reported not supported": [
+     "harbor.v1.Tides/WatchTides"
+    ],
+    "streaming not supported (all)": true,
+    "model endpoints": 22,
+    "would_pass": true
+   },
+   "detail": {
+    "missed (truth, state)": [],
+    "extra (extract, state)": []
+   }
+  },
+  {
+   "id": "PD5-HARBOR/SAFE (post hoc, tuned-on, never gated)",
+   "prediction": "RPC 1.0/1.0; SAFE 0; CODES 0.45-0.80 / 0.90-1.00; AUTH 0 wrong, unclear 0-0.1; TABLES 1.0; REC 1.0/1.0; FLOWS recovered 1-40, verified 0-8, edge 0.00-0.50, coverage 0-5 of 8; SQLT recall 0.60-1.00",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "confident-wrong": 0,
+    "checked": 25,
+    "would_pass": true
+   },
+   "detail": {
+    "wrong": []
+   }
+  },
+  {
+   "id": "PD5-HARBOR/CODES (post hoc, tuned-on, never gated)",
+   "prediction": "RPC 1.0/1.0; SAFE 0; CODES 0.45-0.80 / 0.90-1.00; AUTH 0 wrong, unclear 0-0.1; TABLES 1.0; REC 1.0/1.0; FLOWS recovered 1-40, verified 0-8, edge 0.00-0.50, coverage 0-5 of 8; SQLT recall 0.60-1.00",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "recall": 0.7037,
+    "precision": 0.5,
+    "truth": 54,
+    "extracted": 76,
+    "matched": 38,
+    "unknown_extras": [],
+    "unread_rpcs": [
+     "harbor.v1.Berths/CreateBerth",
+     "harbor.v1.Bookings/BookBerth",
+     "harbor.v1.Bookings/CancelBooking",
+     "harbor.v1.Bookings/CheckIn",
+     "harbor.v1.Bookings/GetBooking",
+     "harbor.v1.Bookings/ListBookings",
+     "harbor.v1.Yard/CompleteWorkOrder",
+     "harbor.v1.Yard/ListWorkOrders",
+     "harbor.v1.Yard/OpenWorkOrder"
+    ],
+    "would_pass": false
+   },
+   "detail": {
+    "missed": [
+     "harbor.v1.Berths/CreateBerth:PERMISSION_DENIED",
+     "harbor.v1.Bookings/BookBerth:INTERNAL",
+     "harbor.v1.Bookings/CancelBooking:INTERNAL",
+     "harbor.v1.Bookings/CheckIn:INTERNAL",
+     "harbor.v1.Bookings/GetBooking:INTERNAL",
+     "harbor.v1.Bookings/ListBookings:INTERNAL",
+     "harbor.v1.Yard/CompleteWorkOrder:FAILED_PRECONDITION",
+     "harbor.v1.Yard/CompleteWorkOrder:INTERNAL",
+     "harbor.v1.Yard/CompleteWorkOrder:NOT_FOUND",
+     "harbor.v1.Yard/CompleteWorkOrder:PERMISSION_DENIED",
+     "harbor.v1.Yard/ListWorkOrders:INTERNAL",
+     "harbor.v1.Yard/ListWorkOrders:NOT_FOUND",
+     "harbor.v1.Yard/OpenWorkOrder:FAILED_PRECONDITION",
+     "harbor.v1.Yard/OpenWorkOrder:INTERNAL",
+     "harbor.v1.Yard/OpenWorkOrder:INVALID_ARGUMENT",
+     "harbor.v1.Yard/OpenWorkOrder:NOT_FOUND"
+    ],
+    "extra": [
+     "harbor.v1.Accounts/CloseAccount:UNAUTHENTICATED",
+     "harbor.v1.Accounts/CloseAccount:UNAVAILABLE",
+     "harbor.v1.Accounts/Logout:UNAUTHENTICATED",
+     "harbor.v1.Accounts/Logout:UNAVAILABLE",
+     "harbor.v1.Accounts/StepDown:UNAUTHENTICATED",
+     "harbor.v1.Accounts/StepDown:UNAVAILABLE",
+     "harbor.v1.Accounts/WhoAmI:UNAUTHENTICATED",
+     "harbor.v1.Accounts/WhoAmI:UNAVAILABLE",
+     "harbor.v1.Berths/CreateBerth:UNAUTHENTICATED",
+     "harbor.v1.Berths/CreateBerth:UNAVAILABLE",
+     "harbor.v1.Berths/GetBerth:UNAUTHENTICATED",
+     "harbor.v1.Berths/GetBerth:UNAVAILABLE",
+     "harbor.v1.Berths/ListBerths:UNAUTHENTICATED",
+     "harbor.v1.Berths/ListBerths:UNAVAILABLE",
+     "harbor.v1.Bookings/BookBerth:UNAUTHENTICATED",
+     "harbor.v1.Bookings/BookBerth:UNAVAILABLE",
+     "harbor.v1.Bookings/CancelBooking:UNAUTHENTICATED",
+     "harbor.v1.Bookings/CancelBooking:UNAVAILABLE",
+     "harbor.v1.Bookings/CheckIn:UNAUTHENTICATED",
+     "harbor.v1.Bookings/CheckIn:UNAVAILABLE",
+     "harbor.v1.Bookings/GetBooking:UNAUTHENTICATED",
+     "harbor.v1.Bookings/GetBooking:UNAVAILABLE",
+     "harbor.v1.Bookings/ListBookings:UNAUTHENTICATED",
+     "harbor.v1.Bookings/ListBookings:UNAVAILABLE",
+     "harbor.v1.Vessels/GetVessel:UNAUTHENTICATED",
+     "harbor.v1.Vessels/GetVessel:UNAVAILABLE",
+     "harbor.v1.Vessels/ListVessels:UNAUTHENTICATED",
+     "harbor.v1.Vessels/ListVessels:UNAVAILABLE",
+     "harbor.v1.Vessels/RegisterVessel:UNAUTHENTICATED",
+     "harbor.v1.Vessels/RegisterVessel:UNAVAILABLE",
+     "harbor.v1.Vessels/RenameVessel:UNAUTHENTICATED",
+     "harbor.v1.Vessels/RenameVessel:UNAVAILABLE",
+     "harbor.v1.Yard/CompleteWorkOrder:UNAUTHENTICATED",
+     "harbor.v1.Yard/CompleteWorkOrder:UNAVAILABLE",
+     "harbor.v1.Yard/ListWorkOrders:UNAUTHENTICATED",
+     "harbor.v1.Yard/ListWorkOrders:UNAVAILABLE",
+     "harbor.v1.Yard/OpenWorkOrder:UNAUTHENTICATED",
+     "harbor.v1.Yard/OpenWorkOrder:UNAVAILABLE"
+    ]
+   }
+  },
+  {
+   "id": "PD5-HARBOR/AUTH (post hoc, tuned-on, never gated)",
+   "prediction": "RPC 1.0/1.0; SAFE 0; CODES 0.45-0.80 / 0.90-1.00; AUTH 0 wrong, unclear 0-0.1; TABLES 1.0; REC 1.0/1.0; FLOWS recovered 1-40, verified 0-8, edge 0.00-0.50, coverage 0-5 of 8; SQLT recall 0.60-1.00",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "denominator": 22,
+    "unclear": 2,
+    "unclear_share": 0.0909,
+    "reason": "",
+    "wrong": [],
+    "would_pass": true
+   },
+   "detail": {
+    "unclear rpcs": [
+     [
+      "harbor.v1.Accounts/Login",
+      "unclear"
+     ],
+     [
+      "harbor.v1.Tides/GetTideTable",
+      "unclear"
+     ]
+    ],
+    "row": {
+     "denominator": 22,
+     "wrong": [],
+     "unclear": 2,
+     "unclear_share": 0.0909,
+     "unclear_rpcs": [
+      [
+       "harbor.v1.Accounts/Login",
+       "unclear"
+      ],
+      [
+       "harbor.v1.Tides/GetTideTable",
+       "unclear"
+      ]
+     ],
+     "reason": "",
+     "pass": true
+    }
+   }
+  },
+  {
+   "id": "PD5-HARBOR/TABLES (post hoc, tuned-on, never gated)",
+   "prediction": "RPC 1.0/1.0; SAFE 0; CODES 0.45-0.80 / 0.90-1.00; AUTH 0 wrong, unclear 0-0.1; TABLES 1.0; REC 1.0/1.0; FLOWS recovered 1-40, verified 0-8, edge 0.00-0.50, coverage 0-5 of 8; SQLT recall 0.60-1.00",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "recall": 1.0,
+    "precision": 1.0,
+    "truth": 7,
+    "extracted": 7,
+    "tables_source": "harness_db",
+    "would_pass": true
+   },
+   "detail": {
+    "missed": [],
+    "extra": []
+   }
+  },
+  {
+   "id": "PD5-HARBOR/REC (post hoc, tuned-on, never gated)",
+   "prediction": "RPC 1.0/1.0; SAFE 0; CODES 0.45-0.80 / 0.90-1.00; AUTH 0 wrong, unclear 0-0.1; TABLES 1.0; REC 1.0/1.0; FLOWS recovered 1-40, verified 0-8, edge 0.00-0.50, coverage 0-5 of 8; SQLT recall 0.60-1.00",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "S5 coverage": 1.0,
+    "S5 agreement": 1.0,
+    "S5 by class": {
+     "absent": "1/1",
+     "implemented": "21/21",
+     "not_registered": "2/2",
+     "unimplemented": "1/1"
+    },
+    "S5 reason": "",
+    "supplementary_calls": 0,
+    "S6": "exercised",
+    "auth_refused on truth-implemented non-public rpcs": [],
+    "order disagreed": [],
+    "all disagreements resolved isolated": true,
+    "rpcs answered by the library": 25,
+    "seconds": 0.13,
+    "login_failed on truth-implemented non-public rpcs": [],
+    "would_pass": true
+   },
+   "detail": {
+    "S5": {
+     "denominator": 25,
+     "covered": 25,
+     "coverage": 1.0,
+     "agreement": 1.0,
+     "by_class": {
+      "absent": "1/1",
+      "implemented": "21/21",
+      "not_registered": "2/2",
+      "unimplemented": "1/1"
+     },
+     "wrong": [],
+     "missing": [],
+     "supplementary_calls": 0,
+     "reason": "",
+     "pass": true
+    },
+    "S6": {
+     "status": "exercised",
+     "pass": true,
+     "effectful": [
+      "harbor.v1.Accounts/CloseAccount",
+      "harbor.v1.Accounts/Logout",
+      "harbor.v1.Accounts/StepDown"
+     ],
+     "not_in_both_passes": [],
+     "isolated": [],
+     "reason": ""
+    },
+    "library output rpcs not in truth": [],
+    "codes": {
+     "harbor.v1.Accounts/Login": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "harbor.v1.Accounts/WhoAmI": {
+      "code": "OK",
+      "answered": true
+     },
+     "harbor.v1.Accounts/Logout": {
+      "code": "OK",
+      "answered": true
+     },
+     "harbor.v1.Accounts/StepDown": {
+      "code": "FAILED_PRECONDITION",
+      "answered": true
+     },
+     "harbor.v1.Accounts/CloseAccount": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "harbor.v1.Berths/ListBerths": {
+      "code": "OK",
+      "answered": true
+     },
+     "harbor.v1.Berths/GetBerth": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "harbor.v1.Berths/CreateBerth": {
+      "code": "PERMISSION_DENIED",
+      "answered": true
+     },
+     "harbor.v1.Berths/RetireBerth": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "harbor.v1.Bookings/BookBerth": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "harbor.v1.Bookings/GetBooking": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "harbor.v1.Bookings/ListBookings": {
+      "code": "OK",
+      "answered": true
+     },
+     "harbor.v1.Bookings/CancelBooking": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "harbor.v1.Bookings/CheckIn": {
+      "code": "PERMISSION_DENIED",
+      "answered": true
+     },
+     "harbor.v1.Tides/GetTideTable": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "harbor.v1.Vessels/RegisterVessel": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "harbor.v1.Vessels/GetVessel": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "harbor.v1.Vessels/RenameVessel": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "harbor.v1.Vessels/ListVessels": {
+      "code": "OK",
+      "answered": true
+     },
+     "harbor.v1.Yard/OpenWorkOrder": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "harbor.v1.Yard/ListWorkOrders": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "harbor.v1.Yard/CompleteWorkOrder": {
+      "code": "PERMISSION_DENIED",
+      "answered": true
+     },
+     "harbor.v1.Fuel/QuoteFuel": {
+      "code": "UNIMPLEMENTED",
+      "answered": false,
+      "route": false
+     },
+     "harbor.v1.Fuel/Dispense": {
+      "code": "UNIMPLEMENTED",
+      "answered": false,
+      "route": false
+     },
+     "(absent)": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     }
+    }
+   }
+  },
+  {
+   "id": "PD5-HARBOR/FLOWS (post hoc, tuned-on, never gated)",
+   "prediction": "RPC 1.0/1.0; SAFE 0; CODES 0.45-0.80 / 0.90-1.00; AUTH 0 wrong, unclear 0-0.1; TABLES 1.0; REC 1.0/1.0; FLOWS recovered 1-40, verified 0-8, edge 0.00-0.50, coverage 0-5 of 8; SQLT recall 0.60-1.00",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "truth_flows": 8,
+    "truth_flows_passing": 8,
+    "truth_replay_failures": {},
+    "truth_edges_total": 23,
+    "recovered": 12,
+    "recovered_by_status": {
+     "verified": 0,
+     "unverified": 0,
+     "failed": 5,
+     "unbound": 7
+    },
+    "recovered_by_kind_status": {
+     "lifecycle": {
+      "unbound": 1
+     },
+     "owner_chain": {
+      "unbound": 1
+     },
+     "pair": {
+      "unbound": 5,
+      "failed": 5
+     }
+    },
+    "verified": 0,
+    "verified_but_failing": 0,
+    "edge_recall": {
+     "num": 0,
+     "den": 23,
+     "bound": 0.3,
+     "gated": true,
+     "value": 0.0,
+     "pass": false,
+     "reason": "below_bound"
+    },
+    "coverage": {
+     "num": 0,
+     "den": 8,
+     "bound": 2,
+     "gated": true,
+     "value": 0.0,
+     "pass": false,
+     "reason": "below_bound"
+    },
+    "exact": {
+     "num": 0,
+     "den": 8
+    },
+    "failing_codes": {
+     "INVALID_ARGUMENT": 3,
+     "PERMISSION_DENIED": 2
+    },
+    "unbound_reasons": {
+     "no_source:berth_code": 7
+    },
+    "reasons": [
+     "no_verified_flow",
+     "edge_recall:below_bound",
+     "coverage:below_bound"
+    ],
+    "seconds": 0.2,
+    "would_pass": false
+   },
+   "detail": {
+    "score": {
+     "pass": false,
+     "reasons": [
+      "no_verified_flow",
+      "edge_recall:below_bound",
+      "coverage:below_bound"
+     ],
+     "recovered": 12,
+     "recovered_by_status": {
+      "verified": 0,
+      "unverified": 0,
+      "failed": 5,
+      "unbound": 7
+     },
+     "verified": 0,
+     "verified_but_failing": 0,
+     "edge_recall": {
+      "num": 0,
+      "den": 23,
+      "bound": 0.3,
+      "gated": true,
+      "value": 0.0,
+      "pass": false,
+      "reason": "below_bound"
+     },
+     "coverage": {
+      "num": 0,
+      "den": 8,
+      "bound": 2,
+      "gated": true,
+      "value": 0.0,
+      "pass": false,
+      "reason": "below_bound"
+     },
+     "exact": {
+      "num": 0,
+      "den": 8
+     },
+     "truth_defects": [],
+     "failing_codes": {
+      "INVALID_ARGUMENT": 3,
+      "PERMISSION_DENIED": 2
+     },
+     "unbound_reasons": {
+      "no_source:berth_code": 7
+     },
+     "truth_flows": 8,
+     "truth_flows_passing": 8,
+     "truth_replay_share": 1.0,
+     "truth_replay_failures": {},
+     "truth_edges_total": 23,
+     "recovered_by_kind_status": {
+      "lifecycle": {
+       "unbound": 1
+      },
+      "owner_chain": {
+       "unbound": 1
+      },
+      "pair": {
+       "unbound": 5,
+       "failed": 5
+      }
+     }
+    },
+    "vbf ids": [],
+    "truth replay": [
+     {
+      "name": "book_then_cancel_twice",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "stranger_cannot_reach_booking",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "work_order_on_own_booking",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "new_vessel_books_and_renames",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "harbormaster_checks_in",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "new_berth_then_occupied",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "yard_lists_work_orders",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "harbormaster_steps_down",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     }
+    ],
+    "not verified": [
+     {
+      "id": "rf-31d77449b5",
+      "kind": "lifecycle",
+      "status": "unbound",
+      "reason": "no_source:berth_code"
+     },
+     {
+      "id": "rf-93d1b868f3",
+      "kind": "owner_chain",
+      "status": "unbound",
+      "reason": "no_source:berth_code"
+     },
+     {
+      "id": "rf-1858610f4d",
+      "kind": "pair",
+      "status": "unbound",
+      "reason": "no_source:berth_code"
+     },
+     {
+      "id": "rf-499385a51e",
+      "kind": "pair",
+      "status": "unbound",
+      "reason": "no_source:berth_code"
+     },
+     {
+      "id": "rf-746632bc3a",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 1 (harbor.v1.Vessels/RegisterVessel) answered INVALID_ARGUMENT"
+     },
+     {
+      "id": "rf-75ccb64005",
+      "kind": "pair",
+      "status": "unbound",
+      "reason": "no_source:berth_code"
+     },
+     {
+      "id": "rf-890eef5c40",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 1 (harbor.v1.Berths/CreateBerth) answered PERMISSION_DENIED"
+     },
+     {
+      "id": "rf-9930f67cb8",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 1 (harbor.v1.Vessels/RegisterVessel) answered INVALID_ARGUMENT"
+     },
+     {
+      "id": "rf-b197e3bc50",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 1 (harbor.v1.Yard/OpenWorkOrder) answered INVALID_ARGUMENT"
+     },
+     {
+      "id": "rf-d44fa911b7",
+      "kind": "pair",
+      "status": "unbound",
+      "reason": "no_source:berth_code"
+     },
+     {
+      "id": "rf-e1b7ff02a8",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 1 (harbor.v1.Berths/CreateBerth) answered PERMISSION_DENIED"
+     },
+     {
+      "id": "rf-f99fe57657",
+      "kind": "pair",
+      "status": "unbound",
+      "reason": "no_source:berth_code"
+     }
+    ]
+   }
+  },
+  {
+   "id": "PD5-HARBOR/SQLT (post hoc, tuned-on, never gated)",
+   "prediction": "RPC 1.0/1.0; SAFE 0; CODES 0.45-0.80 / 0.90-1.00; AUTH 0 wrong, unclear 0-0.1; TABLES 1.0; REC 1.0/1.0; FLOWS recovered 1-40, verified 0-8, edge 0.00-0.50, coverage 0-5 of 8; SQLT recall 0.60-1.00",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "truth_pairs": 31,
+    "extracted_pairs": 28,
+    "matched": 28,
+    "recall": 0.9032,
+    "precision": 1.0,
+    "would_pass": true
+   },
+   "detail": {
+    "harbor.v1.Accounts/CloseAccount": {
+     "truth": [
+      "bookings",
+      "sessions",
+      "users"
+     ],
+     "extracted": [
+      "bookings",
+      "sessions",
+      "users"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "harbor.v1.Accounts/Login": {
+     "truth": [
+      "sessions",
+      "users"
+     ],
+     "extracted": [
+      "sessions",
+      "users"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "harbor.v1.Accounts/Logout": {
+     "truth": [
+      "sessions"
+     ],
+     "extracted": [
+      "sessions"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "harbor.v1.Accounts/StepDown": {
+     "truth": [
+      "users"
+     ],
+     "extracted": [
+      "users"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "harbor.v1.Accounts/WhoAmI": {
+     "truth": [],
+     "extracted": [],
+     "recall": null,
+     "precision": null
+    },
+    "harbor.v1.Berths/CreateBerth": {
+     "truth": [
+      "berths"
+     ],
+     "extracted": [
+      "berths"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "harbor.v1.Berths/GetBerth": {
+     "truth": [
+      "berths"
+     ],
+     "extracted": [
+      "berths"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "harbor.v1.Berths/ListBerths": {
+     "truth": [
+      "berths"
+     ],
+     "extracted": [],
+     "recall": 0.0,
+     "precision": null
+    },
+    "harbor.v1.Bookings/BookBerth": {
+     "truth": [
+      "berths",
+      "bookings",
+      "vessels"
+     ],
+     "extracted": [
+      "berths",
+      "bookings",
+      "vessels"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "harbor.v1.Bookings/CancelBooking": {
+     "truth": [
+      "berths",
+      "bookings"
+     ],
+     "extracted": [
+      "berths",
+      "bookings"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "harbor.v1.Bookings/CheckIn": {
+     "truth": [
+      "berths",
+      "bookings"
+     ],
+     "extracted": [
+      "berths",
+      "bookings"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "harbor.v1.Bookings/GetBooking": {
+     "truth": [
+      "berths",
+      "bookings"
+     ],
+     "extracted": [
+      "berths",
+      "bookings"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "harbor.v1.Bookings/ListBookings": {
+     "truth": [
+      "berths",
+      "bookings"
+     ],
+     "extracted": [],
+     "recall": 0.0,
+     "precision": null
+    },
+    "harbor.v1.Tides/GetTideTable": {
+     "truth": [
+      "tide_readings"
+     ],
+     "extracted": [
+      "tide_readings"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "harbor.v1.Vessels/GetVessel": {
+     "truth": [
+      "vessels"
+     ],
+     "extracted": [
+      "vessels"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "harbor.v1.Vessels/ListVessels": {
+     "truth": [
+      "vessels"
+     ],
+     "extracted": [
+      "vessels"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "harbor.v1.Vessels/RegisterVessel": {
+     "truth": [
+      "vessels"
+     ],
+     "extracted": [
+      "vessels"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "harbor.v1.Vessels/RenameVessel": {
+     "truth": [
+      "vessels"
+     ],
+     "extracted": [
+      "vessels"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "harbor.v1.Yard/CompleteWorkOrder": {
+     "truth": [
+      "work_orders"
+     ],
+     "extracted": [
+      "work_orders"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "harbor.v1.Yard/ListWorkOrders": {
+     "truth": [
+      "bookings",
+      "work_orders"
+     ],
+     "extracted": [
+      "bookings",
+      "work_orders"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "harbor.v1.Yard/OpenWorkOrder": {
+     "truth": [
+      "bookings",
+      "work_orders"
+     ],
+     "extracted": [
+      "bookings",
+      "work_orders"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    }
+   }
+  },
+  {
+   "id": "PD5-TOOL/RPC (post hoc, tuned-on, never gated)",
+   "prediction": "RPC 0.91-1.00 / 0.91-1.00; SAFE 0; CODES 0.50-0.90 / 0.85-1.00; AUTH 0 wrong, unclear 0.00-0.11; TABLES 1.0 (harness_db); REC 1.00 / 1.00; FLOWS truth replaying 8-10 of 10, recovered 3-60, verified 1-15, edge 0.10-0.60, coverage 1-6 of 10; SQLT 0.60-1.00 / 0.80-1.00",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "recall": 1.0,
+    "precision": 1.0,
+    "truth rpcs": 22,
+    "extracted rpcs": 22,
+    "matched": 22,
+    "truth states": {
+     "implemented": 18,
+     "not_registered": 2,
+     "streaming": 1,
+     "unimplemented": 1
+    },
+    "streaming reported not supported": [
+     "toolshed.booking.v1.ReservationService/WatchReservation"
+    ],
+    "streaming not supported (all)": true,
+    "model endpoints": 19,
+    "would_pass": true
+   },
+   "detail": {
+    "missed (truth, state)": [],
+    "extra (extract, state)": []
+   }
+  },
+  {
+   "id": "PD5-TOOL/SAFE (post hoc, tuned-on, never gated)",
+   "prediction": "RPC 0.91-1.00 / 0.91-1.00; SAFE 0; CODES 0.50-0.90 / 0.85-1.00; AUTH 0 wrong, unclear 0.00-0.11; TABLES 1.0 (harness_db); REC 1.00 / 1.00; FLOWS truth replaying 8-10 of 10, recovered 3-60, verified 1-15, edge 0.10-0.60, coverage 1-6 of 10; SQLT 0.60-1.00 / 0.80-1.00",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "confident-wrong": 0,
+    "checked": 22,
+    "would_pass": true
+   },
+   "detail": {
+    "wrong": []
+   }
+  },
+  {
+   "id": "PD5-TOOL/CODES (post hoc, tuned-on, never gated)",
+   "prediction": "RPC 0.91-1.00 / 0.91-1.00; SAFE 0; CODES 0.50-0.90 / 0.85-1.00; AUTH 0 wrong, unclear 0.00-0.11; TABLES 1.0 (harness_db); REC 1.00 / 1.00; FLOWS truth replaying 8-10 of 10, recovered 3-60, verified 1-15, edge 0.10-0.60, coverage 1-6 of 10; SQLT 0.60-1.00 / 0.80-1.00",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "recall": 0.9859,
+    "precision": 1.0,
+    "truth": 71,
+    "extracted": 70,
+    "matched": 70,
+    "unknown_extras": [],
+    "unread_rpcs": [],
+    "would_pass": true
+   },
+   "detail": {
+    "missed": [
+     "toolshed.catalog.v1.EquipmentService/ListTools:INTERNAL"
+    ],
+    "extra": []
+   }
+  },
+  {
+   "id": "PD5-TOOL/AUTH (post hoc, tuned-on, never gated)",
+   "prediction": "RPC 0.91-1.00 / 0.91-1.00; SAFE 0; CODES 0.50-0.90 / 0.85-1.00; AUTH 0 wrong, unclear 0.00-0.11; TABLES 1.0 (harness_db); REC 1.00 / 1.00; FLOWS truth replaying 8-10 of 10, recovered 3-60, verified 1-15, edge 0.10-0.60, coverage 1-6 of 10; SQLT 0.60-1.00 / 0.80-1.00",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "denominator": 19,
+    "unclear": 0,
+    "unclear_share": 0.0,
+    "reason": "",
+    "wrong": [],
+    "would_pass": true
+   },
+   "detail": {
+    "unclear rpcs": [],
+    "row": {
+     "denominator": 19,
+     "wrong": [],
+     "unclear": 0,
+     "unclear_share": 0.0,
+     "unclear_rpcs": [],
+     "reason": "",
+     "pass": true
+    }
+   }
+  },
+  {
+   "id": "PD5-TOOL/TABLES (post hoc, tuned-on, never gated)",
+   "prediction": "RPC 0.91-1.00 / 0.91-1.00; SAFE 0; CODES 0.50-0.90 / 0.85-1.00; AUTH 0 wrong, unclear 0.00-0.11; TABLES 1.0 (harness_db); REC 1.00 / 1.00; FLOWS truth replaying 8-10 of 10, recovered 3-60, verified 1-15, edge 0.10-0.60, coverage 1-6 of 10; SQLT 0.60-1.00 / 0.80-1.00",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "recall": 1.0,
+    "precision": 1.0,
+    "truth": 6,
+    "extracted": 6,
+    "tables_source": "harness_db",
+    "would_pass": true
+   },
+   "detail": {
+    "missed": [],
+    "extra": []
+   }
+  },
+  {
+   "id": "PD5-TOOL/REC (post hoc, tuned-on, never gated)",
+   "prediction": "RPC 0.91-1.00 / 0.91-1.00; SAFE 0; CODES 0.50-0.90 / 0.85-1.00; AUTH 0 wrong, unclear 0.00-0.11; TABLES 1.0 (harness_db); REC 1.00 / 1.00; FLOWS truth replaying 8-10 of 10, recovered 3-60, verified 1-15, edge 0.10-0.60, coverage 1-6 of 10; SQLT 0.60-1.00 / 0.80-1.00",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "S5 coverage": 1.0,
+    "S5 agreement": 1.0,
+    "S5 by class": {
+     "absent": "1/1",
+     "implemented": "18/18",
+     "not_registered": "2/2",
+     "unimplemented": "1/1"
+    },
+    "S5 reason": "",
+    "supplementary_calls": 0,
+    "S6": "exercised",
+    "auth_refused on truth-implemented non-public rpcs": [],
+    "order disagreed": [],
+    "all disagreements resolved isolated": true,
+    "rpcs answered by the library": 22,
+    "seconds": 1.55,
+    "login_failed on truth-implemented non-public rpcs": [],
+    "would_pass": true
+   },
+   "detail": {
+    "S5": {
+     "denominator": 22,
+     "covered": 22,
+     "coverage": 1.0,
+     "agreement": 1.0,
+     "by_class": {
+      "absent": "1/1",
+      "implemented": "18/18",
+      "not_registered": "2/2",
+      "unimplemented": "1/1"
+     },
+     "wrong": [],
+     "missing": [],
+     "supplementary_calls": 0,
+     "reason": "",
+     "pass": true
+    },
+    "S6": {
+     "status": "exercised",
+     "pass": true,
+     "effectful": [
+      "toolshed.auth.v1.SessionService/Logout",
+      "toolshed.members.v1.MemberService/DeleteAccount",
+      "toolshed.members.v1.MemberService/UpdateMember"
+     ],
+     "not_in_both_passes": [],
+     "isolated": [],
+     "reason": ""
+    },
+    "library output rpcs not in truth": [],
+    "codes": {
+     "toolshed.auth.v1.SessionService/Login": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "toolshed.auth.v1.SessionService/Logout": {
+      "code": "OK",
+      "answered": true
+     },
+     "toolshed.auth.v1.SessionService/WhoAmI": {
+      "code": "OK",
+      "answered": true
+     },
+     "toolshed.booking.v1.ReservationService/CreateReservation": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "toolshed.booking.v1.ReservationService/GetReservation": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "toolshed.booking.v1.ReservationService/ListReservations": {
+      "code": "OK",
+      "answered": true
+     },
+     "toolshed.booking.v1.ReservationService/CancelReservation": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "toolshed.booking.v1.ReservationService/CheckOut": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "toolshed.booking.v1.ReservationService/ReturnTool": {
+      "code": "NOT_FOUND",
+      "answered": true
+     },
+     "toolshed.booking.v1.ReservationService/ExtendReservation": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     },
+     "toolshed.catalog.v1.EquipmentService/ListTools": {
+      "code": "OK",
+      "answered": true
+     },
+     "toolshed.catalog.v1.EquipmentService/GetTool": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "toolshed.catalog.v1.EquipmentService/CreateTool": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "toolshed.catalog.v1.EquipmentService/RelocateTool": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "toolshed.catalog.v1.EquipmentService/RetireTool": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "toolshed.members.v1.MemberService/GetMember": {
+      "code": "OK",
+      "answered": true
+     },
+     "toolshed.members.v1.MemberService/ListMembers": {
+      "code": "OK",
+      "answered": true
+     },
+     "toolshed.members.v1.MemberService/UpdateMember": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "toolshed.members.v1.MemberService/DeleteAccount": {
+      "code": "INVALID_ARGUMENT",
+      "answered": true
+     },
+     "toolshed.billing.v1.InvoiceService/GetInvoice": {
+      "code": "UNIMPLEMENTED",
+      "answered": false,
+      "route": false
+     },
+     "toolshed.billing.v1.InvoiceService/ListInvoices": {
+      "code": "UNIMPLEMENTED",
+      "answered": false,
+      "route": false
+     },
+     "(absent)": {
+      "code": "UNIMPLEMENTED",
+      "answered": false
+     }
+    }
+   }
+  },
+  {
+   "id": "PD5-TOOL/FLOWS (post hoc, tuned-on, never gated)",
+   "prediction": "RPC 0.91-1.00 / 0.91-1.00; SAFE 0; CODES 0.50-0.90 / 0.85-1.00; AUTH 0 wrong, unclear 0.00-0.11; TABLES 1.0 (harness_db); REC 1.00 / 1.00; FLOWS truth replaying 8-10 of 10, recovered 3-60, verified 1-15, edge 0.10-0.60, coverage 1-6 of 10; SQLT 0.60-1.00 / 0.80-1.00",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "truth_flows": 10,
+    "truth_flows_passing": 10,
+    "truth_replay_failures": {},
+    "truth_edges_total": 35,
+    "recovered": 7,
+    "recovered_by_status": {
+     "verified": 0,
+     "unverified": 0,
+     "failed": 7,
+     "unbound": 0
+    },
+    "recovered_by_kind_status": {
+     "owner_chain": {
+      "failed": 3
+     },
+     "pair": {
+      "failed": 4
+     }
+    },
+    "verified": 0,
+    "verified_but_failing": 0,
+    "edge_recall": {
+     "num": 0,
+     "den": 35,
+     "bound": 0.3,
+     "gated": true,
+     "value": 0.0,
+     "pass": false,
+     "reason": "below_bound"
+    },
+    "coverage": {
+     "num": 0,
+     "den": 10,
+     "bound": 2,
+     "gated": true,
+     "value": 0.0,
+     "pass": false,
+     "reason": "below_bound"
+    },
+    "exact": {
+     "num": 0,
+     "den": 10
+    },
+    "failing_codes": {
+     "INVALID_ARGUMENT": 7
+    },
+    "unbound_reasons": {},
+    "reasons": [
+     "no_verified_flow",
+     "edge_recall:below_bound",
+     "coverage:below_bound"
+    ],
+    "seconds": 14.5,
+    "would_pass": false
+   },
+   "detail": {
+    "score": {
+     "pass": false,
+     "reasons": [
+      "no_verified_flow",
+      "edge_recall:below_bound",
+      "coverage:below_bound"
+     ],
+     "recovered": 7,
+     "recovered_by_status": {
+      "verified": 0,
+      "unverified": 0,
+      "failed": 7,
+      "unbound": 0
+     },
+     "verified": 0,
+     "verified_but_failing": 0,
+     "edge_recall": {
+      "num": 0,
+      "den": 35,
+      "bound": 0.3,
+      "gated": true,
+      "value": 0.0,
+      "pass": false,
+      "reason": "below_bound"
+     },
+     "coverage": {
+      "num": 0,
+      "den": 10,
+      "bound": 2,
+      "gated": true,
+      "value": 0.0,
+      "pass": false,
+      "reason": "below_bound"
+     },
+     "exact": {
+      "num": 0,
+      "den": 10
+     },
+     "truth_defects": [],
+     "failing_codes": {
+      "INVALID_ARGUMENT": 7
+     },
+     "unbound_reasons": {},
+     "truth_flows": 10,
+     "truth_flows_passing": 10,
+     "truth_replay_share": 1.0,
+     "truth_replay_failures": {},
+     "truth_edges_total": 35,
+     "recovered_by_kind_status": {
+      "owner_chain": {
+       "failed": 3
+      },
+      "pair": {
+       "failed": 4
+      }
+     }
+    },
+    "vbf ids": [],
+    "truth replay": [
+     {
+      "name": "reserve_then_cancel_own_booking",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "reservation_owner_check_and_bypass",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "desk_checkout_and_return",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "logout_revokes_named_session",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "delete_account_cascades",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "admin_promotes_member_to_staff",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "staff_books_on_behalf_of_member",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "admin_tool_lifecycle",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "unserved_methods_answer_unimplemented",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     },
+     {
+      "name": "anonymous_browse_but_not_book",
+      "ok": true,
+      "step": null,
+      "reason": null,
+      "code": null,
+      "expected": null,
+      "detail": ""
+     }
+    ],
+    "not verified": [
+     {
+      "id": "rf-625c32f987",
+      "kind": "owner_chain",
+      "status": "failed",
+      "reason": "step 1 (toolshed.booking.v1.ReservationService/CreateReservation) answered INVALID_ARGUMENT"
+     },
+     {
+      "id": "rf-c6b5dd52b1",
+      "kind": "owner_chain",
+      "status": "failed",
+      "reason": "step 1 (toolshed.booking.v1.ReservationService/CreateReservation) answered INVALID_ARGUMENT"
+     },
+     {
+      "id": "rf-e3dbbea8ca",
+      "kind": "owner_chain",
+      "status": "failed",
+      "reason": "step 1 (toolshed.booking.v1.ReservationService/CreateReservation) answered INVALID_ARGUMENT"
+     },
+     {
+      "id": "rf-176cb1a873",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 1 (toolshed.booking.v1.ReservationService/CreateReservation) answered INVALID_ARGUMENT"
+     },
+     {
+      "id": "rf-39e9708332",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 1 (toolshed.booking.v1.ReservationService/CreateReservation) answered INVALID_ARGUMENT"
+     },
+     {
+      "id": "rf-7011d65f17",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 1 (toolshed.booking.v1.ReservationService/CreateReservation) answered INVALID_ARGUMENT"
+     },
+     {
+      "id": "rf-a0f605fe96",
+      "kind": "pair",
+      "status": "failed",
+      "reason": "step 1 (toolshed.booking.v1.ReservationService/CreateReservation) answered INVALID_ARGUMENT"
+     }
+    ]
+   }
+  },
+  {
+   "id": "PD5-TOOL/SQLT (post hoc, tuned-on, never gated)",
+   "prediction": "RPC 0.91-1.00 / 0.91-1.00; SAFE 0; CODES 0.50-0.90 / 0.85-1.00; AUTH 0 wrong, unclear 0.00-0.11; TABLES 1.0 (harness_db); REC 1.00 / 1.00; FLOWS truth replaying 8-10 of 10, recovered 3-60, verified 1-15, edge 0.10-0.60, coverage 1-6 of 10; SQLT 0.60-1.00 / 0.80-1.00",
+   "pass_rule": "reported only",
+   "status": "REPORTED",
+   "observed": {
+    "truth_pairs": 58,
+    "extracted_pairs": 32,
+    "matched": 32,
+    "recall": 0.5517,
+    "precision": 1.0,
+    "would_pass": true
+   },
+   "detail": {
+    "toolshed.auth.v1.SessionService/Login": {
+     "truth": [
+      "members",
+      "sessions"
+     ],
+     "extracted": [
+      "members",
+      "sessions"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "toolshed.auth.v1.SessionService/Logout": {
+     "truth": [
+      "members",
+      "sessions"
+     ],
+     "extracted": [
+      "sessions"
+     ],
+     "recall": 0.5,
+     "precision": 1.0
+    },
+    "toolshed.auth.v1.SessionService/WhoAmI": {
+     "truth": [
+      "members",
+      "sessions"
+     ],
+     "extracted": [],
+     "recall": 0.0,
+     "precision": null
+    },
+    "toolshed.booking.v1.ReservationService/CancelReservation": {
+     "truth": [
+      "members",
+      "reservation_events",
+      "reservations",
+      "sessions",
+      "tools"
+     ],
+     "extracted": [
+      "members",
+      "reservation_events",
+      "reservations",
+      "tools"
+     ],
+     "recall": 0.8,
+     "precision": 1.0
+    },
+    "toolshed.booking.v1.ReservationService/CheckOut": {
+     "truth": [
+      "members",
+      "reservation_events",
+      "reservations",
+      "sessions",
+      "tools"
+     ],
+     "extracted": [
+      "members",
+      "reservation_events",
+      "reservations",
+      "tools"
+     ],
+     "recall": 0.8,
+     "precision": 1.0
+    },
+    "toolshed.booking.v1.ReservationService/CreateReservation": {
+     "truth": [
+      "members",
+      "reservation_events",
+      "reservations",
+      "sessions",
+      "tools"
+     ],
+     "extracted": [
+      "members",
+      "reservation_events",
+      "reservations",
+      "tools"
+     ],
+     "recall": 0.8,
+     "precision": 1.0
+    },
+    "toolshed.booking.v1.ReservationService/GetReservation": {
+     "truth": [
+      "members",
+      "reservations",
+      "sessions",
+      "tools"
+     ],
+     "extracted": [
+      "members",
+      "reservations",
+      "tools"
+     ],
+     "recall": 0.75,
+     "precision": 1.0
+    },
+    "toolshed.booking.v1.ReservationService/ListReservations": {
+     "truth": [
+      "members",
+      "reservations",
+      "sessions",
+      "tools"
+     ],
+     "extracted": [],
+     "recall": 0.0,
+     "precision": null
+    },
+    "toolshed.booking.v1.ReservationService/ReturnTool": {
+     "truth": [
+      "members",
+      "reservation_events",
+      "reservations",
+      "sessions",
+      "tools"
+     ],
+     "extracted": [
+      "members",
+      "reservation_events",
+      "reservations",
+      "tools"
+     ],
+     "recall": 0.8,
+     "precision": 1.0
+    },
+    "toolshed.catalog.v1.EquipmentService/CreateTool": {
+     "truth": [
+      "audit_log",
+      "members",
+      "sessions",
+      "tools"
+     ],
+     "extracted": [
+      "audit_log",
+      "tools"
+     ],
+     "recall": 0.5,
+     "precision": 1.0
+    },
+    "toolshed.catalog.v1.EquipmentService/GetTool": {
+     "truth": [
+      "tools"
+     ],
+     "extracted": [
+      "tools"
+     ],
+     "recall": 1.0,
+     "precision": 1.0
+    },
+    "toolshed.catalog.v1.EquipmentService/ListTools": {
+     "truth": [
+      "tools"
+     ],
+     "extracted": [],
+     "recall": 0.0,
+     "precision": null
+    },
+    "toolshed.catalog.v1.EquipmentService/RelocateTool": {
+     "truth": [
+      "audit_log",
+      "members",
+      "sessions",
+      "tools"
+     ],
+     "extracted": [
+      "audit_log",
+      "tools"
+     ],
+     "recall": 0.5,
+     "precision": 1.0
+    },
+    "toolshed.catalog.v1.EquipmentService/RetireTool": {
+     "truth": [
+      "audit_log",
+      "members",
+      "sessions",
+      "tools"
+     ],
+     "extracted": [
+      "audit_log",
+      "tools"
+     ],
+     "recall": 0.5,
+     "precision": 1.0
+    },
+    "toolshed.members.v1.MemberService/DeleteAccount": {
+     "truth": [
+      "members",
+      "reservation_events",
+      "reservations",
+      "sessions"
+     ],
+     "extracted": [
+      "members"
+     ],
+     "recall": 0.25,
+     "precision": 1.0
+    },
+    "toolshed.members.v1.MemberService/GetMember": {
+     "truth": [
+      "members",
+      "sessions"
+     ],
+     "extracted": [
+      "members"
+     ],
+     "recall": 0.5,
+     "precision": 1.0
+    },
+    "toolshed.members.v1.MemberService/ListMembers": {
+     "truth": [
+      "members",
+      "sessions"
+     ],
+     "extracted": [],
+     "recall": 0.0,
+     "precision": null
+    },
+    "toolshed.members.v1.MemberService/UpdateMember": {
+     "truth": [
+      "members",
+      "sessions"
+     ],
+     "extracted": [
+      "members"
+     ],
+     "recall": 0.5,
+     "precision": 1.0
+    }
+   }
+  },
+  {
+   "id": "PX5",
+   "prediction": "0.05-2 s; 1-10 s; 5-40 s; <= +20 % (p)",
+   "pass_rule": "<= 30 s; 30 s; 180 s; <= +50 %",
+   "status": "PASS",
+   "observed": {
+    "extract on toolshed (s)": 0.04,
+    "reconcile on deskd (s)": 1.52,
+    "flows on deskd (s)": 3.5,
+    "SQL reader overhead on harborline extract": "+2.9% (0.02s -> 0.02s)"
+   },
+   "detail": null
+  }
+ ]
+}

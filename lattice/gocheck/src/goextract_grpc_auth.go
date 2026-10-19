@@ -127,7 +127,6 @@ func (g *gx) classifyInterceptor(fn *Func) xInterceptor {
 	literal := true
 	why := ""
 	public, prefix := map[string]bool{}, map[string]bool{}
-	e := g.m.EnvOf(fn)
 	passes := func(body ast.Node) bool {
 		ok := false
 		ast.Inspect(body, func(n ast.Node) bool {
@@ -145,13 +144,19 @@ func (g *gx) classifyInterceptor(fn *Func) xInterceptor {
 		})
 		return ok
 	}
+	isM := func(n ast.Expr) bool {
+		sel, ok := unparen(n).(*ast.SelectorExpr)
+		if !ok || sel.Sel.Name != "FullMethod" {
+			return false
+		}
+		id, isID := sel.X.(*ast.Ident)
+		return isID && id.Name == infoName
+	}
 	mentionsMethod := func(n ast.Node) bool {
 		found := false
 		ast.Inspect(n, func(m ast.Node) bool {
-			if sel, ok := m.(*ast.SelectorExpr); ok && sel.Sel.Name == "FullMethod" {
-				if id, ok := sel.X.(*ast.Ident); ok && id.Name == infoName {
-					found = true
-				}
+			if ex, ok := m.(ast.Expr); ok && isM(ex) {
+				found = true
 			}
 			return !found
 		})
@@ -174,6 +179,9 @@ func (g *gx) classifyInterceptor(fn *Func) xInterceptor {
 				}
 				if !ok {
 					set, pre, ok = g.builderSet(be, s.Cond, infoName)
+				}
+				if !ok && g.optGate(b, be, s.Cond, isM, &x) {
+					return true
 				}
 				if !ok {
 					literal, why = false, "the method test `"+g.src(s.Cond)+"` is not a literal set"
@@ -210,7 +218,11 @@ func (g *gx) classifyInterceptor(fn *Func) xInterceptor {
 			return true
 		})
 	}
-	_ = e
+	for _, b := range g.bodies(fn) { // E4a: every other use of the method name must be harmless or read
+		if w := g.methodFlows(b, isM, true, &x, 0); w != "" && literal {
+			literal, why = false, w
+		}
+	}
 	for m := range public {
 		x.Public = append(x.Public, m)
 	}
@@ -221,6 +233,12 @@ func (g *gx) classifyInterceptor(fn *Func) xInterceptor {
 	sort.Strings(x.Prefix)
 	if literal {
 		x.Kind = "auth_literal"
+		for _, c := range es.codes { // E3d
+			if c.Kind == "status_error" {
+				c.Kind, c.File, c.Line, c.In = "interceptor", x.File, x.Line, x.Func
+				x.codes = append(x.codes, c)
+			}
+		}
 	} else {
 		x.Kind, x.Reason = "auth_not_literal", why
 	}
@@ -626,20 +644,27 @@ func (g *gx) rpcAuth(gr *xGrpc, ics []xInterceptor, run *grpcRun) {
 					lits = append(lits, ic)
 				}
 			}
-			pub := false
+			pub, unk := false, false
 			for _, m := range append(lits, xInterceptor{})[0].Public {
 				pub = pub || m == full
 			}
 			for _, m := range append(lits, xInterceptor{})[0].Prefix {
 				pub = pub || strings.HasPrefix(full, m)
 			}
+			if len(lits) == 1 && lits[0].Option != nil && !pub {
+				s, known := lits[0].Option.skips(r, full)
+				pub, unk = s, !known
+			}
 			switch {
+			case len(lits) == 1 && len(auth) == 1 && unk:
+				r.Auth, r.AuthReason = "unclear", fmt.Sprintf("the audience option of %s was not recorded (%s:%d)", full, lits[0].File, lits[0].Line)
 			case len(lits) == 1 && (len(auth) == 1 || !pub):
 				a := lits[0]
 				if pub {
 					r.Auth, r.AuthReason = "Public", fmt.Sprintf("%s lists %s as a method that skips authentication (%s:%d)", a.Func, full, a.File, a.Line)
 				} else {
 					r.Auth, r.AuthReason = "Member", fmt.Sprintf("%s refuses callers without a valid token and does not list %s (%s:%d)", a.Func, full, a.File, a.Line)
+					g.gateCodes(r, a)
 				}
 			case len(auth) > 0:
 				why := "several interceptors refuse unauthenticated callers"
@@ -660,4 +685,322 @@ func (g *gx) rpcAuth(gr *xGrpc, ics []xInterceptor, run *grpcRun) {
 			}
 		}
 	}
+}
+
+// ---- the method name's other uses, and the audience option (E4a, E4b) -----------------------------
+
+// methodFlows (E4a) reads the uses of the method name (isM) in b that the literal-set readers do not: a
+// discarded call (logging) is harmless, a call argument is followed into the module function (where a
+// skip condition may be an option gate, E4b), anything else is a bypass nobody enumerated. top: the
+// conditions on the method are the caller's. It answers why, "" when every use is read.
+func (g *gx) methodFlows(b *Func, isM func(ast.Expr) bool, top bool, x *xInterceptor, depth int) (why string) {
+	e, seen := g.m.EnvOf(b), map[*ast.IfStmt]bool{}
+	var stack []ast.Node
+	ast.Inspect(b.Body, func(n ast.Node) bool {
+		if n == nil {
+			stack = stack[:len(stack)-1]
+			return true
+		}
+		if _, lit := n.(*ast.FuncLit); lit || why != "" {
+			return false
+		}
+		stack = append(stack, n)
+		if ex, ok := n.(ast.Expr); !ok || !isM(ex) {
+			return true
+		}
+		si := len(stack) - 2
+		for ; si >= 0; si-- {
+			if _, ok := stack[si].(ast.Stmt); ok {
+				break
+			}
+		}
+		if si < 0 {
+			return true
+		}
+		st := stack[si]
+		if as, ok := st.(*ast.AssignStmt); ok && si > 0 { // the use is in an `if` initialiser: the condition's
+			if i, ok := stack[si-1].(*ast.IfStmt); ok && i.Init == ast.Stmt(as) {
+				st = i
+			}
+		}
+		switch c := st.(type) {
+		case *ast.ExprStmt, *ast.DeferStmt, *ast.GoStmt: // a discarded call: logging, metrics
+		case *ast.SwitchStmt, *ast.CaseClause:
+			if !top {
+				why = "the method switch `" + g.src(c) + "` is not read"
+			}
+		case *ast.IfStmt:
+			if !top && !seen[c] {
+				seen[c] = true
+				if !g.passesNil(c.Body) || !g.optGate(b, e, c.Cond, isM, x) {
+					why = "the method test `" + g.src(c.Cond) + "` is not a literal set"
+				}
+			}
+		default:
+			call, _ := stack[len(stack)-2].(*ast.CallExpr)
+			var callee *Func
+			if call != nil && depth < 4 {
+				callee = g.calleeOf(e, call)
+			}
+			why = "the method name flows into `" + g.src(st) + "`, which is not a literal set"
+			if callee != nil {
+				for j, a := range call.Args {
+					if ps := callee.Params(); a == stack[len(stack)-1] && j < len(ps) {
+						name := ps[j].name
+						why = g.methodFlows(callee, func(a ast.Expr) bool { id, ok := unparen(a).(*ast.Ident); return ok && id.Name == name }, false, x, depth+1)
+					}
+				}
+			}
+		}
+		return true
+	})
+	return why
+}
+
+// passesNil: a return answering a nil error (a helper's "let the call through").
+func (g *gx) passesNil(body ast.Node) (ok bool) {
+	ast.Inspect(body, func(n ast.Node) bool {
+		if r, isR := n.(*ast.ReturnStmt); isR && len(r.Results) > 0 {
+			id, isID := r.Results[len(r.Results)-1].(*ast.Ident)
+			ok = ok || isID && id.Name == "nil"
+		}
+		_, lit := n.(*ast.FuncLit)
+		return !lit
+	})
+	return
+}
+
+// optGate (E4b) reads a skip condition `<read of a method option> ==|!= <pkg>.<Enum>_<V>` into x.Option.
+func (g *gx) optGate(b *Func, e *Env, cond ast.Expr, isM func(ast.Expr) bool, x *xInterceptor) bool {
+	be, ok := unparen(cond).(*ast.BinaryExpr)
+	if !ok || be.Op != token.EQL && be.Op != token.NEQ {
+		return false
+	}
+	rd := be.X
+	v, pkg, typ := g.enumConst(b.File, e, be.Y)
+	if v == "" {
+		rd = be.Y
+		v, pkg, typ = g.enumConst(b.File, e, be.X)
+	}
+	uses := false
+	ast.Inspect(rd, func(n ast.Node) bool {
+		ex, ok := n.(ast.Expr)
+		uses = uses || ok && isM(ex)
+		return !uses
+	})
+	if v == "" || !uses {
+		return false
+	}
+	og := &xOptGate{Op: be.Op.String(), Value: v}
+	for n, ci := range pkg.Consts { // the enum's zero value
+		if id, ok := ci.typ.(*ast.Ident); ok && id.Name == typ && g.src(ci.value) == "0" {
+			og.Zero = strings.TrimPrefix(n, typ+"_")
+		}
+	}
+	if og.Ext, ok = g.extRead(b, e, rd, og, 0); !ok || x.Option != nil && *x.Option != *og {
+		return false
+	}
+	x.Option = og
+	return true
+}
+
+// enumConst answers (value name, package, enum type) of `<pkg>.<Enum>_<V>`, a constant of a module package.
+func (g *gx) enumConst(f *File, e *Env, x ast.Expr) (string, *Pkg, string) {
+	if sel, ok := unparen(x).(*ast.SelectorExpr); ok {
+		if path, ok := impPath(f, e, sel.X); ok && g.m.ByImport[path] != nil {
+			pkg := g.m.ByImport[path]
+			if id, ok := pkg.Consts[sel.Sel.Name].typ.(*ast.Ident); ok {
+				return strings.TrimPrefix(sel.Sel.Name, id.Name+"_"), pkg, id.Name
+			}
+		}
+	}
+	return "", nil, ""
+}
+
+// extRead answers the extension a value reads from a method's options: proto.GetExtension, through a type
+// assertion, a local, or a module helper that returns it. Enum constants the helper may also answer are
+// noted in og: one that would skip the check must sit under a namespace guard.
+func (g *gx) extRead(b *Func, e *Env, x ast.Expr, og *xOptGate, depth int) (ext string, ok bool) {
+	if depth > 4 {
+		return
+	}
+	n, bad := 0, false // the extensions the returns and assignments read must agree
+	merge := func(got string, good bool) {
+		bad = bad || !good || got == "" || n > 0 && got != ext
+		ext, n = got, n+1
+	}
+	defer func() { ok = ok || n > 0 && !bad }()
+	switch v := unparen(x).(type) {
+	case *ast.TypeAssertExpr:
+		return g.extRead(b, e, v.X, og, depth)
+	case *ast.CallExpr:
+		if p, nm, isPkg := pkgCall(b.File, e, v); isPkg && p == "google.golang.org/protobuf/proto" && nm == "GetExtension" && len(v.Args) == 2 {
+			return g.extName(b.File, e, v.Args[1])
+		}
+		if h := g.calleeOf(e, v); h != nil {
+			ast.Inspect(h.Body, func(nd ast.Node) bool {
+				if r, isR := nd.(*ast.ReturnStmt); isR && len(r.Results) == 1 && !g.cacheRead(h, r.Results[0]) {
+					merge(g.extRead(h, g.m.EnvOf(h), r.Results[0], og, depth+1))
+				}
+				_, lit := nd.(*ast.FuncLit)
+				return !lit
+			})
+		}
+	case *ast.Ident:
+		ast.Inspect(b.Body, func(nd ast.Node) bool {
+			as, isA := nd.(*ast.AssignStmt)
+			if !isA {
+				_, lit := nd.(*ast.FuncLit)
+				return !lit
+			}
+			for i, l := range as.Lhs {
+				if id, isID := l.(*ast.Ident); isID && id.Name == v.Name && (len(as.Rhs) == len(as.Lhs) || i == 0) {
+					rhs := as.Rhs[min(i, len(as.Rhs)-1)]
+					if g.cacheLoad(e, rhs) {
+						continue
+					}
+					if c, _, _ := g.enumConst(b.File, e, rhs); c != "" {
+						bad = bad || !g.noteConst(b, as, c, og)
+					} else {
+						merge(g.extRead(b, e, rhs, og, depth+1))
+					}
+				}
+			}
+			return true
+		})
+	}
+	return
+}
+
+// cacheLoad: x is a `Load` on a sync.Map, a helper's memo of its own answer (not a new source of one).
+func (g *gx) cacheLoad(e *Env, x ast.Expr) bool {
+	if c, ok := unparen(x).(*ast.CallExpr); ok {
+		sel, ok := unparen(c.Fun).(*ast.SelectorExpr)
+		return ok && sel.Sel.Name == "Load" && g.m.Infer(e, sel.X).deref().is("sync.Map")
+	}
+	return false
+}
+
+// cacheRead: x is `v.(T)` for a v the memo loaded.
+func (g *gx) cacheRead(h *Func, x ast.Expr) bool {
+	if ta, ok := unparen(x).(*ast.TypeAssertExpr); ok {
+		if id, ok := unparen(ta.X).(*ast.Ident); ok {
+			src, _, found := g.lastAssign(h, id.Name, x.Pos())
+			return found && g.cacheLoad(g.m.EnvOf(h), src)
+		}
+	}
+	return false
+}
+
+// noteConst: an enum constant assigned to the value the gate compares. One that would skip the check, other
+// than the zero value, is read only under `if [!]strings.HasPrefix(x, "<literal>")` (og.Guard).
+func (g *gx) noteConst(b *Func, as *ast.AssignStmt, c string, og *xOptGate) bool {
+	if c == og.Zero || (og.Op == "==") != (c == og.Value) {
+		return true
+	}
+	var in *ast.IfStmt
+	ast.Inspect(b.Body, func(n ast.Node) bool {
+		if i, ok := n.(*ast.IfStmt); ok && i.Body.Pos() <= as.Pos() && as.End() <= i.Body.End() {
+			in = i
+		}
+		return true
+	})
+	if in == nil {
+		return false
+	}
+	cond, neg := unparen(in.Cond), false
+	if u, ok := cond.(*ast.UnaryExpr); ok && u.Op == token.NOT {
+		cond, neg = unparen(u.X), true
+	}
+	call, ok := cond.(*ast.CallExpr)
+	if !ok || len(call.Args) != 2 {
+		return false
+	}
+	if p, nm, ok := pkgCall(b.File, nil, call); !ok || p != "strings" || nm != "HasPrefix" {
+		return false
+	}
+	pre, ok := g.strOf(b.File, nil, call.Args[1])
+	if !ok || og.Guard != "" && (og.Guard != pre || og.Neg != neg) {
+		return false
+	}
+	og.Guard, og.Neg = pre, neg
+	return true
+}
+
+// extName answers the full name of the extension `<pkg>.E_<X>` from the generated file's ExtensionInfo literal.
+func (g *gx) extName(f *File, e *Env, x ast.Expr) (string, bool) {
+	sel, ok := unparen(x).(*ast.SelectorExpr)
+	if !ok {
+		return "", false
+	}
+	path, ok := impPath(f, e, sel.X)
+	if !ok || g.m.ByImport[path] == nil {
+		return "", false
+	}
+	pkg := g.m.ByImport[path]
+	u, ok := unparen(pkg.Vars[sel.Sel.Name].value).(*ast.UnaryExpr) // &file_..._extTypes[0]
+	if !ok {
+		return "", false
+	}
+	ix, ok := u.X.(*ast.IndexExpr)
+	if !ok {
+		return "", false
+	}
+	tab, ok1 := ix.X.(*ast.Ident)
+	n, ok2 := ix.Index.(*ast.BasicLit)
+	if !ok1 || !ok2 {
+		return "", false
+	}
+	lit, ok := unparen(pkg.Vars[tab.Name].value).(*ast.CompositeLit)
+	if !ok || atoi(n.Value) >= len(lit.Elts) {
+		return "", false
+	}
+	if el, ok := lit.Elts[atoi(n.Value)].(*ast.CompositeLit); ok {
+		for _, kv := range el.Elts {
+			if k, ok := kv.(*ast.KeyValueExpr); ok && g.src(k.Key) == "Name" {
+				return g.strOf(pkg.Vars[tab.Name].file, nil, k.Value)
+			}
+		}
+	}
+	return "", false
+}
+
+// skips answers whether the gate lets rpc r (full method "pkg.Svc/Method") through without a token, and
+// whether that is known: the rpc's option value, the enum's zero value when it has none.
+func (o *xOptGate) skips(r *xRPC, full string) (skip, known bool) {
+	if o.Guard != "" && strings.HasPrefix(strings.TrimPrefix(full, "/"), strings.TrimPrefix(o.Guard, "/")) != o.Neg {
+		return true, true
+	}
+	match := func(k string) bool {
+		k = strings.TrimPrefix(strings.Trim(k, "()"), ".")
+		return k == o.Ext || strings.HasSuffix(o.Ext, "."+k)
+	}
+	val := o.Zero
+	for k, v := range r.CustomOptions {
+		if s, isS := v.(string); match(k) && isS {
+			val = s
+		} else if match(k) {
+			return false, false
+		}
+	}
+	for k := range r.optLost {
+		if match(k) {
+			return false, false
+		}
+	}
+	return (val == o.Value) == (o.Op == "=="), true
+}
+
+// gateCodes (E3d) adds the codes a literal gate answers to an rpc it gates and does not admit.
+func (g *gx) gateCodes(r *xRPC, a xInterceptor) {
+	for _, c := range a.codes {
+		have := false
+		for _, o := range r.Codes {
+			have = have || o.Name == c.Name && o.Kind == c.Kind
+		}
+		if !have {
+			r.Codes = append(r.Codes, c)
+		}
+	}
+	sortCodes(r.Codes)
 }

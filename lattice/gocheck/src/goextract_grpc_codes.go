@@ -148,11 +148,21 @@ func (s *errSrc) has(name string) bool {
 type grpcRun struct {
 	memo map[*Func]*errSrc
 	busy map[*Func]bool
+	bind map[string]int // E3b: the codes the call being read passes for its codes.Code parameters
+	tab  *sentTab       // E1.4: the translation of one service's wrapped descriptor (else the module's)
+}
+
+// table is the translation sentinels take: this service's, else the module's.
+func (r *grpcRun) table() *sentTab {
+	if r.tab != nil {
+		return r.tab
+	}
+	return curWalk.sentTable()
 }
 
 // errOfFunc answers every error fn can return: the union over its return statements.
 func (g *gx) errOfFunc(fn *Func, depth int, run *grpcRun) *errSrc {
-	if s, ok := run.memo[fn]; ok {
+	if s, ok := run.memo[fn]; ok && run.bind == nil {
 		return s
 	}
 	out := &errSrc{}
@@ -188,7 +198,9 @@ func (g *gx) errOfFunc(fn *Func, depth int, run *grpcRun) *errSrc {
 			return true
 		})
 	}
-	run.memo[fn] = out
+	if run.bind == nil {
+		run.memo[fn] = out
+	}
 	return out
 }
 
@@ -205,6 +217,11 @@ func (g *gx) evalErr(b *Func, e *Env, x ast.Expr, at token.Pos, depth int, run *
 		file, line := posOf(p)
 		out.addCode(xCode{Name: "UNKNOWN", Number: 2, Kind: "plain_error", File: file, Line: line, In: qual(topFunc(b))})
 		_ = why
+	}
+	if _, isID := unparen(x).(*ast.Ident); !isID {
+		if ti := g.statusType(e, x); ti != nil {
+			return g.statusOf(b, e, x, ti, run)
+		}
 	}
 	switch v := unparen(x).(type) {
 	case *ast.Ident:
@@ -274,12 +291,11 @@ func (g *gx) evalSentinel(vi varInfo, depth int, run *grpcRun) *errSrc {
 			break
 		}
 	}
-	if host == nil {
-		out.addUnread(xUnread{File: vi.file.Rel, Line: g.line(vi.value.Pos()), What: "grpc_error_not_traced", Reason: "a package-level error has no function to read it in"})
-		return out
+	if host == nil { // a file of variables only (an errors.go): a synthetic host, as the walk's package-variable parents
+		host = &Func{Name: "var.sentinel", Short: "var.sentinel", Type: &ast.FuncType{}, Body: &ast.BlockStmt{}, File: vi.file, Pos: vi.value.Pos()}
 	}
 	res := g.evalErr(host, g.m.EnvOf(host), vi.value, vi.value.Pos(), depth+1, run)
-	if t := curWalk.sentTable(); len(t.code) > 0 && len(res.codes) == 1 && res.codes[0].Kind == "plain_error" && len(res.unread) == 0 {
+	if t := run.table(); len(t.code) > 0 && len(res.codes) == 1 && res.codes[0].Kind == "plain_error" && len(res.unread) == 0 {
 		file, line := vi.file.Rel, g.line(vi.value.Pos())
 		n, ok := t.code[vi.value]
 		if !ok && len(t.def) == 1 && !t.nodef { // the translation's one literal default
@@ -313,7 +329,7 @@ func (g *gx) evalCallErr(b *Func, e *Env, c *ast.CallExpr, depth int, run *grpcR
 	if path, name, ok := pkgCall(f, e, c); ok {
 		switch {
 		case path == grpcStatus && (name == "Error" || name == "Errorf") && len(c.Args) >= 1:
-			if n, ok := g.codeOf(f, e, c.Args[0], 0); ok {
+			if n, ok := g.codeArg(f, e, c.Args[0], run); ok {
 				out.addCode(site(n, "status_error"))
 			} else if ns := g.codesFrom(b, e, c.Args[0]); ns != nil {
 				for _, n := range ns {
@@ -340,7 +356,7 @@ func (g *gx) evalCallErr(b *Func, e *Env, c *ast.CallExpr, depth int, run *grpcR
 								nm = v.Sel.Name
 							}
 						}
-						if strings.Contains(strings.ToLower(nm), "err") {
+						if strings.Contains(strings.ToLower(nm), "err") || g.statusType(e, a) != nil {
 							out.merge(g.evalErr(b, e, a, c.Pos(), depth, run))
 							return out
 						}
@@ -354,27 +370,36 @@ func (g *gx) evalCallErr(b *Func, e *Env, c *ast.CallExpr, depth int, run *grpcR
 			return out
 		}
 	}
-	// status.New(code, msg).Err()
+	// status.New(code, msg)[.WithDetails(..)].Err(), directly or through locals (E3c)
 	if sel, ok := unparen(c.Fun).(*ast.SelectorExpr); ok && sel.Sel.Name == "Err" {
-		if inner, ok := unparen(sel.X).(*ast.CallExpr); ok {
-			if path, name, ok := pkgCall(f, e, inner); ok && path == grpcStatus && (name == "New" || name == "Newf") && len(inner.Args) >= 1 {
-				if n, ok := g.codeOf(f, e, inner.Args[0], 0); ok {
-					out.addCode(site(n, "status_error"))
-				} else {
-					out.addUnread(xUnread{File: file, Line: line, What: "grpc_code_not_literal",
-						Reason: "the code of `" + g.src(c) + "` is chosen at run time"})
-				}
-				return out
+		ca := func(a ast.Expr) (int, bool) { return g.codeArg(f, e, a, run) }
+		if n, ok, seen := g.statusCode(b, e, sel.X, c.Pos(), ca, 0); seen {
+			if ok {
+				out.addCode(site(n, "status_error"))
+			} else {
+				out.addUnread(xUnread{File: file, Line: line, What: "grpc_code_not_literal",
+					Reason: "the code of `" + g.src(c) + "` is chosen at run time"})
 			}
+			return out
 		}
 	}
-	// a module function: its errors (a project error constructor, a helper)
-	if callee := g.m.Callee(e, c); callee != nil && callee.Lit == nil && callee.ErrorResult() {
+	// a module function: its errors (a project error constructor, a helper); a code it takes as a
+	// parameter is read at this call (E3b)
+	if callee := g.m.Callee(e, c); callee != nil && callee.ErrorResult() {
+		saved := run.bind
+		run.bind = nil
+		for i, p := range callee.Params() {
+			if g.src(p.typ) == "codes.Code" {
+				if run.bind == nil {
+					run.bind = map[string]int{}
+				}
+				if n, ok := g.codeArgAt(f, e, c, i, saved, run); ok {
+					run.bind[p.name] = n
+				}
+			}
+		}
 		out.merge(g.errOfFunc(callee, depth+1, run))
-		return out
-	}
-	if callee := g.m.Callee(e, c); callee != nil && callee.Lit != nil && callee.ErrorResult() {
-		out.merge(g.errOfFunc(callee, depth+1, run))
+		run.bind = saved
 		return out
 	}
 	// a gorm call's error
@@ -446,7 +471,7 @@ func (g *gx) pkgVar(f *File, e *Env, x ast.Expr) varInfo {
 
 // translators lists the unary interceptors and the module functions they call (three deep): the code
 // every handler error passes through.
-func (w *grpcWalk) translators() (out []*Func) {
+func (w *grpcWalk) translators(extra ...*Func) (out []*Func) {
 	g, seen := w.g, map[*Func]bool{}
 	var add func(fn *Func, d int)
 	add = func(fn *Func, d int) {
@@ -476,16 +501,22 @@ func (w *grpcWalk) translators() (out []*Func) {
 			return true
 		})
 	}
+	for _, fn := range extra {
+		add(fn, 0)
+	}
 	return
 }
 
-func (w *grpcWalk) sentTable() *sentTab {
-	if w.tab != nil {
+// sentTable is the module's translation; with extra, that of a service whose wrapped descriptor adds translators (E1.4).
+func (w *grpcWalk) sentTable(extra ...*Func) *sentTab {
+	if w.tab != nil && len(extra) == 0 {
 		return w.tab
 	}
 	g, t := w.g, &sentTab{code: map[ast.Expr]int{}, def: map[int]bool{}}
-	w.tab = t
-	for _, fn := range w.translators() {
+	if len(extra) == 0 {
+		w.tab = t
+	}
+	for _, fn := range w.translators(extra...) {
 		e, host := g.m.EnvOf(fn), false
 		rows := func(v *ast.CompositeLit, f *File, e *Env) { // table rows: `sentinel: code` or `{sentinel, code}`
 			for _, el := range v.Elts {
@@ -649,8 +680,8 @@ func (g *gx) untracedReturn(fn *Func, es *errSrc, run *grpcRun) string {
 
 // translated (D3.3): where the module translates errors, a handler's plain error takes the translation's
 // literal default, else it is unread -- never an UNKNOWN placeholder.
-func (g *gx) translated(es *errSrc) *errSrc {
-	t := curWalk.sentTable()
+func (g *gx) translated(es *errSrc, run *grpcRun) *errSrc {
+	t := run.table()
 	if len(t.code) == 0 {
 		return es
 	}
@@ -669,4 +700,311 @@ func (g *gx) translated(es *errSrc) *errSrc {
 		}
 	}
 	return out
+}
+
+// codeArg answers a status code argument: a literal, or a parameter the call being read binds (E3b).
+func (g *gx) codeArg(f *File, e *Env, x ast.Expr, run *grpcRun) (int, bool) {
+	if n, ok := g.codeOf(f, e, x, 0); ok {
+		return n, true
+	}
+	if id, ok := unparen(x).(*ast.Ident); ok {
+		n, ok := run.bind[id.Name]
+		return n, ok
+	}
+	return 0, false
+}
+
+// codeArgAt is codeArg for argument i of call c, read with the caller's bindings.
+func (g *gx) codeArgAt(f *File, e *Env, c *ast.CallExpr, i int, caller map[string]int, run *grpcRun) (int, bool) {
+	if i >= len(c.Args) {
+		return 0, false
+	}
+	saved := run.bind
+	run.bind = caller
+	defer func() { run.bind = saved }()
+	return g.codeArg(f, e, c.Args[i], run)
+}
+
+// statusCode answers the code of a *status.Status expression: status.New / Newf, through WithDetails
+// (the (s, err) split included) and through locals; seen is false when x is none of these. ca reads the
+// code argument.
+func (g *gx) statusCode(b *Func, e *Env, x ast.Expr, at token.Pos, ca func(ast.Expr) (int, bool), depth int) (n int, ok, seen bool) {
+	switch v := unparen(x).(type) {
+	case *ast.CallExpr:
+		if p, nm, isPkg := pkgCall(b.File, e, v); isPkg && p == grpcStatus && (nm == "New" || nm == "Newf") && len(v.Args) > 0 {
+			n, ok = ca(v.Args[0])
+			return n, ok, true
+		}
+		if s, isSel := unparen(v.Fun).(*ast.SelectorExpr); isSel && s.Sel.Name == "WithDetails" {
+			return g.statusCode(b, e, s.X, at, ca, depth)
+		}
+	case *ast.Ident:
+		if src, _, found := g.lastAssign(b, v.Name, at); found && depth < 4 {
+			return g.statusCode(b, e, src, src.Pos(), ca, depth+1)
+		}
+	}
+	return 0, false, false
+}
+
+// statusType answers the module struct type of x when it has a GRPCStatus method (E3a).
+func (g *gx) statusType(e *Env, x ast.Expr) *TypeInfo {
+	if t := g.m.Infer(e, x).deref(); t.Kind == "named" && t.Named != nil && t.Named.Struct != nil && g.m.MethodOf(t.Named, "GRPCStatus", 2) != nil {
+		return t.Named
+	}
+	return nil
+}
+
+// statusOf (E3a) reads the code a returned value of a GRPCStatus type answers: the literal of each
+// `status.New` the method returns, or its field read at the site that built x (never the union over sites).
+func (g *gx) statusOf(b *Func, e *Env, x ast.Expr, ti *TypeInfo, run *grpcRun) *errSrc {
+	out := &errSrc{}
+	m := g.m.MethodOf(ti, "GRPCStatus", 2)
+	me := g.m.EnvOf(m)
+	file, line := b.File.Rel, g.line(x.Pos())
+	ca := func(a ast.Expr) (int, bool) {
+		if n, ok := g.codeOf(m.File, me, a, 0); ok {
+			return n, true
+		}
+		if s, ok := unparen(a).(*ast.SelectorExpr); ok {
+			if id, isID := s.X.(*ast.Ident); isID && id.Name == m.RecvVar {
+				return g.siteField(b, e, x, ti, s.Sel.Name, run)
+			}
+		}
+		return 0, false
+	}
+	read := false
+	ast.Inspect(m.Body, func(nd ast.Node) bool {
+		if r, ok := nd.(*ast.ReturnStmt); ok && len(r.Results) == 1 {
+			n, ok, seen := g.statusCode(m, me, r.Results[0], r.Pos(), ca, 0)
+			switch {
+			case ok:
+				out.addCode(xCode{Name: codeNameList[n], Number: n, Kind: "status_error", File: file, Line: line, In: qual(topFunc(b))})
+			case seen:
+				out.addUnread(xUnread{File: file, Line: line, What: "grpc_code_not_literal", Reason: "the code of `" + g.src(x) + "` is chosen at run time"})
+			}
+			read = read || seen
+		}
+		_, lit := nd.(*ast.FuncLit)
+		return !lit
+	})
+	if !read {
+		out.addUnread(xUnread{File: file, Line: line, What: "grpc_error_not_traced", Reason: "the GRPCStatus of `" + g.src(x) + "` is not traced"})
+	}
+	return out
+}
+
+// siteField answers the code assigned to field of the value x builds: a composite literal `&T{..}`, or the
+// literal a constructor returns with its parameters bound to the call's arguments.
+func (g *gx) siteField(b *Func, e *Env, x ast.Expr, ti *TypeInfo, field string, run *grpcRun) (int, bool) {
+	x = unparen(x)
+	if u, ok := x.(*ast.UnaryExpr); ok && u.Op == token.AND {
+		x = unparen(u.X)
+	}
+	cb, ce, args := b, e, map[string]ast.Expr{}
+	if c, ok := x.(*ast.CallExpr); ok { // a constructor
+		ctor := g.calleeOf(e, c)
+		if ctor == nil {
+			return 0, false
+		}
+		x, cb, ce = nil, ctor, g.m.EnvOf(ctor)
+		for i, p := range ctor.Params() {
+			if i < len(c.Args) {
+				args[p.name] = c.Args[i]
+			}
+		}
+		ast.Inspect(ctor.Body, func(nd ast.Node) bool {
+			if r, ok := nd.(*ast.ReturnStmt); ok && len(r.Results) == 1 && x == nil {
+				x = unparen(r.Results[0])
+				if u, ok := x.(*ast.UnaryExpr); ok && u.Op == token.AND {
+					x = unparen(u.X)
+				}
+			}
+			return x == nil
+		})
+	}
+	cl, ok := x.(*ast.CompositeLit)
+	if !ok {
+		return 0, false
+	}
+	v := fieldExpr(cl, ti, field)
+	if v == nil {
+		return 0, false
+	}
+	if n, ok := g.codeOf(cb.File, ce, v, 0); ok {
+		return n, true
+	}
+	if id, ok := unparen(v).(*ast.Ident); ok && args[id.Name] != nil {
+		return g.codeArg(b.File, e, args[id.Name], run)
+	}
+	return 0, false
+}
+
+// fieldExpr answers the expression a struct literal gives field: keyed, or (with the struct's type) by position.
+func fieldExpr(cl *ast.CompositeLit, ti *TypeInfo, field string) ast.Expr {
+	if cl == nil {
+		return nil
+	}
+	for _, el := range cl.Elts {
+		if kv, ok := el.(*ast.KeyValueExpr); ok {
+			if id, ok := kv.Key.(*ast.Ident); ok && id.Name == field {
+				return kv.Value
+			}
+		}
+	}
+	if ti == nil || ti.Struct == nil || len(cl.Elts) == 0 {
+		return nil
+	}
+	idx := 0
+	for _, fl := range ti.Struct.Fields.List {
+		for _, nm := range fl.Names {
+			if _, keyed := cl.Elts[min(idx, len(cl.Elts)-1)].(*ast.KeyValueExpr); idx < len(cl.Elts) && !keyed && nm.Name == field {
+				return cl.Elts[idx]
+			}
+			idx++
+		}
+	}
+	return nil
+}
+
+// ---- decorated descriptors (E1) --------------------------------------------------------------
+
+// descFromFunc (E1.1) reads the descriptor a module function returns: the generated one, or a value copy of
+// it that the function modifies (ServiceName, Methods) and wraps (Handler). Every return must agree.
+func (g *gx) descFromFunc(e *Env, c *ast.CallExpr, depth int) (got *grpcDesc) {
+	h := g.calleeOf(e, c)
+	if h == nil || depth > 3 {
+		return nil
+	}
+	he, ok := g.m.EnvOf(h), true
+	ast.Inspect(h.Body, func(n ast.Node) bool {
+		if r, isR := n.(*ast.ReturnStmt); isR && len(r.Results) == 1 {
+			d := g.descRet(h, he, r.Results[0], depth)
+			ok = ok && d != nil && (got == nil || got.name == d.name)
+			got = d
+		}
+		_, lit := n.(*ast.FuncLit)
+		return !lit
+	})
+	if !ok {
+		return nil
+	}
+	return got
+}
+
+// descRet reads one returned descriptor: through the locals it was copied into (`out := src; src := pkg.X_ServiceDesc`).
+func (g *gx) descRet(h *Func, he *Env, x ast.Expr, depth int) *grpcDesc {
+	strip := func(x ast.Expr) ast.Expr {
+		x = unparen(x)
+		if u, ok := x.(*ast.UnaryExpr); ok && u.Op == token.AND {
+			return unparen(u.X)
+		}
+		if st, ok := x.(*ast.StarExpr); ok {
+			return unparen(st.X)
+		}
+		return x
+	}
+	x, names := strip(x), map[string]bool{}
+	for id, ok := x.(*ast.Ident); ok; id, ok = x.(*ast.Ident) {
+		if _, local := he.lookup(id.Name); !local {
+			break
+		}
+		if vals := he.valuesOf(id.Name); len(vals) == 1 && len(names) < 4 {
+			names[id.Name], x = true, strip(vals[0])
+		} else {
+			return nil
+		}
+	}
+	var d *grpcDesc
+	if c, ok := x.(*ast.CallExpr); ok {
+		d = g.descFromFunc(he, c, depth+1)
+	} else {
+		d = g.descOf(h.File, he, x)
+	}
+	if d == nil || len(names) == 0 {
+		return d
+	}
+	cp := *d
+	rangeVals, reset, elems, bad := map[string]bool{}, false, 0, false
+	ast.Inspect(h.Body, func(n ast.Node) bool {
+		switch v := n.(type) {
+		case *ast.RangeStmt: // for _, m := range <desc>.Methods
+			if s, ok := unparen(v.X).(*ast.SelectorExpr); ok && s.Sel.Name == "Methods" {
+				rangeVals[g.src(v.Value)] = true
+			}
+		case *ast.KeyValueExpr: // Handler: wrapper (E1.4)
+			if g.src(v.Key) == "Handler" {
+				if w := g.funcRef(he, v.Value, 0); w != nil {
+					cp.wrap = append(cp.wrap, w)
+				} else if l, ok := v.Value.(*ast.FuncLit); ok {
+					cp.wrap = append(cp.wrap, g.m.LitFunc(l, h))
+				}
+			}
+		}
+		return true
+	})
+	ast.Inspect(h.Body, func(n ast.Node) bool {
+		as, ok := n.(*ast.AssignStmt)
+		for i := 0; ok && i < len(as.Lhs); i++ {
+			lhs, rhs := as.Lhs[i], as.Rhs[min(i, len(as.Rhs)-1)]
+			ix, isIx := lhs.(*ast.IndexExpr)
+			if isIx {
+				lhs = ix.X
+			}
+			sel, isSel := lhs.(*ast.SelectorExpr)
+			if !isSel {
+				continue
+			}
+			if id, isID := sel.X.(*ast.Ident); !isID || !names[id.Name] {
+				continue
+			}
+			elem := func(el ast.Expr) { // a MethodDesc literal that copies a ranged method's name
+				cl, _ := unparen(el).(*ast.CompositeLit)
+				mn := fieldExpr(cl, nil, "MethodName")
+				if ms, isSel := mn.(*ast.SelectorExpr); cl != nil && isSel && ms.Sel.Name == "MethodName" && rangeVals[g.src(ms.X)] {
+					elems++
+				} else {
+					bad = true
+				}
+			}
+			switch {
+			case sel.Sel.Name == "ServiceName":
+				if cp.name, ok = g.strOf(h.File, he, rhs); !ok {
+					g.unreadAt(h.File, as.Pos(), "descriptor_name_not_literal", "the ServiceName of the copied descriptor is `"+g.src(rhs)+"`")
+					bad, cp.name = true, ""
+				}
+			case sel.Sel.Name != "Methods":
+			case isIx:
+				elem(rhs)
+			default:
+				switch r := unparen(rhs).(type) {
+				case *ast.CompositeLit:
+					cp.methods, cp.setLit = nil, len(r.Elts) > 0
+					for _, el := range r.Elts {
+						if mn, ok := fieldExpr(unparen(el).(*ast.CompositeLit), nil, "MethodName").(*ast.BasicLit); ok && cp.setLit {
+							cp.methods = append(cp.methods, strings.Trim(mn.Value, "\"`"))
+						} else {
+							bad = true
+						}
+					}
+					reset = reset || !cp.setLit
+				case *ast.CallExpr:
+					if f := g.src(r.Fun); f == "append" && len(r.Args) > 1 {
+						elem(r.Args[1])
+					} else {
+						reset = reset || f == "make"
+						bad = bad || f != "make"
+					}
+				default:
+					reset = reset || g.src(rhs) == "nil"
+					bad = bad || g.src(rhs) != "nil"
+				}
+			}
+		}
+		return true
+	})
+	cp.setBad = bad || reset && elems == 0 && !cp.setLit
+	if cp.name == "" {
+		return nil
+	}
+	return &cp
 }

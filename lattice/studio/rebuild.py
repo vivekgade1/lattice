@@ -840,6 +840,31 @@ def _links(trace_json: str) -> dict[str, list[str]]:
         return {}
 
 
+def grpc_table(project: Path) -> tuple[list[str], str]:
+    """``studio.toml`` ``[grpc]`` (L2, L3): the ``protos`` list and the ``generate`` command."""
+    try:
+        t = tomllib.loads((project / "studio.toml").read_text(encoding="utf-8")).get("grpc")
+    except (OSError, tomllib.TOMLDecodeError):
+        return [], ""
+    t = t if isinstance(t, dict) else {}
+    protos = [str(x) for x in t.get("protos") or [] if isinstance(x, str)]
+    return protos, str(t.get("generate") or "")
+
+
+def grpc_lines(protos: Sequence[str], generate: str) -> list[str]:
+    """L3: the brief section that names the protos and the generator (nothing without protos)."""
+    if not protos:
+        return []
+    gen = (
+        f" Generated stubs come only from `{generate}`, which Studio runs before the gates; "
+        "do not hand-edit generated files."
+        if generate
+        else ""
+    )
+    lead = "The contract also includes these .proto files (never edit them): "
+    return [f"{lead}{', '.join(protos)}.{gen}", ""]
+
+
 def brief(
     changes: Sequence[Mapping[str, Any]],
     *,
@@ -847,6 +872,7 @@ def brief(
     gates: Sequence[str],
     targets: Sequence[Mapping[str, Any]],
     project_rel: str,
+    grpc: tuple[Sequence[str], str] = ((), ""),
 ) -> str:
     """Round 1's prompt: the accepted changes, their rules and requirements diff, the
     targets (checks labelled not built yet), the gates and the rules."""
@@ -882,6 +908,7 @@ def brief(
         out += ["## Checks not built yet (these must turn green)", ""]
         out += [f"- {t['id']}: {t['label']}" for t in targets]
         out.append("")
+    out += grpc_lines(*grpc)
     out += ["## Gates (run from the repository root; all must exit 0)", ""]
     out += [f"- `{g}`" for g in gates]
     out += ["", "Fix the code, never the spec, requirements or trace. Stop when the gates pass."]
@@ -918,6 +945,7 @@ def scope_brief(
     project_rel: str,
     context_files: Sequence[str] = (),
     changes: Sequence[Mapping[str, Any]] = (),
+    grpc: tuple[Sequence[str], str] = ((), ""),
 ) -> str:
     """Round 1's prompt of a scoped build: the rules in scope grouped by section, their
     checks, the baseline failures in scope, the context files, the gates and the rules."""
@@ -977,6 +1005,7 @@ def scope_brief(
             "builds (they may stay failing), but do not break any check that passes.",
             "",
         ]
+    out += grpc_lines(*grpc)
     out += ["## Gates (run from the repository root)", ""]
     out += [f"- `{g}`" for g in gates]
     out += [
@@ -2662,6 +2691,7 @@ class Rebuilder:
             edited = self._restore_protected(run)
             if run.stop.is_set():
                 return
+            gen = self._generate(run, n)  # L2: the stubs, before the gates
             gates, counts, gate_findings = self._gate_round(run, n)
             if run.stop.is_set():
                 return
@@ -2678,6 +2708,8 @@ class Rebuilder:
                         "signal_key": "studio:spec_edited",
                     }
                 )
+            if gen:
+                findings.append(gen)
             if agent.get("error"):
                 findings.append(
                     {"title": f"the agent failed: {agent['error']['message']}", "target": "agent",
@@ -2686,12 +2718,13 @@ class Rebuilder:
             extra: dict[str, Any] = {}
             if run.scope is None:
                 findings += gate_findings
-                passed = bool(gates) and all(g["exit_code"] == 0 for g in gates) and not edited
+                passed = bool(gates) and all(g["exit_code"] == 0 for g in gates)
+                passed = passed and not edited and not gen
                 if passed:
                     findings = []  # a passing gate's informational FAIL-looking lines
             else:
                 passed, scoped, extra = self._judge(run, gates, gate_findings)
-                passed = passed and not edited
+                passed = passed and not edited and not gen
                 findings += scoped
             failing_now = extra.pop("_failing", None)
             for i, f in enumerate(findings, 1):
@@ -2754,6 +2787,7 @@ class Rebuilder:
                     gates=run.gates,
                     targets=run.targets,
                     project_rel=run.project_rel,
+                    grpc=grpc_table(self.project),
                 )
             base = run.record.get("baseline") or {}
             out_of = sum(1 for f in base.get("findings") or [] if not f.get("in_scope"))
@@ -2766,6 +2800,7 @@ class Rebuilder:
                 project_rel=run.project_rel,
                 context_files=self._context_files(run),
                 changes=run.changes,
+                grpc=grpc_table(self.project),
             )
             text += "\n\n" + run.plan_note if run.plan_note else ""
             budget = self._budget_note(run)
@@ -3271,7 +3306,7 @@ class Rebuilder:
 
     def _protected_paths(self, run: _Run) -> list[str]:
         rel = "" if run.project_rel == "." else run.project_rel + "/"
-        names = [*SPEC_FILES, *self.protected]
+        names = [*SPEC_FILES, *self.protected, *grpc_table(self.project)[0]]  # L3: protos
         # Spike G: the owner's approved notes, while they exist in the worktree or at the base
         for n in self._notes_names(run.worktree / run.project_rel):
             names.append(n)
@@ -3314,10 +3349,13 @@ class Rebuilder:
             if _git(run.repo, "cat-file", "-e", f"{run.base}:{rel}{n}").returncode == 0
         ]
 
-    def _restore_protected(self, run: _Run) -> list[str]:
+    def _restore_protected(self, run: _Run, paths: Sequence[str] | None = None) -> list[str]:
         """The protected files the round changed (restored to the base commit's)."""
         edited = []
-        for p in self._protected_paths(run):
+        for p in self._protected_paths(run) if paths is None else paths:
+            if paths is None and self._is_tree(run, p):
+                edited += self._restore_tree(run, p.rstrip("/"))  # L1: a directory entry
+                continue
             r = subprocess.run(
                 ["git", "-C", str(run.repo), "cat-file", "-p", f"{run.base}:{p}"],
                 capture_output=True,
@@ -3334,6 +3372,40 @@ class Rebuilder:
             else:
                 _git_ok(run.worktree, "checkout", run.base, "--", p)
         return edited
+
+    @staticmethod
+    def _is_tree(run: _Run, p: str) -> bool:
+        return _git(run.repo, "cat-file", "-t", f"{run.base}:{p}").stdout.strip() == "tree"
+
+    def _restore_tree(self, run: _Run, d: str) -> list[str]:
+        """L1: every file of the directory at the base commit must be byte-equal, and a
+        non-ignored file the base lacks is an edit (removed); git-ignored files are left."""
+        ls = _git(run.repo, "ls-tree", "-r", "--name-only", run.base, "--", d).stdout
+        base = set(ls.split("\n")) - {""}
+        edited = self._restore_protected(run, sorted(base))
+        files = (f for f in (run.worktree / d).rglob("*") if f.is_file())
+        for p in sorted({f.relative_to(run.worktree).as_posix() for f in files} - base):
+            if _git(run.worktree, "check-ignore", "-q", "--", p).returncode != 0:
+                (run.worktree / p).unlink(missing_ok=True)
+                edited.append(p)
+        return edited
+
+    def _generate(self, run: _Run, n: int) -> dict[str, Any] | None:
+        """L2: run ``[grpc] generate`` in the worktree with the gates' environment and timeout;
+        a finding when it fails."""
+        cmd = grpc_table(self.project)[1]
+        if not cmd:
+            return None
+        g = self._run_gate(run, cmd, self._child_env(run, n))
+        self.log(f"[{run.record['id']}] round {n}: generate `{cmd}` exited {g['exit_code']}")
+        run.record["rounds"][-1]["generate"] = {
+            k: g[k] for k in ("command", "exit_code", "seconds")
+        }
+        if g["exit_code"] == 0:
+            return None
+        return {"title": f"`{cmd}` (the [grpc] generate command) exited {g['exit_code']}: "
+                f"{g['output_tail'][-500:].strip()}", "target": "grpc",
+                "signal_key": "studio:grpc_generate_failed"}  # fmt: skip
 
     def _gates(self, run: _Run, n: int, jpath: Path | None = None) -> list[dict[str, Any]]:
         """Run the gates in order. With `jpath` (``[rebuild] findings_json``) the gate during

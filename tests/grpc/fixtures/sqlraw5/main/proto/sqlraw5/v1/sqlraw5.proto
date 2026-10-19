@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package sqlraw5.v1;
+
+option go_package = "example.com/q5main/gen/sqlraw5/v1;sqlraw5v1";
+
+message Req {
+  string name = 1;
+}
+
+message Rep {
+  string name = 1;
+}
+
+service Lit {
+  rpc Get(Req) returns (Rep);
+  rpc Put(Req) returns (Rep);
+}
+
+service Cst {
+  rpc Bump(Req) returns (Rep);
+  rpc Drop(Req) returns (Rep);
+}
+
+service Cat {
+  rpc Cat(Req) returns (Rep);
+  rpc Fmt(Req) returns (Rep);
+  rpc Dyn(Req) returns (Rep);
+}
+
+service Txn {
+  rpc Move(Req) returns (Rep);
+}
+
+service Dbtx {
+  rpc Get(Req) returns (Rep);
+}
+
+service Ifc {
+  rpc Find(Req) returns (Rep);
+}
+
+service Cte {
+  rpc Recent(Req) returns (Rep);
+}
+
+service Ups {
+  rpc Pref(Req) returns (Rep);
+  rpc Flag(Req) returns (Rep);
+  rpc Cache(Req) returns (Rep);
+}
+
+service Sub {
+  rpc Nested(Req) returns (Rep);
+  rpc Quoted(Req) returns (Rep);
+  rpc Purge(Req) returns (Rep);
+}

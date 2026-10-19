@@ -1,0 +1,150 @@
+{
+  "schema": "lattice.grpc.sqlraw5-truth/1",
+  "written": "2026-10-18",
+  "note": "hand-written before any round-5 extractor code ran, by reading the Go (the fixture is read, not run). Each case is a module under this directory. An rpc entry is a state string or an object of the facts compared exactly (state, codes, unread = a grpc_code_not_literal item, auth, tables, writes as table:op, custom_options).",
+  "cases": {
+    "main": {
+      "why": "database/sql statements read lexically: Lit literal; Cst constants; Cat concatenation and a Sprintf whose table is literal, Dyn a Sprintf with %s as the table (unread, no table); Txn *sql.Tx in a closure; Dbtx a sqlc-style DBTX interface with a leading SQL comment; Ifc a store reached through an interface: only the implementer the server builds (SQLParts), never MemParts (table ghost); Cte a CTE name is no table; Ups upserts in three spellings are save; Sub a subquery, quoted and schema-qualified names, a DELETE",
+      "rpcs": {
+        "sqlraw5.v1.Lit/Get": {
+          "state": "implemented",
+          "tables": [
+            "widgets"
+          ],
+          "writes": []
+        },
+        "sqlraw5.v1.Lit/Put": {
+          "state": "implemented",
+          "tables": [
+            "widgets"
+          ],
+          "writes": [
+            "widgets:create"
+          ]
+        },
+        "sqlraw5.v1.Cst/Bump": {
+          "state": "implemented",
+          "tables": [
+            "counters"
+          ],
+          "writes": [
+            "counters:update"
+          ]
+        },
+        "sqlraw5.v1.Cst/Drop": {
+          "state": "implemented",
+          "tables": [
+            "sessions"
+          ],
+          "writes": [
+            "sessions:delete"
+          ]
+        },
+        "sqlraw5.v1.Cat/Cat": {
+          "state": "implemented",
+          "tables": [
+            "orders"
+          ],
+          "writes": []
+        },
+        "sqlraw5.v1.Cat/Fmt": {
+          "state": "implemented",
+          "tables": [
+            "items"
+          ],
+          "writes": []
+        },
+        "sqlraw5.v1.Cat/Dyn": {
+          "state": "implemented",
+          "tables": [],
+          "writes": []
+        },
+        "sqlraw5.v1.Txn/Move": {
+          "state": "implemented",
+          "tables": [
+            "accounts",
+            "ledger"
+          ],
+          "writes": [
+            "accounts:update",
+            "ledger:create"
+          ]
+        },
+        "sqlraw5.v1.Dbtx/Get": {
+          "state": "implemented",
+          "tables": [
+            "things"
+          ],
+          "writes": []
+        },
+        "sqlraw5.v1.Ifc/Find": {
+          "state": "implemented",
+          "tables": [
+            "parts"
+          ],
+          "writes": []
+        },
+        "sqlraw5.v1.Cte/Recent": {
+          "state": "implemented",
+          "tables": [
+            "events",
+            "users"
+          ],
+          "writes": []
+        },
+        "sqlraw5.v1.Ups/Pref": {
+          "state": "implemented",
+          "tables": [
+            "prefs"
+          ],
+          "writes": [
+            "prefs:save"
+          ]
+        },
+        "sqlraw5.v1.Ups/Flag": {
+          "state": "implemented",
+          "tables": [
+            "flags"
+          ],
+          "writes": [
+            "flags:save"
+          ]
+        },
+        "sqlraw5.v1.Ups/Cache": {
+          "state": "implemented",
+          "tables": [
+            "caches"
+          ],
+          "writes": [
+            "caches:save"
+          ]
+        },
+        "sqlraw5.v1.Sub/Nested": {
+          "state": "implemented",
+          "tables": [
+            "alpha",
+            "beta"
+          ],
+          "writes": []
+        },
+        "sqlraw5.v1.Sub/Quoted": {
+          "state": "implemented",
+          "tables": [
+            "order_lines",
+            "users"
+          ],
+          "writes": []
+        },
+        "sqlraw5.v1.Sub/Purge": {
+          "state": "implemented",
+          "tables": [
+            "sessions"
+          ],
+          "writes": [
+            "sessions:delete"
+          ]
+        }
+      }
+    }
+  }
+}

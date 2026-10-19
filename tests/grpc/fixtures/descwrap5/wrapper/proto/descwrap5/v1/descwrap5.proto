@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package descwrap5.v1;
+
+option go_package = "example.com/d5wrapper/gen/descwrap5/v1;descwrap5v1";
+
+message Req {
+  string name = 1;
+}
+
+message Rep {
+  string name = 1;
+}
+
+service Eq {
+  rpc Get(Req) returns (Rep);
+  rpc Put(Req) returns (Rep);
+}
+
+service Raw {
+  rpc Get(Req) returns (Rep);
+  rpc Put(Req) returns (Rep);
+}

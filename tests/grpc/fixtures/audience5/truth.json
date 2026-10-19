@@ -1,0 +1,92 @@
+{
+  "schema": "lattice.grpc.audience5-truth/1",
+  "written": "2026-10-18",
+  "note": "hand-written before any round-5 extractor code ran, by reading the Go (the fixture is read, not run). Each case is a module under this directory. An rpc entry is a state string or an object of the facts compared exactly (state, codes, unread = a grpc_code_not_literal item, auth, tables, writes as table:op, custom_options).",
+  "cases": {
+    "opt": {
+      "why": "the gate skips its token check when the method's audience option is ANONYMOUS (read by a helper with a namespace guard that no rpc of the module trips). Login carries ANONYMOUS: Public. Info has no option: the enum's zero value: Member. Staff has STAFF: Member. Odd has an aggregate value the proto reader cannot record: unclear",
+      "rpcs": {
+        "audience5.v1.Door/Login": {
+          "state": "implemented",
+          "auth": "Public",
+          "custom_options": {
+            "(audience5.options.v1.audience)": "AUDIENCE_ANONYMOUS"
+          }
+        },
+        "audience5.v1.Door/Info": {
+          "state": "implemented",
+          "auth": "Member",
+          "custom_options": {}
+        },
+        "audience5.v1.Door/Staff": {
+          "state": "implemented",
+          "auth": "Member",
+          "custom_options": {
+            "(audience5.options.v1.audience)": "AUDIENCE_STAFF"
+          }
+        },
+        "audience5.v1.Door/Odd": {
+          "state": "implemented",
+          "auth": "unclear",
+          "custom_options": {}
+        }
+      }
+    },
+    "optne": {
+      "why": "the skip condition is audience != MEMBER: Members carries MEMBER and is gated (Member); Lobby has no option, the zero value is not MEMBER, so it skips the check (Public)",
+      "rpcs": {
+        "audience5.v1.Hall/Members": {
+          "state": "implemented",
+          "auth": "Member",
+          "custom_options": {
+            "(audience5.options.v1.audience)": "AUDIENCE_MEMBER"
+          }
+        },
+        "audience5.v1.Hall/Lobby": {
+          "state": "implemented",
+          "auth": "Public",
+          "custom_options": {}
+        }
+      }
+    },
+    "skipregistry": {
+      "why": "the skip condition is a registry lookup on the method: not enumerated, so every rpc is unclear",
+      "rpcs": {
+        "audience5.v1.Vault/Open": {
+          "state": "implemented",
+          "auth": "unclear"
+        },
+        "audience5.v1.Vault/Shut": {
+          "state": "implemented",
+          "auth": "unclear"
+        }
+      }
+    },
+    "skipflow": {
+      "why": "the method is handed to a helper whose answer decides the skip (the round-4 empty-allowlist shape): an unenumerated bypass, so never Member: unclear",
+      "rpcs": {
+        "audience5.v1.Vault/Open": {
+          "state": "implemented",
+          "auth": "unclear"
+        },
+        "audience5.v1.Vault/Shut": {
+          "state": "implemented",
+          "auth": "unclear"
+        }
+      }
+    },
+    "noskip": {
+      "why": "the gate has no skip condition at all: the empty allowlist is literal, every rpc is Member",
+      "rpcs": {
+        "audience5.v1.Vault/Open": {
+          "state": "implemented",
+          "auth": "Member"
+        },
+        "audience5.v1.Vault/Shut": {
+          "state": "implemented",
+          "auth": "Member"
+        }
+      }
+    }
+  }
+}

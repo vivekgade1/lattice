@@ -1,0 +1,5 @@
+daabff1b81d78a84c77fab4780f122af4c0f9cb0b2a532bf53f15a53c4bee8ba  tests/grpc/fixtures/descwrap5/truth.json
+f7eb1e743f217f06f5a7076024eb35eacb64adcd9760dfe5057affd0188eaf65  tests/grpc/fixtures/builderopt5/truth.json
+b47d3da1f176bf1061ccc4759e9f7cefded341caa73f29abb8b8c93459b26424  tests/grpc/fixtures/status5/truth.json
+63106d120255c2055776985404c88064d4de89e4e43aea6c01790145c5f7f18b  tests/grpc/fixtures/audience5/truth.json
+b06e045c685f69bdfe4606d0a9302f0393a2cee53c908f4d2ce781b2ce358d99  tests/grpc/fixtures/sqlraw5/truth.json

@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package audience5.v1;
+
+option go_package = "example.com/a5skipregistry/gen/audience5/v1;audience5v1";
+
+message Req {
+  string name = 1;
+}
+
+message Rep {
+  string name = 1;
+}
+
+service Vault {
+  rpc Open(Req) returns (Rep);
+  rpc Shut(Req) returns (Rep);
+}
