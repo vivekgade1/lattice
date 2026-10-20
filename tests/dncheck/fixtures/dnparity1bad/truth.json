@@ -1,0 +1,30 @@
+{
+  "schema": "lattice.dntruth/1",
+  "fixture": "tests/dncheck/fixtures/dnparity1bad",
+  "spike": "J node B3 (sibling fixture of dnparity1, Amendment 2 ruling 8); written and hashed before any layer A library code; prereg docs/results/2026-10-18-dotnet-prereg.md 5.4 (A0-DN: DN800)",
+  "kind": "parse-only ASP.NET Core project with one deliberately unparsable file; never restored, built or run by the tests",
+  "conventions": {
+    "paths": "every `file` is relative to the fixture directory, '/' separators",
+    "lines": "1-based; every finding carries the quoted source line in `text`",
+    "key": "DN800|<file>: one finding per file with a syntax error, at the line of its first error; the message names the Roslyn diagnostic ids only"
+  },
+  "layer_a": {
+    "policy": {"tables": {}, "owners": {}, "owner_via": {}, "private": {}, "machines": {}, "admin_routes": [], "open_routes": []},
+    "findings": [
+      {
+        "code": "DN800",
+        "route": null,
+        "subject": "Broken.cs",
+        "key": "DN800|Broken.cs",
+        "diagnostics": ["CS1525"],
+        "construct": "a0",
+        "file": "Broken.cs",
+        "line": 7,
+        "text": "return a + ;"
+      }
+    ],
+    "silent": [
+      {"file": "Program.cs", "why": "parses; and with a DN800 present no other rule is judged (an app that does not parse is not read further)"}
+    ]
+  }
+}

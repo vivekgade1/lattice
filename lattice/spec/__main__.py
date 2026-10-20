@@ -111,8 +111,8 @@ def _parser() -> argparse.ArgumentParser:
     c.add_argument(
         "--runtime",
         help="module:RUNTIME, the app's AppRuntime (or a function returning one); "
-        "'process': lattice.spec.process.process_runtime(); 'go': the same with "
-        "framework='go'",
+        "'process': lattice.spec.process.process_runtime(); 'go' / 'dotnet': the same with "
+        "that framework",
     )
     c.add_argument(
         "--services",
@@ -263,10 +263,10 @@ def _runtime(ref: str | None) -> Any:
 
     if ref is None:
         return None
-    if ref in ("process", "go"):
+    if ref in ("process", "go", "dotnet"):
         from lattice.spec.process import process_runtime
 
-        return process_runtime() if ref == "process" else process_runtime(framework="go")
+        return process_runtime() if ref == "process" else process_runtime(framework=ref)
     runtime = load(ref)
     if not isinstance(runtime, AppRuntime) and callable(runtime):
         runtime = runtime()
