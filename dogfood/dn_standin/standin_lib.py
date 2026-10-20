@@ -273,8 +273,10 @@ class StandInLib:
         refuted: list[str] = []
         findings: list[str] = []
         eps: list[str] = []
-        if layers == "R" and bug in ("jm1", "jm2"):
-            vm["R1 GET /runs/{rid}" if bug == "jm1" else "R3 GET /runs/{rid} 404"] = "refuted"
+        if layers == "R" and bug in ("jm1", "jm2", "noauth", "forbidden"):
+            vm["R1 GET /runs/{rid}" if bug in ("jm1", "noauth") else "R3 GET /runs/{rid} 404"] = (
+                "refuted"
+            )
             refuted = [i for i, v in vm.items() if v == "refuted"]
         if layers == "B" and bug in ("nocheck", "nocancel"):
             ep = {"nocheck": "POST /configs/{cid}/runs", "nocancel": "POST /runs/{rid}/cancel"}[bug]

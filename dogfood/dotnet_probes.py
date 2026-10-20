@@ -87,7 +87,7 @@ KINDS = ("shakedown", "scored", "rerun", "verify", "mutants")
 SCORED_KINDS = ("scored", "rerun", "verify")
 NODES = ("B2", "B3", "B4")
 VERIFIED = ("verified", "verified (corrected)")
-Q9_YES = True  # Amendment 1 Q9: DN805 is built because G3's K8 passed (A-805 is gated); flip before Amendment 3 if B3 did not build it
+Q9_YES = False  # Amendment 1 Q9/D2: DN805 is built only if G3's K8 passed; K8 was refuted (go-parity-round3-tier2-results.md), B3 gated DN805 with the reason, so A-805 is reported, not gated (93 gated rows)
 Q8_YES = True  # Amendment 1 Q8: dnapp is built (the N rows are gated)
 DOTNET_ENV = {
     "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
@@ -110,6 +110,7 @@ SRC_CS = (
     "Raises",
     "State",
     "Closure",
+    "Required",
     "Assemble",
 )
 ALWAYS = (  # the runners, their test, the stand-ins' anchors, the truths, the corpus archives and the library of node B1
@@ -1360,10 +1361,15 @@ class RealLib(Lib):
         mod, _, attr = str(toml["runtime"]).partition(":")
         harness = importlib.import_module(mod)
         rt = fe.runtime(root, ".")
+        harness = sys.modules.get(
+            mod, harness
+        )  # the front end re-imports the harness module (a fresh object)
         view = {
             "with_harness": {
                 "framework": rt.framework,
-                "is_harness_runtime": rt is getattr(harness, attr),
+                # B2 returns dataclasses.replace(RUNTIME, transport=<login-field wrapper>) (deviation 3), so identity is that of its auth driver
+                "is_harness_runtime": rt is getattr(harness, attr)
+                or rt.auth is getattr(harness, attr).auth,
                 "one_server": rt.one_server,
             }
         }
@@ -1545,7 +1551,14 @@ class RealLib(Lib):
     def dnapp_check(self, ctx: Ctx, layers: str, bug: str = "") -> dict[str, Any]:
         from lattice.spec import check
 
-        sys.path.insert(0, str(REPO)) if str(REPO) not in sys.path else None
+        for name in [n for n in sys.modules if n == "tests" or n.startswith("tests.")]:
+            f = getattr(
+                sys.modules[name], "__file__", None
+            )  # a target's overlay (use_overlay) may have claimed `tests`
+            if f and not str(f).startswith(str(REPO)):
+                del sys.modules[name]
+        sys.path[:] = [str(REPO), *[p for p in sys.path if p != str(REPO)]]
+        importlib.invalidate_caches()
         rb = importlib.import_module("tests.spec.dn_harness_rb")
         keep = os.environ.get("DNAPP_BUG")
         os.environ["DNAPP_BUG"] = bug
@@ -1714,6 +1727,13 @@ class RealLib(Lib):
         return {"status": answer, "findings": sorted(f.key for f in found if f.code == "DN805")}
 
     # ---- B4 ------------------------------------------------------------------------------------------------------------
+    @staticmethod
+    def _harness_users(tgt: Mapping[str, Any]) -> list[str]:
+        use_overlay(tgt)  # type: ignore[arg-type]
+        app = tomllib.loads((Path(tgt["module_dir"]) / "studio.toml").read_text()).get("app", {})
+        mod = str(app.get("app", "")).partition(":")[0]
+        return list(getattr(importlib.import_module(mod), "USERS", {}) or {}) if mod else []
+
     def workflows(self, ctx: Ctx, tgt: dict[str, Any], mode: str, out_dir: Path) -> dict[str, Any]:
         shutil.rmtree(out_dir, ignore_errors=True)
         argv = [
@@ -1728,11 +1748,14 @@ class RealLib(Lib):
         env = ctx.env()
         if mode == "static":
             argv.append("--static")
-        elif mode == "observed-sqlite":
-            argv += ["--database", "sqlite"]
-        else:
-            argv += ["--database", "mysql"]
-            env = ctx.env_real()
+        else:  # an observed run needs declared users (`--user`): the handles of the harness's USERS
+            for handle in self._harness_users(tgt):
+                argv += ["--user", handle]
+            if mode == "observed-sqlite":
+                argv += ["--database", "sqlite"]
+            else:
+                argv += ["--database", "mysql"]
+                env = ctx.env_real()
         r = json_cli(ctx, argv, cwd=tgt["overlay"], env=env, timeout=3600)
         f = out_dir / "workflows.json"
         r["doc"] = json.loads(f.read_text()) if f.is_file() else None
@@ -1940,7 +1963,9 @@ def tool_ask(ctx: Ctx, tgt: dict[str, Any], proj: Path, inventory: Path) -> dict
             spec,
             question,
             trace=trace,
-            generator=ScriptedGenerator([json.dumps(body)]),
+            generator=ScriptedGenerator(
+                [json.dumps(body)] * 2
+            ),  # the second text answers ask()'s one repair request (a code-only answer has no spec grounding)
             model="stub",
             inventory=inv,
         )
@@ -1985,7 +2010,10 @@ def tool_mcp(ctx: Ctx, tgt: dict[str, Any], proj: Path, inventory: Path) -> dict
         {"jsonrpc": "2.0", "method": "notifications/initialized"},
     ]
     calls = [
-        ("implementation_get", {"section": "summary"}),
+        (
+            "implementation_get",
+            {"section": "routes"},
+        ),  # the route rows carry the code:<file>:<line> evidence; `summary` and `rules` hold counts and statuses only
         ("workflow_get", {"id": fid}),
         ("workflow_find", {"question": "check in"}),
     ]
@@ -2110,7 +2138,9 @@ def tool_contracts_live(ctx: Ctx, tgt: dict[str, Any], proj: Path) -> dict[str, 
         + "\n"
     )
     (w / "lattice.workspace.toml").write_text(
-        f'[workspace]\nname = "w"\n\n[[project]]\nname = "prov"\npath = "prov"\nrole = "provider"\nspec = "spec:SPEC"\napp = "{h}:make_app"\ndb = "{h}:build_db"\nlogin = "{h}:LOGIN"\n\n'
+        f'[workspace]\nname = "w"\n\n[[project]]\nname = "prov"\npath = "prov"\nrole = "provider"\nspec = "spec:SPEC"\napp = "{h}:make_app"\ndb = "{h}:build_db"\nlogin = "{h}:LOGIN"\n'
+        # the live child puts the repository root first on PYTHONPATH, so a harness outside the repository (D1's overlay) is named by `src`
+        f"src = {json.dumps(os.path.relpath(Path(tgt['overlay']).resolve(), (w / 'prov').resolve()))}\n\n"
         '[[project]]\nname = "cons"\npath = "cons"\nrole = "consumer"\n\n[[link]]\nfrom = "cons"\nto = "prov"\nkind = "uses"\ncontract = "live"\n'
     )
     env = ctx.env_real(PYTHONPATH=os.pathsep.join([str(w / "prov"), ctx.pythonpath()]))
@@ -3636,7 +3666,15 @@ def i_d1_6(ctx: Ctx) -> dict[str, Any]:
     d = import_dir(ctx, ctx.d1)
     rv = ctx.lib.review_list(ctx, ctx.d1, d)
     rep = load_report(d)
-    unverified = {i for i, v in rep["rules"]["items"].items() if v["verdict"] not in VERIFIED}
+    # `review list` skips only a plain "verified" item (review.py: a corrected item is listed for the owner's decision)
+    # and it lists a corrected item under its corrected id (the item's `correction.corrected`)
+    unverified = {
+        (v.get("correction") or {}).get("corrected", i)
+        if v["verdict"] == "verified (corrected)"
+        else i
+        for i, v in rep["rules"]["items"].items()
+        if v["verdict"] != "verified"
+    }
     listed = set(rv["ids"])
     return row("I-D1-6", "python -m lattice.importer review <dir> list", {"exit": rv["rc"], "listed": len(listed), "report_unverified": len(unverified), "listed_not_in_report": sorted(listed - unverified), "report_not_listed": sorted(unverified - listed)}, rv["rc"] == 0 and listed == unverified)  # fmt: skip
 
@@ -3952,9 +3990,8 @@ def c_implm(ctx: Ctx) -> dict[str, Any]:
 def inv_orphans(ctx: Ctx) -> list[str]:
     """The implemented-not-required routes of the unmodified D1 report (the baseline the extra route adds one to)."""
     proj = spec_project(ctx, ctx.scratch / "proj-impl")
-    return impl_summary(report_of_impl(ctx, inv_of(ctx, "wf", wf=True), proj))[
-        "implemented_not_required"
-    ]
+    # like for like: the extra-route and missing-route inventories are built without the workflow file, so is the baseline
+    return impl_summary(report_of_impl(ctx, inv_of(ctx), proj))["implemented_not_required"]
 
 
 # ---- Stage 5: the consumers on D1's inventory (node B4's dispatch) -----------------------------------------------------------------------------------------
@@ -4162,9 +4199,9 @@ def c_rebuild(ctx: Ctx) -> dict[str, Any]:
 
 GO_S1_SHARE = 0.6957  # Go S1's verified share (m, prereg 5.5 N-R1)
 DNAPP_R_BUGS = (
-    "jm1",
-    "jm2",
-)  # DNAPP_BUG values for the JM1 (GET /runs/{rid} skips the caller) and JM2 (answers 403 for a missing run) analogues: B4's brief must supply them
+    "noauth",
+    "forbidden",
+)  # B4's DNAPP_BUG values for the JM1 (GET /runs/{rid} skips the caller) and JM2 (answers 403 for a missing run) analogues
 DNAPP_B_BUGS = {"nocheck": "POST /configs/{cid}/runs", "nocancel": "POST /runs/{rid}/cancel"}
 
 
@@ -4450,6 +4487,14 @@ def h_impl(ctx: Ctx) -> dict[str, Any]:
     shutil.rmtree(proj, ignore_errors=True)
     proj.mkdir(parents=True)
     shutil.copyfile(d / "candidate_spec.py", proj / "spec.py")
+    for side in (
+        "profile.py",
+        "natives.py",
+    ):  # the candidate loads its profile (PROFILE_FILE) and natives from beside itself
+        if (d / side).is_file():
+            shutil.copyfile(d / side, proj / side)
+    if (d / "routes").is_dir():
+        shutil.copytree(d / "routes", proj / "routes")
     wfd = ctx.lib.workflows(ctx, t, "observed-sqlite", ctx.scratch / "wf-h" / "a")["dir"]
     inv = ctx.lib.inventory(
         ctx, t, ctx.scratch / "inv" / "h", workflows=Path(wfd) / "workflows.json"
@@ -4541,10 +4586,13 @@ def check_cli(
     env.pop("LATTICE_MYSQL_URL", None)
     rc, so, se, wall = run([ctx.py, "-m", *argv], cwd=proj, env=env, timeout=3600)
     doc: Any = None
-    try:
-        doc = json.loads(so.strip().splitlines()[-1]) if so.strip() else None
+    try:  # `check --json` prints one indented document; an older shape was a single last line
+        doc = json.loads(so) if so.strip() else None
     except ValueError:
-        pass
+        try:
+            doc = json.loads(so.strip().splitlines()[-1])
+        except ValueError:
+            pass
     return {"rc": rc, "json": doc, "stderr": se[-800:], "wall_s": round(wall, 1)}
 
 
@@ -4555,6 +4603,9 @@ def normalise_check(doc: Mapping[str, Any]) -> dict[str, Any]:
         if isinstance(v, list):
             return [scrub(x) for x in v]
         if isinstance(v, str):
+            v = re.sub(
+                r"\d+(\.\d+)? ?ms\b", "<ms>", v
+            )  # "30 ms each on average" (the database note)
             return re.sub(r"\d+(\.\d+)?s\b", "<s>", re.sub(r"lattice-[a-z0-9-]+", "<container>", v))
         return v
 
@@ -4992,8 +5043,14 @@ def pb_h(ctx: Ctx) -> dict[str, Any]:
         if a != b and name.endswith(
             "check --help"
         ):  # the one declared exception (Q10): `dotnet` joins the --runtime text
-            only = [ln for ln in difflib_lines(a[1], b[1])]
-            rows[name]["declared_exception"] = bool(only) and all("dotnet" in ln for ln in only)
+            only = difflib_lines(
+                a[1], b[1]
+            )  # the --runtime paragraph is re-wrapped: its old lines do not say "dotnet", its new ones do
+            rows[name]["declared_exception"] = (
+                bool(only)
+                and any("dotnet" in ln for ln in only)
+                and all("'go'" in ln or "framework" in ln or "dotnet" in ln for ln in only)
+            )
             rows[name]["same"] = rows[name]["declared_exception"]
     proj = ctx.scratch / "mcp_empty"
     proj.mkdir(exist_ok=True)

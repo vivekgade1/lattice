@@ -24,9 +24,9 @@ needs_dotnet = pytest.mark.skipif(shutil.which("dotnet") is None, reason="needs 
 # ---- the row table -------------------------------------------------------------------------------------------------------------------------------------
 
 
-def test_the_gated_row_count_is_the_preregistered_94() -> None:
-    ids = G.GATED  # Stage 1: 21, 2: 5, 3: 6 + A-805, 4: 9 + the 4 dnapp rows, 5: 16, Arm H: 19, Arm M: 2, cross: 10, P-J0: 1
-    assert len(ids) == 94
+def test_the_gated_row_count_is_the_preregistered_93() -> None:
+    ids = G.GATED  # Stage 1: 21, 2: 5, 3: 6 (A-805 only on Q9 yes; K8 was refuted, DN805 is gated), 4: 9 + the 4 dnapp rows, 5: 16, Arm H: 19, Arm M: 2, cross: 10, P-J0: 1
+    assert len(ids) == 93  # 89 + the four dnapp rows (Q8); 94 only with Q9 yes
     assert sum(1 for i in ids if i.startswith("H-")) == 19
     assert sum(1 for i in ids if i.startswith(("M-R",))) == 2
     assert {"H-PI5", "A-JUDGE-D1", "I-D1-5"}.isdisjoint(ids)
@@ -298,7 +298,9 @@ def test_the_library_mutant_edits_that_exist_apply_exactly_once() -> None:
         for rel, old, _new in spec["edits"]:
             assert (ROOT / rel).read_text().count(old) == 1, (mid, rel)
     assert set(M.load_lm()) == set(M.LM_IDS)
-    assert {m for m, s in M.load_lm().items() if not s["edits"]} == {"LM20", "LM21", "LM23", "LM24"}
+    assert {
+        m for m, s in M.load_lm().items() if not s["edits"]
+    } == set()  # LM20, LM21, LM23, LM24 filled by node S
 
 
 # ---- the 4.5 scoring on synthetic inputs -------------------------------------------------------------------------------------------------------------------

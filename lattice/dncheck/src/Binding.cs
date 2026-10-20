@@ -359,16 +359,19 @@ public sealed partial class Ex
     {
         var r = rec.R;
         if (r.Params.Any(p => p.Source == "body")) return;
-        var seen = new HashSet<string>(StringComparer.Ordinal);
+        var seen = new Dictionary<string, XParam>(StringComparer.Ordinal);
         foreach (var v in rec.Reach!.Visits)
             foreach (var inv in v.Body.DescendantNodesAndSelf().OfType<InvocationExpressionSyntax>())
             {
                 if (inv.ArgumentList.Arguments.Count == 0 || inv.Expression is not MemberAccessExpressionSyntax) continue;
                 var c = Resolve(inv);
-                if (!c.Project || c.M == null || c.M.IsStatic || ConstOf(inv.ArgumentList.Arguments[0].Expression, v) is not string key || !IsKeyAccessor(c.M, 0) || !IsBodyWrapper(c.M.ContainingType) || !seen.Add(key)) continue;
+                if (!c.Project || c.M == null || c.M.IsStatic || ConstOf(inv.ArgumentList.Arguments[0].Expression, v) is not string key || !IsKeyAccessor(c.M, 0) || !IsBodyWrapper(c.M.ContainingType)) continue;
+                bool required = AccessorRequired(inv, c.M, v);
+                if (seen.TryGetValue(key, out var prior)) { if (required) prior.Required = true; continue; }
                 var suffix = Regex.Replace(c.M.Name, "^(Optional|Required|Try|Get|Read)", "");
-                bool required = c.M.Name.StartsWith("Required", StringComparison.Ordinal) || inv.Parent is BinaryExpressionSyntax { RawKind: (int)SyntaxKind.CoalesceExpression, Right: ThrowExpressionSyntax };
-                r.Params.Add(new XParam { Name = key, Wire = key, Source = "body", BindSource = "body", Annotation = c.M.ReturnType.ToDisplayString(), Type = suffix switch { "String" => "Str", "Int" or "Int32" or "Long" => "Int", "Bool" or "Boolean" => "Bool", "Uuid" or "Guid" => "Uuid", "Date" => "Date", "DateTime" => "DateTime", "Double" or "Decimal" or "Number" => "Float", _ => null }, Required = required, File = FileOf(inv), Line = LineOf(inv), EnforcedBy = null });
+                var np = new XParam { Name = key, Wire = key, Source = "body", BindSource = "body", Annotation = c.M.ReturnType.ToDisplayString(), Type = suffix switch { "String" => "Str", "Int" or "Int32" or "Long" => "Int", "Bool" or "Boolean" => "Bool", "Uuid" or "Guid" => "Uuid", "Date" => "Date", "DateTime" => "DateTime", "Double" or "Decimal" or "Number" => "Float", _ => null }, Required = required, File = FileOf(inv), Line = LineOf(inv), EnforcedBy = null };
+                seen[key] = np;
+                r.Params.Add(np);
             }
     }
 

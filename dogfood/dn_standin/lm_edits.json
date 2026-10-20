@@ -317,7 +317,18 @@
  "LM20": {
   "what": "DN806 fires on DateTimeOffset comparisons",
   "killed_by": "A0-DN",
-  "edits": [],
+  "edits": [
+   [
+    "lattice/dncheck/src/CheckDatetime.cs",
+    "\"UtcDateTime\" => DK.Utc, \"LocalDateTime\" => DK.Local, _ => DK.Unknown",
+    "\"UtcDateTime\" or \"UtcNow\" => DK.Utc, \"LocalDateTime\" or \"Now\" => DK.Local, _ => DK.Unknown"
+   ],
+   [
+    "lattice/dncheck/src/CheckDatetime.cs",
+    "if (IsType(lt, \"DateTime\") && IsType(rt, \"DateTime\"))",
+    "if ((IsType(lt, \"DateTime\") || IsType(lt, \"DateTimeOffset\")) && (IsType(rt, \"DateTime\") || IsType(rt, \"DateTimeOffset\")))"
+   ]
+  ],
   "probes": [
    "A0-DN"
   ],
@@ -327,7 +338,13 @@
  "LM21": {
   "what": "DN807 ignores the transaction scope",
   "killed_by": "A0-DN",
-  "edits": [],
+  "edits": [
+   [
+    "lattice/dncheck/src/CheckPartial.cs",
+    "if (InTransaction(v, inv) && save) continue;",
+    "if (false && InTransaction(v, inv) && save) continue;"
+   ]
+  ],
   "probes": [
    "A0-DN"
   ],
@@ -353,7 +370,13 @@
  "LM23": {
   "what": "the .NET front end is registered eagerly (Python imports load it)",
   "killed_by": "PB-LAZY; PB-P",
-  "edits": [],
+  "edits": [
+   [
+    "lattice/importer/frontends/__init__.py",
+    "    _REGISTRY.setdefault(FRONT_END.name, FRONT_END)\n",
+    "    _REGISTRY.setdefault(FRONT_END.name, FRONT_END)\n    _load_dotnet()\n"
+   ]
+  ],
   "probes": [
    "PB-LAZY"
   ],
@@ -363,7 +386,13 @@
  "LM24": {
   "what": "the consumer dispatch always picks the Go front end",
   "killed_by": "C-INV; W-D1-1",
-  "edits": [],
+  "edits": [
+   [
+    "lattice/importer/extract_source.py",
+    "return dn if dn.detect(Path(root), package) else go",
+    "return go"
+   ]
+  ],
   "probes": [
    "C-INV",
    "W-D1-1"

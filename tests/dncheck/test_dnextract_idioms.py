@@ -358,3 +358,77 @@ def test_a_missing_sdk_and_a_failed_build_are_errors_never_silent(
     with pytest.raises(dncheck.DotnetToolchainMissing):
         dncheck.build_dncheck()
     dncheck.sdk_version.cache_clear()
+
+
+REQUIRED_APP = """
+using System.Text.Json.Nodes;
+public sealed class ApiException(int status, string msg) : Exception(msg) { public int Status { get; } = status; }
+public sealed class JsonBody
+{
+    private readonly JsonObject _o;
+    private JsonBody(JsonObject o) => _o = o;
+    public static JsonBody Of(JsonObject o) => new(o);
+    public static async Task<JsonBody> ReadAsync(HttpRequest r)
+    {
+        using var rd = new StreamReader(r.Body);
+        return new JsonBody(JsonNode.Parse(await rd.ReadToEndAsync()) as JsonObject ?? new JsonObject());
+    }
+    public bool Has(string k) => _o.ContainsKey(k);
+    public string? OptionalString(string k) => _o.TryGetPropertyValue(k, out var n) && n is not null ? n.GetValue<string>() : null;
+    public string RequiredString(string k) => OptionalString(k) ?? throw new ApiException(422, k + " is required");
+    public JsonArray RequiredArray(string k) => _o.TryGetPropertyValue(k, out var n) && n is JsonArray a ? a : throw new ApiException(422, k);
+}
+public static class Svc
+{
+    static string ValidName(string? n) => n is null || n.Trim().Length == 0 ? throw new ApiException(422, "name") : n;
+    static string? ValidNote(string? n) => n is not null && n.Length > 9 ? throw new ApiException(422, "note") : n;
+    public static void Create(JsonBody body)
+    {
+        if (!body.Has("version")) throw new ApiException(422, "version is required");
+        var name = ValidName(body.OptionalString("name"));
+        var note = ValidNote(body.OptionalString("note"));
+        var tag = body.OptionalString("tag");
+        var token = body.OptionalString("token");
+        if (string.IsNullOrEmpty(token)) throw new ApiException(422, "token");
+        var city = body.OptionalString("city") ?? "";
+        if (city.Length == 0) throw new ApiException(422, "city");
+        var lang = body.OptionalString("lang") ?? "en";
+        if (lang.Length == 0) throw new ApiException(422, "lang");
+        if (body.Has("nick"))
+        {
+            var nick = body.OptionalString("nick");
+            if (nick is null) throw new ApiException(422, "nick");
+        }
+        foreach (var item in body.RequiredArray("items"))
+        {
+            var o = JsonBody.Of((JsonObject)item!);
+            o.RequiredString("sku");
+        }
+    }
+}
+"""
+
+
+def test_a_body_accessor_is_required_when_the_handler_refuses_its_missing_value(
+    tmp_path: Path,
+) -> None:
+    root = project(
+        tmp_path,
+        {
+            "Program.cs": """
+            var builder = WebApplication.CreateBuilder(args);
+            var app = builder.Build();
+            app.MapPost("/things", async (HttpRequest req) => { Svc.Create(await JsonBody.ReadAsync(req)); return Results.Ok(); });
+            app.Run();
+            """,
+            "App.cs": REQUIRED_APP,
+        },
+    )
+    doc = dncheck.extract_json(root)
+    params = {p["name"]: p for p in routes(doc)[("POST", "/things")]["params"]}
+    required = {k for k, p in params.items() if p.get("required")}
+    # refused when missing: a helper that throws on null, a null/empty check, a default the check rejects, a `!Has` guard, `Required*`
+    assert {"version", "name", "token", "city", "items"} <= required
+    # not refused (the helper passes null, the default passes, the check is under `Has`, an item's own field)
+    assert {"note", "tag", "lang", "nick", "sku"} <= set(params)
+    assert not required & {"note", "tag", "lang", "nick", "sku"}
