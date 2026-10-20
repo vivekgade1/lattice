@@ -608,3 +608,37 @@ def test_main_verifies_the_freeze_writes_the_ledger_and_the_evidence(
     # a scored run of the same arm is refused once it has been scored, and the freeze file is required
     with pytest.raises(SystemExit, match="--freeze is required"):
         G.main(["--arm", "0", "--out", str(tmp_path / "o3")])
+
+
+# ---- the minted-secret masks of I-D1-7 / H-PI7 (Amendment, node S round 2) --------------------------------------------------------------------------------
+
+
+def test_minted_secrets_are_masked_and_names_are_not() -> None:
+    jwt = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.TCshYSxhPpSHfd0JTgOeoA3w"
+    text = (
+        '{"h": "$2a$11$' + "a" * 53 + '", "t": "' + jwt + '", "x": "' + "ab12" * 16 + '", '
+        '"r": "bIo_ONU5tXQnNNLpjveMkNu-eD5NyOwGi5UutgzpZ9k", "n": "access_token_expires_after_15_minutes", '
+        '"u": "0f8fad5b-d9cb-469f-a165-70867728950e"}'
+    )
+    out = G.mask_minted(text)
+    assert "<bcrypt>" in out and "<jwt>" in out and "<hex>" in out and '"<token>"' in out
+    assert (
+        "access_token_expires_after_15_minutes" in out
+        and "0f8fad5b-d9cb-469f-a165-70867728950e" in out
+    )
+    assert G.mask_minted(text.replace("bIo_ONU5", "xYz_ABC9")) == out
+
+
+def test_normalised_tree_ignores_minted_values_only(tmp_path: Path) -> None:
+    for name, tok in (
+        ("a", "bIo_ONU5tXQnNNLpjveMkNu-eD5NyOwGi5UutgzpZ9k"),
+        ("b", "YkE6-F_QzMo7O3OX-0Fvode51vBRPt2T7dH_gvkkVR8"),
+    ):
+        (tmp_path / name).mkdir()
+        (tmp_path / name / "report.json").write_text(
+            json.dumps({"cost": {"wall_s": 1.0}, "repo": "x", "tok": tok, "fixed": "same"})
+        )
+        (tmp_path / name / "proposals.json").write_text(json.dumps([{"refresh_token": tok}]))
+    assert G.normalised_tree(tmp_path / "a") == G.normalised_tree(tmp_path / "b")
+    (tmp_path / "b" / "proposals.json").write_text(json.dumps([{"refresh_token": "different"}]))
+    assert G.normalised_tree(tmp_path / "a") != G.normalised_tree(tmp_path / "b")

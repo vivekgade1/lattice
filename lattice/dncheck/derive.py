@@ -13,7 +13,8 @@ a :class:`~lattice.dncheck.policy.DnPolicy`:
 * ``owner_via``: a table whose owner evidence is a comparison through a navigation to an owned parent
   (``owner_uses[].via``), or that has exactly one foreign key to an owned table, as ``(fk column, parent entity)``
   (GoPolicy's order);
-* ``private``: the non-key columns the serializer skips (``[JsonIgnore]``, extract ``json == "-"``). Never guessed from a name;
+* ``private``: the columns the serializer skips (``[JsonIgnore]``, or what no response reads: extract ``json == "-"``, see
+  ``Projection.cs``). Never guessed from a name;
 * ``admin_routes``: the routes the extract marks ``Admin``;
 * ``machines``: **empty**. Edges derived from the app's own writes would make every write an edge (DN808 could not
   fire), and a machine is a decision, not a fact of the code (as in Go);
@@ -112,7 +113,7 @@ def derive_dn_policy(
         hidden = [
             c["name"]
             for c in t["columns"]
-            if (c.get("private") or c.get("json") == "-") and not c.get("primary_key")
+            if c.get("json") == "-" or (c.get("private") and not c.get("primary_key"))
         ]
         if hidden:
             private[t["struct"]] = tuple(sorted(hidden))

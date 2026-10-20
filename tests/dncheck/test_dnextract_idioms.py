@@ -432,3 +432,38 @@ def test_a_body_accessor_is_required_when_the_handler_refuses_its_missing_value(
     # not refused (the helper passes null, the default passes, the check is under `Has`, an item's own field)
     assert {"note", "tag", "lang", "nick", "sku"} <= set(params)
     assert not required & {"note", "tag", "lang", "nick", "sku"}
+
+
+def test_a_column_no_response_record_reads_is_derived_private(tmp_path: Path) -> None:
+    root = project(
+        tmp_path,
+        {
+            "Program.cs": """
+            var builder = WebApplication.CreateBuilder(args);
+            var app = builder.Build();
+            app.MapGet("/items", (Db db) => Results.Ok(db.Items.Select(i => new ItemBody(i.Id, i.Name)).ToList()));
+            app.MapGet("/tags", (Db db) => Results.Ok(db.Tags.ToList()));
+            app.MapGet("/notes", (Db db) => Results.Ok(db.Notes.Select(n => n).ToList()));
+            app.Run();
+            public record ItemBody(int Id, string Name);
+            """,
+            "Data.cs": """
+            using Microsoft.EntityFrameworkCore;
+            public class Db : DbContext { public Db(DbContextOptions<Db> o) : base(o) {}
+              public DbSet<Item> Items { get; set; } = null!; public DbSet<Tag> Tags { get; set; } = null!; public DbSet<Note> Notes { get; set; } = null!; }
+            public class Item { public int Id { get; set; } public string Name { get; set; } = ""; public string Secret { get; set; } = ""; public int OwnerId { get; set; } }
+            public class Tag { public int Id { get; set; } public string Label { get; set; } = ""; }
+            public class Note { public int Id { get; set; } public string Body { get; set; } = ""; }
+            """,
+        },
+    )
+    cols = {
+        (t["struct"], c["field"]): c.get("json")
+        for t in dncheck.extract_json(root, policy=True)["tables"]
+        for c in t["columns"]
+    }
+    assert cols[("Item", "Secret")] == "-" and cols[("Item", "OwnerId")] == "-"
+    assert cols[("Item", "Id")] != "-" and cols[("Item", "Name")] != "-"
+    # an entity answered whole (Tag), or handed on unread (Note, `n => n`), is not derived
+    assert all(cols[("Tag", f)] != "-" for f in ("Id", "Label"))
+    assert all(cols[("Note", f)] != "-" for f in ("Id", "Body"))

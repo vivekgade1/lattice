@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import contextlib
 import dataclasses
+import hashlib
 import json
 import os
 import re
@@ -342,7 +343,8 @@ class AspNetFrontEnd:
         self, root: Path | str, model: RepoModel, *, timeout: float = 30.0
     ) -> dict[str, Any]:
         """Which extracted routes the app's build answers: each route called unauthenticated
-        (path parameters ``1``, ``{}`` on writes) plus a control request to ``<path>/zz-absent``.
+        (path parameters ``1``, ``{}`` on writes) plus a control request (same method) to
+        ``/zz-absent-<hash>``, a path no sibling absorbs.
         The result holds, per ``METHOD path``, ``status``, ``control`` and ``observed`` (the status
         is neither 404 nor 405) -- no port, no timing. Needs the harness (``studio.toml`` ``[app]
         app``, ``db``), Docker and a MySQL-capable driver; a missing one is an error naming it,
@@ -382,7 +384,12 @@ class AspNetFrontEnd:
                     kw = {"json": body} if body is not None else {}
                     status = client.request(r.method, path, **kw).status_code
                     ckw = {"json": {}} if body is not None else {}
-                    control = client.request(r.method, path.rstrip("/") + "/zz-absent", **ckw)
+                    # a control that no parametrised sibling (`/habits/{id}`) absorbs
+                    absent = (
+                        "/zz-absent-"
+                        + hashlib.sha256(f"{r.method} {r.path}".encode()).hexdigest()[:8]
+                    )
+                    control = client.request(r.method, absent, **ckw)
                     out[f"{r.method} {r.path}"] = {
                         "status": status,
                         "control": control.status_code,

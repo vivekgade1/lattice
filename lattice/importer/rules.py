@@ -584,6 +584,9 @@ class Callers:
     mint: Callable[[Any], str] | None = None
     # a session cookie: put in each probe's session (AuthDriver.present)
     present: Callable[[Any, str], Mapping[str, str]] | None = None
+    # a JSON login route that requires body fields besides the credentials (a device or
+    # installation id): (method, path, username field, password field), see probes._r1
+    json_login: tuple[str, str, str, str] | None = None
 
 
 def callers(result: Any, seeder: Seeder, variant: str = "seed") -> Callers:
@@ -647,6 +650,17 @@ def callers(result: Any, seeder: Seeder, variant: str = "seed") -> Callers:
         def login(client: Any, handle: str) -> str:
             return mint(keys[handle])
 
+    json_route = None
+    if fe.login_path is not None and fe.login_encoding == "json":
+        credentials = {fe.username_field, fe.password_field}
+        extra = any(
+            p.source == "body" and p.required and p.name not in credentials
+            for r in model.routes
+            if r.method == "POST" and r.path == fe.login_path
+            for p in r.params
+        )
+        if extra:  # takes_credentials() does not see such a route: say it is the login
+            json_route = ("POST", fe.login_path, fe.username_field, fe.password_field)
     return Callers(
         login,
         headers,
@@ -655,6 +669,7 @@ def callers(result: Any, seeder: Seeder, variant: str = "seed") -> Callers:
         route,
         inactive_login=True,
         present=driver.present if driver.cookie is not None else None,
+        json_login=json_route,
     )
 
 
@@ -994,7 +1009,7 @@ def import_rules(
                         refusals=who.refusals, login_route=who.login_route,
                         auth_headers=who.headers, inactive_login=who.inactive_login,
                         unreachable=unreachable, variant=variant,
-                        auth_present=who.present)  # fmt: skip
+                        auth_present=who.present, json_login=who.json_login)  # fmt: skip
 
         t1 = clock()
         recorder = _Recording() if mine_proposals else None

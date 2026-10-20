@@ -111,6 +111,7 @@ SRC_CS = (
     "State",
     "Closure",
     "Required",
+    "Projection",
     "Assemble",
 )
 ALWAYS = (  # the runners, their test, the stand-ins' anchors, the truths, the corpus archives and the library of node B1
@@ -145,6 +146,7 @@ NODE_FILES: dict[
         "lattice/importer/rules.py",
         "tests/importer/test_dotnet_aspnet.py",
         "tests/importer/test_dotnet_rules.py",
+        "tests/importer/test_candidate_item_ids.py",
     ),
     "B3": (
         "lattice/dncheck/policy.py",
@@ -1498,7 +1500,7 @@ class RealLib(Lib):
         cand = spec if spec is not None else load_candidate(cand_dir)
         seeder, res, rules = m["seeder"], m["result"], m["rules"]
         who = rules.callers(res, seeder, variant)
-        kw = dict(login=who.login, mint_token=who.mint, scheme=who.scheme, refusals=who.refusals, login_route=who.login_route, auth_headers=who.headers, inactive_login=who.inactive_login, unreachable=m["unreachable"], variant=variant, auth_present=who.present)  # fmt: skip
+        kw = dict(login=who.login, mint_token=who.mint, scheme=who.scheme, refusals=who.refusals, login_route=who.login_route, auth_headers=who.headers, inactive_login=who.inactive_login, unreachable=m["unreachable"], variant=variant, auth_present=who.present, json_login=getattr(who, "json_login", None))  # fmt: skip
         rr = run_probes(
             replace(cand.SPEC, users=seeder.credentials(variant)),
             m["sessions"],
@@ -3453,8 +3455,37 @@ def a_805(ctx: Ctx) -> dict[str, Any]:
 # ---- Stage 4: the rules-first import of D1 (node B2) -------------------------------------------------------------------------------------------------
 
 
+# Amendment (node S round 2): values the app under test mints itself differ between runs and reach the import's evidence
+# (probe bodies, database diffs). They are masked by pattern in the *comparison* of I-D1-7 and H-PI7 only; the raw files stay as written.
+MINTED = (
+    (re.compile(r"\$2[abxy]\$\d\d\$[./A-Za-z0-9]{53}"), "<bcrypt>"),
+    (re.compile(r"eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*"), "<jwt>"),
+    (re.compile(r"(?<![0-9A-Fa-f])[0-9a-f]{32,}(?![0-9A-Fa-f])"), "<hex>"),
+)
+TOKEN_VALUE = re.compile(r'"([A-Za-z0-9_-]{32,})"')
+
+
+def mask_minted(text: str) -> str:
+    """``text`` with the app's minted secrets masked: bcrypt hashes, JWTs, 32+ hex digits, and a quoted base64url-looking value of 32+
+    characters holding upper case, lower case and a digit, ``-`` or ``_`` (``secrets.token_urlsafe``; a snake_case name has no upper case)."""
+    for rx, repl in MINTED:
+        text = rx.sub(repl, text)
+
+    def token(m: re.Match[str]) -> str:
+        v = m.group(1)
+        looks = (
+            any(c.isupper() for c in v)
+            and any(c.islower() for c in v)
+            and any(c.isdigit() or c in "-_" for c in v)
+        )
+        return '"<token>"' if looks else m.group(0)
+
+    return TOKEN_VALUE.sub(token, text)
+
+
 def normalised_tree(d: Path) -> dict[str, str]:
-    """The import directory byte for byte except the timing fields (report.json ``cost.wall_s`` and ``rules.timing``) and report.md."""
+    """The import directory byte for byte except the timing fields (report.json ``cost.wall_s`` and ``rules.timing``), report.md and
+    the minted secrets (:func:`mask_minted`)."""
     out: dict[str, str] = {}
     for p in sorted(d.rglob("*")):
         if not p.is_file():
@@ -3470,6 +3501,10 @@ def normalised_tree(d: Path) -> dict[str, str]:
                 r["rules"]["timing"] = "<timing>"
             r["repo"] = "<repo>" if "repo" in r else None
             data = (json.dumps(r, indent=2, sort_keys=True) + "\n").encode()
+        try:
+            data = mask_minted(data.decode()).encode()
+        except UnicodeDecodeError:
+            pass
         out[rel] = sha_bytes(data)
     return out
 
@@ -3510,10 +3545,21 @@ def item_audit(rep: Mapping[str, Any]) -> dict[str, Any]:
 
 
 def mapped_verdicts(rep: Mapping[str, Any]) -> dict[str, str]:
-    cmap = {
-        c["item"]: c["corrected"] for c in rep["rules"].get("corrections", ()) if c.get("corrected")
-    }
-    return {cmap.get(i, i): v["verdict"] for i, v in rep["rules"]["items"].items()}
+    """The report's verdicts under the ids of the corrected candidate (the library's own renaming and duplicate renumbering)."""
+    try:
+        from lattice.importer.review import candidate_item_ids
+    except ImportError:  # a tree without the renumbering (the base)
+        candidate_item_ids = None  # type: ignore[assignment]
+    items = rep["rules"]["items"]
+    if candidate_item_ids is None:
+        cmap = {
+            c["item"]: c["corrected"]
+            for c in rep["rules"].get("corrections", ())
+            if c.get("corrected")
+        }
+        return {cmap.get(i, i): v["verdict"] for i, v in items.items()}
+    ids = candidate_item_ids(items)
+    return {ids[i]: v["verdict"] for i, v in items.items()}
 
 
 def diff_maps(theirs: Mapping[str, str], mine: Mapping[str, str]) -> dict[str, list[str | None]]:
@@ -3666,15 +3712,12 @@ def i_d1_6(ctx: Ctx) -> dict[str, Any]:
     d = import_dir(ctx, ctx.d1)
     rv = ctx.lib.review_list(ctx, ctx.d1, d)
     rep = load_report(d)
-    # `review list` skips only a plain "verified" item (review.py: a corrected item is listed for the owner's decision)
-    # and it lists a corrected item under its corrected id (the item's `correction.corrected`)
-    unverified = {
-        (v.get("correction") or {}).get("corrected", i)
-        if v["verdict"] == "verified (corrected)"
-        else i
-        for i, v in rep["rules"]["items"].items()
-        if v["verdict"] != "verified"
-    }
+    # `review list` skips only a plain "verified" item and names an item by its id in the corrected candidate
+    from lattice.importer.review import candidate_item_ids
+
+    items = rep["rules"]["items"]
+    ids = candidate_item_ids(items)
+    unverified = {ids[i] for i, v in items.items() if v["verdict"] != "verified"}
     listed = set(rv["ids"])
     return row("I-D1-6", "python -m lattice.importer review <dir> list", {"exit": rv["rc"], "listed": len(listed), "report_unverified": len(unverified), "listed_not_in_report": sorted(listed - unverified), "report_not_listed": sorted(unverified - listed)}, rv["rc"] == 0 and listed == unverified)  # fmt: skip
 
