@@ -1,0 +1,374 @@
+{
+ "LM1": {
+  "what": "a MapGroup prefix dropped when the group crosses a method boundary",
+  "killed_by": "P0-ROUTES; D-ROUTES",
+  "edits": [
+   [
+    "lattice/dncheck/src/Routes.cs",
+    "env2[b.P] = b.V ?? (",
+    "env2[b.P] = (b.V is Group ? rootGroup : b.V) ?? ("
+   ]
+  ],
+  "probes": [
+   "P0-ROUTES",
+   "D-ROUTES"
+  ],
+  "tests": [],
+  "node": null
+ },
+ "LM2": {
+  "what": "the [controller] token is not replaced",
+  "killed_by": "P0-ROUTES",
+  "edits": [
+   [
+    "lattice/dncheck/src/Routes.cs",
+    "full.Replace(\"[controller]\", ctrlName).Replace(\"[action]\"",
+    "full.Replace(\"[action]\""
+   ]
+  ],
+  "probes": [
+   "P0-ROUTES"
+  ],
+  "tests": [],
+  "node": null
+ },
+ "LM3": {
+  "what": "a base controller's [Route] is not inherited",
+  "killed_by": "P0-ROUTES",
+  "edits": [
+   [
+    "lattice/dncheck/src/Routes.cs",
+    "for (var b = t; b != null && IsProject(b); b = b.BaseType)\n        {\n            classRoutes",
+    "for (var b = t; b != null && b == t; b = b.BaseType)\n        {\n            classRoutes"
+   ]
+  ],
+  "probes": [
+   "P0-ROUTES"
+  ],
+  "tests": [],
+  "node": null
+ },
+ "LM4": {
+  "what": "[AllowAnonymous] is ignored",
+  "killed_by": "P0-AUTH",
+  "edits": [
+   [
+    "lattice/dncheck/src/Auth.cs",
+    "var anon = all.FirstOrDefault(m => m.Kind == \"anonymous\");",
+    "var anon = all.FirstOrDefault(m => m.Kind == \"anonymous-ignored\");"
+   ]
+  ],
+  "probes": [
+   "P0-AUTH"
+  ],
+  "tests": [],
+  "node": null
+ },
+ "LM5": {
+  "what": "RequireAuthorization on a group is not propagated to nested groups",
+  "killed_by": "P0-AUTH; D-AUTH",
+  "edits": [
+   [
+    "lattice/dncheck/src/Auth.cs",
+    "foreach (var g in rec.Group!.Chain()) all.AddRange(g.Meta);",
+    "all.AddRange(rec.Group!.Meta);"
+   ]
+  ],
+  "probes": [
+   "P0-AUTH",
+   "D-AUTH"
+  ],
+  "tests": [],
+  "node": null
+ },
+ "LM6": {
+  "what": "a RequireRole policy is read as Member",
+  "killed_by": "P0-AUTH",
+  "edits": [
+   [
+    "lattice/dncheck/src/Auth.cs",
+    "var admin = roles.FirstOrDefault(IsAdminName);",
+    "string? admin = null;"
+   ]
+  ],
+  "probes": [
+   "P0-AUTH"
+  ],
+  "tests": [],
+  "node": null
+ },
+ "LM7": {
+  "what": "minimal-API annotations are treated as enforced without AddValidation",
+  "killed_by": "P0-BIND; A0-DN (DN803 lost)",
+  "edits": [
+   [
+    "lattice/dncheck/src/Binding.cs",
+    "else if (minimalValidation) by = \"addvalidation\";",
+    "else by = \"addvalidation\";"
+   ]
+  ],
+  "probes": [
+   "P0-BIND",
+   "A0-DN"
+  ],
+  "tests": [],
+  "node": null
+ },
+ "LM8": {
+  "what": "FluentValidation rules are ignored",
+  "killed_by": "P0-BIND",
+  "edits": [
+   [
+    "lattice/dncheck/src/Binding.cs",
+    "if (called || (fluentAuto && rec.Controller != null)) fluent = true;",
+    "if (false) fluent = true;"
+   ]
+  ],
+  "probes": [
+   "P0-BIND"
+  ],
+  "tests": [],
+  "node": null
+ },
+ "LM9": {
+  "what": "the implicit required of non-nullable reference types (nullable enable) is ignored",
+  "killed_by": "P0-BIND",
+  "edits": [
+   [
+    "lattice/dncheck/src/Binding.cs",
+    "bool implicitReq = rec.Controller != null",
+    "bool implicitReq = false && rec.Controller != null"
+   ]
+  ],
+  "probes": [
+   "P0-BIND"
+  ],
+  "tests": [],
+  "node": null
+ },
+ "LM10": {
+  "what": "the class name is used as the table name instead of the DbSet property name",
+  "killed_by": "P0-TABLES",
+  "edits": [
+   [
+    "lattice/dncheck/src/Ef.cs",
+    "else if (ei.DbSetName != null) { tab.Table = SqlName(ei.DbSetName);",
+    "else if (ei.DbSetName != null) { tab.Table = SqlName(ei.T.Name);"
+   ]
+  ],
+  "probes": [
+   "P0-TABLES",
+   "D-TABLES"
+  ],
+  "tests": [],
+  "node": null
+ },
+ "LM11": {
+  "what": "IEntityTypeConfiguration<T> classes are not applied",
+  "killed_by": "P0-TABLES",
+  "edits": [
+   [
+    "lattice/dncheck/src/Ef.cs",
+    "return Sm(d).GetTypeInfo(g.TypeArgumentList.Arguments[0]).Type as INamedTypeSymbol;",
+    "return null;"
+   ]
+  ],
+  "probes": [
+   "P0-TABLES"
+  ],
+  "tests": [],
+  "node": null
+ },
+ "LM12": {
+  "what": "[JsonIgnore] is not read",
+  "killed_by": "P0-TABLES; A0-DN (DN802 on User); A-DERIVE",
+  "edits": [
+   [
+    "lattice/dncheck/src/Ef.cs",
+    "bool ignored = jig != null",
+    "bool ignored = false && jig != null"
+   ]
+  ],
+  "probes": [
+   "P0-TABLES",
+   "A0-DN",
+   "A-DERIVE"
+  ],
+  "tests": [],
+  "node": null
+ },
+ "LM13": {
+  "what": "only the first conjunct of an && predicate is read",
+  "killed_by": "P0-OWNER",
+  "edits": [
+   [
+    "lattice/dncheck/src/Owner.cs",
+    "foreach (var x in Conjuncts(b.Right)) yield return x; }",
+    "}"
+   ]
+  ],
+  "probes": [
+   "P0-OWNER"
+  ],
+  "tests": [],
+  "node": null
+ },
+ "LM14": {
+  "what": "the find-then-check owner pattern is not read",
+  "killed_by": "P0-OWNER; A0-DN (false DN801 on o2)",
+  "edits": [
+   [
+    "lattice/dncheck/src/Owner.cs",
+    "be when !InsideLambdaOfQuery(be)",
+    "be when false && !InsideLambdaOfQuery(be)"
+   ]
+  ],
+  "probes": [
+   "P0-OWNER",
+   "A0-DN"
+  ],
+  "tests": [],
+  "node": null
+ },
+ "LM15": {
+  "what": "global query filters are ignored",
+  "killed_by": "P0-OWNER; A0-DN",
+  "edits": [
+   [
+    "lattice/dncheck/src/Owner.cs",
+    "foreach (var qf in D.Dotnet.QueryFilters.Where(q => q.Owner))\n        {\n            var ent",
+    "foreach (var qf in D.Dotnet.QueryFilters.Where(q => false))\n        {\n            var ent"
+   ]
+  ],
+  "probes": [
+   "P0-OWNER",
+   "A0-DN"
+  ],
+  "tests": [],
+  "node": null
+ },
+ "LM16": {
+  "what": "single-registration DI resolution is off",
+  "killed_by": "P0-DI; A-D1 judged set (A-DM DM1)",
+  "edits": [
+   [
+    "lattice/dncheck/src/Closure.cs",
+    "if (regs.Count != 1 || regs[0].Impl == null || regs[0].Open) {",
+    "if (regs.Count != 1 || regs[0].Impl == null || regs[0].Open || true) {"
+   ]
+  ],
+  "probes": [
+   "P0-DI",
+   "A-D1"
+  ],
+  "tests": [],
+  "node": null
+ },
+ "LM17": {
+  "what": "DI picks the first of two registrations",
+  "killed_by": "P0-DI; unit two_registrations_stay_unread",
+  "edits": [
+   [
+    "lattice/dncheck/src/Closure.cs",
+    "if (regs.Count != 1 || regs[0].Impl == null || regs[0].Open) {",
+    "if (regs.Count < 1 || regs[0].Impl == null || regs[0].Open) {"
+   ]
+  ],
+  "probes": [
+   "P0-DI"
+  ],
+  "tests": [],
+  "node": null
+ },
+ "LM18": {
+  "what": "the exception-handler mapping is off",
+  "killed_by": "P0-RAISE",
+  "edits": [
+   [
+    "lattice/dncheck/src/Raises.cs",
+    "if (!isHandler && !isMiddleware) continue;",
+    "if (true || !isHandler && !isMiddleware) continue;"
+   ]
+  ],
+  "probes": [
+   "P0-RAISE"
+  ],
+  "tests": [],
+  "node": null
+ },
+ "LM19": {
+  "what": "the JSON naming policy is ignored (wire = property name)",
+  "killed_by": "P0-JSON; D-WIRE; I-D1-T2",
+  "edits": [
+   [
+    "lattice/dncheck/src/Json.cs",
+    "\"SnakeCaseLower\" => Separated(name, '_', false),",
+    "\"SnakeCaseLower\" => name,"
+   ]
+  ],
+  "probes": [
+   "P0-JSON",
+   "D-WIRE",
+   "I-D1-T2"
+  ],
+  "tests": [],
+  "node": null
+ },
+ "LM20": {
+  "what": "DN806 fires on DateTimeOffset comparisons",
+  "killed_by": "A0-DN",
+  "edits": [],
+  "probes": [
+   "A0-DN"
+  ],
+  "tests": [],
+  "node": "B3"
+ },
+ "LM21": {
+  "what": "DN807 ignores the transaction scope",
+  "killed_by": "A0-DN",
+  "edits": [],
+  "probes": [
+   "A0-DN"
+  ],
+  "tests": [],
+  "node": "B3"
+ },
+ "LM22": {
+  "what": "an absolute path in the extract",
+  "killed_by": "DET-PATH",
+  "edits": [
+   [
+    "lattice/dncheck/src/Load.cs",
+    "public static string FileOf(SyntaxNode n) => n.SyntaxTree.FilePath;",
+    "public static string FileOf(SyntaxNode n) => System.IO.Path.GetFullPath(n.SyntaxTree.FilePath);"
+   ]
+  ],
+  "probes": [
+   "DET-PATH"
+  ],
+  "tests": [],
+  "node": null
+ },
+ "LM23": {
+  "what": "the .NET front end is registered eagerly (Python imports load it)",
+  "killed_by": "PB-LAZY; PB-P",
+  "edits": [],
+  "probes": [
+   "PB-LAZY"
+  ],
+  "tests": [],
+  "node": "B2"
+ },
+ "LM24": {
+  "what": "the consumer dispatch always picks the Go front end",
+  "killed_by": "C-INV; W-D1-1",
+  "edits": [],
+  "probes": [
+   "C-INV",
+   "W-D1-1"
+  ],
+  "tests": [],
+  "node": "B4"
+ }
+}
