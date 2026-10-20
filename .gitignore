@@ -12,3 +12,9 @@ __pycache__/
 /.claude/
 
 /lattice/studio/graph/node_modules/
+
+# .NET helper and authored .NET apps: never commit build output
+lattice/dncheck/src/bin/
+lattice/dncheck/src/obj/
+tests/spec/dn*/bin/
+tests/spec/dn*/obj/
