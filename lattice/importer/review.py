@@ -50,6 +50,7 @@ import argparse
 import getpass
 import json
 import os
+import re
 import sys
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, replace
@@ -92,6 +93,32 @@ class Entry:
     verdict: str | None = None  # rule items: layer R's verdict
 
 
+_DUPLICATE = re.compile(r" #(\d+)$")
+
+
+def candidate_item_ids(items: Mapping[str, Mapping[str, Any]]) -> dict[str, str]:
+    """Each report item id -> its id in the corrected candidate spec. A corrected item takes
+    its ``correction.corrected`` id. The others keep theirs, except that an id carrying a
+    ``#n`` suffix (the n-th error of a route with the same status and detail) is renumbered:
+    when a correction renames one of the duplicates, the rest move up, as
+    ``lattice.spec.probes._error_ids`` numbers them in the candidate."""
+    moved = {
+        i: str(v["correction"]["corrected"])
+        for i, v in items.items()
+        if isinstance(v.get("correction"), Mapping) and v["correction"].get("corrected")
+    }
+    groups: dict[str, list[tuple[int, str]]] = {}
+    for i in items:
+        if i not in moved:
+            m = _DUPLICATE.search(i)
+            groups.setdefault(i[: m.start()] if m else i, []).append((int(m[1]) if m else 1, i))
+    out = dict(moved)
+    for base, members in groups.items():
+        for n, (_, i) in enumerate(sorted(members), 1):
+            out[i] = base if n == 1 else f"{base} #{n}"
+    return out
+
+
 def _now() -> str:
     return datetime.now(UTC).isoformat(timespec="seconds")
 
@@ -120,6 +147,13 @@ class Review:
 
         rules = self.report.get("rules") or {}
         verdicts = rules.get("items") or {}
+        renamed = candidate_item_ids(verdicts)
+        # a candidate id keeps the verdict of the report item it now names (duplicates renumbered)
+        verdicts = {
+            renamed[i]: v
+            for i, v in verdicts.items()
+            if not (isinstance(v.get("correction"), Mapping) and v["correction"].get("corrected"))
+        }
         out: dict[str, dict[str, Any]] = {}
         for item in rule_items(self.candidate.spec):
             v = verdicts.get(item.id, {})

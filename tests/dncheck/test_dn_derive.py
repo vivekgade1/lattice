@@ -83,7 +83,13 @@ def test_derive_on_d1_is_the_truths_owners_and_private_and_the_baseline_is_empty
     p = derive_dn_policy(d1_dir)
     assert dict(p.owners) == truth["owners"]
     assert dict(p.owner_via) == {k: (v[1], v[0]) for k, v in truth["owner_via"].items()}
-    assert not p.private  # D1 keeps the hash off the wire by its DTOs, not by [JsonIgnore]: the spec states it (dn_spec_policy)
+    # D1 keeps columns off the wire by its response records, not by [JsonIgnore]: derived from what no response reads
+    hidden = {(e, c) for e, cols in p.private.items() for c in cols}
+    want = {(n["entity"], n["column"]) for n in truth["not_returned"]}
+    assert want <= hidden
+    assert {c for c in hidden if c not in want} <= {
+        ("TestClockRow", "now")
+    }  # echoed back from a local, not the row
     assert p.baseline == frozenset() and p.users_table == "User"
     assert not p.machines
 

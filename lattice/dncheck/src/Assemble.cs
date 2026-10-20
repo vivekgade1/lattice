@@ -280,6 +280,7 @@ public sealed partial class Ex
             MinimalApiValidation = minimalValidation,
             Fluentvalidation = validators.Keys.Select(k => QualType(k)).OrderBy(x => x, StringComparer.Ordinal).ToList(),
         };
+        DeriveProjectionPrivacy();
         if (!Policy) { foreach (var t in D.Tables) foreach (var c in t.Columns) c.Json = null; }
         D.Dotnet.JsonNamingByStyle = new SortedDictionary<string, string>(D.Dotnet.JsonNamingByStyle, StringComparer.Ordinal);
     }
