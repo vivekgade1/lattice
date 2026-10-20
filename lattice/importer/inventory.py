@@ -77,18 +77,19 @@ def capture(
             raise ImplementationError(
                 "bad_workflows", f"{wf_path} schema is not {WORKFLOWS_SCHEMA!r}"
             )
-    if extract is None:
-        from lattice.importer.frontends.go_gin import GoGinFrontEnd
+    from lattice.importer.extract_source import extract_json, frontend_of
 
-        extract = GoGinFrontEnd().extract_json(root, package)
+    if extract is None:
+        extract = extract_json(root, package)
     ex_bytes = canonical_json(extract).encode()
+    frontend = frontend_of(extract)
     meta: dict[str, Any] = {
         "schema": SCHEMA_INVENTORY,
-        "frontend": "go_gin",
+        "frontend": frontend,
         "package": package,
         "extract_sha256": sha256_bytes(ex_bytes),
         "workflows_sha256": sha256_bytes(wf_bytes) if wf_bytes is not None else None,
-        "source": source_record(root),
+        "source": source_record(root, frontend),
     }
     dest.mkdir(parents=True, exist_ok=True)
     (dest / "extract.json").write_bytes(ex_bytes)

@@ -906,6 +906,7 @@ class Pipeline:
         self.database = database
         self.list_rule = list_rule
         self.wall: dict[str, float] = {}
+        self.fe: Any = None  # the front end that reads the app (set by extract())
         try:
             self.out_dir.relative_to(self.root)
         except ValueError:
@@ -916,9 +917,9 @@ class Pipeline:
     # -- extraction
 
     def extract(self) -> tuple[dict[str, Any], str, str]:
-        from lattice.importer.frontends.go_gin import GoGinFrontEnd
+        from lattice.importer.extract_source import front_end_for
 
-        fe = GoGinFrontEnd()
+        fe = self.fe = front_end_for(self.root, self.package)
         base = fe.extract_json(self.root, self.package)
         raw = json.dumps(base, indent=2, sort_keys=False).encode()
         wf = fe.extract_json(self.root, self.package, workflow=True)
@@ -951,7 +952,7 @@ class Pipeline:
         doc: dict[str, Any] = {"schema": W.SCHEMA}
         doc["app"] = {
             "module": x["module"],
-            "framework": "gin",
+            "framework": self.fe.name,
             "extract_sha256": sha,
             "workflow_extract_sha256": sha_wf,
         }
@@ -1046,11 +1047,11 @@ class Pipeline:
     ]:
         view = plan.view
         x = view.x
-        from lattice.importer.frontends.go_gin import GoGinFrontEnd, model_from_extract
+        from lattice.importer.extract_source import model_from_extract
 
         runtime = h.runtime
         if runtime is None:
-            runtime = GoGinFrontEnd().runtime(self.root, self.package, model=model_from_extract(x))
+            runtime = self.fe.runtime(self.root, self.package, model=model_from_extract(x))
         provider: Any
         if dialect == "sqlite":
             provider = SqliteProvider(h.build_db, self.scratch)
@@ -1217,7 +1218,7 @@ class Pipeline:
     def _profile(self, x: dict[str, Any]) -> tuple[Any, Any, str | None]:
         """(model, profile, error) of the extraction."""
         try:
-            from lattice.importer.frontends.go_gin import model_from_extract
+            from lattice.importer.extract_source import model_from_extract
             from lattice.importer.lift import load_profile
             from lattice.importer.profile_gen import generate_profile
 
