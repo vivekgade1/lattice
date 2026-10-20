@@ -124,11 +124,16 @@ def _tools_consts() -> tuple[frozenset[str], frozenset[str]]:
 # ---- the source set (D1) ------------------------------------------------------------------
 
 
-def source_files(app_root: Path) -> list[str]:
-    """The source set under `app_root` (D1): every ``*.go``, ``go.mod`` and ``go.sum``, minus
-    ``_SKIP_DIRS``, ``testdata`` and dot-directories; relative ``/`` paths, sorted. Symbolic
-    links are not followed and not listed."""
+def source_files(app_root: Path, frontend: str | None = None) -> list[str]:
+    """The source set under `app_root` (D1): every ``*.go``, ``go.mod`` and ``go.sum``
+    (``frontend`` ``dotnet_aspnet``: ``*.cs``, project and solution files, minus ``bin`` and
+    ``obj``), minus ``_SKIP_DIRS``, ``testdata`` and dot-directories; relative ``/`` paths,
+    sorted. Symbolic links are not followed and not listed."""
+    from lattice.importer.extract_source import source_suffixes
+
+    suffixes, names, extra_skip = source_suffixes(frontend)
     skip, _ = _tools_consts()
+    skip = skip | extra_skip
     out: list[str] = []
     root = Path(app_root)
     for dp, dns, fns in os.walk(root):
@@ -141,7 +146,7 @@ def source_files(app_root: Path) -> list[str]:
             and not (Path(dp) / d).is_symlink()
         )
         for fn in fns:
-            if not (fn.endswith(".go") or fn in ("go.mod", "go.sum")):
+            if not (fn.endswith(suffixes) or fn in names) or (extra_skip and fn.startswith(".")):
                 continue
             p = Path(dp) / fn
             if p.is_symlink() or not p.is_file():
@@ -150,16 +155,16 @@ def source_files(app_root: Path) -> list[str]:
     return sorted(out)
 
 
-def source_hashes(app_root: Path) -> dict[str, str]:
+def source_hashes(app_root: Path, frontend: str | None = None) -> dict[str, str]:
     """{relative path: sha256} of the source set."""
     root = Path(app_root)
-    return {rel: sha256_bytes((root / rel).read_bytes()) for rel in source_files(root)}
+    return {rel: sha256_bytes((root / rel).read_bytes()) for rel in source_files(root, frontend)}
 
 
-def source_record(app_root: Path) -> dict[str, Any]:
+def source_record(app_root: Path, frontend: str | None = None) -> dict[str, Any]:
     """The inventory's ``source`` entry: ``{sha256, files[{path, sha256}]}``, where the first
     hash covers the sorted ``path sha256`` lines."""
-    hashes = source_hashes(app_root)
+    hashes = source_hashes(app_root, frontend)
     lines = "".join(f"{p} {h}\n" for p, h in hashes.items())
     return {
         "sha256": sha256_bytes(lines.encode()),
@@ -251,7 +256,7 @@ def _read_json(path: Path, code: str) -> Any:
 
 def _stale_verdict(meta: Mapping[str, Any], app_root: Path) -> dict[str, Any] | None:
     recorded = {f["path"]: f["sha256"] for f in (meta.get("source") or {}).get("files") or []}
-    now = source_hashes(app_root)
+    now = source_hashes(app_root, meta.get("frontend"))
     changed = sorted(p for p in recorded if p in now and recorded[p] != now[p])
     added = sorted(p for p in now if p not in recorded)
     removed = sorted(p for p in recorded if p not in now)

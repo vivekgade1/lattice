@@ -109,13 +109,15 @@ class GoTree:
         return None
 
     def go_files(self, directory: str) -> list[str]:
+        """The code files of a package directory: ``*.go`` (not tests); ``*.cs`` for .NET."""
         root = Path(self.inv.app_root) / directory
         if not root.is_dir():
             return []
+        ext = ".cs" if self.inv.meta.get("frontend") == "dotnet_aspnet" else ".go"
         return sorted(
             f"{directory}/{p.name}".lstrip("/")
             for p in root.iterdir()
-            if p.name.endswith(".go") and not p.name.endswith("_test.go") and p.is_file()
+            if p.name.endswith(ext) and not p.name.endswith("_test.go") and p.is_file()
         )
 
 
