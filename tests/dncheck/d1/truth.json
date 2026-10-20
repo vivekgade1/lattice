@@ -1,0 +1,3614 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "template": "/health",
+      "auth": "Public",
+      "style": "minimal",
+      "file": "Api/Endpoints/FeedEndpoints.cs",
+      "line": 11
+    },
+    {
+      "method": "POST",
+      "template": "/v1/auth/register",
+      "auth": "Public",
+      "style": "minimal",
+      "file": "Api/Endpoints/AccountEndpoints.cs",
+      "line": 12
+    },
+    {
+      "method": "POST",
+      "template": "/v1/auth/login",
+      "auth": "Public",
+      "style": "minimal",
+      "file": "Api/Endpoints/AccountEndpoints.cs",
+      "line": 15
+    },
+    {
+      "method": "POST",
+      "template": "/v1/auth/refresh",
+      "auth": "Public",
+      "style": "minimal",
+      "file": "Api/Endpoints/AccountEndpoints.cs",
+      "line": 17
+    },
+    {
+      "method": "POST",
+      "template": "/v1/auth/logout",
+      "auth": "Member",
+      "style": "minimal",
+      "file": "Api/Endpoints/AccountEndpoints.cs",
+      "line": 19
+    },
+    {
+      "method": "GET",
+      "template": "/v1/me",
+      "auth": "Member",
+      "style": "minimal",
+      "file": "Api/Endpoints/AccountEndpoints.cs",
+      "line": 26
+    },
+    {
+      "method": "PUT",
+      "template": "/v1/me",
+      "auth": "Member",
+      "style": "minimal",
+      "file": "Api/Endpoints/AccountEndpoints.cs",
+      "line": 28
+    },
+    {
+      "method": "DELETE",
+      "template": "/v1/me",
+      "auth": "Member",
+      "style": "minimal",
+      "file": "Api/Endpoints/AccountEndpoints.cs",
+      "line": 31
+    },
+    {
+      "method": "POST",
+      "template": "/v1/devices",
+      "auth": "Member",
+      "style": "controller",
+      "file": "Api/Controllers/DevicesController.cs",
+      "line": 14
+    },
+    {
+      "method": "DELETE",
+      "template": "/v1/devices/{id}",
+      "auth": "Member",
+      "style": "controller",
+      "file": "Api/Controllers/DevicesController.cs",
+      "line": 21
+    },
+    {
+      "method": "GET",
+      "template": "/v1/habits",
+      "auth": "Member",
+      "style": "controller",
+      "file": "Api/Controllers/HabitsController.cs",
+      "line": 14
+    },
+    {
+      "method": "POST",
+      "template": "/v1/habits",
+      "auth": "Member",
+      "style": "controller",
+      "file": "Api/Controllers/HabitsController.cs",
+      "line": 18
+    },
+    {
+      "method": "GET",
+      "template": "/v1/habits/{id}",
+      "auth": "Member",
+      "style": "controller",
+      "file": "Api/Controllers/HabitsController.cs",
+      "line": 25
+    },
+    {
+      "method": "PATCH",
+      "template": "/v1/habits/{id}",
+      "auth": "Member",
+      "style": "controller",
+      "file": "Api/Controllers/HabitsController.cs",
+      "line": 29
+    },
+    {
+      "method": "DELETE",
+      "template": "/v1/habits/{id}",
+      "auth": "Member",
+      "style": "controller",
+      "file": "Api/Controllers/HabitsController.cs",
+      "line": 33
+    },
+    {
+      "method": "GET",
+      "template": "/v1/habits/{id}/progress",
+      "auth": "Member",
+      "style": "controller",
+      "file": "Api/Controllers/HabitsController.cs",
+      "line": 40
+    },
+    {
+      "method": "GET",
+      "template": "/v1/habits/{id}/history",
+      "auth": "Member",
+      "style": "controller",
+      "file": "Api/Controllers/HabitsController.cs",
+      "line": 44
+    },
+    {
+      "method": "POST",
+      "template": "/v1/habits/{habit_id}/completions",
+      "auth": "Member",
+      "style": "controller",
+      "file": "Api/Controllers/CompletionsController.cs",
+      "line": 13
+    },
+    {
+      "method": "GET",
+      "template": "/v1/habits/{habit_id}/completions",
+      "auth": "Member",
+      "style": "controller",
+      "file": "Api/Controllers/CompletionsController.cs",
+      "line": 21
+    },
+    {
+      "method": "DELETE",
+      "template": "/v1/habits/{habit_id}/completions/{id}",
+      "auth": "Member",
+      "style": "controller",
+      "file": "Api/Controllers/CompletionsController.cs",
+      "line": 25
+    },
+    {
+      "method": "POST",
+      "template": "/v1/completions/batch",
+      "auth": "Member",
+      "style": "controller",
+      "file": "Api/Controllers/CompletionsController.cs",
+      "line": 32
+    },
+    {
+      "method": "GET",
+      "template": "/v1/home",
+      "auth": "Member",
+      "style": "minimal",
+      "file": "Api/Endpoints/FeedEndpoints.cs",
+      "line": 14
+    },
+    {
+      "method": "GET",
+      "template": "/v1/sync",
+      "auth": "Member",
+      "style": "minimal",
+      "file": "Api/Endpoints/FeedEndpoints.cs",
+      "line": 16
+    },
+    {
+      "method": "GET",
+      "template": "/v1/nudges",
+      "auth": "Member",
+      "style": "minimal",
+      "file": "Api/Endpoints/FeedEndpoints.cs",
+      "line": 18
+    },
+    {
+      "method": "POST",
+      "template": "/v1/nudges/{id}/dismiss",
+      "auth": "Member",
+      "style": "minimal",
+      "file": "Api/Endpoints/FeedEndpoints.cs",
+      "line": 20
+    },
+    {
+      "method": "PUT",
+      "template": "/test/clock",
+      "auth": "Public",
+      "style": "minimal",
+      "file": "Api/Endpoints/FeedEndpoints.cs",
+      "line": 26
+    }
+  ],
+  "tables": [
+    {
+      "entity": "User",
+      "table": "users",
+      "file": "Data/StreakDbContext.cs",
+      "line": 41,
+      "entity_class": {
+        "file": "Domain/Entities.cs",
+        "line": 4
+      },
+      "columns": [
+        {
+          "name": "id",
+          "wire": "id",
+          "private": false,
+          "nullable": false,
+          "unique": true,
+          "pk": true,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 43,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 8
+        },
+        {
+          "name": "email",
+          "wire": "email",
+          "private": false,
+          "nullable": false,
+          "unique": true,
+          "pk": false,
+          "max_length": 255,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 44,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 8
+        },
+        {
+          "name": "hashed_password",
+          "wire": null,
+          "private": true,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 255,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 45
+        },
+        {
+          "name": "timezone",
+          "wire": "timezone",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 64,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 46,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 8
+        },
+        {
+          "name": "change_seq",
+          "wire": null,
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 47
+        },
+        {
+          "name": "created_at",
+          "wire": null,
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 48
+        }
+      ]
+    },
+    {
+      "entity": "NotificationPrefs",
+      "table": "notification_prefs",
+      "file": "Data/StreakDbContext.cs",
+      "line": 54,
+      "entity_class": {
+        "file": "Domain/Entities.cs",
+        "line": 17
+      },
+      "columns": [
+        {
+          "name": "user_id",
+          "wire": null,
+          "private": false,
+          "nullable": false,
+          "unique": true,
+          "pk": true,
+          "max_length": null,
+          "fk": "users.id",
+          "file": "Data/StreakDbContext.cs",
+          "line": 56
+        },
+        {
+          "name": "push_enabled",
+          "wire": "push_enabled",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 57,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 10
+        },
+        {
+          "name": "quiet_start",
+          "wire": "quiet_start",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 5,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 58,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 10
+        },
+        {
+          "name": "quiet_end",
+          "wire": "quiet_end",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 5,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 59,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 10
+        },
+        {
+          "name": "nudge_time",
+          "wire": "nudge_time",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 5,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 60,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 10
+        },
+        {
+          "name": "last_pass_date",
+          "wire": null,
+          "private": false,
+          "nullable": true,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 61
+        }
+      ]
+    },
+    {
+      "entity": "Device",
+      "table": "devices",
+      "file": "Data/StreakDbContext.cs",
+      "line": 68,
+      "entity_class": {
+        "file": "Domain/Entities.cs",
+        "line": 29
+      },
+      "columns": [
+        {
+          "name": "id",
+          "wire": "id",
+          "private": false,
+          "nullable": false,
+          "unique": true,
+          "pk": true,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 70,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 19
+        },
+        {
+          "name": "user_id",
+          "wire": null,
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": "users.id",
+          "file": "Data/StreakDbContext.cs",
+          "line": 71
+        },
+        {
+          "name": "installation_id",
+          "wire": "installation_id",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 36,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 72,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 19
+        },
+        {
+          "name": "platform",
+          "wire": "platform",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 16,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 73,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 19
+        },
+        {
+          "name": "push_token",
+          "wire": "push_token",
+          "private": false,
+          "nullable": false,
+          "unique": true,
+          "pk": false,
+          "max_length": 4096,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 74,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 19
+        },
+        {
+          "name": "timezone",
+          "wire": "timezone",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 64,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 75,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 19
+        },
+        {
+          "name": "app_version",
+          "wire": "app_version",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 64,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 76,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 19
+        },
+        {
+          "name": "created_at",
+          "wire": null,
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 77
+        },
+        {
+          "name": "updated_at",
+          "wire": null,
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 78
+        }
+      ]
+    },
+    {
+      "entity": "RefreshToken",
+      "table": "refresh_tokens",
+      "file": "Data/StreakDbContext.cs",
+      "line": 93,
+      "entity_class": {
+        "file": "Domain/Entities.cs",
+        "line": 43
+      },
+      "columns": [
+        {
+          "name": "id",
+          "wire": null,
+          "private": false,
+          "nullable": false,
+          "unique": true,
+          "pk": true,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 95
+        },
+        {
+          "name": "user_id",
+          "wire": null,
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": "users.id",
+          "file": "Data/StreakDbContext.cs",
+          "line": 96
+        },
+        {
+          "name": "installation_id",
+          "wire": null,
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 36,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 97
+        },
+        {
+          "name": "token_hash",
+          "wire": null,
+          "private": true,
+          "nullable": false,
+          "unique": true,
+          "pk": false,
+          "max_length": 64,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 98
+        },
+        {
+          "name": "expires_at",
+          "wire": null,
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 99
+        },
+        {
+          "name": "rotated_at",
+          "wire": null,
+          "private": false,
+          "nullable": true,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 100
+        },
+        {
+          "name": "revoked_at",
+          "wire": null,
+          "private": false,
+          "nullable": true,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 101
+        },
+        {
+          "name": "created_at",
+          "wire": null,
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 102
+        }
+      ]
+    },
+    {
+      "entity": "Habit",
+      "table": "habits",
+      "file": "Data/StreakDbContext.cs",
+      "line": 111,
+      "entity_class": {
+        "file": "Domain/Entities.cs",
+        "line": 56
+      },
+      "columns": [
+        {
+          "name": "id",
+          "wire": "id",
+          "private": false,
+          "nullable": false,
+          "unique": true,
+          "pk": true,
+          "max_length": 36,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 113,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 24
+        },
+        {
+          "name": "user_id",
+          "wire": null,
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": "users.id",
+          "file": "Data/StreakDbContext.cs",
+          "line": 115
+        },
+        {
+          "name": "name",
+          "wire": "name",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 100,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 116,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 24
+        },
+        {
+          "name": "description",
+          "wire": "description",
+          "private": false,
+          "nullable": true,
+          "unique": false,
+          "pk": false,
+          "max_length": 500,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 117,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 24
+        },
+        {
+          "name": "target_count",
+          "wire": "target_count",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 118,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 24
+        },
+        {
+          "name": "period",
+          "wire": "period",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 8,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 119,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 24
+        },
+        {
+          "name": "start_date",
+          "wire": "start_date",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 120,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 24
+        },
+        {
+          "name": "end_date",
+          "wire": "end_date",
+          "private": false,
+          "nullable": true,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 121,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 24
+        },
+        {
+          "name": "archived",
+          "wire": "archived",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 122,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 24
+        },
+        {
+          "name": "version",
+          "wire": "version",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 123,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 24
+        },
+        {
+          "name": "change_seq",
+          "wire": "change_seq",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 124,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 82
+        },
+        {
+          "name": "created_at",
+          "wire": "created_at",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 125,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 24
+        },
+        {
+          "name": "updated_at",
+          "wire": "updated_at",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 126,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 24
+        },
+        {
+          "name": "deleted_at",
+          "wire": null,
+          "private": false,
+          "nullable": true,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 127
+        }
+      ]
+    },
+    {
+      "entity": "HabitTarget",
+      "table": "habit_targets",
+      "file": "Data/StreakDbContext.cs",
+      "line": 135,
+      "entity_class": {
+        "file": "Domain/Entities.cs",
+        "line": 75
+      },
+      "columns": [
+        {
+          "name": "id",
+          "wire": null,
+          "private": false,
+          "nullable": false,
+          "unique": true,
+          "pk": true,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 137
+        },
+        {
+          "name": "habit_id",
+          "wire": null,
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 36,
+          "fk": "habits.id",
+          "file": "Data/StreakDbContext.cs",
+          "line": 138
+        },
+        {
+          "name": "target_count",
+          "wire": null,
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 140
+        },
+        {
+          "name": "effective_from",
+          "wire": null,
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 141
+        }
+      ]
+    },
+    {
+      "entity": "Completion",
+      "table": "completions",
+      "file": "Data/StreakDbContext.cs",
+      "line": 150,
+      "entity_class": {
+        "file": "Domain/Entities.cs",
+        "line": 84
+      },
+      "columns": [
+        {
+          "name": "id",
+          "wire": "id",
+          "private": false,
+          "nullable": false,
+          "unique": true,
+          "pk": true,
+          "max_length": 36,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 152,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 58
+        },
+        {
+          "name": "habit_id",
+          "wire": "habit_id",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 36,
+          "fk": "habits.id",
+          "file": "Data/StreakDbContext.cs",
+          "line": 154,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 58
+        },
+        {
+          "name": "date",
+          "wire": "date",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 156,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 58
+        },
+        {
+          "name": "note",
+          "wire": "note",
+          "private": false,
+          "nullable": true,
+          "unique": false,
+          "pk": false,
+          "max_length": 280,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 157,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 58
+        },
+        {
+          "name": "change_seq",
+          "wire": "change_seq",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 158,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 82
+        },
+        {
+          "name": "created_at",
+          "wire": "created_at",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 159,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 58
+        },
+        {
+          "name": "updated_at",
+          "wire": "updated_at",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 160,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 58
+        },
+        {
+          "name": "deleted_at",
+          "wire": null,
+          "private": false,
+          "nullable": true,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 161
+        }
+      ]
+    },
+    {
+      "entity": "Nudge",
+      "table": "nudges",
+      "file": "Data/StreakDbContext.cs",
+      "line": 169,
+      "entity_class": {
+        "file": "Domain/Entities.cs",
+        "line": 97
+      },
+      "columns": [
+        {
+          "name": "id",
+          "wire": "id",
+          "private": false,
+          "nullable": false,
+          "unique": true,
+          "pk": true,
+          "max_length": 36,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 171,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 63
+        },
+        {
+          "name": "habit_id",
+          "wire": "habit_id",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 36,
+          "fk": "habits.id",
+          "file": "Data/StreakDbContext.cs",
+          "line": 173,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 63
+        },
+        {
+          "name": "for_date",
+          "wire": "for_date",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 175,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 63
+        },
+        {
+          "name": "kind",
+          "wire": "kind",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 16,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 176,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 63
+        },
+        {
+          "name": "message",
+          "wire": "message",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 512,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 177,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 63
+        },
+        {
+          "name": "delivery",
+          "wire": "delivery",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 16,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 178,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 63
+        },
+        {
+          "name": "delivery_reason",
+          "wire": "delivery_reason",
+          "private": false,
+          "nullable": true,
+          "unique": false,
+          "pk": false,
+          "max_length": 32,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 179,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 63
+        },
+        {
+          "name": "change_seq",
+          "wire": "change_seq",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 180,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 82
+        },
+        {
+          "name": "created_at",
+          "wire": null,
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 181
+        },
+        {
+          "name": "updated_at",
+          "wire": null,
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 182
+        },
+        {
+          "name": "dismissed_at",
+          "wire": "dismissed_at",
+          "private": false,
+          "nullable": true,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 183,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 63
+        },
+        {
+          "name": "deleted_at",
+          "wire": null,
+          "private": false,
+          "nullable": true,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 184
+        }
+      ]
+    },
+    {
+      "entity": "TestClockRow",
+      "table": "test_clock",
+      "file": "Data/StreakDbContext.cs",
+      "line": 192,
+      "entity_class": {
+        "file": "Domain/Entities.cs",
+        "line": 114
+      },
+      "columns": [
+        {
+          "name": "id",
+          "wire": null,
+          "private": false,
+          "nullable": false,
+          "unique": true,
+          "pk": true,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 194
+        },
+        {
+          "name": "now",
+          "wire": "now",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/StreakDbContext.cs",
+          "line": 195,
+          "wire_file": "Application/Contracts.cs",
+          "wire_line": 88
+        }
+      ]
+    }
+  ],
+  "unique_together": [
+    {
+      "table": "habit_targets",
+      "columns": [
+        "habit_id",
+        "effective_from"
+      ],
+      "file": "Data/StreakDbContext.cs",
+      "line": 143
+    },
+    {
+      "table": "nudges",
+      "columns": [
+        "habit_id",
+        "for_date"
+      ],
+      "file": "Data/StreakDbContext.cs",
+      "line": 185
+    }
+  ],
+  "owners": {
+    "NotificationPrefs": "user_id",
+    "Device": "user_id",
+    "RefreshToken": "user_id",
+    "Habit": "user_id"
+  },
+  "owners_source": {
+    "NotificationPrefs": {
+      "file": "Data/StreakDbContext.cs",
+      "line": 62
+    },
+    "Device": {
+      "file": "Data/StreakDbContext.cs",
+      "line": 87
+    },
+    "RefreshToken": {
+      "file": "Data/StreakDbContext.cs",
+      "line": 105
+    },
+    "Habit": {
+      "file": "Data/StreakDbContext.cs",
+      "line": 129
+    }
+  },
+  "owner_via": {
+    "HabitTarget": [
+      "Habit",
+      "habit_id"
+    ],
+    "Completion": [
+      "Habit",
+      "habit_id"
+    ],
+    "Nudge": [
+      "Habit",
+      "habit_id"
+    ]
+  },
+  "owner_via_source": {
+    "HabitTarget": {
+      "file": "Data/StreakDbContext.cs",
+      "line": 144
+    },
+    "Completion": {
+      "file": "Data/StreakDbContext.cs",
+      "line": 163
+    },
+    "Nudge": {
+      "file": "Data/StreakDbContext.cs",
+      "line": 186
+    }
+  },
+  "ownership_enforced": {
+    "file": "Application/HabitAccess.cs",
+    "line": 13
+  },
+  "machines": {
+    "Nudge.delivery": {
+      "initial": [
+        "pending",
+        "suppressed"
+      ],
+      "edges": [
+        [
+          "pending",
+          "sent"
+        ],
+        [
+          "pending",
+          "failed"
+        ],
+        [
+          "pending",
+          "suppressed"
+        ]
+      ],
+      "storage": "string",
+      "initial_source": {
+        "file": "Application/NudgeWriter.cs",
+        "line": 46
+      },
+      "edges_source": {
+        "file": "Application/DailyPassService.cs",
+        "line": 83
+      },
+      "rewrite_keeps_delivery": {
+        "file": "Application/NudgeWriter.cs",
+        "line": 61
+      },
+      "file": "Domain/Vocabulary.cs",
+      "line": 33
+    }
+  },
+  "bind_status": 422,
+  "bind_status_source": {
+    "file": "Api/Http/JsonBody.cs",
+    "line": 37
+  },
+  "json_naming": "snake_case_lower",
+  "json_naming_source": {
+    "file": "Api/Http/ErrorHandling.cs",
+    "line": 84
+  },
+  "login": {
+    "path": "/v1/auth/login",
+    "fields": [
+      "email",
+      "password",
+      "installation_id"
+    ],
+    "token_field": "access_token",
+    "file": "Api/Endpoints/AccountEndpoints.cs",
+    "line": 15,
+    "handler": {
+      "file": "Application/AccountService.cs",
+      "line": 70
+    },
+    "token_field_source": {
+      "file": "Application/Contracts.cs",
+      "line": 17
+    }
+  },
+  "seed_users": [
+    {
+      "name": "ann@example.com",
+      "role": "Member",
+      "file": "../dnstreak_harness.py",
+      "line": 28
+    },
+    {
+      "name": "ben@example.com",
+      "role": "Member",
+      "file": "../dnstreak_harness.py",
+      "line": 28
+    }
+  ],
+  "roles": {
+    "values": [
+      "Public",
+      "Member"
+    ],
+    "admin": null,
+    "file": "Api/Auth/BearerAuthentication.cs",
+    "line": 19
+  },
+  "not_returned": [
+    {
+      "entity": "User",
+      "column": "hashed_password",
+      "file": "Data/StreakDbContext.cs",
+      "line": 45
+    },
+    {
+      "entity": "User",
+      "column": "change_seq",
+      "file": "Data/StreakDbContext.cs",
+      "line": 47
+    },
+    {
+      "entity": "User",
+      "column": "created_at",
+      "file": "Data/StreakDbContext.cs",
+      "line": 48
+    },
+    {
+      "entity": "NotificationPrefs",
+      "column": "user_id",
+      "file": "Data/StreakDbContext.cs",
+      "line": 56
+    },
+    {
+      "entity": "NotificationPrefs",
+      "column": "last_pass_date",
+      "file": "Data/StreakDbContext.cs",
+      "line": 61
+    },
+    {
+      "entity": "Device",
+      "column": "user_id",
+      "file": "Data/StreakDbContext.cs",
+      "line": 71
+    },
+    {
+      "entity": "Device",
+      "column": "created_at",
+      "file": "Data/StreakDbContext.cs",
+      "line": 77
+    },
+    {
+      "entity": "Device",
+      "column": "updated_at",
+      "file": "Data/StreakDbContext.cs",
+      "line": 78
+    },
+    {
+      "entity": "RefreshToken",
+      "column": "id",
+      "file": "Data/StreakDbContext.cs",
+      "line": 95
+    },
+    {
+      "entity": "RefreshToken",
+      "column": "user_id",
+      "file": "Data/StreakDbContext.cs",
+      "line": 96
+    },
+    {
+      "entity": "RefreshToken",
+      "column": "installation_id",
+      "file": "Data/StreakDbContext.cs",
+      "line": 97
+    },
+    {
+      "entity": "RefreshToken",
+      "column": "token_hash",
+      "file": "Data/StreakDbContext.cs",
+      "line": 98
+    },
+    {
+      "entity": "RefreshToken",
+      "column": "expires_at",
+      "file": "Data/StreakDbContext.cs",
+      "line": 99
+    },
+    {
+      "entity": "RefreshToken",
+      "column": "rotated_at",
+      "file": "Data/StreakDbContext.cs",
+      "line": 100
+    },
+    {
+      "entity": "RefreshToken",
+      "column": "revoked_at",
+      "file": "Data/StreakDbContext.cs",
+      "line": 101
+    },
+    {
+      "entity": "RefreshToken",
+      "column": "created_at",
+      "file": "Data/StreakDbContext.cs",
+      "line": 102
+    },
+    {
+      "entity": "Habit",
+      "column": "user_id",
+      "file": "Data/StreakDbContext.cs",
+      "line": 115
+    },
+    {
+      "entity": "Habit",
+      "column": "deleted_at",
+      "file": "Data/StreakDbContext.cs",
+      "line": 127
+    },
+    {
+      "entity": "HabitTarget",
+      "column": "id",
+      "file": "Data/StreakDbContext.cs",
+      "line": 137
+    },
+    {
+      "entity": "HabitTarget",
+      "column": "habit_id",
+      "file": "Data/StreakDbContext.cs",
+      "line": 138
+    },
+    {
+      "entity": "HabitTarget",
+      "column": "target_count",
+      "file": "Data/StreakDbContext.cs",
+      "line": 140
+    },
+    {
+      "entity": "HabitTarget",
+      "column": "effective_from",
+      "file": "Data/StreakDbContext.cs",
+      "line": 141
+    },
+    {
+      "entity": "Completion",
+      "column": "deleted_at",
+      "file": "Data/StreakDbContext.cs",
+      "line": 161
+    },
+    {
+      "entity": "Nudge",
+      "column": "created_at",
+      "file": "Data/StreakDbContext.cs",
+      "line": 181
+    },
+    {
+      "entity": "Nudge",
+      "column": "updated_at",
+      "file": "Data/StreakDbContext.cs",
+      "line": 182
+    },
+    {
+      "entity": "Nudge",
+      "column": "deleted_at",
+      "file": "Data/StreakDbContext.cs",
+      "line": 184
+    },
+    {
+      "entity": "TestClockRow",
+      "column": "id",
+      "file": "Data/StreakDbContext.cs",
+      "line": 194
+    }
+  ],
+  "refusals": [
+    {
+      "route": "GET /health",
+      "status": 426,
+      "detail": "upgrade_required (X-Client-Version)",
+      "cause": "other",
+      "file": "Api/Middleware/ClientVersionMiddleware.cs",
+      "line": 23
+    },
+    {
+      "route": "POST /v1/auth/register",
+      "status": 426,
+      "detail": "upgrade_required (X-Client-Version)",
+      "cause": "other",
+      "file": "Api/Middleware/ClientVersionMiddleware.cs",
+      "line": 23
+    },
+    {
+      "route": "POST /v1/auth/login",
+      "status": 426,
+      "detail": "upgrade_required (X-Client-Version)",
+      "cause": "other",
+      "file": "Api/Middleware/ClientVersionMiddleware.cs",
+      "line": 23
+    },
+    {
+      "route": "POST /v1/auth/refresh",
+      "status": 426,
+      "detail": "upgrade_required (X-Client-Version)",
+      "cause": "other",
+      "file": "Api/Middleware/ClientVersionMiddleware.cs",
+      "line": 23
+    },
+    {
+      "route": "POST /v1/auth/logout",
+      "status": 426,
+      "detail": "upgrade_required (X-Client-Version)",
+      "cause": "other",
+      "file": "Api/Middleware/ClientVersionMiddleware.cs",
+      "line": 23
+    },
+    {
+      "route": "POST /v1/auth/logout",
+      "status": 401,
+      "detail": "not_authenticated",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 71
+    },
+    {
+      "route": "POST /v1/auth/logout",
+      "status": 401,
+      "detail": "token_expired",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 47
+    },
+    {
+      "route": "POST /v1/auth/logout",
+      "status": 401,
+      "detail": "invalid_token",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 59
+    },
+    {
+      "route": "POST /v1/auth/logout",
+      "status": 429,
+      "detail": "rate_limited (120 per user per clock minute)",
+      "cause": "other",
+      "file": "Api/Middleware/RateLimitMiddleware.cs",
+      "line": 33
+    },
+    {
+      "route": "GET /v1/me",
+      "status": 426,
+      "detail": "upgrade_required (X-Client-Version)",
+      "cause": "other",
+      "file": "Api/Middleware/ClientVersionMiddleware.cs",
+      "line": 23
+    },
+    {
+      "route": "GET /v1/me",
+      "status": 401,
+      "detail": "not_authenticated",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 71
+    },
+    {
+      "route": "GET /v1/me",
+      "status": 401,
+      "detail": "token_expired",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 47
+    },
+    {
+      "route": "GET /v1/me",
+      "status": 401,
+      "detail": "invalid_token",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 59
+    },
+    {
+      "route": "GET /v1/me",
+      "status": 429,
+      "detail": "rate_limited (120 per user per clock minute)",
+      "cause": "other",
+      "file": "Api/Middleware/RateLimitMiddleware.cs",
+      "line": 33
+    },
+    {
+      "route": "PUT /v1/me",
+      "status": 426,
+      "detail": "upgrade_required (X-Client-Version)",
+      "cause": "other",
+      "file": "Api/Middleware/ClientVersionMiddleware.cs",
+      "line": 23
+    },
+    {
+      "route": "PUT /v1/me",
+      "status": 401,
+      "detail": "not_authenticated",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 71
+    },
+    {
+      "route": "PUT /v1/me",
+      "status": 401,
+      "detail": "token_expired",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 47
+    },
+    {
+      "route": "PUT /v1/me",
+      "status": 401,
+      "detail": "invalid_token",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 59
+    },
+    {
+      "route": "PUT /v1/me",
+      "status": 429,
+      "detail": "rate_limited (120 per user per clock minute)",
+      "cause": "other",
+      "file": "Api/Middleware/RateLimitMiddleware.cs",
+      "line": 33
+    },
+    {
+      "route": "DELETE /v1/me",
+      "status": 426,
+      "detail": "upgrade_required (X-Client-Version)",
+      "cause": "other",
+      "file": "Api/Middleware/ClientVersionMiddleware.cs",
+      "line": 23
+    },
+    {
+      "route": "DELETE /v1/me",
+      "status": 401,
+      "detail": "not_authenticated",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 71
+    },
+    {
+      "route": "DELETE /v1/me",
+      "status": 401,
+      "detail": "token_expired",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 47
+    },
+    {
+      "route": "DELETE /v1/me",
+      "status": 401,
+      "detail": "invalid_token",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 59
+    },
+    {
+      "route": "DELETE /v1/me",
+      "status": 429,
+      "detail": "rate_limited (120 per user per clock minute)",
+      "cause": "other",
+      "file": "Api/Middleware/RateLimitMiddleware.cs",
+      "line": 33
+    },
+    {
+      "route": "POST /v1/devices",
+      "status": 426,
+      "detail": "upgrade_required (X-Client-Version)",
+      "cause": "other",
+      "file": "Api/Middleware/ClientVersionMiddleware.cs",
+      "line": 23
+    },
+    {
+      "route": "POST /v1/devices",
+      "status": 401,
+      "detail": "not_authenticated",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 71
+    },
+    {
+      "route": "POST /v1/devices",
+      "status": 401,
+      "detail": "token_expired",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 47
+    },
+    {
+      "route": "POST /v1/devices",
+      "status": 401,
+      "detail": "invalid_token",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 59
+    },
+    {
+      "route": "POST /v1/devices",
+      "status": 429,
+      "detail": "rate_limited (120 per user per clock minute)",
+      "cause": "other",
+      "file": "Api/Middleware/RateLimitMiddleware.cs",
+      "line": 33
+    },
+    {
+      "route": "DELETE /v1/devices/{id}",
+      "status": 426,
+      "detail": "upgrade_required (X-Client-Version)",
+      "cause": "other",
+      "file": "Api/Middleware/ClientVersionMiddleware.cs",
+      "line": 23
+    },
+    {
+      "route": "DELETE /v1/devices/{id}",
+      "status": 401,
+      "detail": "not_authenticated",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 71
+    },
+    {
+      "route": "DELETE /v1/devices/{id}",
+      "status": 401,
+      "detail": "token_expired",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 47
+    },
+    {
+      "route": "DELETE /v1/devices/{id}",
+      "status": 401,
+      "detail": "invalid_token",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 59
+    },
+    {
+      "route": "DELETE /v1/devices/{id}",
+      "status": 429,
+      "detail": "rate_limited (120 per user per clock minute)",
+      "cause": "other",
+      "file": "Api/Middleware/RateLimitMiddleware.cs",
+      "line": 33
+    },
+    {
+      "route": "GET /v1/habits",
+      "status": 426,
+      "detail": "upgrade_required (X-Client-Version)",
+      "cause": "other",
+      "file": "Api/Middleware/ClientVersionMiddleware.cs",
+      "line": 23
+    },
+    {
+      "route": "GET /v1/habits",
+      "status": 401,
+      "detail": "not_authenticated",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 71
+    },
+    {
+      "route": "GET /v1/habits",
+      "status": 401,
+      "detail": "token_expired",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 47
+    },
+    {
+      "route": "GET /v1/habits",
+      "status": 401,
+      "detail": "invalid_token",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 59
+    },
+    {
+      "route": "GET /v1/habits",
+      "status": 429,
+      "detail": "rate_limited (120 per user per clock minute)",
+      "cause": "other",
+      "file": "Api/Middleware/RateLimitMiddleware.cs",
+      "line": 33
+    },
+    {
+      "route": "POST /v1/habits",
+      "status": 426,
+      "detail": "upgrade_required (X-Client-Version)",
+      "cause": "other",
+      "file": "Api/Middleware/ClientVersionMiddleware.cs",
+      "line": 23
+    },
+    {
+      "route": "POST /v1/habits",
+      "status": 401,
+      "detail": "not_authenticated",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 71
+    },
+    {
+      "route": "POST /v1/habits",
+      "status": 401,
+      "detail": "token_expired",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 47
+    },
+    {
+      "route": "POST /v1/habits",
+      "status": 401,
+      "detail": "invalid_token",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 59
+    },
+    {
+      "route": "POST /v1/habits",
+      "status": 429,
+      "detail": "rate_limited (120 per user per clock minute)",
+      "cause": "other",
+      "file": "Api/Middleware/RateLimitMiddleware.cs",
+      "line": 33
+    },
+    {
+      "route": "GET /v1/habits/{id}",
+      "status": 426,
+      "detail": "upgrade_required (X-Client-Version)",
+      "cause": "other",
+      "file": "Api/Middleware/ClientVersionMiddleware.cs",
+      "line": 23
+    },
+    {
+      "route": "GET /v1/habits/{id}",
+      "status": 401,
+      "detail": "not_authenticated",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 71
+    },
+    {
+      "route": "GET /v1/habits/{id}",
+      "status": 401,
+      "detail": "token_expired",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 47
+    },
+    {
+      "route": "GET /v1/habits/{id}",
+      "status": 401,
+      "detail": "invalid_token",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 59
+    },
+    {
+      "route": "GET /v1/habits/{id}",
+      "status": 429,
+      "detail": "rate_limited (120 per user per clock minute)",
+      "cause": "other",
+      "file": "Api/Middleware/RateLimitMiddleware.cs",
+      "line": 33
+    },
+    {
+      "route": "PATCH /v1/habits/{id}",
+      "status": 426,
+      "detail": "upgrade_required (X-Client-Version)",
+      "cause": "other",
+      "file": "Api/Middleware/ClientVersionMiddleware.cs",
+      "line": 23
+    },
+    {
+      "route": "PATCH /v1/habits/{id}",
+      "status": 401,
+      "detail": "not_authenticated",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 71
+    },
+    {
+      "route": "PATCH /v1/habits/{id}",
+      "status": 401,
+      "detail": "token_expired",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 47
+    },
+    {
+      "route": "PATCH /v1/habits/{id}",
+      "status": 401,
+      "detail": "invalid_token",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 59
+    },
+    {
+      "route": "PATCH /v1/habits/{id}",
+      "status": 429,
+      "detail": "rate_limited (120 per user per clock minute)",
+      "cause": "other",
+      "file": "Api/Middleware/RateLimitMiddleware.cs",
+      "line": 33
+    },
+    {
+      "route": "DELETE /v1/habits/{id}",
+      "status": 426,
+      "detail": "upgrade_required (X-Client-Version)",
+      "cause": "other",
+      "file": "Api/Middleware/ClientVersionMiddleware.cs",
+      "line": 23
+    },
+    {
+      "route": "DELETE /v1/habits/{id}",
+      "status": 401,
+      "detail": "not_authenticated",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 71
+    },
+    {
+      "route": "DELETE /v1/habits/{id}",
+      "status": 401,
+      "detail": "token_expired",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 47
+    },
+    {
+      "route": "DELETE /v1/habits/{id}",
+      "status": 401,
+      "detail": "invalid_token",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 59
+    },
+    {
+      "route": "DELETE /v1/habits/{id}",
+      "status": 429,
+      "detail": "rate_limited (120 per user per clock minute)",
+      "cause": "other",
+      "file": "Api/Middleware/RateLimitMiddleware.cs",
+      "line": 33
+    },
+    {
+      "route": "GET /v1/habits/{id}/progress",
+      "status": 426,
+      "detail": "upgrade_required (X-Client-Version)",
+      "cause": "other",
+      "file": "Api/Middleware/ClientVersionMiddleware.cs",
+      "line": 23
+    },
+    {
+      "route": "GET /v1/habits/{id}/progress",
+      "status": 401,
+      "detail": "not_authenticated",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 71
+    },
+    {
+      "route": "GET /v1/habits/{id}/progress",
+      "status": 401,
+      "detail": "token_expired",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 47
+    },
+    {
+      "route": "GET /v1/habits/{id}/progress",
+      "status": 401,
+      "detail": "invalid_token",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 59
+    },
+    {
+      "route": "GET /v1/habits/{id}/progress",
+      "status": 429,
+      "detail": "rate_limited (120 per user per clock minute)",
+      "cause": "other",
+      "file": "Api/Middleware/RateLimitMiddleware.cs",
+      "line": 33
+    },
+    {
+      "route": "GET /v1/habits/{id}/history",
+      "status": 426,
+      "detail": "upgrade_required (X-Client-Version)",
+      "cause": "other",
+      "file": "Api/Middleware/ClientVersionMiddleware.cs",
+      "line": 23
+    },
+    {
+      "route": "GET /v1/habits/{id}/history",
+      "status": 401,
+      "detail": "not_authenticated",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 71
+    },
+    {
+      "route": "GET /v1/habits/{id}/history",
+      "status": 401,
+      "detail": "token_expired",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 47
+    },
+    {
+      "route": "GET /v1/habits/{id}/history",
+      "status": 401,
+      "detail": "invalid_token",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 59
+    },
+    {
+      "route": "GET /v1/habits/{id}/history",
+      "status": 429,
+      "detail": "rate_limited (120 per user per clock minute)",
+      "cause": "other",
+      "file": "Api/Middleware/RateLimitMiddleware.cs",
+      "line": 33
+    },
+    {
+      "route": "POST /v1/habits/{habit_id}/completions",
+      "status": 426,
+      "detail": "upgrade_required (X-Client-Version)",
+      "cause": "other",
+      "file": "Api/Middleware/ClientVersionMiddleware.cs",
+      "line": 23
+    },
+    {
+      "route": "POST /v1/habits/{habit_id}/completions",
+      "status": 401,
+      "detail": "not_authenticated",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 71
+    },
+    {
+      "route": "POST /v1/habits/{habit_id}/completions",
+      "status": 401,
+      "detail": "token_expired",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 47
+    },
+    {
+      "route": "POST /v1/habits/{habit_id}/completions",
+      "status": 401,
+      "detail": "invalid_token",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 59
+    },
+    {
+      "route": "POST /v1/habits/{habit_id}/completions",
+      "status": 429,
+      "detail": "rate_limited (120 per user per clock minute)",
+      "cause": "other",
+      "file": "Api/Middleware/RateLimitMiddleware.cs",
+      "line": 33
+    },
+    {
+      "route": "GET /v1/habits/{habit_id}/completions",
+      "status": 426,
+      "detail": "upgrade_required (X-Client-Version)",
+      "cause": "other",
+      "file": "Api/Middleware/ClientVersionMiddleware.cs",
+      "line": 23
+    },
+    {
+      "route": "GET /v1/habits/{habit_id}/completions",
+      "status": 401,
+      "detail": "not_authenticated",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 71
+    },
+    {
+      "route": "GET /v1/habits/{habit_id}/completions",
+      "status": 401,
+      "detail": "token_expired",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 47
+    },
+    {
+      "route": "GET /v1/habits/{habit_id}/completions",
+      "status": 401,
+      "detail": "invalid_token",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 59
+    },
+    {
+      "route": "GET /v1/habits/{habit_id}/completions",
+      "status": 429,
+      "detail": "rate_limited (120 per user per clock minute)",
+      "cause": "other",
+      "file": "Api/Middleware/RateLimitMiddleware.cs",
+      "line": 33
+    },
+    {
+      "route": "DELETE /v1/habits/{habit_id}/completions/{id}",
+      "status": 426,
+      "detail": "upgrade_required (X-Client-Version)",
+      "cause": "other",
+      "file": "Api/Middleware/ClientVersionMiddleware.cs",
+      "line": 23
+    },
+    {
+      "route": "DELETE /v1/habits/{habit_id}/completions/{id}",
+      "status": 401,
+      "detail": "not_authenticated",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 71
+    },
+    {
+      "route": "DELETE /v1/habits/{habit_id}/completions/{id}",
+      "status": 401,
+      "detail": "token_expired",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 47
+    },
+    {
+      "route": "DELETE /v1/habits/{habit_id}/completions/{id}",
+      "status": 401,
+      "detail": "invalid_token",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 59
+    },
+    {
+      "route": "DELETE /v1/habits/{habit_id}/completions/{id}",
+      "status": 429,
+      "detail": "rate_limited (120 per user per clock minute)",
+      "cause": "other",
+      "file": "Api/Middleware/RateLimitMiddleware.cs",
+      "line": 33
+    },
+    {
+      "route": "POST /v1/completions/batch",
+      "status": 426,
+      "detail": "upgrade_required (X-Client-Version)",
+      "cause": "other",
+      "file": "Api/Middleware/ClientVersionMiddleware.cs",
+      "line": 23
+    },
+    {
+      "route": "POST /v1/completions/batch",
+      "status": 401,
+      "detail": "not_authenticated",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 71
+    },
+    {
+      "route": "POST /v1/completions/batch",
+      "status": 401,
+      "detail": "token_expired",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 47
+    },
+    {
+      "route": "POST /v1/completions/batch",
+      "status": 401,
+      "detail": "invalid_token",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 59
+    },
+    {
+      "route": "POST /v1/completions/batch",
+      "status": 429,
+      "detail": "rate_limited (120 per user per clock minute)",
+      "cause": "other",
+      "file": "Api/Middleware/RateLimitMiddleware.cs",
+      "line": 33
+    },
+    {
+      "route": "GET /v1/home",
+      "status": 426,
+      "detail": "upgrade_required (X-Client-Version)",
+      "cause": "other",
+      "file": "Api/Middleware/ClientVersionMiddleware.cs",
+      "line": 23
+    },
+    {
+      "route": "GET /v1/home",
+      "status": 401,
+      "detail": "not_authenticated",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 71
+    },
+    {
+      "route": "GET /v1/home",
+      "status": 401,
+      "detail": "token_expired",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 47
+    },
+    {
+      "route": "GET /v1/home",
+      "status": 401,
+      "detail": "invalid_token",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 59
+    },
+    {
+      "route": "GET /v1/home",
+      "status": 429,
+      "detail": "rate_limited (120 per user per clock minute)",
+      "cause": "other",
+      "file": "Api/Middleware/RateLimitMiddleware.cs",
+      "line": 33
+    },
+    {
+      "route": "GET /v1/sync",
+      "status": 426,
+      "detail": "upgrade_required (X-Client-Version)",
+      "cause": "other",
+      "file": "Api/Middleware/ClientVersionMiddleware.cs",
+      "line": 23
+    },
+    {
+      "route": "GET /v1/sync",
+      "status": 401,
+      "detail": "not_authenticated",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 71
+    },
+    {
+      "route": "GET /v1/sync",
+      "status": 401,
+      "detail": "token_expired",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 47
+    },
+    {
+      "route": "GET /v1/sync",
+      "status": 401,
+      "detail": "invalid_token",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 59
+    },
+    {
+      "route": "GET /v1/sync",
+      "status": 429,
+      "detail": "rate_limited (120 per user per clock minute)",
+      "cause": "other",
+      "file": "Api/Middleware/RateLimitMiddleware.cs",
+      "line": 33
+    },
+    {
+      "route": "GET /v1/nudges",
+      "status": 426,
+      "detail": "upgrade_required (X-Client-Version)",
+      "cause": "other",
+      "file": "Api/Middleware/ClientVersionMiddleware.cs",
+      "line": 23
+    },
+    {
+      "route": "GET /v1/nudges",
+      "status": 401,
+      "detail": "not_authenticated",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 71
+    },
+    {
+      "route": "GET /v1/nudges",
+      "status": 401,
+      "detail": "token_expired",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 47
+    },
+    {
+      "route": "GET /v1/nudges",
+      "status": 401,
+      "detail": "invalid_token",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 59
+    },
+    {
+      "route": "GET /v1/nudges",
+      "status": 429,
+      "detail": "rate_limited (120 per user per clock minute)",
+      "cause": "other",
+      "file": "Api/Middleware/RateLimitMiddleware.cs",
+      "line": 33
+    },
+    {
+      "route": "POST /v1/nudges/{id}/dismiss",
+      "status": 426,
+      "detail": "upgrade_required (X-Client-Version)",
+      "cause": "other",
+      "file": "Api/Middleware/ClientVersionMiddleware.cs",
+      "line": 23
+    },
+    {
+      "route": "POST /v1/nudges/{id}/dismiss",
+      "status": 401,
+      "detail": "not_authenticated",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 71
+    },
+    {
+      "route": "POST /v1/nudges/{id}/dismiss",
+      "status": 401,
+      "detail": "token_expired",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 47
+    },
+    {
+      "route": "POST /v1/nudges/{id}/dismiss",
+      "status": 401,
+      "detail": "invalid_token",
+      "cause": "auth",
+      "file": "Api/Auth/BearerAuthentication.cs",
+      "line": 59
+    },
+    {
+      "route": "POST /v1/nudges/{id}/dismiss",
+      "status": 429,
+      "detail": "rate_limited (120 per user per clock minute)",
+      "cause": "other",
+      "file": "Api/Middleware/RateLimitMiddleware.cs",
+      "line": 33
+    },
+    {
+      "route": "PUT /test/clock",
+      "status": 426,
+      "detail": "upgrade_required (X-Client-Version)",
+      "cause": "other",
+      "file": "Api/Middleware/ClientVersionMiddleware.cs",
+      "line": 23
+    },
+    {
+      "route": "POST /v1/auth/register",
+      "status": 422,
+      "detail": "validation_failed: email",
+      "cause": "invalid",
+      "file": "Application/AccountService.cs",
+      "line": 28
+    },
+    {
+      "route": "POST /v1/auth/register",
+      "status": 422,
+      "detail": "validation_failed: password",
+      "cause": "invalid",
+      "file": "Application/AccountService.cs",
+      "line": 35
+    },
+    {
+      "route": "POST /v1/auth/register",
+      "status": 422,
+      "detail": "validation_failed: timezone",
+      "cause": "invalid",
+      "file": "Application/AccountService.cs",
+      "line": 41
+    },
+    {
+      "route": "POST /v1/auth/register",
+      "status": 409,
+      "detail": "email_taken",
+      "cause": "conflict",
+      "file": "Application/AccountService.cs",
+      "line": 46
+    },
+    {
+      "route": "POST /v1/auth/login",
+      "status": 422,
+      "detail": "validation_failed: email",
+      "cause": "invalid",
+      "file": "Application/AccountService.cs",
+      "line": 75
+    },
+    {
+      "route": "POST /v1/auth/login",
+      "status": 422,
+      "detail": "validation_failed: password",
+      "cause": "invalid",
+      "file": "Application/AccountService.cs",
+      "line": 78
+    },
+    {
+      "route": "POST /v1/auth/login",
+      "status": 422,
+      "detail": "validation_failed: installation_id",
+      "cause": "invalid",
+      "file": "Application/AccountService.cs",
+      "line": 79
+    },
+    {
+      "route": "POST /v1/auth/login",
+      "status": 401,
+      "detail": "invalid_credentials",
+      "cause": "auth",
+      "file": "Application/AccountService.cs",
+      "line": 90
+    },
+    {
+      "route": "POST /v1/auth/refresh",
+      "status": 422,
+      "detail": "validation_failed: refresh_token",
+      "cause": "invalid",
+      "file": "Application/AccountService.cs",
+      "line": 109
+    },
+    {
+      "route": "POST /v1/auth/refresh",
+      "status": 401,
+      "detail": "invalid_refresh_token (unknown, expired or revoked)",
+      "cause": "auth",
+      "file": "Application/AccountService.cs",
+      "line": 137
+    },
+    {
+      "route": "POST /v1/auth/refresh",
+      "status": 401,
+      "detail": "refresh_token_reused (revokes the installation's session)",
+      "cause": "auth",
+      "file": "Application/AccountService.cs",
+      "line": 131
+    },
+    {
+      "route": "PUT /v1/me",
+      "status": 422,
+      "detail": "validation_failed: timezone",
+      "cause": "invalid",
+      "file": "Application/AccountService.cs",
+      "line": 175
+    },
+    {
+      "route": "PUT /v1/me",
+      "status": 422,
+      "detail": "validation_failed: push_enabled",
+      "cause": "invalid",
+      "file": "Application/AccountService.cs",
+      "line": 183
+    },
+    {
+      "route": "PUT /v1/me",
+      "status": 422,
+      "detail": "validation_failed: quiet_start | quiet_end | nudge_time",
+      "cause": "invalid",
+      "file": "Application/AccountService.cs",
+      "line": 197
+    },
+    {
+      "route": "POST /v1/devices",
+      "status": 422,
+      "detail": "validation_failed: installation_id",
+      "cause": "invalid",
+      "file": "Application/DeviceService.cs",
+      "line": 16
+    },
+    {
+      "route": "POST /v1/devices",
+      "status": 422,
+      "detail": "validation_failed: platform",
+      "cause": "invalid",
+      "file": "Application/DeviceService.cs",
+      "line": 20
+    },
+    {
+      "route": "POST /v1/devices",
+      "status": 422,
+      "detail": "validation_failed: push_token",
+      "cause": "invalid",
+      "file": "Application/DeviceService.cs",
+      "line": 26
+    },
+    {
+      "route": "POST /v1/devices",
+      "status": 422,
+      "detail": "validation_failed: timezone",
+      "cause": "invalid",
+      "file": "Application/DeviceService.cs",
+      "line": 32
+    },
+    {
+      "route": "POST /v1/devices",
+      "status": 422,
+      "detail": "validation_failed: app_version",
+      "cause": "invalid",
+      "file": "Application/DeviceService.cs",
+      "line": 38
+    },
+    {
+      "route": "DELETE /v1/devices/{id}",
+      "status": 422,
+      "detail": "validation_failed: id",
+      "cause": "invalid",
+      "file": "Application/DeviceService.cs",
+      "line": 83
+    },
+    {
+      "route": "DELETE /v1/devices/{id}",
+      "status": 404,
+      "detail": "not_found: no such device",
+      "cause": "not_found",
+      "file": "Application/DeviceService.cs",
+      "line": 88
+    },
+    {
+      "route": "DELETE /v1/devices/{id}",
+      "status": 404,
+      "detail": "not_found: another user's device",
+      "cause": "not_owned",
+      "file": "Application/DeviceService.cs",
+      "line": 87
+    },
+    {
+      "route": "GET /v1/habits",
+      "status": 422,
+      "detail": "validation_failed: include_archived",
+      "cause": "invalid",
+      "file": "Application/HabitService.cs",
+      "line": 18
+    },
+    {
+      "route": "GET /v1/habits",
+      "status": 422,
+      "detail": "validation_failed: limit",
+      "cause": "invalid",
+      "file": "Application/HabitService.cs",
+      "line": 19
+    },
+    {
+      "route": "GET /v1/habits",
+      "status": 422,
+      "detail": "invalid_cursor",
+      "cause": "invalid",
+      "file": "Application/HabitService.cs",
+      "line": 20
+    },
+    {
+      "route": "POST /v1/habits",
+      "status": 422,
+      "detail": "validation_failed: id",
+      "cause": "invalid",
+      "file": "Application/HabitService.cs",
+      "line": 41
+    },
+    {
+      "route": "POST /v1/habits",
+      "status": 422,
+      "detail": "validation_failed: name",
+      "cause": "invalid",
+      "file": "Application/HabitService.cs",
+      "line": 343
+    },
+    {
+      "route": "POST /v1/habits",
+      "status": 422,
+      "detail": "validation_failed: description",
+      "cause": "invalid",
+      "file": "Application/HabitService.cs",
+      "line": 351
+    },
+    {
+      "route": "POST /v1/habits",
+      "status": 422,
+      "detail": "validation_failed: period",
+      "cause": "invalid",
+      "file": "Application/HabitService.cs",
+      "line": 47
+    },
+    {
+      "route": "POST /v1/habits",
+      "status": 422,
+      "detail": "validation_failed: target_count",
+      "cause": "invalid",
+      "file": "Application/HabitService.cs",
+      "line": 358
+    },
+    {
+      "route": "POST /v1/habits",
+      "status": 422,
+      "detail": "validation_failed: start_date (malformed)",
+      "cause": "invalid",
+      "file": "Application/HabitService.cs",
+      "line": 52
+    },
+    {
+      "route": "POST /v1/habits",
+      "status": 422,
+      "detail": "validation_failed: end_date (malformed or before start_date)",
+      "cause": "invalid",
+      "file": "Application/HabitService.cs",
+      "line": 59
+    },
+    {
+      "route": "POST /v1/habits",
+      "status": 409,
+      "detail": "id_conflict",
+      "cause": "conflict",
+      "file": "Application/HabitService.cs",
+      "line": 71
+    },
+    {
+      "route": "POST /v1/habits",
+      "status": 409,
+      "detail": "name_taken",
+      "cause": "conflict",
+      "file": "Application/HabitService.cs",
+      "line": 332
+    },
+    {
+      "route": "POST /v1/habits",
+      "status": 409,
+      "detail": "habit_limit",
+      "cause": "conflict",
+      "file": "Application/HabitService.cs",
+      "line": 77
+    },
+    {
+      "route": "GET /v1/habits/{id}",
+      "status": 422,
+      "detail": "validation_failed: id",
+      "cause": "invalid",
+      "file": "Application/HabitService.cs",
+      "line": 107
+    },
+    {
+      "route": "GET /v1/habits/{id}",
+      "status": 404,
+      "detail": "not_found (missing or deleted)",
+      "cause": "not_found",
+      "file": "Application/HabitService.cs",
+      "line": 110
+    },
+    {
+      "route": "GET /v1/habits/{id}",
+      "status": 404,
+      "detail": "not_found: another user's habit",
+      "cause": "not_owned",
+      "file": "Application/HabitService.cs",
+      "line": 109
+    },
+    {
+      "route": "PATCH /v1/habits/{id}",
+      "status": 422,
+      "detail": "validation_failed: period (cannot change)",
+      "cause": "invalid",
+      "file": "Application/HabitService.cs",
+      "line": 123
+    },
+    {
+      "route": "PATCH /v1/habits/{id}",
+      "status": 422,
+      "detail": "validation_failed: version",
+      "cause": "invalid",
+      "file": "Application/HabitService.cs",
+      "line": 128
+    },
+    {
+      "route": "PATCH /v1/habits/{id}",
+      "status": 422,
+      "detail": "validation_failed: name",
+      "cause": "invalid",
+      "file": "Application/HabitService.cs",
+      "line": 343
+    },
+    {
+      "route": "PATCH /v1/habits/{id}",
+      "status": 422,
+      "detail": "validation_failed: target_count",
+      "cause": "invalid",
+      "file": "Application/HabitService.cs",
+      "line": 159
+    },
+    {
+      "route": "PATCH /v1/habits/{id}",
+      "status": 422,
+      "detail": "validation_failed: start_date",
+      "cause": "invalid",
+      "file": "Application/HabitService.cs",
+      "line": 144
+    },
+    {
+      "route": "PATCH /v1/habits/{id}",
+      "status": 422,
+      "detail": "validation_failed: end_date",
+      "cause": "invalid",
+      "file": "Application/HabitService.cs",
+      "line": 166
+    },
+    {
+      "route": "PATCH /v1/habits/{id}",
+      "status": 422,
+      "detail": "validation_failed: archived",
+      "cause": "invalid",
+      "file": "Application/HabitService.cs",
+      "line": 152
+    },
+    {
+      "route": "PATCH /v1/habits/{id}",
+      "status": 404,
+      "detail": "not_found (missing or deleted)",
+      "cause": "not_found",
+      "file": "Application/HabitAccess.cs",
+      "line": 14
+    },
+    {
+      "route": "PATCH /v1/habits/{id}",
+      "status": 404,
+      "detail": "not_found: another user's habit",
+      "cause": "not_owned",
+      "file": "Application/HabitAccess.cs",
+      "line": 13
+    },
+    {
+      "route": "PATCH /v1/habits/{id}",
+      "status": 409,
+      "detail": "version_conflict (with current)",
+      "cause": "conflict",
+      "file": "Application/HabitService.cs",
+      "line": 171
+    },
+    {
+      "route": "PATCH /v1/habits/{id}",
+      "status": 409,
+      "detail": "start_date_locked",
+      "cause": "conflict",
+      "file": "Application/HabitService.cs",
+      "line": 183
+    },
+    {
+      "route": "PATCH /v1/habits/{id}",
+      "status": 409,
+      "detail": "name_taken",
+      "cause": "conflict",
+      "file": "Application/HabitService.cs",
+      "line": 332
+    },
+    {
+      "route": "PATCH /v1/habits/{id}",
+      "status": 409,
+      "detail": "checkins_after_end",
+      "cause": "conflict",
+      "file": "Application/HabitService.cs",
+      "line": 218
+    },
+    {
+      "route": "PATCH /v1/habits/{id}",
+      "status": 409,
+      "detail": "habit_limit (restore)",
+      "cause": "conflict",
+      "file": "Application/HabitService.cs",
+      "line": 229
+    },
+    {
+      "route": "DELETE /v1/habits/{id}",
+      "status": 422,
+      "detail": "validation_failed: id",
+      "cause": "invalid",
+      "file": "Application/HabitService.cs",
+      "line": 269
+    },
+    {
+      "route": "DELETE /v1/habits/{id}",
+      "status": 404,
+      "detail": "not_found (missing or deleted)",
+      "cause": "not_found",
+      "file": "Application/HabitAccess.cs",
+      "line": 14
+    },
+    {
+      "route": "DELETE /v1/habits/{id}",
+      "status": 404,
+      "detail": "not_found: another user's habit",
+      "cause": "not_owned",
+      "file": "Application/HabitAccess.cs",
+      "line": 13
+    },
+    {
+      "route": "GET /v1/habits/{id}/progress",
+      "status": 422,
+      "detail": "validation_failed: id",
+      "cause": "invalid",
+      "file": "Application/HabitService.cs",
+      "line": 298
+    },
+    {
+      "route": "GET /v1/habits/{id}/progress",
+      "status": 404,
+      "detail": "not_found",
+      "cause": "not_found",
+      "file": "Application/HabitService.cs",
+      "line": 301
+    },
+    {
+      "route": "GET /v1/habits/{id}/progress",
+      "status": 404,
+      "detail": "not_found: another user's habit",
+      "cause": "not_owned",
+      "file": "Application/HabitService.cs",
+      "line": 300
+    },
+    {
+      "route": "GET /v1/habits/{id}/history",
+      "status": 422,
+      "detail": "validation_failed: limit",
+      "cause": "invalid",
+      "file": "Application/HabitService.cs",
+      "line": 309
+    },
+    {
+      "route": "GET /v1/habits/{id}/history",
+      "status": 404,
+      "detail": "not_found",
+      "cause": "not_found",
+      "file": "Application/HabitService.cs",
+      "line": 312
+    },
+    {
+      "route": "GET /v1/habits/{id}/history",
+      "status": 404,
+      "detail": "not_found: another user's habit",
+      "cause": "not_owned",
+      "file": "Application/HabitService.cs",
+      "line": 311
+    },
+    {
+      "route": "GET /v1/habits/{id}/history",
+      "status": 409,
+      "detail": "habit_not_started",
+      "cause": "conflict",
+      "file": "Application/HabitService.cs",
+      "line": 316
+    },
+    {
+      "route": "POST /v1/habits/{habit_id}/completions",
+      "status": 422,
+      "detail": "validation_failed: habit_id",
+      "cause": "invalid",
+      "file": "Application/CompletionService.cs",
+      "line": 23
+    },
+    {
+      "route": "POST /v1/habits/{habit_id}/completions",
+      "status": 422,
+      "detail": "validation_failed: id",
+      "cause": "invalid",
+      "file": "Application/CompletionService.cs",
+      "line": 183
+    },
+    {
+      "route": "POST /v1/habits/{habit_id}/completions",
+      "status": 422,
+      "detail": "validation_failed: date",
+      "cause": "invalid",
+      "file": "Application/CompletionService.cs",
+      "line": 184
+    },
+    {
+      "route": "POST /v1/habits/{habit_id}/completions",
+      "status": 422,
+      "detail": "validation_failed: note",
+      "cause": "invalid",
+      "file": "Application/CompletionService.cs",
+      "line": 188
+    },
+    {
+      "route": "POST /v1/habits/{habit_id}/completions",
+      "status": 404,
+      "detail": "not_found: habit",
+      "cause": "not_found",
+      "file": "Application/HabitAccess.cs",
+      "line": 14
+    },
+    {
+      "route": "POST /v1/habits/{habit_id}/completions",
+      "status": 404,
+      "detail": "not_found: another user's habit",
+      "cause": "not_owned",
+      "file": "Application/HabitAccess.cs",
+      "line": 13
+    },
+    {
+      "route": "POST /v1/habits/{habit_id}/completions",
+      "status": 409,
+      "detail": "habit_archived",
+      "cause": "conflict",
+      "file": "Application/CompletionService.cs",
+      "line": 121
+    },
+    {
+      "route": "POST /v1/habits/{habit_id}/completions",
+      "status": 409,
+      "detail": "id_conflict",
+      "cause": "conflict",
+      "file": "Application/CompletionService.cs",
+      "line": 131
+    },
+    {
+      "route": "POST /v1/habits/{habit_id}/completions",
+      "status": 422,
+      "detail": "date_in_future",
+      "cause": "invalid",
+      "file": "Application/CompletionService.cs",
+      "line": 138
+    },
+    {
+      "route": "POST /v1/habits/{habit_id}/completions",
+      "status": 422,
+      "detail": "date_out_of_range",
+      "cause": "invalid",
+      "file": "Application/CompletionService.cs",
+      "line": 143
+    },
+    {
+      "route": "POST /v1/habits/{habit_id}/completions",
+      "status": 422,
+      "detail": "date_too_old",
+      "cause": "invalid",
+      "file": "Application/CompletionService.cs",
+      "line": 148
+    },
+    {
+      "route": "POST /v1/habits/{habit_id}/completions",
+      "status": 409,
+      "detail": "already_checked_in",
+      "cause": "conflict",
+      "file": "Application/CompletionService.cs",
+      "line": 153
+    },
+    {
+      "route": "GET /v1/habits/{habit_id}/completions",
+      "status": 422,
+      "detail": "validation_failed: from | to (malformed)",
+      "cause": "invalid",
+      "file": "Application/CompletionService.cs",
+      "line": 67
+    },
+    {
+      "route": "GET /v1/habits/{habit_id}/completions",
+      "status": 422,
+      "detail": "validation_failed: from after to",
+      "cause": "invalid",
+      "file": "Application/CompletionService.cs",
+      "line": 71
+    },
+    {
+      "route": "GET /v1/habits/{habit_id}/completions",
+      "status": 422,
+      "detail": "validation_failed: limit",
+      "cause": "invalid",
+      "file": "Application/CompletionService.cs",
+      "line": 74
+    },
+    {
+      "route": "GET /v1/habits/{habit_id}/completions",
+      "status": 422,
+      "detail": "invalid_cursor",
+      "cause": "invalid",
+      "file": "Application/CompletionService.cs",
+      "line": 75
+    },
+    {
+      "route": "GET /v1/habits/{habit_id}/completions",
+      "status": 404,
+      "detail": "not_found: habit",
+      "cause": "not_found",
+      "file": "Application/CompletionService.cs",
+      "line": 78
+    },
+    {
+      "route": "GET /v1/habits/{habit_id}/completions",
+      "status": 404,
+      "detail": "not_found: another user's habit",
+      "cause": "not_owned",
+      "file": "Application/CompletionService.cs",
+      "line": 76
+    },
+    {
+      "route": "DELETE /v1/habits/{habit_id}/completions/{id}",
+      "status": 422,
+      "detail": "validation_failed: habit_id | id",
+      "cause": "invalid",
+      "file": "Application/CompletionService.cs",
+      "line": 95
+    },
+    {
+      "route": "DELETE /v1/habits/{habit_id}/completions/{id}",
+      "status": 404,
+      "detail": "not_found: habit",
+      "cause": "not_found",
+      "file": "Application/HabitAccess.cs",
+      "line": 14
+    },
+    {
+      "route": "DELETE /v1/habits/{habit_id}/completions/{id}",
+      "status": 404,
+      "detail": "not_found: another user's habit",
+      "cause": "not_owned",
+      "file": "Application/HabitAccess.cs",
+      "line": 13
+    },
+    {
+      "route": "DELETE /v1/habits/{habit_id}/completions/{id}",
+      "status": 404,
+      "detail": "not_found: check-in (other habit or already deleted)",
+      "cause": "not_found",
+      "file": "Application/CompletionService.cs",
+      "line": 100
+    },
+    {
+      "route": "DELETE /v1/habits/{habit_id}/completions/{id}",
+      "status": 409,
+      "detail": "habit_archived",
+      "cause": "conflict",
+      "file": "Application/CompletionService.cs",
+      "line": 103
+    },
+    {
+      "route": "POST /v1/completions/batch",
+      "status": 422,
+      "detail": "validation_failed: items (1..100)",
+      "cause": "invalid",
+      "file": "Application/CompletionService.cs",
+      "line": 34
+    },
+    {
+      "route": "GET /v1/sync",
+      "status": 422,
+      "detail": "validation_failed: limit",
+      "cause": "invalid",
+      "file": "Application/SyncService.cs",
+      "line": 16
+    },
+    {
+      "route": "GET /v1/sync",
+      "status": 422,
+      "detail": "invalid_cursor",
+      "cause": "invalid",
+      "file": "Application/SyncService.cs",
+      "line": 18
+    },
+    {
+      "route": "GET /v1/nudges",
+      "status": 422,
+      "detail": "validation_failed: limit",
+      "cause": "invalid",
+      "file": "Application/NudgeService.cs",
+      "line": 28
+    },
+    {
+      "route": "GET /v1/nudges",
+      "status": 422,
+      "detail": "invalid_cursor",
+      "cause": "invalid",
+      "file": "Application/NudgeService.cs",
+      "line": 29
+    },
+    {
+      "route": "POST /v1/nudges/{id}/dismiss",
+      "status": 422,
+      "detail": "validation_failed: id",
+      "cause": "invalid",
+      "file": "Application/NudgeService.cs",
+      "line": 49
+    },
+    {
+      "route": "POST /v1/nudges/{id}/dismiss",
+      "status": 404,
+      "detail": "not_found: nudge",
+      "cause": "not_found",
+      "file": "Application/NudgeService.cs",
+      "line": 57
+    },
+    {
+      "route": "POST /v1/nudges/{id}/dismiss",
+      "status": 404,
+      "detail": "not_found: another user's nudge",
+      "cause": "not_owned",
+      "file": "Application/NudgeService.cs",
+      "line": 55
+    },
+    {
+      "route": "POST /v1/nudges/{id}/dismiss",
+      "status": 409,
+      "detail": "nudge_dismissed",
+      "cause": "conflict",
+      "file": "Application/NudgeService.cs",
+      "line": 60
+    },
+    {
+      "route": "PUT /test/clock",
+      "status": 422,
+      "detail": "validation_failed: now",
+      "cause": "invalid",
+      "file": "Application/TestClockService.cs",
+      "line": 20
+    }
+  ],
+  "bounds": [
+    {
+      "route": "POST /v1/auth/register",
+      "field": "email",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": 1,
+      "max_length": 254,
+      "enforced_by": "AccountService.IsEmail",
+      "file": "Application/AccountService.cs",
+      "line": 264
+    },
+    {
+      "route": "POST /v1/auth/register",
+      "field": "password",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": 8,
+      "max_length": 72,
+      "enforced_by": "AccountService.RegisterAsync (UTF-8 byte count)",
+      "file": "Application/AccountService.cs",
+      "line": 33
+    },
+    {
+      "route": "POST /v1/auth/register",
+      "field": "timezone",
+      "required": false,
+      "ge": null,
+      "le": null,
+      "min_length": 1,
+      "max_length": 64,
+      "enforced_by": "UserTime.FindZone (IANA name)",
+      "file": "Domain/UserTime.cs",
+      "line": 13
+    },
+    {
+      "route": "POST /v1/auth/login",
+      "field": "email",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": 1,
+      "max_length": null,
+      "enforced_by": "AccountService.LoginAsync",
+      "file": "Application/AccountService.cs",
+      "line": 75
+    },
+    {
+      "route": "POST /v1/auth/login",
+      "field": "password",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": null,
+      "max_length": null,
+      "enforced_by": "AccountService.LoginAsync",
+      "file": "Application/AccountService.cs",
+      "line": 78
+    },
+    {
+      "route": "POST /v1/auth/login",
+      "field": "installation_id",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": 36,
+      "max_length": 36,
+      "enforced_by": "Values.Uuid",
+      "file": "Api/Http/JsonBody.cs",
+      "line": 120
+    },
+    {
+      "route": "POST /v1/auth/refresh",
+      "field": "refresh_token",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": 1,
+      "max_length": null,
+      "enforced_by": "AccountService.RefreshAsync",
+      "file": "Application/AccountService.cs",
+      "line": 107
+    },
+    {
+      "route": "PUT /v1/me",
+      "field": "timezone",
+      "required": false,
+      "ge": null,
+      "le": null,
+      "min_length": 1,
+      "max_length": 64,
+      "enforced_by": "UserTime.FindZone (IANA name)",
+      "file": "Domain/UserTime.cs",
+      "line": 13
+    },
+    {
+      "route": "PUT /v1/me",
+      "field": "quiet_start",
+      "required": false,
+      "ge": null,
+      "le": null,
+      "min_length": 5,
+      "max_length": 5,
+      "enforced_by": "Values.IsClockTime (HH:MM)",
+      "file": "Api/Http/JsonBody.cs",
+      "line": 125
+    },
+    {
+      "route": "PUT /v1/me",
+      "field": "quiet_end",
+      "required": false,
+      "ge": null,
+      "le": null,
+      "min_length": 5,
+      "max_length": 5,
+      "enforced_by": "Values.IsClockTime (HH:MM)",
+      "file": "Api/Http/JsonBody.cs",
+      "line": 125
+    },
+    {
+      "route": "PUT /v1/me",
+      "field": "nudge_time",
+      "required": false,
+      "ge": null,
+      "le": null,
+      "min_length": 5,
+      "max_length": 5,
+      "enforced_by": "Values.IsClockTime (HH:MM)",
+      "file": "Api/Http/JsonBody.cs",
+      "line": 125
+    },
+    {
+      "route": "POST /v1/devices",
+      "field": "installation_id",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": 36,
+      "max_length": 36,
+      "enforced_by": "Values.Uuid",
+      "file": "Api/Http/JsonBody.cs",
+      "line": 120
+    },
+    {
+      "route": "POST /v1/devices",
+      "field": "push_token",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": 1,
+      "max_length": 4096,
+      "enforced_by": "DeviceService.RegisterAsync",
+      "file": "Application/DeviceService.cs",
+      "line": 24
+    },
+    {
+      "route": "POST /v1/devices",
+      "field": "timezone",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": 1,
+      "max_length": 64,
+      "enforced_by": "UserTime.FindZone (IANA name)",
+      "file": "Domain/UserTime.cs",
+      "line": 13
+    },
+    {
+      "route": "POST /v1/devices",
+      "field": "app_version",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": 1,
+      "max_length": 64,
+      "enforced_by": "DeviceService.RegisterAsync",
+      "file": "Application/DeviceService.cs",
+      "line": 36
+    },
+    {
+      "route": "POST /v1/habits",
+      "field": "id",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": 36,
+      "max_length": 36,
+      "enforced_by": "Values.Uuid",
+      "file": "Api/Http/JsonBody.cs",
+      "line": 120
+    },
+    {
+      "route": "POST /v1/habits",
+      "field": "name",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": 1,
+      "max_length": 100,
+      "enforced_by": "HabitService.ValidName (characters, not only whitespace)",
+      "file": "Application/HabitService.cs",
+      "line": 341
+    },
+    {
+      "route": "POST /v1/habits",
+      "field": "description",
+      "required": false,
+      "ge": null,
+      "le": null,
+      "min_length": null,
+      "max_length": 500,
+      "enforced_by": "HabitService.ValidDescription",
+      "file": "Application/HabitService.cs",
+      "line": 350
+    },
+    {
+      "route": "POST /v1/habits",
+      "field": "target_count",
+      "required": true,
+      "ge": 1,
+      "le": 366,
+      "min_length": null,
+      "max_length": null,
+      "enforced_by": "HabitService.ValidTarget (le 7 week, 31 month, 366 year)",
+      "file": "Application/HabitService.cs",
+      "line": 356
+    },
+    {
+      "route": "PATCH /v1/habits/{id}",
+      "field": "version",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": null,
+      "max_length": null,
+      "enforced_by": "HabitService.PatchAsync",
+      "file": "Application/HabitService.cs",
+      "line": 128
+    },
+    {
+      "route": "PATCH /v1/habits/{id}",
+      "field": "name",
+      "required": false,
+      "ge": null,
+      "le": null,
+      "min_length": 1,
+      "max_length": 100,
+      "enforced_by": "HabitService.ValidName",
+      "file": "Application/HabitService.cs",
+      "line": 341
+    },
+    {
+      "route": "PATCH /v1/habits/{id}",
+      "field": "description",
+      "required": false,
+      "ge": null,
+      "le": null,
+      "min_length": null,
+      "max_length": 500,
+      "enforced_by": "HabitService.ValidDescription",
+      "file": "Application/HabitService.cs",
+      "line": 350
+    },
+    {
+      "route": "PATCH /v1/habits/{id}",
+      "field": "target_count",
+      "required": false,
+      "ge": 1,
+      "le": 366,
+      "min_length": null,
+      "max_length": null,
+      "enforced_by": "HabitService.ValidTarget (le by the habit's period)",
+      "file": "Application/HabitService.cs",
+      "line": 356
+    },
+    {
+      "route": "POST /v1/habits/{habit_id}/completions",
+      "field": "id",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": 36,
+      "max_length": 36,
+      "enforced_by": "Values.Uuid",
+      "file": "Api/Http/JsonBody.cs",
+      "line": 120
+    },
+    {
+      "route": "POST /v1/habits/{habit_id}/completions",
+      "field": "note",
+      "required": false,
+      "ge": null,
+      "le": null,
+      "min_length": null,
+      "max_length": 280,
+      "enforced_by": "CompletionService.Parse",
+      "file": "Application/CompletionService.cs",
+      "line": 186
+    },
+    {
+      "route": "POST /v1/completions/batch",
+      "field": "items",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": 1,
+      "max_length": 100,
+      "enforced_by": "CompletionService.BatchAsync (array length)",
+      "file": "Application/CompletionService.cs",
+      "line": 32
+    },
+    {
+      "route": "POST /v1/completions/batch",
+      "field": "note",
+      "required": false,
+      "ge": null,
+      "le": null,
+      "min_length": null,
+      "max_length": 280,
+      "enforced_by": "CompletionService.Parse (per item)",
+      "file": "Application/CompletionService.cs",
+      "line": 186
+    },
+    {
+      "route": "GET /v1/habits",
+      "field": "limit",
+      "required": false,
+      "ge": 1,
+      "le": 200,
+      "min_length": null,
+      "max_length": null,
+      "enforced_by": "QueryValues.Limit",
+      "file": "Application/HabitService.cs",
+      "line": 19
+    },
+    {
+      "route": "GET /v1/habits/{habit_id}/completions",
+      "field": "limit",
+      "required": false,
+      "ge": 1,
+      "le": 200,
+      "min_length": null,
+      "max_length": null,
+      "enforced_by": "QueryValues.Limit",
+      "file": "Application/CompletionService.cs",
+      "line": 74
+    },
+    {
+      "route": "GET /v1/nudges",
+      "field": "limit",
+      "required": false,
+      "ge": 1,
+      "le": 200,
+      "min_length": null,
+      "max_length": null,
+      "enforced_by": "QueryValues.Limit",
+      "file": "Application/NudgeService.cs",
+      "line": 28
+    },
+    {
+      "route": "GET /v1/sync",
+      "field": "limit",
+      "required": false,
+      "ge": 1,
+      "le": 200,
+      "min_length": null,
+      "max_length": null,
+      "enforced_by": "QueryValues.Limit",
+      "file": "Application/SyncService.cs",
+      "line": 16
+    },
+    {
+      "route": "GET /v1/habits/{id}/history",
+      "field": "limit",
+      "required": false,
+      "ge": 1,
+      "le": 100,
+      "min_length": null,
+      "max_length": null,
+      "enforced_by": "QueryValues.Limit",
+      "file": "Application/HabitService.cs",
+      "line": 309
+    },
+    {
+      "route": "PUT /test/clock",
+      "field": "now",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": null,
+      "max_length": null,
+      "enforced_by": "TestClockService.SetAsync",
+      "file": "Application/TestClockService.cs",
+      "line": 20
+    }
+  ],
+  "refusal_body": {
+    "shape": {
+      "error": {
+        "code": "string",
+        "message": "string",
+        "field": "string?"
+      }
+    },
+    "file": "Api/Http/ErrorHandling.cs",
+    "line": 8
+  }
+}

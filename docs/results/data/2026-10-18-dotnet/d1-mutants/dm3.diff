@@ -1,0 +1,17 @@
+--- a/Application/AccountService.cs
++++ b/Application/AccountService.cs
+@@ -155,12 +155,10 @@
+         await scope.CommitAsync(ct);
+     }
+ 
+-    public async Task<MeBody> GetMeAsync(CurrentUser caller, CancellationToken ct)
++    public async Task<User> GetMeAsync(CurrentUser caller, CancellationToken ct)
+     {
+         var user = await db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == caller.Id, ct) ?? throw InvalidToken();
+-        var prefs = await db.NotificationPrefs.AsNoTracking().FirstOrDefaultAsync(p => p.UserId == caller.Id, ct)
+-                    ?? new NotificationPrefs { UserId = caller.Id };
+-        return new MeBody(user.Id, user.Email, user.Timezone, PrefsBody.From(prefs));
++        return user;
+     }
+ 
+     /// <summary>Any subset of {timezone, push_enabled, quiet_start, quiet_end, nudge_time}; all validated first.</summary>

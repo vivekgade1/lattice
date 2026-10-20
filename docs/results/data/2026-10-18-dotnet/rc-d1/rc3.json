@@ -1,0 +1,38 @@
+{
+ "columns": 142,
+ "columns_snake_case": 138,
+ "non_snake_case": [
+  "devices.Id",
+  "habit_targets.Id",
+  "refresh_tokens.Id",
+  "users.Id"
+ ],
+ "present": true,
+ "rc": "RC3",
+ "root": "dnstreak",
+ "share_snake_case": 0.972,
+ "snapshots": [
+  "Data/Migrations/MySql/MySqlStreakDbContextModelSnapshot.cs",
+  "Data/Migrations/Sqlite/SqliteStreakDbContextModelSnapshot.cs"
+ ],
+ "tables": [
+  "Completion",
+  "Device",
+  "Habit",
+  "HabitTarget",
+  "NotificationPrefs",
+  "Nudge",
+  "RefreshToken",
+  "completions",
+  "devices",
+  "habit_targets",
+  "habits",
+  "notification_prefs",
+  "nudges",
+  "refresh_tokens",
+  "test_clock",
+  "users"
+ ],
+ "tables_snake_case": false,
+ "verdict": "not snake_case"
+}

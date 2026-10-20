@@ -1,0 +1,11 @@
+--- a/Application/DailyPassService.cs
++++ b/Application/DailyPassService.cs
+@@ -80,7 +80,7 @@
+             .Select(d => d.PushToken).ToListAsync(ct);
+         var quiet = InQuietHours(UserTime.MinuteOfDay(now, zone), prefs.QuietStart, prefs.QuietEnd);
+ 
+-        foreach (var nudge in todays.Where(n => n.Delivery == Deliveries.Pending))
++        foreach (var nudge in todays)
+         {
+             (string delivery, string? reason) outcome;
+             if (nudge.DismissedAt is not null)
