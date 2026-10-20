@@ -241,10 +241,10 @@ def _load(root: Path, ref: str) -> Any:
 
 
 def _runtime(root: Path, ref: str) -> Any:
-    if ref in ("process", "go"):
+    if ref in ("process", "go", "dotnet"):
         from lattice.spec.process import process_runtime
 
-        return process_runtime() if ref == "process" else process_runtime(framework="go")
+        return process_runtime() if ref == "process" else process_runtime(framework=ref)
     from lattice.importer.transport import AppRuntime
 
     got = _load(root, ref)
