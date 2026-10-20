@@ -37,6 +37,7 @@ public sealed class Visit
     public Dictionary<ISymbol, Arg> Binds = new(SymbolEqualityComparer.Default);
     public string In = "";
     public DiHop? Di;
+    public SyntaxNode? CallSite; // the invocation in Parent.Body that created this visit
     public HashSet<SyntaxNode>? Skip;
     public string BindKey => string.Join(",", Binds.OrderBy(b => b.Key.Name, StringComparer.Ordinal).Select(b => b.Key.Name + (b.Value.Caller ? "!" : "")));
 }
@@ -361,7 +362,7 @@ public sealed partial class Ex
             var q = Qual(target);
             r.Calls.Add(q);
             if (v.Depth >= HelperDepth) { r.Incomplete = true; continue; }
-            var child = new Visit { Body = body, Method = target, Depth = v.Depth + 1, Parent = v, In = q, Di = hop ?? v.Di, };
+            var child = new Visit { Body = body, Method = target, Depth = v.Depth + 1, Parent = v, In = q, Di = hop ?? v.Di, CallSite = inv };
             foreach (var (p, e) in MapArgs(inv, c))
             {
                 var tp = target.Parameters.FirstOrDefault(x => x.Name == p.Name && (x.Ordinal == p.Ordinal || SymbolEqualityComparer.Default.Equals(x.Type, p.Type))) ?? (p.Ordinal < target.Parameters.Length ? target.Parameters[p.Ordinal] : null);
