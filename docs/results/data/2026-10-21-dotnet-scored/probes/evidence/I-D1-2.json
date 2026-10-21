@@ -1,0 +1,31 @@
+{
+  "id": "I-D1-2",
+  "probe": "inferences[] of the D1 import against the truth",
+  "ran": true,
+  "predicted": "inferences: owner_uses per truth owner table, json_ignore per private column, enum_choices Nudge.delivery, route_constraint, bind_status, json_naming",
+  "observed": {
+    "counts": {
+      "owner_uses": 4,
+      "bind_status": 1,
+      "enum_choices": 1,
+      "json_naming": 1,
+      "body_model": 8
+    },
+    "constrained_params_in_extract": 0,
+    "checks": {
+      "owner_uses per truth owner table": true,
+      "json_ignore per private column": false,
+      "enum_choices Nudge.delivery": true,
+      "route_constraint per constrained param": true,
+      "bind_status 1": true,
+      "json_naming 1": true
+    }
+  },
+  "pass": false,
+  "evidence": {},
+  "gated": true,
+  "arm": "D",
+  "nodes": [
+    "B2"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "id": "A-805",
+  "probe": "the not-owned answer derived on dnparity1 and D1; a D1 copy answering 403 on a scoped miss",
+  "ran": true,
+  "predicted": "dnparity1 404; D1 404 or unclear; a D1 copy answering 403 on a scoped miss gives DN805",
+  "observed": {
+    "dnparity1": {
+      "status": null,
+      "findings": []
+    },
+    "D1": {
+      "status": null,
+      "findings": []
+    },
+    "copy": {
+      "status": null,
+      "findings": []
+    },
+    "checks": {
+      "dnparity1 answers 404": false,
+      "D1 404 or unclear": true,
+      "the 403 copy gives DN805 on GET /v1/habits/{id}": false,
+      "the 403 edit (DM5) applied": true
+    }
+  },
+  "pass": false,
+  "evidence": {},
+  "gated": false,
+  "arm": "D",
+  "nodes": [
+    "B3"
+  ]
+}

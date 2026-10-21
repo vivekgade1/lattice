@@ -1,0 +1,20 @@
+{
+  "id": "P0-JSON",
+  "probe": "dotnet.json_naming and every wire name (policy extract)",
+  "ran": true,
+  "predicted": "SnakeCaseLower; every wire name exact",
+  "observed": {
+    "json_naming [extract, truth]": [
+      "SnakeCaseLower",
+      "SnakeCaseLower"
+    ],
+    "wrong_wire": [],
+    "parse_params": 16,
+    "bind_refusals_present": true
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "0",
+  "nodes": []
+}

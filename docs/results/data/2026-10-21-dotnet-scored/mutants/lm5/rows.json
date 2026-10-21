@@ -1,0 +1,76 @@
+[
+  {
+    "id": "P0-AUTH",
+    "probe": "auth per route",
+    "ran": true,
+    "predicted": "exact (Public/Member/Admin; the admin route Admin)",
+    "observed": {
+      "routes": 39,
+      "wrong": {
+        "GET /v1/todos/all": [
+          "Member",
+          "Public"
+        ],
+        "GET /v1/todos/open": [
+          "Member",
+          "Public"
+        ],
+        "GET /v1/todos/overdue": [
+          "Member",
+          "Public"
+        ],
+        "GET /v1/todos/{}": [
+          "Member",
+          "Public"
+        ]
+      },
+      "values": [
+        "Admin",
+        "Member",
+        "Public"
+      ]
+    },
+    "pass": false,
+    "evidence": {
+      "auth_object": {
+        "scheme": [
+          "Bearer",
+          "Bearer"
+        ],
+        "caller_keys": [
+          [
+            "sub"
+          ],
+          [
+            "sub"
+          ]
+        ],
+        "admin_role": [
+          "Admin",
+          "Admin"
+        ]
+      }
+    },
+    "gated": true,
+    "arm": "0",
+    "nodes": []
+  },
+  {
+    "id": "D-AUTH",
+    "probe": "D1 auth per route",
+    "ran": true,
+    "predicted": "exact on 26/26 (p 0.8); gate >= 0.95",
+    "observed": {
+      "matched": 26,
+      "exact": 26,
+      "share_of_matched": 1.0,
+      "share_of_truth": 1.0,
+      "wrong": {}
+    },
+    "pass": true,
+    "evidence": {},
+    "gated": true,
+    "arm": "D",
+    "nodes": []
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "id": "D-UNREAD",
+  "probe": "every D1 truth route is a route or named in unread/excluded",
+  "ran": true,
+  "predicted": "0 silent drops",
+  "observed": {
+    "silent_drops": [],
+    "n": 0
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "D",
+  "nodes": []
+}

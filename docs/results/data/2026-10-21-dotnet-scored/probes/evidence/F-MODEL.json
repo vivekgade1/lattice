@@ -1,0 +1,46 @@
+{
+  "id": "F-MODEL",
+  "probe": "model_from_extract on D1: counts, DTO body models, framework/orm, login path, fields and token field",
+  "ran": true,
+  "predicted": "counts equal the extract's; login path, fields and token field exact vs truth; aspnetcore/efcore",
+  "observed": {
+    "view": {
+      "framework": "aspnetcore",
+      "orm": "efcore",
+      "routes": 26,
+      "tables": 9,
+      "models": [
+        "POST_v1_auth_loginBody",
+        "POST_v1_auth_refreshBody",
+        "POST_v1_auth_registerBody",
+        "POST_v1_completions_batchBody",
+        "POST_v1_devicesBody",
+        "POST_v1_habitsBody",
+        "POST_v1_habits_habit_id_completionsBody",
+        "PUT_test_clockBody"
+      ],
+      "login_path": "/v1/auth/login",
+      "username_field": "email",
+      "password_field": "password",
+      "token_path": [
+        "access_token"
+      ]
+    },
+    "checks": {
+      "framework/orm": true,
+      "routes": true,
+      "tables": true,
+      "bodies are models": true,
+      "login path": true,
+      "login fields": true,
+      "token field": true
+    }
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "D",
+  "nodes": [
+    "B2"
+  ]
+}

@@ -1,0 +1,143 @@
+{
+  "passes": true,
+  "dn801_dn802_on_hm_routes": [],
+  "registered_r_items_refuted": [],
+  "pristine_copy_new_findings": [],
+  "pristine_copy_equals_h1": true,
+  "binary_injection_works": true,
+  "layer_a_original_findings": [],
+  "r_items": 77,
+  "r_verified": 3,
+  "r_items_unstable_between_two_runs": [],
+  "binary_injection": "make_app starts /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/scored-hm/scr/shims/dotnet /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f2",
+  "operators": {
+    "HM1": {
+      "key": "owner_read",
+      "from_list": "owner_read",
+      "from_id": "owner_read",
+      "cell": "owner_read",
+      "shifted": false,
+      "source": "list"
+    },
+    "HM2": {
+      "key": "owner_write",
+      "from_list": "owner_write",
+      "from_id": "owner_read",
+      "cell": "owner_write",
+      "shifted": false,
+      "source": "list"
+    },
+    "HM3": {
+      "key": "owner_write",
+      "from_list": "owner_write",
+      "from_id": "owner_write",
+      "cell": "owner_write",
+      "shifted": false,
+      "source": "list"
+    },
+    "HM4": {
+      "key": "owner_write",
+      "from_list": "owner_write",
+      "from_id": "owner_write",
+      "cell": "owner_write",
+      "shifted": false,
+      "source": "list"
+    },
+    "HM5": {
+      "key": "expose_column",
+      "from_list": "expose_column",
+      "from_id": "expose_column",
+      "cell": "expose_column",
+      "shifted": false,
+      "source": "list"
+    },
+    "HM6": {
+      "key": "expose_column",
+      "from_list": "expose_column",
+      "from_id": "expose_column",
+      "cell": "expose_column",
+      "shifted": false,
+      "source": "list"
+    },
+    "HM7": {
+      "key": "drop_login",
+      "from_list": "drop_login",
+      "from_id": "drop_login",
+      "cell": "drop_login",
+      "shifted": false,
+      "source": "list"
+    },
+    "HM8": {
+      "key": "drop_login",
+      "from_list": "drop_login",
+      "from_id": "drop_login",
+      "cell": "drop_login",
+      "shifted": false,
+      "source": "list"
+    },
+    "HM9": {
+      "key": "status_403",
+      "from_list": "status_403",
+      "from_id": "status_403",
+      "cell": "status_403",
+      "shifted": false,
+      "source": "list"
+    },
+    "HM10": {
+      "key": "status_403",
+      "from_list": "status_403",
+      "from_id": "status_403",
+      "cell": "status_403",
+      "shifted": false,
+      "source": "list"
+    },
+    "HM11": {
+      "key": "drop_parent",
+      "from_list": "drop_parent",
+      "from_id": "drop_parent",
+      "cell": "drop_parent",
+      "shifted": false,
+      "source": "list"
+    },
+    "HM12": {
+      "key": "drop_guard",
+      "from_list": "drop_guard",
+      "from_id": "drop_guard",
+      "cell": "drop_guard",
+      "shifted": false,
+      "source": "list"
+    },
+    "HM13": {
+      "key": "drop_guard",
+      "from_list": "drop_guard",
+      "from_id": "drop_guard",
+      "cell": "drop_guard",
+      "shifted": false,
+      "source": "list"
+    },
+    "HM14": {
+      "key": "loosen_bound",
+      "from_list": "loosen_bound",
+      "from_id": "loosen_bound",
+      "cell": "loosen_bound",
+      "shifted": false,
+      "source": "list"
+    },
+    "HM15": {
+      "key": "owner_body",
+      "from_list": "owner_body",
+      "from_id": "owner_body",
+      "cell": "owner_body",
+      "shifted": false,
+      "source": "list"
+    },
+    "HM16": {
+      "key": "widen_list",
+      "from_list": "widen_list",
+      "from_id": "widen_list",
+      "cell": "widen_list",
+      "shifted": false,
+      "source": "list"
+    }
+  }
+}

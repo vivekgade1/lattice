@@ -1,0 +1,60 @@
+{
+  "id": "HM12",
+  "patch": "m12.diff",
+  "patch_sha256": "147a8000c67c8d6f97c27b482edfeeec0962cc4df80c87671909e2175d6bf367",
+  "mutants_md_line": "HM12 | drop_guard | POST /reports/{reportId:int}/submit | Features/Reports/ReportService.cs:69 | none (first transition); drops the CanTransition conflict guard, the no-lines guard stays",
+  "operator": {
+    "key": "drop_guard",
+    "from_list": "drop_guard",
+    "from_id": "drop_guard",
+    "cell": "drop_guard",
+    "shifted": false,
+    "source": "list"
+  },
+  "route": "POST /reports/{}/submit",
+  "file_line": [
+    "Features/Reports/ReportService.cs",
+    69
+  ],
+  "substitutions": "none (first transition); drops the CanTransition conflict guard, the no-lines guard stays",
+  "operator_key": "drop_guard",
+  "gated": false,
+  "detectors": [
+    {
+      "detector": "R3 POST /reports/{}/submit status [409]",
+      "layer": "R",
+      "armed": false,
+      "flipped": false,
+      "hits": [],
+      "items [control, mutant]": {},
+      "why_not": "the spec has no such item"
+    }
+  ],
+  "killed": false,
+  "killed_by": "survived: R3 POST /reports/{}/submit status [409]: the spec has no such item",
+  "expose_column": null,
+  "status_of_conflict": {
+    "statuses": [
+      409
+    ],
+    "from_truth": true
+  },
+  "status": "judged",
+  "apply": {
+    "ok": true,
+    "returncode": 0,
+    "output": "patching file 'Features/Reports/ReportService.cs'\n",
+    "leftovers": [],
+    "files_changed": [
+      "Features/Reports/ReportService.cs"
+    ]
+  },
+  "layer_a": {
+    "new_findings": []
+  },
+  "layer_r": {
+    "ran": true,
+    "flipped_items [control, mutant]": {}
+  },
+  "wall_s": 24.3
+}

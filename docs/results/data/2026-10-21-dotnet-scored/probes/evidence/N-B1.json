@@ -1,0 +1,32 @@
+{
+  "id": "N-B1",
+  "probe": "layer B on dnapp: safe, DNAPP_BUG=nocheck and nocancel",
+  "ran": true,
+  "predicted": "layer B on dnapp: 0 findings safe, >= 1 on the bugged route each",
+  "observed": {
+    "safe": {
+      "findings": [],
+      "cases": 32
+    },
+    "nocheck": {
+      "endpoints": [
+        "POST /configs/{cid}/runs"
+      ],
+      "findings": 2
+    },
+    "nocancel": {
+      "endpoints": [
+        "POST /runs/{rid}/cancel"
+      ],
+      "findings": 2
+    }
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "N",
+  "nodes": [
+    "B2",
+    "B4"
+  ]
+}

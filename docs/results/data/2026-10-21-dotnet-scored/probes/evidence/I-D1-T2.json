@@ -1,0 +1,42 @@
+{
+  "id": "I-D1-T2",
+  "probe": "T2 items of the private columns",
+  "ran": true,
+  "predicted": "T2 items of the private columns present, keyed by wire name, verified",
+  "observed": {
+    "Completion.deleted_at": {},
+    "Device.created_at": {},
+    "Device.updated_at": {},
+    "Device.user_id": {},
+    "Habit.deleted_at": {},
+    "Habit.user_id": {},
+    "HabitTarget.effective_from": {},
+    "HabitTarget.habit_id": {},
+    "HabitTarget.id": {},
+    "HabitTarget.target_count": {},
+    "NotificationPrefs.last_pass_date": {},
+    "NotificationPrefs.user_id": {},
+    "Nudge.created_at": {},
+    "Nudge.deleted_at": {},
+    "Nudge.updated_at": {},
+    "RefreshToken.created_at": {},
+    "RefreshToken.expires_at": {},
+    "RefreshToken.id": {},
+    "RefreshToken.installation_id": {},
+    "RefreshToken.revoked_at": {},
+    "RefreshToken.rotated_at": {},
+    "RefreshToken.token_hash": {},
+    "RefreshToken.user_id": {},
+    "TestClockRow.id": {},
+    "User.change_seq": {},
+    "User.created_at": {},
+    "User.hashed_password": {}
+  },
+  "pass": false,
+  "evidence": {},
+  "gated": true,
+  "arm": "D",
+  "nodes": [
+    "B2"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "id": "C-LIVE",
+  "probe": "lattice contracts check on a live link to D1 over MySQL",
+  "ran": true,
+  "predicted": "lattice contracts live on D1 over MySQL: runs, 0 contract violations",
+  "observed": {
+    "rc": 0,
+    "pin_rc": 0,
+    "violations": 0,
+    "findings": [],
+    "stderr": ""
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "D",
+  "nodes": [
+    "B4"
+  ]
+}

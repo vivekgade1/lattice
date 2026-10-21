@@ -1,0 +1,25 @@
+{
+  "id": "C-MCP",
+  "probe": "MCP implementation_get, workflow_get and workflow_find('check in') on D1",
+  "ran": true,
+  "predicted": "implementation_get, workflow_get, workflow_find('check in'): non-empty, .cs citations",
+  "observed": {
+    "non_empty": {
+      "implementation_get": true,
+      "workflow_get": true,
+      "workflow_find": true
+    },
+    "cs_citations": {
+      "implementation_get": true,
+      "workflow_get": true,
+      "workflow_find": true
+    }
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "D",
+  "nodes": [
+    "B4"
+  ]
+}

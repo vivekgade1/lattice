@@ -1,0 +1,54 @@
+{
+  "id": "H-PA1",
+  "probe": "derive_dn_policy: private within the truth's, owners within the truth's",
+  "ran": true,
+  "predicted": "derive_dn_policy: private within truth private, owners within truth owners",
+  "observed": {
+    "private": {
+      "User": [
+        "created_at",
+        "password"
+      ],
+      "ExpenseReport": [
+        "created_at",
+        "decided_at",
+        "id",
+        "purpose",
+        "review_comment",
+        "reviewer_id",
+        "submitted_at",
+        "title",
+        "updated_at"
+      ],
+      "PayoutMethod": [
+        "account_number",
+        "user_id"
+      ]
+    },
+    "owners": {
+      "PayoutMethod": "user_id",
+      "ExpenseReport": "user_id"
+    },
+    "private_not_in_truth": {
+      "ExpenseReport": [
+        "created_at",
+        "decided_at",
+        "id",
+        "purpose",
+        "review_comment",
+        "reviewer_id",
+        "submitted_at",
+        "title",
+        "updated_at"
+      ]
+    },
+    "owners_not_in_truth": {}
+  },
+  "pass": false,
+  "evidence": {},
+  "gated": true,
+  "arm": "H",
+  "nodes": [
+    "B3"
+  ]
+}

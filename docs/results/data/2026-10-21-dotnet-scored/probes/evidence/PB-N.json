@@ -1,0 +1,28 @@
+{
+  "id": "PB-N",
+  "probe": "stack-neutral outputs identical to the base",
+  "ran": true,
+  "predicted": "stack-neutral outputs identical to the base",
+  "observed": {
+    "pytest_base": [
+      "607 passed",
+      "1 skipped"
+    ],
+    "pytest_now": [
+      "607 passed",
+      "1 skipped"
+    ],
+    "same_pytest_ids": true,
+    "exports": {
+      "gotickets": {
+        "same": true,
+        "sha256": "7560c50c8e65c5ac"
+      }
+    }
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "X",
+  "nodes": []
+}

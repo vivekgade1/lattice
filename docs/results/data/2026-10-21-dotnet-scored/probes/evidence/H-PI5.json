@@ -1,0 +1,26 @@
+{
+  "id": "H-PI5",
+  "probe": "proposals include the truth machine's first edge",
+  "ran": true,
+  "predicted": "the truth machine's first edge proposed (p 0.6; reported)",
+  "observed": {
+    "count": 2,
+    "machines": {
+      "ExpenseReport.status": {
+        "first_edge": [
+          "draft",
+          "submitted"
+        ],
+        "proposed_edges": [],
+        "first_edge_proposed": false
+      }
+    }
+  },
+  "pass": false,
+  "evidence": {},
+  "gated": false,
+  "arm": "H",
+  "nodes": [
+    "B2"
+  ]
+}

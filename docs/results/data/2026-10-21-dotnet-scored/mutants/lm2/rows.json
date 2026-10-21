@@ -1,0 +1,228 @@
+[
+  {
+    "id": "P0-ROUTES",
+    "probe": "routes of dnparity1 vs truth (method, full template, style, condition, path_template, success)",
+    "ran": true,
+    "predicted": "exact",
+    "observed": {
+      "routes_truth": 39,
+      "routes_extract": 39,
+      "set": {
+        "missing": [
+          [
+            "DELETE",
+            "/api/notes/{}"
+          ],
+          [
+            "DELETE",
+            "/api/v2/forms/nothing"
+          ],
+          [
+            "GET",
+            "/api/notes"
+          ],
+          [
+            "GET",
+            "/api/notes/public/{}"
+          ],
+          [
+            "GET",
+            "/api/notes/{}"
+          ],
+          [
+            "GET",
+            "/api/notes/{}/tags"
+          ],
+          [
+            "GET",
+            "/api/v2/forms/bad/{}"
+          ],
+          [
+            "GET",
+            "/api/v2/forms/clash"
+          ],
+          [
+            "GET",
+            "/api/v2/forms/explode"
+          ],
+          [
+            "GET",
+            "/api/v2/forms/forbidden"
+          ],
+          [
+            "GET",
+            "/api/v2/forms/gone"
+          ],
+          [
+            "GET",
+            "/api/v2/forms/invalid"
+          ],
+          [
+            "GET",
+            "/api/v2/forms/missing/{}"
+          ],
+          [
+            "GET",
+            "/api/v2/forms/teapot"
+          ],
+          [
+            "GET",
+            "/api/v2/forms/unauthorized"
+          ],
+          [
+            "GET",
+            "/api/v2/forms/unprocessable"
+          ],
+          [
+            "GET",
+            "/api/v2/reports/{}"
+          ],
+          [
+            "GET",
+            "/api/v2/reports/{}/audit"
+          ],
+          [
+            "GET",
+            "/api/v2/users/me"
+          ],
+          [
+            "POST",
+            "/api/notes"
+          ],
+          [
+            "POST",
+            "/api/notes/{}/publish"
+          ],
+          [
+            "POST",
+            "/api/notes/{}/restore"
+          ],
+          [
+            "POST",
+            "/api/v2/forms/accepted"
+          ],
+          [
+            "POST",
+            "/api/v2/forms/created"
+          ],
+          [
+            "PUT",
+            "/api/notes/{}"
+          ]
+        ],
+        "extra": [
+          [
+            "DELETE",
+            "/api/[controller]/{}"
+          ],
+          [
+            "DELETE",
+            "/api/v2/[controller]/nothing"
+          ],
+          [
+            "GET",
+            "/api/[controller]"
+          ],
+          [
+            "GET",
+            "/api/[controller]/public/{}"
+          ],
+          [
+            "GET",
+            "/api/[controller]/{}"
+          ],
+          [
+            "GET",
+            "/api/[controller]/{}/tags"
+          ],
+          [
+            "GET",
+            "/api/v2/[controller]/bad/{}"
+          ],
+          [
+            "GET",
+            "/api/v2/[controller]/clash"
+          ],
+          [
+            "GET",
+            "/api/v2/[controller]/explode"
+          ],
+          [
+            "GET",
+            "/api/v2/[controller]/forbidden"
+          ],
+          [
+            "GET",
+            "/api/v2/[controller]/gone"
+          ],
+          [
+            "GET",
+            "/api/v2/[controller]/invalid"
+          ],
+          [
+            "GET",
+            "/api/v2/[controller]/me"
+          ],
+          [
+            "GET",
+            "/api/v2/[controller]/missing/{}"
+          ],
+          [
+            "GET",
+            "/api/v2/[controller]/teapot"
+          ],
+          [
+            "GET",
+            "/api/v2/[controller]/unauthorized"
+          ],
+          [
+            "GET",
+            "/api/v2/[controller]/unprocessable"
+          ],
+          [
+            "GET",
+            "/api/v2/[controller]/{}"
+          ],
+          [
+            "GET",
+            "/api/v2/[controller]/{}/audit"
+          ],
+          [
+            "POST",
+            "/api/[controller]"
+          ],
+          [
+            "POST",
+            "/api/[controller]/{}/publish"
+          ],
+          [
+            "POST",
+            "/api/[controller]/{}/restore"
+          ],
+          [
+            "POST",
+            "/api/v2/[controller]/accepted"
+          ],
+          [
+            "POST",
+            "/api/v2/[controller]/created"
+          ],
+          [
+            "PUT",
+            "/api/[controller]/{}"
+          ]
+        ],
+        "n_missing": 25,
+        "n_extra": 25,
+        "equal": false
+      },
+      "field_differences": {},
+      "status_differences": {}
+    },
+    "pass": false,
+    "evidence": {},
+    "gated": true,
+    "arm": "0",
+    "nodes": []
+  }
+]

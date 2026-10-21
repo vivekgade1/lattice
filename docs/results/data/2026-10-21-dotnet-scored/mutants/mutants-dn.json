@@ -1,0 +1,1822 @@
+{
+  "LM": [
+    {
+      "id": "control",
+      "detectors": {
+        "probe:P0-ROUTES": true,
+        "probe:P0-AUTH": true,
+        "probe:P0-BIND": true,
+        "probe:P0-TABLES": true,
+        "probe:P0-OWNER": true,
+        "probe:P0-RAISE": true,
+        "probe:P0-DI": true,
+        "probe:P0-JSON": true,
+        "probe:PB-LAZY": true,
+        "probe:A0-DN": true,
+        "probe:DET-PATH": true,
+        "probe:D-ROUTES": true,
+        "probe:D-AUTH": true,
+        "probe:D-TABLES": true,
+        "probe:D-WIRE": true,
+        "probe:A-D1": null,
+        "probe:A-DERIVE": false,
+        "probe:I-D1-T2": false,
+        "probe:W-D1-1": null,
+        "probe:C-INV": true
+      },
+      "tests_failing_on_control": [],
+      "probes_not_passing_on_control": [
+        "probe:A-D1",
+        "probe:A-DERIVE",
+        "probe:I-D1-T2",
+        "probe:W-D1-1"
+      ],
+      "passes": true,
+      "wall_s": 215.2
+    },
+    {
+      "id": "LM1",
+      "mutant": "a MapGroup prefix dropped when the group crosses a method boundary",
+      "killed_by": "P0-ROUTES; D-ROUTES",
+      "node": null,
+      "detectors": {
+        "probe:P0-ROUTES": false,
+        "probe:D-ROUTES": true
+      },
+      "flipped": {
+        "probe:P0-ROUTES": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "LM2",
+      "mutant": "the [controller] token is not replaced",
+      "killed_by": "P0-ROUTES",
+      "node": null,
+      "detectors": {
+        "probe:P0-ROUTES": false
+      },
+      "flipped": {
+        "probe:P0-ROUTES": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "LM3",
+      "mutant": "a base controller's [Route] is not inherited",
+      "killed_by": "P0-ROUTES",
+      "node": null,
+      "detectors": {
+        "probe:P0-ROUTES": false
+      },
+      "flipped": {
+        "probe:P0-ROUTES": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "LM4",
+      "mutant": "[AllowAnonymous] is ignored",
+      "killed_by": "P0-AUTH",
+      "node": null,
+      "detectors": {
+        "probe:P0-AUTH": false
+      },
+      "flipped": {
+        "probe:P0-AUTH": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "LM5",
+      "mutant": "RequireAuthorization on a group is not propagated to nested groups",
+      "killed_by": "P0-AUTH; D-AUTH",
+      "node": null,
+      "detectors": {
+        "probe:P0-AUTH": false,
+        "probe:D-AUTH": true
+      },
+      "flipped": {
+        "probe:P0-AUTH": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "LM6",
+      "mutant": "a RequireRole policy is read as Member",
+      "killed_by": "P0-AUTH",
+      "node": null,
+      "detectors": {
+        "probe:P0-AUTH": false
+      },
+      "flipped": {
+        "probe:P0-AUTH": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "LM7",
+      "mutant": "minimal-API annotations are treated as enforced without AddValidation",
+      "killed_by": "P0-BIND; A0-DN (DN803 lost)",
+      "node": null,
+      "detectors": {
+        "probe:P0-BIND": false,
+        "probe:A0-DN": false
+      },
+      "flipped": {
+        "probe:P0-BIND": [
+          true,
+          false
+        ],
+        "probe:A0-DN": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "LM8",
+      "mutant": "FluentValidation rules are ignored",
+      "killed_by": "P0-BIND",
+      "node": null,
+      "detectors": {
+        "probe:P0-BIND": false
+      },
+      "flipped": {
+        "probe:P0-BIND": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "LM9",
+      "mutant": "the implicit required of non-nullable reference types (nullable enable) is ignored",
+      "killed_by": "P0-BIND",
+      "node": null,
+      "detectors": {
+        "probe:P0-BIND": false
+      },
+      "flipped": {
+        "probe:P0-BIND": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "LM10",
+      "mutant": "the class name is used as the table name instead of the DbSet property name",
+      "killed_by": "P0-TABLES",
+      "node": null,
+      "detectors": {
+        "probe:P0-TABLES": false,
+        "probe:D-TABLES": true
+      },
+      "flipped": {
+        "probe:P0-TABLES": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "LM11",
+      "mutant": "IEntityTypeConfiguration<T> classes are not applied",
+      "killed_by": "P0-TABLES",
+      "node": null,
+      "detectors": {
+        "probe:P0-TABLES": false
+      },
+      "flipped": {
+        "probe:P0-TABLES": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "LM12",
+      "mutant": "[JsonIgnore] is not read",
+      "killed_by": "P0-TABLES; A0-DN (DN802 on User); A-DERIVE",
+      "node": null,
+      "detectors": {
+        "probe:P0-TABLES": false,
+        "probe:A0-DN": true,
+        "probe:A-DERIVE": false
+      },
+      "flipped": {
+        "probe:P0-TABLES": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "LM13",
+      "mutant": "only the first conjunct of an && predicate is read",
+      "killed_by": "P0-OWNER",
+      "node": null,
+      "detectors": {
+        "probe:P0-OWNER": false
+      },
+      "flipped": {
+        "probe:P0-OWNER": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "LM14",
+      "mutant": "the find-then-check owner pattern is not read",
+      "killed_by": "P0-OWNER; A0-DN (false DN801 on o2)",
+      "node": null,
+      "detectors": {
+        "probe:P0-OWNER": false,
+        "probe:A0-DN": true
+      },
+      "flipped": {
+        "probe:P0-OWNER": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "LM15",
+      "mutant": "global query filters are ignored",
+      "killed_by": "P0-OWNER; A0-DN",
+      "node": null,
+      "detectors": {
+        "probe:P0-OWNER": false,
+        "probe:A0-DN": false
+      },
+      "flipped": {
+        "probe:P0-OWNER": [
+          true,
+          false
+        ],
+        "probe:A0-DN": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "LM16",
+      "mutant": "single-registration DI resolution is off",
+      "killed_by": "P0-DI; A-D1 judged set (A-DM DM1)",
+      "node": null,
+      "detectors": {
+        "probe:P0-DI": false,
+        "probe:A-D1": null
+      },
+      "flipped": {
+        "probe:P0-DI": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "LM17",
+      "mutant": "DI picks the first of two registrations",
+      "killed_by": "P0-DI; unit two_registrations_stay_unread",
+      "node": null,
+      "detectors": {
+        "probe:P0-DI": false
+      },
+      "flipped": {
+        "probe:P0-DI": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "LM18",
+      "mutant": "the exception-handler mapping is off",
+      "killed_by": "P0-RAISE",
+      "node": null,
+      "detectors": {
+        "probe:P0-RAISE": false
+      },
+      "flipped": {
+        "probe:P0-RAISE": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "LM19",
+      "mutant": "the JSON naming policy is ignored (wire = property name)",
+      "killed_by": "P0-JSON; D-WIRE; I-D1-T2",
+      "node": null,
+      "detectors": {
+        "probe:P0-JSON": false,
+        "probe:D-WIRE": false,
+        "probe:I-D1-T2": false
+      },
+      "flipped": {
+        "probe:P0-JSON": [
+          true,
+          false
+        ],
+        "probe:D-WIRE": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "LM20",
+      "mutant": "DN806 fires on DateTimeOffset comparisons",
+      "killed_by": "A0-DN",
+      "node": "B3",
+      "detectors": {
+        "probe:A0-DN": false
+      },
+      "flipped": {
+        "probe:A0-DN": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "LM21",
+      "mutant": "DN807 ignores the transaction scope",
+      "killed_by": "A0-DN",
+      "node": "B3",
+      "detectors": {
+        "probe:A0-DN": false
+      },
+      "flipped": {
+        "probe:A0-DN": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "LM22",
+      "mutant": "an absolute path in the extract",
+      "killed_by": "DET-PATH",
+      "node": null,
+      "detectors": {
+        "probe:DET-PATH": false
+      },
+      "flipped": {
+        "probe:DET-PATH": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "LM23",
+      "mutant": "the .NET front end is registered eagerly (Python imports load it)",
+      "killed_by": "PB-LAZY; PB-P",
+      "node": "B2",
+      "detectors": {
+        "probe:PB-LAZY": false
+      },
+      "flipped": {
+        "probe:PB-LAZY": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    },
+    {
+      "id": "LM24",
+      "mutant": "the consumer dispatch always picks the Go front end",
+      "killed_by": "C-INV; W-D1-1",
+      "node": "B4",
+      "detectors": {
+        "probe:W-D1-1": null,
+        "probe:C-INV": false
+      },
+      "flipped": {
+        "probe:C-INV": [
+          true,
+          false
+        ]
+      },
+      "killed": true
+    }
+  ],
+  "DM": [
+    {
+      "id": "DM1",
+      "gated": true,
+      "killed": true,
+      "detector": {
+        "detector": "DN801 on GET /v1/habits/{}",
+        "layer": "A",
+        "armed": true,
+        "flipped": true,
+        "hits": [
+          "DN801|GET /v1/habits/{id}|Habit"
+        ],
+        "control_findings": []
+      },
+      "apply": {
+        "ok": true,
+        "files": [
+          "Application/HabitService.cs"
+        ]
+      }
+    },
+    {
+      "id": "DM2",
+      "gated": true,
+      "killed": true,
+      "detector": {
+        "detector": "DN801 on PATCH /v1/habits/{}",
+        "layer": "A",
+        "armed": true,
+        "flipped": true,
+        "hits": [
+          "DN801|PATCH /v1/habits/{id}|Habit"
+        ],
+        "control_findings": []
+      },
+      "apply": {
+        "ok": true,
+        "files": [
+          "Application/HabitService.cs"
+        ]
+      }
+    },
+    {
+      "id": "DM3",
+      "gated": true,
+      "killed": true,
+      "detector": {
+        "detector": "DN802 on GET /v1/me",
+        "layer": "A",
+        "armed": true,
+        "flipped": true,
+        "hits": [
+          "DN802|GET /v1/me|User.hashed_password"
+        ],
+        "control_findings": []
+      },
+      "apply": {
+        "ok": true,
+        "files": [
+          "Application/AccountService.cs"
+        ]
+      }
+    },
+    {
+      "id": "DM4",
+      "gated": true,
+      "killed": false,
+      "detector": {
+        "detector": "R1 POST /v1/auth/logout",
+        "layer": "R",
+        "armed": true,
+        "flipped": false,
+        "hits": [],
+        "items [control, mutant]": {
+          "R1 POST /v1/auth/logout": [
+            "verified",
+            "verified"
+          ]
+        },
+        "why_not": "no such item is refuted on the mutant"
+      },
+      "apply": {
+        "ok": true,
+        "files": [
+          "Api/Endpoints/AccountEndpoints.cs"
+        ]
+      }
+    },
+    {
+      "id": "DM5",
+      "gated": true,
+      "killed": true,
+      "detector": {
+        "detector": "R3 GET /v1/habits/{} status [404]",
+        "layer": "R",
+        "armed": true,
+        "flipped": true,
+        "hits": [
+          "R3 GET /v1/habits/{id} 404"
+        ],
+        "items [control, mutant]": {
+          "R3 GET /v1/habits/{id} 404": [
+            "verified",
+            "refuted"
+          ]
+        },
+        "why_not": ""
+      },
+      "apply": {
+        "ok": true,
+        "files": [
+          "Application/HabitService.cs"
+        ]
+      }
+    },
+    {
+      "id": "DM6",
+      "gated": false,
+      "killed": null,
+      "reported": true,
+      "why": "no HTTP route: only a scenario driving the nudger sees it (reported, as registered)"
+    }
+  ],
+  "RM": [
+    {
+      "id": "RM1",
+      "mutant": "the runner reports a row NOT RUN with every prerequisite present",
+      "killed": true,
+      "caught": true,
+      "fake_rows": 6,
+      "not_run_only_in_one_row": true,
+      "not_run_calls": [
+        [
+          "one_row",
+          5452
+        ]
+      ]
+    },
+    {
+      "id": "RM2",
+      "mutant": "the self-hash check skips an entry or accepts an edited hash",
+      "killed": true,
+      "control_passes": true,
+      "checks": {
+        "skips the running script's entry": "caught: freeze check failed (0433d7943e734935a61414fffed8b8fb.sha256): not lis",
+        "skips a library file's entry": "caught: freeze check failed (682913a52a8a4da3b7cb76fa596d7165.sha256): not lis",
+        "skips the mutants runner's entry": "caught: freeze check failed (43d43975b60f46359f8b70e4b80656ae.sha256): not lis",
+        "skips a stand-in file's entry": "caught: freeze check failed (fac6e987b74a4170b4fa56a2f2952b73.sha256): not lis",
+        "one edited hash": "caught: freeze check failed (01f2bcb58a6546f987d524a1b18cee7b.sha256): mismatc",
+        "a listed file that does not exist": "caught: freeze check failed (2315a83fc8ad46cc8e63911047ad7a08.sha256): mismatc"
+      },
+      "caught": true
+    }
+  ],
+  "HM": {
+    "h1": "/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/scored-hm/scr/targets/h1/tests/spec/outlay",
+    "h1_tree_sha256": "d4ab7122991db3d8cd8d1c67f0884c2541180a97376ebe15d628d7b4787f754b",
+    "mutants_md_sha256": "68fcd1d5ca377733ddc5d0b59c48901c34bcce1bc354a3112ab65c346e4271cb",
+    "truth_sha256": "682b739af0572377dd0f4995f5712bce81fe0890acb05d062a550fae24401c75",
+    "patch_sha256": {
+      "m01.diff": "9b8aba8f02657b014327c0169b201aebfea08bed5b582240955a210ec9b7265f",
+      "m02.diff": "0005ed1d88aeb373b412232c3b938c1603d2b3844710e45b692ac3b794db7043",
+      "m03.diff": "58fb71b90f8cc7d24c5369864951634e87345ed36f050a49141cf60605877cde",
+      "m04.diff": "0273db3bcbd9ac6f6d20037f2bf8e2d989caf7db0f6c187565c4daf55990607e",
+      "m05.diff": "9362972ea9ed0c3a6eed78a2812fe696ac14f976cc8bbc4eb455463afdaa1fe1",
+      "m06.diff": "7844b531b5c749c3aace856f9b2aafeaaf1857a9efd71c4e7d181118d22d31d3",
+      "m07.diff": "ead59f3ae69b539a3eb9cb7335614bec29f407e4f0a7ffb69b7637f800d7599f",
+      "m08.diff": "eb6a6ffa96092991e9f3a65e63473f853caf4296789e40654d07357e69e7c8a5",
+      "m09.diff": "c042144bb4eb8b7f1a5122ce29018ac014990b75dc1330d4937e7e0ae73024e2",
+      "m10.diff": "7a62def65e580390af7157abada00007c30a4a7b7ca2f8bf3509afdd361f8747",
+      "m11.diff": "5c97ddce8bc33d3baa02841fa746fc2ff242a88630b6ccbfc4d24fa23e074f2f",
+      "m12.diff": "147a8000c67c8d6f97c27b482edfeeec0962cc4df80c87671909e2175d6bf367",
+      "m13.diff": "d0ce181bb01239f463af4057cb71edbefe166c5481b092b012a3e4304b363fa7",
+      "m14.diff": "0155a32b1cf68dfb3e8e0b306417c1bd53865e500a7436bac93e8ecf2583767d",
+      "m15.diff": "f39c8838b638316547d9b2f703872528be4601278025e7f36c20055c5377eeb8",
+      "m16.diff": "48c52692ba3b79386d8cb4134ab5148d8b1bf0a8ae94980d44bbd018b877519a"
+    },
+    "control": {
+      "passes": true,
+      "dn801_dn802_on_hm_routes": [],
+      "registered_r_items_refuted": [],
+      "pristine_copy_new_findings": [],
+      "pristine_copy_equals_h1": true,
+      "binary_injection_works": true,
+      "layer_a_original_findings": [],
+      "r_items": 77,
+      "r_verified": 3,
+      "r_items_unstable_between_two_runs": [],
+      "binary_injection": "make_app starts /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/scored-hm/scr/shims/dotnet /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f2",
+      "operators": {
+        "HM1": {
+          "key": "owner_read",
+          "from_list": "owner_read",
+          "from_id": "owner_read",
+          "cell": "owner_read",
+          "shifted": false,
+          "source": "list"
+        },
+        "HM2": {
+          "key": "owner_write",
+          "from_list": "owner_write",
+          "from_id": "owner_read",
+          "cell": "owner_write",
+          "shifted": false,
+          "source": "list"
+        },
+        "HM3": {
+          "key": "owner_write",
+          "from_list": "owner_write",
+          "from_id": "owner_write",
+          "cell": "owner_write",
+          "shifted": false,
+          "source": "list"
+        },
+        "HM4": {
+          "key": "owner_write",
+          "from_list": "owner_write",
+          "from_id": "owner_write",
+          "cell": "owner_write",
+          "shifted": false,
+          "source": "list"
+        },
+        "HM5": {
+          "key": "expose_column",
+          "from_list": "expose_column",
+          "from_id": "expose_column",
+          "cell": "expose_column",
+          "shifted": false,
+          "source": "list"
+        },
+        "HM6": {
+          "key": "expose_column",
+          "from_list": "expose_column",
+          "from_id": "expose_column",
+          "cell": "expose_column",
+          "shifted": false,
+          "source": "list"
+        },
+        "HM7": {
+          "key": "drop_login",
+          "from_list": "drop_login",
+          "from_id": "drop_login",
+          "cell": "drop_login",
+          "shifted": false,
+          "source": "list"
+        },
+        "HM8": {
+          "key": "drop_login",
+          "from_list": "drop_login",
+          "from_id": "drop_login",
+          "cell": "drop_login",
+          "shifted": false,
+          "source": "list"
+        },
+        "HM9": {
+          "key": "status_403",
+          "from_list": "status_403",
+          "from_id": "status_403",
+          "cell": "status_403",
+          "shifted": false,
+          "source": "list"
+        },
+        "HM10": {
+          "key": "status_403",
+          "from_list": "status_403",
+          "from_id": "status_403",
+          "cell": "status_403",
+          "shifted": false,
+          "source": "list"
+        },
+        "HM11": {
+          "key": "drop_parent",
+          "from_list": "drop_parent",
+          "from_id": "drop_parent",
+          "cell": "drop_parent",
+          "shifted": false,
+          "source": "list"
+        },
+        "HM12": {
+          "key": "drop_guard",
+          "from_list": "drop_guard",
+          "from_id": "drop_guard",
+          "cell": "drop_guard",
+          "shifted": false,
+          "source": "list"
+        },
+        "HM13": {
+          "key": "drop_guard",
+          "from_list": "drop_guard",
+          "from_id": "drop_guard",
+          "cell": "drop_guard",
+          "shifted": false,
+          "source": "list"
+        },
+        "HM14": {
+          "key": "loosen_bound",
+          "from_list": "loosen_bound",
+          "from_id": "loosen_bound",
+          "cell": "loosen_bound",
+          "shifted": false,
+          "source": "list"
+        },
+        "HM15": {
+          "key": "owner_body",
+          "from_list": "owner_body",
+          "from_id": "owner_body",
+          "cell": "owner_body",
+          "shifted": false,
+          "source": "list"
+        },
+        "HM16": {
+          "key": "widen_list",
+          "from_list": "widen_list",
+          "from_id": "widen_list",
+          "cell": "widen_list",
+          "shifted": false,
+          "source": "list"
+        }
+      }
+    },
+    "rows": [
+      {
+        "id": "HM1",
+        "patch": "m01.diff",
+        "patch_sha256": "9b8aba8f02657b014327c0169b201aebfea08bed5b582240955a210ec9b7265f",
+        "mutants_md_line": "HM1 | owner_read | GET /reports/{reportId:int} | Features/Reports/ReportService.cs:21 | owner_read fits only this route (direct-owner single-row read; lists go to widen_list, line reads to drop_parent), so used once; GetMine also reads the lines directly because ListLines re-checks the owner",
+        "operator": {
+          "key": "owner_read",
+          "from_list": "owner_read",
+          "from_id": "owner_read",
+          "cell": "owner_read",
+          "shifted": false,
+          "source": "list"
+        },
+        "route": "GET /reports/{}",
+        "file_line": [
+          "Features/Reports/ReportService.cs",
+          21
+        ],
+        "substitutions": "owner_read fits only this route (direct-owner single-row read; lists go to widen_list, line reads to drop_parent), so used once; GetMine also reads the lines directly because ListLines re-checks the owner",
+        "operator_key": "owner_read",
+        "gated": true,
+        "detectors": [
+          {
+            "detector": "DN801 on GET /reports/{}",
+            "layer": "A",
+            "armed": true,
+            "flipped": false,
+            "hits": [],
+            "control_findings": []
+          }
+        ],
+        "killed": false,
+        "killed_by": "survived: DN801 on GET /reports/{}: no new finding",
+        "expose_column": null,
+        "status": "judged",
+        "apply": {
+          "ok": true,
+          "returncode": 0,
+          "output": "patching file 'Features/Reports/ReportService.cs'\n",
+          "leftovers": [],
+          "files_changed": [
+            "Features/Reports/ReportService.cs"
+          ]
+        },
+        "layer_a": {
+          "new_findings": []
+        },
+        "layer_r": {
+          "ran": true,
+          "flipped_items [control, mutant]": {}
+        },
+        "wall_s": 24.4
+      },
+      {
+        "id": "HM2",
+        "patch": "m02.diff",
+        "patch_sha256": "0005ed1d88aeb373b412232c3b938c1603d2b3844710e45b692ac3b794db7043",
+        "mutants_md_line": "HM2 | owner_write | PATCH /reports/{reportId:int} | Features/Reports/ReportService.cs:46 | owner_read had one fit, so owner_write takes HM2-HM4: the three direct-owner writes PATCH, DELETE, submit",
+        "operator": {
+          "key": "owner_write",
+          "from_list": "owner_write",
+          "from_id": "owner_read",
+          "cell": "owner_write",
+          "shifted": false,
+          "source": "list"
+        },
+        "route": "PATCH /reports/{}",
+        "file_line": [
+          "Features/Reports/ReportService.cs",
+          46
+        ],
+        "substitutions": "owner_read had one fit, so owner_write takes HM2-HM4: the three direct-owner writes PATCH, DELETE, submit",
+        "operator_key": "owner_write",
+        "gated": true,
+        "detectors": [
+          {
+            "detector": "DN801 on PATCH /reports/{}",
+            "layer": "A",
+            "armed": true,
+            "flipped": false,
+            "hits": [],
+            "control_findings": []
+          }
+        ],
+        "killed": false,
+        "killed_by": "survived: DN801 on PATCH /reports/{}: no new finding",
+        "expose_column": null,
+        "status": "judged",
+        "apply": {
+          "ok": true,
+          "returncode": 0,
+          "output": "patching file 'Features/Reports/ReportService.cs'\n",
+          "leftovers": [],
+          "files_changed": [
+            "Features/Reports/ReportService.cs"
+          ]
+        },
+        "layer_a": {
+          "new_findings": []
+        },
+        "layer_r": {
+          "ran": true,
+          "flipped_items [control, mutant]": {}
+        },
+        "wall_s": 24.4
+      },
+      {
+        "id": "HM3",
+        "patch": "m03.diff",
+        "patch_sha256": "58fb71b90f8cc7d24c5369864951634e87345ed36f050a49141cf60605877cde",
+        "mutants_md_line": "HM3 | owner_write | DELETE /reports/{reportId:int} | Features/Reports/ReportService.cs:59 | second of three owner_write instances (see HM2)",
+        "operator": {
+          "key": "owner_write",
+          "from_list": "owner_write",
+          "from_id": "owner_write",
+          "cell": "owner_write",
+          "shifted": false,
+          "source": "list"
+        },
+        "route": "DELETE /reports/{}",
+        "file_line": [
+          "Features/Reports/ReportService.cs",
+          59
+        ],
+        "substitutions": "second of three owner_write instances (see HM2)",
+        "operator_key": "owner_write",
+        "gated": true,
+        "detectors": [
+          {
+            "detector": "DN801 on DELETE /reports/{}",
+            "layer": "A",
+            "armed": true,
+            "flipped": false,
+            "hits": [],
+            "control_findings": []
+          }
+        ],
+        "killed": false,
+        "killed_by": "survived: DN801 on DELETE /reports/{}: no new finding",
+        "expose_column": null,
+        "status": "judged",
+        "apply": {
+          "ok": true,
+          "returncode": 0,
+          "output": "patching file 'Features/Reports/ReportService.cs'\n",
+          "leftovers": [],
+          "files_changed": [
+            "Features/Reports/ReportService.cs"
+          ]
+        },
+        "layer_a": {
+          "new_findings": []
+        },
+        "layer_r": {
+          "ran": true,
+          "flipped_items [control, mutant]": {}
+        },
+        "wall_s": 24.5
+      },
+      {
+        "id": "HM4",
+        "patch": "m04.diff",
+        "patch_sha256": "0273db3bcbd9ac6f6d20037f2bf8e2d989caf7db0f6c187565c4daf55990607e",
+        "mutants_md_line": "HM4 | owner_write | POST /reports/{reportId:int}/submit | Features/Reports/ReportService.cs:68 | third of three owner_write instances (see HM2)",
+        "operator": {
+          "key": "owner_write",
+          "from_list": "owner_write",
+          "from_id": "owner_write",
+          "cell": "owner_write",
+          "shifted": false,
+          "source": "list"
+        },
+        "route": "POST /reports/{}/submit",
+        "file_line": [
+          "Features/Reports/ReportService.cs",
+          68
+        ],
+        "substitutions": "third of three owner_write instances (see HM2)",
+        "operator_key": "owner_write",
+        "gated": true,
+        "detectors": [
+          {
+            "detector": "DN801 on POST /reports/{}/submit",
+            "layer": "A",
+            "armed": true,
+            "flipped": false,
+            "hits": [],
+            "control_findings": []
+          }
+        ],
+        "killed": false,
+        "killed_by": "survived: DN801 on POST /reports/{}/submit: no new finding",
+        "expose_column": null,
+        "status": "judged",
+        "apply": {
+          "ok": true,
+          "returncode": 0,
+          "output": "patching file 'Features/Reports/ReportService.cs'\n",
+          "leftovers": [],
+          "files_changed": [
+            "Features/Reports/ReportService.cs"
+          ]
+        },
+        "layer_a": {
+          "new_findings": []
+        },
+        "layer_r": {
+          "ran": true,
+          "flipped_items [control, mutant]": {}
+        },
+        "wall_s": 24.4
+      },
+      {
+        "id": "HM5",
+        "patch": "m05.diff",
+        "patch_sha256": "9362972ea9ed0c3a6eed78a2812fe696ac14f976cc8bbc4eb455463afdaa1fe1",
+        "mutants_md_line": "HM5 | expose_column | POST /auth/login | Features/Auth/AuthService.cs:24 | first route answering a User row; exposes User.password as user.password (also Features/Auth/AuthDtos.cs:21)",
+        "operator": {
+          "key": "expose_column",
+          "from_list": "expose_column",
+          "from_id": "expose_column",
+          "cell": "expose_column",
+          "shifted": false,
+          "source": "list"
+        },
+        "route": "POST /auth/login",
+        "file_line": [
+          "Features/Auth/AuthService.cs",
+          24
+        ],
+        "substitutions": "first route answering a User row; exposes User.password as user.password (also Features/Auth/AuthDtos.cs:21)",
+        "operator_key": "expose_column",
+        "gated": true,
+        "detectors": [
+          {
+            "detector": "DN802 on POST /auth/login",
+            "layer": "A",
+            "armed": true,
+            "flipped": false,
+            "hits": [],
+            "control_findings": []
+          }
+        ],
+        "killed": false,
+        "killed_by": "survived: DN802 on POST /auth/login: no new finding",
+        "expose_column": {
+          "columns": [
+            "PayoutMethod.account_number",
+            "PayoutMethod.user_id",
+            "User.created_at",
+            "User.password",
+            "payout_methods.account_number",
+            "payout_methods.user_id",
+            "users.created_at",
+            "users.password"
+          ],
+          "named_by_mutants_md": false
+        },
+        "status": "judged",
+        "apply": {
+          "ok": true,
+          "returncode": 0,
+          "output": "patching file 'Features/Auth/AuthDtos.cs'\npatching file 'Features/Auth/AuthService.cs'\n",
+          "leftovers": [],
+          "files_changed": [
+            "Features/Auth/AuthDtos.cs",
+            "Features/Auth/AuthService.cs"
+          ]
+        },
+        "layer_a": {
+          "new_findings": []
+        },
+        "layer_r": {
+          "ran": true,
+          "flipped_items [control, mutant]": {}
+        },
+        "wall_s": 24.5
+      },
+      {
+        "id": "HM6",
+        "patch": "m06.diff",
+        "patch_sha256": "7844b531b5c749c3aace856f9b2aafeaaf1857a9efd71c4e7d181118d22d31d3",
+        "mutants_md_line": "HM6 | expose_column | POST /payout-methods | Features/Payouts/PayoutService.cs:48 | last route answering a PayoutMethod row; exposes PayoutMethod.account_number as accountNumber on the create answer only (also Features/Payouts/PayoutDtos.cs:22)",
+        "operator": {
+          "key": "expose_column",
+          "from_list": "expose_column",
+          "from_id": "expose_column",
+          "cell": "expose_column",
+          "shifted": false,
+          "source": "list"
+        },
+        "route": "POST /payout-methods",
+        "file_line": [
+          "Features/Payouts/PayoutService.cs",
+          48
+        ],
+        "substitutions": "last route answering a PayoutMethod row; exposes PayoutMethod.account_number as accountNumber on the create answer only (also Features/Payouts/PayoutDtos.cs:22)",
+        "operator_key": "expose_column",
+        "gated": true,
+        "detectors": [
+          {
+            "detector": "DN802 on POST /payout-methods",
+            "layer": "A",
+            "armed": true,
+            "flipped": false,
+            "hits": [],
+            "control_findings": []
+          }
+        ],
+        "killed": false,
+        "killed_by": "survived: DN802 on POST /payout-methods: no new finding",
+        "expose_column": {
+          "columns": [
+            "PayoutMethod.account_number",
+            "PayoutMethod.user_id",
+            "User.created_at",
+            "User.password",
+            "payout_methods.account_number",
+            "payout_methods.user_id",
+            "users.created_at",
+            "users.password"
+          ],
+          "named_by_mutants_md": false
+        },
+        "status": "judged",
+        "apply": {
+          "ok": true,
+          "returncode": 0,
+          "output": "patching file 'Features/Payouts/PayoutDtos.cs'\npatching file 'Features/Payouts/PayoutService.cs'\n",
+          "leftovers": [],
+          "files_changed": [
+            "Features/Payouts/PayoutDtos.cs",
+            "Features/Payouts/PayoutService.cs"
+          ]
+        },
+        "layer_a": {
+          "new_findings": []
+        },
+        "layer_r": {
+          "ran": true,
+          "flipped_items [control, mutant]": {}
+        },
+        "wall_s": 24.6
+      },
+      {
+        "id": "HM7",
+        "patch": "m07.diff",
+        "patch_sha256": "ead59f3ae69b539a3eb9cb7335614bec29f407e4f0a7ffb69b7637f800d7599f",
+        "mutants_md_line": "HM7 | drop_login | GET /reports | Features/Reports/ReportsController.cs:11 | none (first Member route); [AllowAnonymous] on the action, an anonymous call now reaches User.UserId() and answers 500 not 401",
+        "operator": {
+          "key": "drop_login",
+          "from_list": "drop_login",
+          "from_id": "drop_login",
+          "cell": "drop_login",
+          "shifted": false,
+          "source": "list"
+        },
+        "route": "GET /reports",
+        "file_line": [
+          "Features/Reports/ReportsController.cs",
+          11
+        ],
+        "substitutions": "none (first Member route); [AllowAnonymous] on the action, an anonymous call now reaches User.UserId() and answers 500 not 401",
+        "operator_key": "drop_login",
+        "gated": true,
+        "detectors": [
+          {
+            "detector": "R1 GET /reports",
+            "layer": "R",
+            "armed": false,
+            "flipped": false,
+            "hits": [],
+            "items [control, mutant]": {
+              "R1 GET /reports": [
+                "unexercised",
+                "unexercised"
+              ]
+            },
+            "why_not": "no such item is verified on the control (or unstable)"
+          }
+        ],
+        "killed": false,
+        "killed_by": "survived: R1 GET /reports: no such item is verified on the control (or unstable)",
+        "expose_column": null,
+        "status": "judged",
+        "apply": {
+          "ok": true,
+          "returncode": 0,
+          "output": "patching file 'Features/Reports/ReportsController.cs'\n",
+          "leftovers": [],
+          "files_changed": [
+            "Features/Reports/ReportsController.cs"
+          ]
+        },
+        "layer_a": {
+          "new_findings": []
+        },
+        "layer_r": {
+          "ran": true,
+          "flipped_items [control, mutant]": {
+            "R3 GET /reports 5xx": [
+              "unexercised",
+              "refuted"
+            ]
+          }
+        },
+        "wall_s": 24.5
+      },
+      {
+        "id": "HM8",
+        "patch": "m08.diff",
+        "patch_sha256": "eb6a6ffa96092991e9f3a65e63473f853caf4296789e40654d07357e69e7c8a5",
+        "mutants_md_line": "HM8 | drop_login | POST /payout-methods | Features/Payouts/PayoutMethodsController.cs:15 | none (last Member route); [AllowAnonymous] on the action, an anonymous call answers 500 not 401",
+        "operator": {
+          "key": "drop_login",
+          "from_list": "drop_login",
+          "from_id": "drop_login",
+          "cell": "drop_login",
+          "shifted": false,
+          "source": "list"
+        },
+        "route": "POST /payout-methods",
+        "file_line": [
+          "Features/Payouts/PayoutMethodsController.cs",
+          15
+        ],
+        "substitutions": "none (last Member route); [AllowAnonymous] on the action, an anonymous call answers 500 not 401",
+        "operator_key": "drop_login",
+        "gated": true,
+        "detectors": [
+          {
+            "detector": "R1 POST /payout-methods",
+            "layer": "R",
+            "armed": false,
+            "flipped": false,
+            "hits": [],
+            "items [control, mutant]": {
+              "R1 POST /payout-methods": [
+                "unexercised",
+                "refuted"
+              ]
+            },
+            "why_not": "no such item is verified on the control (or unstable)"
+          }
+        ],
+        "killed": false,
+        "killed_by": "survived: R1 POST /payout-methods: no such item is verified on the control (or unstable)",
+        "expose_column": null,
+        "status": "judged",
+        "apply": {
+          "ok": true,
+          "returncode": 0,
+          "output": "patching file 'Features/Payouts/PayoutMethodsController.cs'\n",
+          "leftovers": [],
+          "files_changed": [
+            "Features/Payouts/PayoutMethodsController.cs"
+          ]
+        },
+        "layer_a": {
+          "new_findings": []
+        },
+        "layer_r": {
+          "ran": true,
+          "flipped_items [control, mutant]": {
+            "R1 POST /payout-methods": [
+              "unexercised",
+              "refuted"
+            ],
+            "R3 POST /payout-methods 400": [
+              "unexercised",
+              "verified"
+            ],
+            "R3 POST /payout-methods 5xx": [
+              "unexercised",
+              "verified"
+            ]
+          }
+        },
+        "wall_s": 24.6
+      },
+      {
+        "id": "HM9",
+        "patch": "m09.diff",
+        "patch_sha256": "c042144bb4eb8b7f1a5122ce29018ac014990b75dc1330d4937e7e0ae73024e2",
+        "mutants_md_line": "HM9 | status_403 | GET /reports/{reportId:int} | Features/Reports/ReportService.cs:22 | none (first route with a not_found refusal); same detail text, status 403",
+        "operator": {
+          "key": "status_403",
+          "from_list": "status_403",
+          "from_id": "status_403",
+          "cell": "status_403",
+          "shifted": false,
+          "source": "list"
+        },
+        "route": "GET /reports/{}",
+        "file_line": [
+          "Features/Reports/ReportService.cs",
+          22
+        ],
+        "substitutions": "none (first route with a not_found refusal); same detail text, status 403",
+        "operator_key": "status_403",
+        "gated": true,
+        "detectors": [
+          {
+            "detector": "R3 GET /reports/{} status [404]",
+            "layer": "R",
+            "armed": false,
+            "flipped": false,
+            "hits": [],
+            "items [control, mutant]": {},
+            "why_not": "the spec has no such item"
+          }
+        ],
+        "killed": false,
+        "killed_by": "survived: R3 GET /reports/{} status [404]: the spec has no such item",
+        "expose_column": null,
+        "status_of_not_found": {
+          "statuses": [
+            404
+          ],
+          "from_truth": true
+        },
+        "status": "judged",
+        "apply": {
+          "ok": true,
+          "returncode": 0,
+          "output": "patching file 'Features/Reports/ReportService.cs'\n",
+          "leftovers": [],
+          "files_changed": [
+            "Features/Reports/ReportService.cs"
+          ]
+        },
+        "layer_a": {
+          "new_findings": []
+        },
+        "layer_r": {
+          "ran": true,
+          "flipped_items [control, mutant]": {}
+        },
+        "wall_s": 24.4
+      },
+      {
+        "id": "HM10",
+        "patch": "m10.diff",
+        "patch_sha256": "7a62def65e580390af7157abada00007c30a4a7b7ca2f8bf3509afdd361f8747",
+        "mutants_md_line": "HM10 | status_403 | POST /review/reports/{reportId:int}/reject | Features/Review/ReviewService.cs:30 | none (last route with a not_found refusal); Decide is shared with approve, so 403 only when the decision is a rejection",
+        "operator": {
+          "key": "status_403",
+          "from_list": "status_403",
+          "from_id": "status_403",
+          "cell": "status_403",
+          "shifted": false,
+          "source": "list"
+        },
+        "route": "POST /review/reports/{}/reject",
+        "file_line": [
+          "Features/Review/ReviewService.cs",
+          30
+        ],
+        "substitutions": "none (last route with a not_found refusal); Decide is shared with approve, so 403 only when the decision is a rejection",
+        "operator_key": "status_403",
+        "gated": true,
+        "detectors": [
+          {
+            "detector": "R3 POST /review/reports/{}/reject status [404]",
+            "layer": "R",
+            "armed": false,
+            "flipped": false,
+            "hits": [],
+            "items [control, mutant]": {},
+            "why_not": "the spec has no such item"
+          }
+        ],
+        "killed": false,
+        "killed_by": "survived: R3 POST /review/reports/{}/reject status [404]: the spec has no such item",
+        "expose_column": null,
+        "status_of_not_found": {
+          "statuses": [
+            404
+          ],
+          "from_truth": true
+        },
+        "status": "judged",
+        "apply": {
+          "ok": true,
+          "returncode": 0,
+          "output": "patching file 'Features/Review/ReviewService.cs'\n",
+          "leftovers": [],
+          "files_changed": [
+            "Features/Review/ReviewService.cs"
+          ]
+        },
+        "layer_a": {
+          "new_findings": []
+        },
+        "layer_r": {
+          "ran": true,
+          "flipped_items [control, mutant]": {}
+        },
+        "wall_s": 24.4
+      },
+      {
+        "id": "HM11",
+        "patch": "m11.diff",
+        "patch_sha256": "5c97ddce8bc33d3baa02841fa746fc2ff242a88630b6ccbfc4d24fa23e074f2f",
+        "mutants_md_line": "HM11 | drop_parent | GET /reports/{reportId:int}/lines | Features/Reports/ReportService.cs:93 | only owner_via table is ExpenseLine; first route reaching it (the parent check is in ListLines); a missing report still answers 404, another user's report no longer does",
+        "operator": {
+          "key": "drop_parent",
+          "from_list": "drop_parent",
+          "from_id": "drop_parent",
+          "cell": "drop_parent",
+          "shifted": false,
+          "source": "list"
+        },
+        "route": "GET /reports/{}/lines",
+        "file_line": [
+          "Features/Reports/ReportService.cs",
+          93
+        ],
+        "substitutions": "only owner_via table is ExpenseLine; first route reaching it (the parent check is in ListLines); a missing report still answers 404, another user's report no longer does",
+        "operator_key": "drop_parent",
+        "gated": false,
+        "detectors": [
+          {
+            "detector": "DN801 on GET /reports/{}/lines",
+            "layer": "A",
+            "armed": true,
+            "flipped": false,
+            "hits": [],
+            "control_findings": []
+          },
+          {
+            "detector": "R2 GET /reports/{}/lines",
+            "layer": "R",
+            "armed": false,
+            "flipped": false,
+            "hits": [],
+            "items [control, mutant]": {},
+            "why_not": "the spec has no such item"
+          }
+        ],
+        "killed": false,
+        "killed_by": "survived: DN801 on GET /reports/{}/lines: no new finding; R2 GET /reports/{}/lines: the spec has no such item",
+        "expose_column": null,
+        "status": "judged",
+        "apply": {
+          "ok": true,
+          "returncode": 0,
+          "output": "patching file 'Features/Reports/ReportService.cs'\n",
+          "leftovers": [],
+          "files_changed": [
+            "Features/Reports/ReportService.cs"
+          ]
+        },
+        "layer_a": {
+          "new_findings": []
+        },
+        "layer_r": {
+          "ran": true,
+          "flipped_items [control, mutant]": {}
+        },
+        "wall_s": 24.4
+      },
+      {
+        "id": "HM12",
+        "patch": "m12.diff",
+        "patch_sha256": "147a8000c67c8d6f97c27b482edfeeec0962cc4df80c87671909e2175d6bf367",
+        "mutants_md_line": "HM12 | drop_guard | POST /reports/{reportId:int}/submit | Features/Reports/ReportService.cs:69 | none (first transition); drops the CanTransition conflict guard, the no-lines guard stays",
+        "operator": {
+          "key": "drop_guard",
+          "from_list": "drop_guard",
+          "from_id": "drop_guard",
+          "cell": "drop_guard",
+          "shifted": false,
+          "source": "list"
+        },
+        "route": "POST /reports/{}/submit",
+        "file_line": [
+          "Features/Reports/ReportService.cs",
+          69
+        ],
+        "substitutions": "none (first transition); drops the CanTransition conflict guard, the no-lines guard stays",
+        "operator_key": "drop_guard",
+        "gated": false,
+        "detectors": [
+          {
+            "detector": "R3 POST /reports/{}/submit status [409]",
+            "layer": "R",
+            "armed": false,
+            "flipped": false,
+            "hits": [],
+            "items [control, mutant]": {},
+            "why_not": "the spec has no such item"
+          }
+        ],
+        "killed": false,
+        "killed_by": "survived: R3 POST /reports/{}/submit status [409]: the spec has no such item",
+        "expose_column": null,
+        "status_of_conflict": {
+          "statuses": [
+            409
+          ],
+          "from_truth": true
+        },
+        "status": "judged",
+        "apply": {
+          "ok": true,
+          "returncode": 0,
+          "output": "patching file 'Features/Reports/ReportService.cs'\n",
+          "leftovers": [],
+          "files_changed": [
+            "Features/Reports/ReportService.cs"
+          ]
+        },
+        "layer_a": {
+          "new_findings": []
+        },
+        "layer_r": {
+          "ran": true,
+          "flipped_items [control, mutant]": {}
+        },
+        "wall_s": 24.3
+      },
+      {
+        "id": "HM13",
+        "patch": "m13.diff",
+        "patch_sha256": "d0ce181bb01239f463af4057cb71edbefe166c5481b092b012a3e4304b363fa7",
+        "mutants_md_line": "HM13 | drop_guard | POST /review/reports/{reportId:int}/reject | Features/Review/ReviewService.cs:33 | none (last transition); drops the CanTransition guard for reject only, and the atomic Status == Submitted backstop in the same method (ReviewService.cs:40) for reject only, otherwise the guard stays masked as a 409",
+        "operator": {
+          "key": "drop_guard",
+          "from_list": "drop_guard",
+          "from_id": "drop_guard",
+          "cell": "drop_guard",
+          "shifted": false,
+          "source": "list"
+        },
+        "route": "POST /review/reports/{}/reject",
+        "file_line": [
+          "Features/Review/ReviewService.cs",
+          33
+        ],
+        "substitutions": "none (last transition); drops the CanTransition guard for reject only, and the atomic Status == Submitted backstop in the same method (ReviewService.cs:40) for reject only, otherwise the guard stays masked as a 409",
+        "operator_key": "drop_guard",
+        "gated": false,
+        "detectors": [
+          {
+            "detector": "R3 POST /review/reports/{}/reject status [409]",
+            "layer": "R",
+            "armed": false,
+            "flipped": false,
+            "hits": [],
+            "items [control, mutant]": {},
+            "why_not": "the spec has no such item"
+          }
+        ],
+        "killed": false,
+        "killed_by": "survived: R3 POST /review/reports/{}/reject status [409]: the spec has no such item",
+        "expose_column": null,
+        "status_of_conflict": {
+          "statuses": [
+            409
+          ],
+          "from_truth": true
+        },
+        "status": "judged",
+        "apply": {
+          "ok": true,
+          "returncode": 0,
+          "output": "patching file 'Features/Review/ReviewService.cs'\n",
+          "leftovers": [],
+          "files_changed": [
+            "Features/Review/ReviewService.cs"
+          ]
+        },
+        "layer_a": {
+          "new_findings": []
+        },
+        "layer_r": {
+          "ran": true,
+          "flipped_items [control, mutant]": {}
+        },
+        "wall_s": 24.5
+      },
+      {
+        "id": "HM14",
+        "patch": "m14.diff",
+        "patch_sha256": "0155a32b1cf68dfb3e8e0b306417c1bd53865e500a7436bac93e8ecf2583767d",
+        "mutants_md_line": "HM14 | loosen_bound | POST /auth/login | Features/Auth/AuthDtos.cs:8 | none (first route in truth.json order with an upper bound, email max_length 254); StringLength max becomes int.MaxValue, min length 3 stays",
+        "operator": {
+          "key": "loosen_bound",
+          "from_list": "loosen_bound",
+          "from_id": "loosen_bound",
+          "cell": "loosen_bound",
+          "shifted": false,
+          "source": "list"
+        },
+        "route": "POST /auth/login",
+        "file_line": [
+          "Features/Auth/AuthDtos.cs",
+          8
+        ],
+        "substitutions": "none (first route in truth.json order with an upper bound, email max_length 254); StringLength max becomes int.MaxValue, min length 3 stays",
+        "operator_key": "loosen_bound",
+        "gated": false,
+        "detectors": [
+          {
+            "detector": "R3 POST /auth/login status [400]",
+            "layer": "R",
+            "armed": true,
+            "flipped": false,
+            "hits": [],
+            "items [control, mutant]": {
+              "R3 POST /auth/login 400": [
+                "verified",
+                "verified"
+              ]
+            },
+            "why_not": "no such item is refuted on the mutant"
+          }
+        ],
+        "killed": false,
+        "killed_by": "survived: R3 POST /auth/login status [400]: no such item is refuted on the mutant",
+        "expose_column": null,
+        "status_of_invalid": {
+          "statuses": [
+            400
+          ],
+          "from_truth": true
+        },
+        "status": "judged",
+        "apply": {
+          "ok": true,
+          "returncode": 0,
+          "output": "patching file 'Features/Auth/AuthDtos.cs'\n",
+          "leftovers": [],
+          "files_changed": [
+            "Features/Auth/AuthDtos.cs"
+          ]
+        },
+        "layer_a": {
+          "new_findings": []
+        },
+        "layer_r": {
+          "ran": true,
+          "flipped_items [control, mutant]": {}
+        },
+        "wall_s": 24.6
+      },
+      {
+        "id": "HM15",
+        "patch": "m15.diff",
+        "patch_sha256": "f39c8838b638316547d9b2f703872528be4601278025e7f36c20055c5377eeb8",
+        "mutants_md_line": "HM15 | owner_body | POST /reports | Features/Reports/ReportService.cs:32 | none (first create route); request gains an optional userId that sets the owner, falling back to the caller (also Features/Reports/ReportDtos.cs:12)",
+        "operator": {
+          "key": "owner_body",
+          "from_list": "owner_body",
+          "from_id": "owner_body",
+          "cell": "owner_body",
+          "shifted": false,
+          "source": "list"
+        },
+        "route": "POST /reports",
+        "file_line": [
+          "Features/Reports/ReportService.cs",
+          32
+        ],
+        "substitutions": "none (first create route); request gains an optional userId that sets the owner, falling back to the caller (also Features/Reports/ReportDtos.cs:12)",
+        "operator_key": "owner_body",
+        "gated": false,
+        "detectors": [
+          {
+            "detector": "DN801 on POST /reports",
+            "layer": "A",
+            "armed": true,
+            "flipped": false,
+            "hits": [],
+            "control_findings": []
+          },
+          {
+            "detector": "R2 POST /reports",
+            "layer": "R",
+            "armed": false,
+            "flipped": false,
+            "hits": [],
+            "items [control, mutant]": {},
+            "why_not": "the spec has no such item"
+          }
+        ],
+        "killed": false,
+        "killed_by": "survived: DN801 on POST /reports: no new finding; R2 POST /reports: the spec has no such item",
+        "expose_column": null,
+        "status": "judged",
+        "apply": {
+          "ok": true,
+          "returncode": 0,
+          "output": "patching file 'Features/Reports/ReportDtos.cs'\npatching file 'Features/Reports/ReportService.cs'\n",
+          "leftovers": [],
+          "files_changed": [
+            "Features/Reports/ReportDtos.cs",
+            "Features/Reports/ReportService.cs"
+          ]
+        },
+        "layer_a": {
+          "new_findings": [
+            "DN803 DN803|POST /reports|CreateReportRequest.UserId"
+          ]
+        },
+        "layer_r": {
+          "ran": true,
+          "flipped_items [control, mutant]": {}
+        },
+        "wall_s": 24.5
+      },
+      {
+        "id": "HM16",
+        "patch": "m16.diff",
+        "patch_sha256": "48c52692ba3b79386d8cb4134ab5148d8b1bf0a8ae94980d44bbd018b877519a",
+        "mutants_md_line": "HM16 | widen_list | GET /reports | Features/Reports/ReportService.cs:15 | none (first owner-scoped list route); the UserId filter is removed so every user's reports are listed",
+        "operator": {
+          "key": "widen_list",
+          "from_list": "widen_list",
+          "from_id": "widen_list",
+          "cell": "widen_list",
+          "shifted": false,
+          "source": "list"
+        },
+        "route": "GET /reports",
+        "file_line": [
+          "Features/Reports/ReportService.cs",
+          15
+        ],
+        "substitutions": "none (first owner-scoped list route); the UserId filter is removed so every user's reports are listed",
+        "operator_key": "widen_list",
+        "gated": false,
+        "detectors": [
+          {
+            "detector": "DN801 on GET /reports",
+            "layer": "A",
+            "armed": true,
+            "flipped": false,
+            "hits": [],
+            "control_findings": []
+          },
+          {
+            "detector": "R2 GET /reports",
+            "layer": "R",
+            "armed": false,
+            "flipped": false,
+            "hits": [],
+            "items [control, mutant]": {},
+            "why_not": "the spec has no such item"
+          }
+        ],
+        "killed": false,
+        "killed_by": "survived: DN801 on GET /reports: no new finding; R2 GET /reports: the spec has no such item",
+        "expose_column": null,
+        "status": "judged",
+        "apply": {
+          "ok": true,
+          "returncode": 0,
+          "output": "patching file 'Features/Reports/ReportService.cs'\n",
+          "leftovers": [],
+          "files_changed": [
+            "Features/Reports/ReportService.cs"
+          ]
+        },
+        "layer_a": {
+          "new_findings": []
+        },
+        "layer_r": {
+          "ran": true,
+          "flipped_items [control, mutant]": {}
+        },
+        "wall_s": 24.4
+      }
+    ],
+    "judged": true,
+    "gate": {
+      "killed": 0,
+      "of": 16,
+      "need": 13,
+      "predicted": [
+        12,
+        15
+      ],
+      "classes": {
+        "HM1-4": {
+          "killed": 0,
+          "of": 4,
+          "need": 3,
+          "pass": false
+        },
+        "HM5-6": {
+          "killed": 0,
+          "of": 2,
+          "need": 2,
+          "pass": false
+        },
+        "HM7-8": {
+          "killed": 0,
+          "of": 2,
+          "need": 2,
+          "pass": false
+        },
+        "HM9-10": {
+          "killed": 0,
+          "of": 2,
+          "need": 2,
+          "pass": false
+        }
+      },
+      "not_run": [],
+      "verdict": "fail",
+      "survivors": [
+        "HM1",
+        "HM2",
+        "HM3",
+        "HM4",
+        "HM5",
+        "HM6",
+        "HM7",
+        "HM8",
+        "HM9",
+        "HM10",
+        "HM11",
+        "HM12",
+        "HM13",
+        "HM14",
+        "HM15",
+        "HM16"
+      ]
+    },
+    "wall_s": 491.4
+  },
+  "runner": "dotnet_mutants",
+  "runner_sha256": "410ff0283191803400587b1f8a94ce66ee8c115d050eaa1aeb05f036de5e69b4",
+  "kind": "scored",
+  "run_id": "83808539fb73",
+  "lattice_file": "/Users/vivekgade/Documents/lattice-dn/lattice/__init__.py",
+  "freeze": {
+    "file": "/Users/vivekgade/Documents/lattice-dn/docs/results/data/2026-10-18-dotnet/freeze-h1-hm.sha256",
+    "list_sha256": "913fc9d833cfc1b7743a49bbb920a618befd802a916d71092d104bc41aed4b30",
+    "entries": 122,
+    "mismatches": 0,
+    "must_listed": 83,
+    "running_script_listed": true,
+    "lattice_file": "/Users/vivekgade/Documents/lattice-dn/lattice/__init__.py",
+    "import_subprocess_lattice_file": "/Users/vivekgade/Documents/lattice-dn/lattice/__init__.py"
+  },
+  "suites": [
+    "LM",
+    "DM",
+    "RM",
+    "HM"
+  ]
+}

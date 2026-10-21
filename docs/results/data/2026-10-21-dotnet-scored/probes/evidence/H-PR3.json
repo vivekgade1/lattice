@@ -1,0 +1,18 @@
+{
+  "id": "H-PR3",
+  "probe": "layer R with the imported candidate_spec.py",
+  "ran": true,
+  "predicted": "R with the imported spec: the same verdict map after the correction map",
+  "observed": {
+    "items_import": 77,
+    "items_rerun": 77,
+    "differences [import, rerun]": {}
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "H",
+  "nodes": [
+    "B2"
+  ]
+}
