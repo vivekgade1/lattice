@@ -1,0 +1,17 @@
+{
+  "id": "H-WIRE",
+  "probe": "wire names vs truth",
+  "ran": true,
+  "predicted": "wire names >= 0.95",
+  "observed": {
+    "wire_columns": 28,
+    "ok": 28,
+    "share": 1.0,
+    "wrong": []
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "H",
+  "nodes": []
+}

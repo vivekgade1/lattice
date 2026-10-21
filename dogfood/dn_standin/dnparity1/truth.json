@@ -1,0 +1,986 @@
+{
+ "standin": "dnparity1 re-labelled as the held-out arm (self-test only)",
+ "routes": [
+  {
+   "method": "GET",
+   "template": "/api/Notes",
+   "auth": "Member",
+   "style": "controller",
+   "file": "Controllers/NotesController.cs",
+   "line": 32
+  },
+  {
+   "method": "POST",
+   "template": "/api/Notes",
+   "auth": "Member",
+   "style": "controller",
+   "file": "Controllers/NotesController.cs",
+   "line": 50
+  },
+  {
+   "method": "GET",
+   "template": "/api/Notes/public/{id:int}",
+   "auth": "Public",
+   "style": "controller",
+   "file": "Controllers/NotesController.cs",
+   "line": 132
+  },
+  {
+   "method": "DELETE",
+   "template": "/api/Notes/{id:int}",
+   "auth": "Member",
+   "style": "controller",
+   "file": "Controllers/NotesController.cs",
+   "line": 83
+  },
+  {
+   "method": "GET",
+   "template": "/api/Notes/{id:int}",
+   "auth": "Member",
+   "style": "controller",
+   "file": "Controllers/NotesController.cs",
+   "line": 39
+  },
+  {
+   "method": "PUT",
+   "template": "/api/Notes/{id:int}",
+   "auth": "Member",
+   "style": "controller",
+   "file": "Controllers/NotesController.cs",
+   "line": 68
+  },
+  {
+   "method": "POST",
+   "template": "/api/Notes/{id:int}/publish",
+   "auth": "Member",
+   "style": "controller",
+   "file": "Controllers/NotesController.cs",
+   "line": 96
+  },
+  {
+   "method": "POST",
+   "template": "/api/Notes/{id:int}/restore",
+   "auth": "Member",
+   "style": "controller",
+   "file": "Controllers/NotesController.cs",
+   "line": 114
+  },
+  {
+   "method": "GET",
+   "template": "/api/Notes/{id:int}/tags",
+   "auth": "Member",
+   "style": "controller",
+   "file": "Controllers/NotesController.cs",
+   "line": 142
+  },
+  {
+   "method": "POST",
+   "template": "/api/v2/Forms/accepted",
+   "auth": "Member",
+   "style": "controller",
+   "file": "Controllers/FormsController.cs",
+   "line": 33
+  },
+  {
+   "method": "GET",
+   "template": "/api/v2/Forms/bad/{id:int}",
+   "auth": "Member",
+   "style": "controller",
+   "file": "Controllers/FormsController.cs",
+   "line": 8
+  },
+  {
+   "method": "GET",
+   "template": "/api/v2/Forms/clash",
+   "auth": "Member",
+   "style": "controller",
+   "file": "Controllers/FormsController.cs",
+   "line": 48
+  },
+  {
+   "method": "POST",
+   "template": "/api/v2/Forms/created",
+   "auth": "Member",
+   "style": "controller",
+   "file": "Controllers/FormsController.cs",
+   "line": 36
+  },
+  {
+   "method": "GET",
+   "template": "/api/v2/Forms/explode",
+   "auth": "Member",
+   "style": "controller",
+   "file": "Controllers/FormsController.cs",
+   "line": 51
+  },
+  {
+   "method": "GET",
+   "template": "/api/v2/Forms/forbidden",
+   "auth": "Member",
+   "style": "controller",
+   "file": "Controllers/FormsController.cs",
+   "line": 21
+  },
+  {
+   "method": "GET",
+   "template": "/api/v2/Forms/gone",
+   "auth": "Member",
+   "style": "controller",
+   "file": "Controllers/FormsController.cs",
+   "line": 30
+  },
+  {
+   "method": "GET",
+   "template": "/api/v2/Forms/invalid",
+   "auth": "Member",
+   "style": "controller",
+   "file": "Controllers/FormsController.cs",
+   "line": 42
+  },
+  {
+   "method": "GET",
+   "template": "/api/v2/Forms/missing/{id:int}",
+   "auth": "Member",
+   "style": "controller",
+   "file": "Controllers/FormsController.cs",
+   "line": 45
+  },
+  {
+   "method": "DELETE",
+   "template": "/api/v2/Forms/nothing",
+   "auth": "Member",
+   "style": "controller",
+   "file": "Controllers/FormsController.cs",
+   "line": 39
+  },
+  {
+   "method": "GET",
+   "template": "/api/v2/Forms/teapot",
+   "auth": "Member",
+   "style": "controller",
+   "file": "Controllers/FormsController.cs",
+   "line": 27
+  },
+  {
+   "method": "GET",
+   "template": "/api/v2/Forms/unauthorized",
+   "auth": "Member",
+   "style": "controller",
+   "file": "Controllers/FormsController.cs",
+   "line": 18
+  },
+  {
+   "method": "GET",
+   "template": "/api/v2/Forms/unprocessable",
+   "auth": "Member",
+   "style": "controller",
+   "file": "Controllers/FormsController.cs",
+   "line": 24
+  },
+  {
+   "method": "GET",
+   "template": "/api/v2/Reports/{id:int}",
+   "auth": "Member",
+   "style": "controller",
+   "file": "Controllers/ReportsController.cs",
+   "line": 15
+  },
+  {
+   "method": "GET",
+   "template": "/api/v2/Reports/{id:int}/audit",
+   "auth": "Member",
+   "style": "controller",
+   "file": "Controllers/ReportsController.cs",
+   "line": 26
+  },
+  {
+   "method": "GET",
+   "template": "/api/v2/Users/me",
+   "auth": "Member",
+   "style": "controller",
+   "file": "Controllers/UsersController.cs",
+   "line": 15
+  },
+  {
+   "method": "GET",
+   "template": "/dev/ping",
+   "auth": "Public",
+   "style": "minimal",
+   "file": "Program.cs",
+   "line": 50
+  },
+  {
+   "method": "GET",
+   "template": "/v1/admin/notes",
+   "auth": "Admin",
+   "style": "minimal",
+   "file": "Program.cs",
+   "line": 56
+  },
+  {
+   "method": "GET",
+   "template": "/v1/forms/{kind}",
+   "auth": "Member",
+   "style": "minimal",
+   "file": "Program.cs",
+   "line": 137
+  },
+  {
+   "method": "POST",
+   "template": "/v1/notes/quick",
+   "auth": "Member",
+   "style": "minimal",
+   "file": "Program.cs",
+   "line": 76
+  },
+  {
+   "method": "POST",
+   "template": "/v1/notes/validated",
+   "auth": "Member",
+   "style": "minimal",
+   "file": "Program.cs",
+   "line": 84
+  },
+  {
+   "method": "PATCH",
+   "template": "/v1/notes/{id:int}",
+   "auth": "Member",
+   "style": "minimal",
+   "file": "Program.cs",
+   "line": 67
+  },
+  {
+   "method": "POST",
+   "template": "/v1/notes/{id:int}/split",
+   "auth": "Member",
+   "style": "minimal",
+   "file": "Program.cs",
+   "line": 97
+  },
+  {
+   "method": "POST",
+   "template": "/v1/notes/{id:int}/split-safe",
+   "auth": "Member",
+   "style": "minimal",
+   "file": "Program.cs",
+   "line": 116
+  },
+  {
+   "method": "GET",
+   "template": "/v1/notes/{id:int}/summary",
+   "auth": "Member",
+   "style": "minimal",
+   "file": "Program.cs",
+   "line": 65
+  },
+  {
+   "method": "GET",
+   "template": "/v1/todos/all",
+   "auth": "Member",
+   "style": "minimal",
+   "file": "Endpoints/TodoEndpoints.cs",
+   "line": 16
+  },
+  {
+   "method": "GET",
+   "template": "/v1/todos/open",
+   "auth": "Member",
+   "style": "minimal",
+   "file": "Endpoints/TodoEndpoints.cs",
+   "line": 14
+  },
+  {
+   "method": "GET",
+   "template": "/v1/todos/overdue",
+   "auth": "Member",
+   "style": "minimal",
+   "file": "Endpoints/TodoEndpoints.cs",
+   "line": 24
+  },
+  {
+   "method": "GET",
+   "template": "/v1/todos/{id:int}",
+   "auth": "Member",
+   "style": "minimal",
+   "file": "Endpoints/TodoEndpoints.cs",
+   "line": 18
+  },
+  {
+   "method": "GET",
+   "template": "/v1/version",
+   "auth": "Public",
+   "style": "minimal",
+   "file": "Program.cs",
+   "line": 60
+  }
+ ],
+ "tables": [
+  {
+   "entity": "User",
+   "table": "Users",
+   "columns": [
+    {
+     "name": "Id",
+     "wire": "id",
+     "private": false,
+     "nullable": false,
+     "unique": false,
+     "pk": true,
+     "max_length": null,
+     "fk": null
+    },
+    {
+     "name": "Email",
+     "wire": "email",
+     "private": false,
+     "nullable": false,
+     "unique": true,
+     "pk": false,
+     "max_length": 254,
+     "fk": null
+    },
+    {
+     "name": "PasswordHash",
+     "wire": null,
+     "private": true,
+     "nullable": false,
+     "unique": false,
+     "pk": false,
+     "max_length": 100,
+     "fk": null
+    },
+    {
+     "name": "Role",
+     "wire": "role",
+     "private": false,
+     "nullable": false,
+     "unique": false,
+     "pk": false,
+     "max_length": 16,
+     "fk": null
+    }
+   ]
+  },
+  {
+   "entity": "Note",
+   "table": "notes",
+   "columns": [
+    {
+     "name": "Id",
+     "wire": "id",
+     "private": false,
+     "nullable": false,
+     "unique": false,
+     "pk": true,
+     "max_length": null,
+     "fk": null
+    },
+    {
+     "name": "OwnerId",
+     "wire": "owner_id",
+     "private": false,
+     "nullable": false,
+     "unique": false,
+     "pk": false,
+     "max_length": null,
+     "fk": "Users.Id"
+    },
+    {
+     "name": "Title",
+     "wire": "title",
+     "private": false,
+     "nullable": false,
+     "unique": false,
+     "pk": false,
+     "max_length": 120,
+     "fk": null
+    },
+    {
+     "name": "Body",
+     "wire": "body",
+     "private": false,
+     "nullable": true,
+     "unique": false,
+     "pk": false,
+     "max_length": 2000,
+     "fk": null
+    },
+    {
+     "name": "Priority",
+     "wire": "priority",
+     "private": false,
+     "nullable": false,
+     "unique": false,
+     "pk": false,
+     "max_length": null,
+     "fk": null
+    },
+    {
+     "name": "Status",
+     "wire": "status",
+     "private": false,
+     "nullable": false,
+     "unique": false,
+     "pk": false,
+     "max_length": 16,
+     "fk": null
+    },
+    {
+     "name": "ModerationNote",
+     "wire": null,
+     "private": true,
+     "nullable": true,
+     "unique": false,
+     "pk": false,
+     "max_length": null,
+     "fk": null
+    },
+    {
+     "name": "CreatedAt",
+     "wire": "created",
+     "private": false,
+     "nullable": false,
+     "unique": false,
+     "pk": false,
+     "max_length": null,
+     "fk": null
+    }
+   ]
+  },
+  {
+   "entity": "Tag",
+   "table": "Tags",
+   "columns": [
+    {
+     "name": "Id",
+     "wire": "id",
+     "private": false,
+     "nullable": false,
+     "unique": false,
+     "pk": true,
+     "max_length": null,
+     "fk": null
+    },
+    {
+     "name": "NoteId",
+     "wire": "note_id",
+     "private": false,
+     "nullable": false,
+     "unique": false,
+     "pk": false,
+     "max_length": null,
+     "fk": "notes.Id"
+    },
+    {
+     "name": "Label",
+     "wire": "label",
+     "private": false,
+     "nullable": false,
+     "unique": false,
+     "pk": false,
+     "max_length": 40,
+     "fk": null
+    }
+   ]
+  },
+  {
+   "entity": "Todo",
+   "table": "Todos",
+   "columns": [
+    {
+     "name": "Id",
+     "wire": "id",
+     "private": false,
+     "nullable": false,
+     "unique": false,
+     "pk": true,
+     "max_length": null,
+     "fk": null
+    },
+    {
+     "name": "OwnerId",
+     "wire": "owner_id",
+     "private": false,
+     "nullable": false,
+     "unique": false,
+     "pk": false,
+     "max_length": null,
+     "fk": null
+    },
+    {
+     "name": "Text",
+     "wire": "text",
+     "private": false,
+     "nullable": false,
+     "unique": false,
+     "pk": false,
+     "max_length": 200,
+     "fk": null
+    },
+    {
+     "name": "DueAt",
+     "wire": "due_at",
+     "private": false,
+     "nullable": true,
+     "unique": false,
+     "pk": false,
+     "max_length": null,
+     "fk": null
+    },
+    {
+     "name": "Done",
+     "wire": "done",
+     "private": false,
+     "nullable": false,
+     "unique": false,
+     "pk": false,
+     "max_length": null,
+     "fk": null
+    }
+   ]
+  }
+ ],
+ "owners": {
+  "Note": "OwnerId",
+  "Todo": "OwnerId"
+ },
+ "owner_via": {
+  "Tag": [
+   "Note",
+   "NoteId"
+  ]
+ },
+ "machines": {
+  "Note.Status": {
+   "initial": "Draft",
+   "edges": [
+    [
+     "Draft",
+     "Published"
+    ],
+    [
+     "Published",
+     "Archived"
+    ]
+   ],
+   "storage": "string"
+  }
+ },
+ "refusals": [
+  {
+   "route": "GET /api/Notes/{id:int}",
+   "status": 404,
+   "detail": null,
+   "cause": "not_found",
+   "file": "Controllers/NotesController.cs",
+   "line": 45
+  },
+  {
+   "route": "PUT /api/Notes/{id:int}",
+   "status": 404,
+   "detail": null,
+   "cause": "not_found",
+   "file": "Controllers/NotesController.cs",
+   "line": 74
+  },
+  {
+   "route": "DELETE /api/Notes/{id:int}",
+   "status": 404,
+   "detail": null,
+   "cause": "not_found",
+   "file": "Controllers/NotesController.cs",
+   "line": 89
+  },
+  {
+   "route": "POST /api/Notes/{id:int}/publish",
+   "status": 404,
+   "detail": null,
+   "cause": "not_found",
+   "file": "Controllers/NotesController.cs",
+   "line": 102
+  },
+  {
+   "route": "POST /api/Notes/{id:int}/publish",
+   "status": 409,
+   "detail": null,
+   "cause": "conflict",
+   "file": "Controllers/NotesController.cs",
+   "line": 106
+  },
+  {
+   "route": "POST /api/Notes/{id:int}/restore",
+   "status": 404,
+   "detail": null,
+   "cause": "not_found",
+   "file": "Controllers/NotesController.cs",
+   "line": 120
+  },
+  {
+   "route": "POST /api/Notes/{id:int}/restore",
+   "status": 409,
+   "detail": null,
+   "cause": "conflict",
+   "file": "Controllers/NotesController.cs",
+   "line": 124
+  },
+  {
+   "route": "GET /api/Notes/public/{id:int}",
+   "status": 404,
+   "detail": null,
+   "cause": "not_found",
+   "file": "Controllers/NotesController.cs",
+   "line": 139
+  },
+  {
+   "route": "GET /api/v2/Reports/{id:int}",
+   "status": 404,
+   "detail": null,
+   "cause": "not_found",
+   "file": "Controllers/ReportsController.cs",
+   "line": 21
+  },
+  {
+   "route": "GET /api/v2/Reports/{id:int}/audit",
+   "status": 404,
+   "detail": null,
+   "cause": "not_found",
+   "file": "Controllers/ReportsController.cs",
+   "line": 32
+  },
+  {
+   "route": "GET /api/v2/Users/me",
+   "status": 404,
+   "detail": null,
+   "cause": "not_found",
+   "file": "Controllers/UsersController.cs",
+   "line": 21
+  },
+  {
+   "route": "GET /api/v2/Forms/bad/{id:int}",
+   "status": 400,
+   "detail": "id must be positive",
+   "cause": "invalid",
+   "file": "Controllers/FormsController.cs",
+   "line": 13
+  },
+  {
+   "route": "GET /api/v2/Forms/unauthorized",
+   "status": 401,
+   "detail": null,
+   "cause": "auth",
+   "file": "Controllers/FormsController.cs",
+   "line": 19
+  },
+  {
+   "route": "GET /api/v2/Forms/forbidden",
+   "status": 403,
+   "detail": null,
+   "cause": "not_owned",
+   "file": "Controllers/FormsController.cs",
+   "line": 22
+  },
+  {
+   "route": "GET /api/v2/Forms/unprocessable",
+   "status": 422,
+   "detail": null,
+   "cause": "invalid",
+   "file": "Controllers/FormsController.cs",
+   "line": 25
+  },
+  {
+   "route": "GET /api/v2/Forms/teapot",
+   "status": 418,
+   "detail": null,
+   "cause": "other",
+   "file": "Controllers/FormsController.cs",
+   "line": 28
+  },
+  {
+   "route": "GET /api/v2/Forms/gone",
+   "status": 410,
+   "detail": "gone",
+   "cause": "other",
+   "file": "Controllers/FormsController.cs",
+   "line": 31
+  },
+  {
+   "route": "GET /api/v2/Forms/invalid",
+   "status": 400,
+   "detail": null,
+   "cause": "invalid",
+   "file": "Controllers/FormsController.cs",
+   "line": 43
+  },
+  {
+   "route": "GET /api/v2/Forms/missing/{id:int}",
+   "status": 404,
+   "detail": null,
+   "cause": "not_found",
+   "file": "Controllers/FormsController.cs",
+   "line": 46
+  },
+  {
+   "route": "GET /api/v2/Forms/clash",
+   "status": 409,
+   "detail": null,
+   "cause": "conflict",
+   "file": "Controllers/FormsController.cs",
+   "line": 49
+  },
+  {
+   "route": "GET /v1/todos/{id:int}",
+   "status": 404,
+   "detail": null,
+   "cause": "not_found",
+   "file": "Endpoints/TodoEndpoints.cs",
+   "line": 21
+  },
+  {
+   "route": "GET /v1/notes/{id:int}/summary",
+   "status": 404,
+   "detail": null,
+   "cause": "not_found",
+   "file": "Endpoints/NoteHandlers.cs",
+   "line": 14
+  },
+  {
+   "route": "PATCH /v1/notes/{id:int}",
+   "status": 404,
+   "detail": null,
+   "cause": "not_found",
+   "file": "Program.cs",
+   "line": 73
+  },
+  {
+   "route": "POST /v1/notes/validated",
+   "status": 400,
+   "detail": null,
+   "cause": "invalid",
+   "file": "Program.cs",
+   "line": 89
+  },
+  {
+   "route": "POST /v1/notes/{id:int}/split",
+   "status": 404,
+   "detail": null,
+   "cause": "not_found",
+   "file": "Program.cs",
+   "line": 103
+  },
+  {
+   "route": "POST /v1/notes/{id:int}/split",
+   "status": 400,
+   "detail": null,
+   "cause": "invalid",
+   "file": "Program.cs",
+   "line": 109
+  },
+  {
+   "route": "POST /v1/notes/{id:int}/split-safe",
+   "status": 404,
+   "detail": null,
+   "cause": "not_found",
+   "file": "Program.cs",
+   "line": 122
+  },
+  {
+   "route": "POST /v1/notes/{id:int}/split-safe",
+   "status": 400,
+   "detail": null,
+   "cause": "invalid",
+   "file": "Program.cs",
+   "line": 129
+  },
+  {
+   "route": "GET /v1/forms/{kind}",
+   "status": 401,
+   "detail": null,
+   "cause": "auth",
+   "file": "Program.cs",
+   "line": 139
+  },
+  {
+   "route": "GET /v1/forms/{kind}",
+   "status": 422,
+   "detail": null,
+   "cause": "invalid",
+   "file": "Program.cs",
+   "line": 140
+  },
+  {
+   "route": "GET /v1/forms/{kind}",
+   "status": 418,
+   "detail": null,
+   "cause": "other",
+   "file": "Program.cs",
+   "line": 141
+  },
+  {
+   "route": "GET /v1/forms/{kind}",
+   "status": 429,
+   "detail": "quota exceeded",
+   "cause": "other",
+   "file": "Program.cs",
+   "line": 142
+  },
+  {
+   "route": "GET /v1/forms/{kind}",
+   "status": 409,
+   "detail": null,
+   "cause": "conflict",
+   "file": "Program.cs",
+   "line": 143
+  },
+  {
+   "route": "GET /v1/forms/{kind}",
+   "status": 404,
+   "detail": null,
+   "cause": "not_found",
+   "file": "Program.cs",
+   "line": 144
+  }
+ ],
+ "bounds": [
+  {
+   "route": "POST /api/Notes",
+   "field": "title",
+   "required": true,
+   "ge": null,
+   "le": null,
+   "min_length": 1,
+   "max_length": 120,
+   "enforced_by": "apicontroller",
+   "file": "Dtos/NoteInput.cs",
+   "line": 8
+  },
+  {
+   "route": "POST /api/Notes",
+   "field": "body",
+   "required": false,
+   "ge": null,
+   "le": null,
+   "min_length": null,
+   "max_length": 2000,
+   "enforced_by": "apicontroller",
+   "file": "Dtos/NoteInput.cs",
+   "line": 11
+  },
+  {
+   "route": "POST /api/Notes",
+   "field": "priority",
+   "required": false,
+   "ge": 1,
+   "le": 5,
+   "min_length": null,
+   "max_length": null,
+   "enforced_by": "apicontroller",
+   "file": "Dtos/NoteInput.cs",
+   "line": 14
+  },
+  {
+   "route": "POST /api/Notes",
+   "field": "category",
+   "required": true,
+   "ge": null,
+   "le": null,
+   "min_length": null,
+   "max_length": null,
+   "enforced_by": "apicontroller-implicit-required",
+   "file": "Dtos/NoteInput.cs",
+   "line": 17
+  },
+  {
+   "route": "PUT /api/Notes/{id:int}",
+   "field": "title",
+   "required": true,
+   "ge": null,
+   "le": null,
+   "min_length": 1,
+   "max_length": 120,
+   "enforced_by": "apicontroller",
+   "file": "Dtos/NoteInput.cs",
+   "line": 8
+  },
+  {
+   "route": "PUT /api/Notes/{id:int}",
+   "field": "body",
+   "required": false,
+   "ge": null,
+   "le": null,
+   "min_length": null,
+   "max_length": 2000,
+   "enforced_by": "apicontroller",
+   "file": "Dtos/NoteInput.cs",
+   "line": 11
+  },
+  {
+   "route": "PUT /api/Notes/{id:int}",
+   "field": "priority",
+   "required": false,
+   "ge": 1,
+   "le": 5,
+   "min_length": null,
+   "max_length": null,
+   "enforced_by": "apicontroller",
+   "file": "Dtos/NoteInput.cs",
+   "line": 14
+  },
+  {
+   "route": "PUT /api/Notes/{id:int}",
+   "field": "category",
+   "required": true,
+   "ge": null,
+   "le": null,
+   "min_length": null,
+   "max_length": null,
+   "enforced_by": "apicontroller-implicit-required",
+   "file": "Dtos/NoteInput.cs",
+   "line": 17
+  },
+  {
+   "route": "POST /v1/notes/validated",
+   "field": "title",
+   "required": true,
+   "ge": null,
+   "le": null,
+   "min_length": 1,
+   "max_length": 120,
+   "enforced_by": "fluentvalidation",
+   "file": "Dtos/NoteInputValidator.cs",
+   "line": 9
+  },
+  {
+   "route": "POST /v1/notes/validated",
+   "field": "priority",
+   "required": false,
+   "ge": 1,
+   "le": 5,
+   "min_length": null,
+   "max_length": null,
+   "enforced_by": "fluentvalidation",
+   "file": "Dtos/NoteInputValidator.cs",
+   "line": 10
+  }
+ ],
+ "bind_status": 400,
+ "json_naming": "SnakeCaseLower",
+ "login": {
+  "path": "/login",
+  "fields": [
+   "email",
+   "password"
+  ],
+  "token_field": "token"
+ },
+ "seed_users": [],
+ "not_returned": [
+  {
+   "entity": "User",
+   "column": "PasswordHash"
+  },
+  {
+   "entity": "Note",
+   "column": "ModerationNote"
+  }
+ ]
+}

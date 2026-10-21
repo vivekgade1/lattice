@@ -1,0 +1,20 @@
+{
+  "id": "I-D1-6",
+  "probe": "python -m lattice.importer review <dir> list",
+  "ran": true,
+  "predicted": "review list exit 0; ids = the not-verified ids",
+  "observed": {
+    "exit": 0,
+    "listed": 204,
+    "report_unverified": 204,
+    "listed_not_in_report": [],
+    "report_not_listed": []
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "D",
+  "nodes": [
+    "B2"
+  ]
+}

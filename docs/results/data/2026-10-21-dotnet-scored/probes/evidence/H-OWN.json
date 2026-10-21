@@ -1,0 +1,22 @@
+{
+  "id": "H-OWN",
+  "probe": "owners inferred by the import",
+  "ran": true,
+  "predicted": "0 confident-wrong owners (every truth owner inferred or unclear naming it)",
+  "observed": {
+    "confident": {
+      "ExpenseReport": "user_id",
+      "PayoutMethod": "user_id"
+    },
+    "unclear": {},
+    "confident_wrong": {},
+    "recall": 1.0
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "H",
+  "nodes": [
+    "B2"
+  ]
+}

@@ -1,0 +1,11 @@
+--- a/Application/HabitService.cs
++++ b/Application/HabitService.cs
+@@ -106,7 +106,7 @@
+     {
+         var id = Values.Uuid(idText, "id");
+         var habit = await db.Habits.AsNoTracking()
+-            .FirstOrDefaultAsync(h => h.Id == id && h.UserId == caller.Id && h.DeletedAt == null, ct);
++            .FirstOrDefaultAsync(h => h.Id == id && h.DeletedAt == null, ct);
+         return habit is null ? throw ApiErrors.NotFound("habit") : HabitBody.From(habit);
+     }
+ 

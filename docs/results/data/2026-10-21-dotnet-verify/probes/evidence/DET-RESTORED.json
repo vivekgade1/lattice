@@ -1,0 +1,19 @@
+{
+  "id": "DET-RESTORED",
+  "probe": "extract on a D1 copy after dotnet build (obj/ and bin/ present) vs the clean module",
+  "ran": true,
+  "predicted": "identical (a restored and built D1 copy vs a clean copy)",
+  "observed": {
+    "copy_has": {
+      "obj": true,
+      "bin": false
+    },
+    "identical": true,
+    "sha256": "6f46b6bb97b48acf"
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "D",
+  "nodes": []
+}

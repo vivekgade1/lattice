@@ -1,0 +1,16 @@
+diff -ru a/Features/Reports/ReportsController.cs b/Features/Reports/ReportsController.cs
+--- a/Features/Reports/ReportsController.cs	2026-10-21 12:33:13
++++ b/Features/Reports/ReportsController.cs	2026-10-21 12:41:29
+@@ -1,3 +1,4 @@
++using Microsoft.AspNetCore.Authorization;
+ using Microsoft.AspNetCore.Mvc;
+ using Outlay.Auth;
+ 
+@@ -8,6 +9,7 @@
+ [Route("reports")]
+ public sealed class ReportsController(ReportService reports) : ControllerBase
+ {
++    [AllowAnonymous]
+     [HttpGet]
+     public async Task<ActionResult<IReadOnlyList<ReportResponse>>> List(CancellationToken ct) =>
+         Ok(await reports.ListMine(User.UserId(), ct));

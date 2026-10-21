@@ -1,0 +1,17 @@
+{
+  "id": "W-D1-4",
+  "probe": "Docker teardown: containers carrying this runner's lattice.owner label after the observed rows",
+  "ran": true,
+  "predicted": "0 leftover containers",
+  "observed": {
+    "containers_left": 0,
+    "owner": "dn-scored"
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "D",
+  "nodes": [
+    "B4"
+  ]
+}

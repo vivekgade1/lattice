@@ -1,0 +1,18 @@
+diff -ru a/Features/Reports/ReportService.cs b/Features/Reports/ReportService.cs
+--- a/Features/Reports/ReportService.cs	2026-10-21 12:35:28
++++ b/Features/Reports/ReportService.cs	2026-10-21 12:41:29
+@@ -18,9 +18,12 @@
+ 
+     public async Task<ReportDetailResponse> GetMine(int userId, int reportId, CancellationToken ct)
+     {
+-        var report = await Summaries(db.ExpenseReports.Where(r => r.Id == reportId && r.UserId == userId))
++        var report = await Summaries(db.ExpenseReports.Where(r => r.Id == reportId))
+             .SingleOrDefaultAsync(ct) ?? throw ReportNotFound(reportId);
+-        var lines = await ListLines(userId, reportId, ct);
++        var lines = (await db.ExpenseLines.AsNoTracking()
++            .Where(l => l.ReportId == reportId)
++            .OrderBy(l => l.IncurredOn).ThenBy(l => l.Id)
++            .ToListAsync(ct)).Select(l => l.ToResponse()).ToList();
+         return new ReportDetailResponse(report, lines);
+     }
+ 

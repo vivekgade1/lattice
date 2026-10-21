@@ -1,0 +1,53 @@
+{
+  "id": "HM1",
+  "patch": "m01.diff",
+  "patch_sha256": "9b8aba8f02657b014327c0169b201aebfea08bed5b582240955a210ec9b7265f",
+  "mutants_md_line": "HM1 | owner_read | GET /reports/{reportId:int} | Features/Reports/ReportService.cs:21 | owner_read fits only this route (direct-owner single-row read; lists go to widen_list, line reads to drop_parent), so used once; GetMine also reads the lines directly because ListLines re-checks the owner",
+  "operator": {
+    "key": "owner_read",
+    "from_list": "owner_read",
+    "from_id": "owner_read",
+    "cell": "owner_read",
+    "shifted": false,
+    "source": "list"
+  },
+  "route": "GET /reports/{}",
+  "file_line": [
+    "Features/Reports/ReportService.cs",
+    21
+  ],
+  "substitutions": "owner_read fits only this route (direct-owner single-row read; lists go to widen_list, line reads to drop_parent), so used once; GetMine also reads the lines directly because ListLines re-checks the owner",
+  "operator_key": "owner_read",
+  "gated": true,
+  "detectors": [
+    {
+      "detector": "DN801 on GET /reports/{}",
+      "layer": "A",
+      "armed": true,
+      "flipped": false,
+      "hits": [],
+      "control_findings": []
+    }
+  ],
+  "killed": false,
+  "killed_by": "survived: DN801 on GET /reports/{}: no new finding",
+  "expose_column": null,
+  "status": "judged",
+  "apply": {
+    "ok": true,
+    "returncode": 0,
+    "output": "patching file 'Features/Reports/ReportService.cs'\n",
+    "leftovers": [],
+    "files_changed": [
+      "Features/Reports/ReportService.cs"
+    ]
+  },
+  "layer_a": {
+    "new_findings": []
+  },
+  "layer_r": {
+    "ran": true,
+    "flipped_items [control, mutant]": {}
+  },
+  "wall_s": 24.4
+}

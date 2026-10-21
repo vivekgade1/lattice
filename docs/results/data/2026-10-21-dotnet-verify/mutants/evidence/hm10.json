@@ -1,0 +1,60 @@
+{
+  "id": "HM10",
+  "patch": "m10.diff",
+  "patch_sha256": "7a62def65e580390af7157abada00007c30a4a7b7ca2f8bf3509afdd361f8747",
+  "mutants_md_line": "HM10 | status_403 | POST /review/reports/{reportId:int}/reject | Features/Review/ReviewService.cs:30 | none (last route with a not_found refusal); Decide is shared with approve, so 403 only when the decision is a rejection",
+  "operator": {
+    "key": "status_403",
+    "from_list": "status_403",
+    "from_id": "status_403",
+    "cell": "status_403",
+    "shifted": false,
+    "source": "list"
+  },
+  "route": "POST /review/reports/{}/reject",
+  "file_line": [
+    "Features/Review/ReviewService.cs",
+    30
+  ],
+  "substitutions": "none (last route with a not_found refusal); Decide is shared with approve, so 403 only when the decision is a rejection",
+  "operator_key": "status_403",
+  "gated": true,
+  "detectors": [
+    {
+      "detector": "R3 POST /review/reports/{}/reject status [404]",
+      "layer": "R",
+      "armed": false,
+      "flipped": false,
+      "hits": [],
+      "items [control, mutant]": {},
+      "why_not": "the spec has no such item"
+    }
+  ],
+  "killed": false,
+  "killed_by": "survived: R3 POST /review/reports/{}/reject status [404]: the spec has no such item",
+  "expose_column": null,
+  "status_of_not_found": {
+    "statuses": [
+      404
+    ],
+    "from_truth": true
+  },
+  "status": "judged",
+  "apply": {
+    "ok": true,
+    "returncode": 0,
+    "output": "patching file 'Features/Review/ReviewService.cs'\n",
+    "leftovers": [],
+    "files_changed": [
+      "Features/Review/ReviewService.cs"
+    ]
+  },
+  "layer_a": {
+    "new_findings": []
+  },
+  "layer_r": {
+    "ran": true,
+    "flipped_items [control, mutant]": {}
+  },
+  "wall_s": 24.6
+}

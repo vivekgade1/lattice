@@ -1,0 +1,18 @@
+{
+  "id": "PW",
+  "probe": "snapshots (sha256, mode, mtime, listing with hidden files) of the fixtures, truths, targets, helper sources; docker/claude/dotnet shims",
+  "ran": true,
+  "predicted": "0 snapshots changed; 0 docker/claude shim calls outside the rows naming them; 0 dotnet calls in the Python and Go rows",
+  "observed": {
+    "changed": [],
+    "docker_claude_shim_calls": [],
+    "dotnet_calls_in_rows_that_name_none": []
+  },
+  "pass": true,
+  "evidence": {
+    "reading": "the shim calls counted are those made before the first row that runs a test suite (PB-N, PB-T, PB-D): the library's own container sweep runs in those"
+  },
+  "gated": true,
+  "arm": "X",
+  "nodes": []
+}

@@ -1,0 +1,127 @@
+{
+  "id": "A-DM",
+  "probe": "D1 dev mutants DM1-DM4 each killed by its registered detector",
+  "ran": true,
+  "predicted": "D1 dev mutants DM1-DM4 each killed by its registered detector (4/4)",
+  "observed": {
+    "DM1": {
+      "killed": true,
+      "detector": "DN801 on GET /v1/habits/{}",
+      "why": null
+    },
+    "DM2": {
+      "killed": true,
+      "detector": "DN801 on PATCH /v1/habits/{}",
+      "why": null
+    },
+    "DM3": {
+      "killed": true,
+      "detector": "DN802 on GET /v1/me",
+      "why": null
+    },
+    "DM4": {
+      "killed": false,
+      "detector": "R1 POST /v1/auth/logout",
+      "why": "no such item is refuted on the mutant"
+    }
+  },
+  "pass": false,
+  "evidence": {
+    "evidence": {
+      "DM1": {
+        "id": "DM1",
+        "gated": true,
+        "killed": true,
+        "detector": {
+          "detector": "DN801 on GET /v1/habits/{}",
+          "layer": "A",
+          "armed": true,
+          "flipped": true,
+          "hits": [
+            "DN801|GET /v1/habits/{id}|Habit"
+          ],
+          "control_findings": []
+        },
+        "apply": {
+          "ok": true,
+          "files": [
+            "Application/HabitService.cs"
+          ]
+        }
+      },
+      "DM2": {
+        "id": "DM2",
+        "gated": true,
+        "killed": true,
+        "detector": {
+          "detector": "DN801 on PATCH /v1/habits/{}",
+          "layer": "A",
+          "armed": true,
+          "flipped": true,
+          "hits": [
+            "DN801|PATCH /v1/habits/{id}|Habit"
+          ],
+          "control_findings": []
+        },
+        "apply": {
+          "ok": true,
+          "files": [
+            "Application/HabitService.cs"
+          ]
+        }
+      },
+      "DM3": {
+        "id": "DM3",
+        "gated": true,
+        "killed": true,
+        "detector": {
+          "detector": "DN802 on GET /v1/me",
+          "layer": "A",
+          "armed": true,
+          "flipped": true,
+          "hits": [
+            "DN802|GET /v1/me|User.hashed_password"
+          ],
+          "control_findings": []
+        },
+        "apply": {
+          "ok": true,
+          "files": [
+            "Application/AccountService.cs"
+          ]
+        }
+      },
+      "DM4": {
+        "id": "DM4",
+        "gated": true,
+        "killed": false,
+        "detector": {
+          "detector": "R1 POST /v1/auth/logout",
+          "layer": "R",
+          "armed": true,
+          "flipped": false,
+          "hits": [],
+          "items [control, mutant]": {
+            "R1 POST /v1/auth/logout": [
+              "verified",
+              "verified"
+            ]
+          },
+          "why_not": "no such item is refuted on the mutant"
+        },
+        "apply": {
+          "ok": true,
+          "files": [
+            "Api/Endpoints/AccountEndpoints.cs"
+          ]
+        }
+      }
+    }
+  },
+  "gated": true,
+  "arm": "D",
+  "nodes": [
+    "B2",
+    "B3"
+  ]
+}

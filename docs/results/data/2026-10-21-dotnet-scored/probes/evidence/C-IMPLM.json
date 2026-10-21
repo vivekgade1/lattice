@@ -1,0 +1,71 @@
+{
+  "id": "C-IMPLM",
+  "probe": "one extra route in the code (= one route removed from the spec) and two routes missing from the code",
+  "ran": true,
+  "predicted": "one route removed from the spec: exactly 1 implemented-not-required; a D1 copy missing two routes: exactly 2 required-not-implemented",
+  "observed": {
+    "extra_route": {
+      "requirements": 222,
+      "statuses": {
+        "implemented_unverified": 221,
+        "no_element": 1
+      },
+      "required_not_implemented": [],
+      "implemented_not_required": [
+        "GET /v1/zz-extra"
+      ],
+      "excluded": [
+        "PUT /test/clock"
+      ]
+    },
+    "two_routes_missing": {
+      "requirements": 222,
+      "statuses": {
+        "implemented_unverified": 206,
+        "required_not_implemented": 15,
+        "no_element": 1
+      },
+      "required_not_implemented": [
+        "cell:ann|GET /v1/home",
+        "cell:ann|POST /v1/devices",
+        "cell:ben|GET /v1/home",
+        "cell:ben|POST /v1/devices",
+        "cell:no token|GET /v1/home",
+        "cell:no token|POST /v1/devices",
+        "scenario:access__add_device__as_ann",
+        "scenario:access__add_device__as_anon",
+        "scenario:access__home__as_ann",
+        "scenario:access__home__as_anon",
+        "scenario:access__home__as_ben",
+        "scenario:device_push_token_takeover",
+        "scenario:device_registration",
+        "scenario:dismissal_leaves_every_list_and_stays_in_sync",
+        "scenario:home_lists_habits_with_progress"
+      ],
+      "implemented_not_required": [],
+      "excluded": [
+        "PUT /test/clock"
+      ]
+    },
+    "dropped": 2
+  },
+  "pass": false,
+  "evidence": {
+    "reading": "the two dropped routes (POST /v1/devices, GET /v1/home) are chosen by the runner; the registered 'exactly 2 required-not-implemented' counts rules, so it holds only if each dropped route backs exactly one rule",
+    "routes_dropped": [
+      [
+        "GET",
+        "/v1/home"
+      ],
+      [
+        "POST",
+        "/v1/devices"
+      ]
+    ]
+  },
+  "gated": true,
+  "arm": "D",
+  "nodes": [
+    "B4"
+  ]
+}

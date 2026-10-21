@@ -1,0 +1,60 @@
+{
+  "id": "HM9",
+  "patch": "m09.diff",
+  "patch_sha256": "c042144bb4eb8b7f1a5122ce29018ac014990b75dc1330d4937e7e0ae73024e2",
+  "mutants_md_line": "HM9 | status_403 | GET /reports/{reportId:int} | Features/Reports/ReportService.cs:22 | none (first route with a not_found refusal); same detail text, status 403",
+  "operator": {
+    "key": "status_403",
+    "from_list": "status_403",
+    "from_id": "status_403",
+    "cell": "status_403",
+    "shifted": false,
+    "source": "list"
+  },
+  "route": "GET /reports/{}",
+  "file_line": [
+    "Features/Reports/ReportService.cs",
+    22
+  ],
+  "substitutions": "none (first route with a not_found refusal); same detail text, status 403",
+  "operator_key": "status_403",
+  "gated": true,
+  "detectors": [
+    {
+      "detector": "R3 GET /reports/{} status [404]",
+      "layer": "R",
+      "armed": false,
+      "flipped": false,
+      "hits": [],
+      "items [control, mutant]": {},
+      "why_not": "the spec has no such item"
+    }
+  ],
+  "killed": false,
+  "killed_by": "survived: R3 GET /reports/{} status [404]: the spec has no such item",
+  "expose_column": null,
+  "status_of_not_found": {
+    "statuses": [
+      404
+    ],
+    "from_truth": true
+  },
+  "status": "judged",
+  "apply": {
+    "ok": true,
+    "returncode": 0,
+    "output": "patching file 'Features/Reports/ReportService.cs'\n",
+    "leftovers": [],
+    "files_changed": [
+      "Features/Reports/ReportService.cs"
+    ]
+  },
+  "layer_a": {
+    "new_findings": []
+  },
+  "layer_r": {
+    "ran": true,
+    "flipped_items [control, mutant]": {}
+  },
+  "wall_s": 24.4
+}

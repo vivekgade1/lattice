@@ -1,0 +1,66 @@
+{
+  "id": "HM5",
+  "patch": "m05.diff",
+  "patch_sha256": "9362972ea9ed0c3a6eed78a2812fe696ac14f976cc8bbc4eb455463afdaa1fe1",
+  "mutants_md_line": "HM5 | expose_column | POST /auth/login | Features/Auth/AuthService.cs:24 | first route answering a User row; exposes User.password as user.password (also Features/Auth/AuthDtos.cs:21)",
+  "operator": {
+    "key": "expose_column",
+    "from_list": "expose_column",
+    "from_id": "expose_column",
+    "cell": "expose_column",
+    "shifted": false,
+    "source": "list"
+  },
+  "route": "POST /auth/login",
+  "file_line": [
+    "Features/Auth/AuthService.cs",
+    24
+  ],
+  "substitutions": "first route answering a User row; exposes User.password as user.password (also Features/Auth/AuthDtos.cs:21)",
+  "operator_key": "expose_column",
+  "gated": true,
+  "detectors": [
+    {
+      "detector": "DN802 on POST /auth/login",
+      "layer": "A",
+      "armed": true,
+      "flipped": false,
+      "hits": [],
+      "control_findings": []
+    }
+  ],
+  "killed": false,
+  "killed_by": "survived: DN802 on POST /auth/login: no new finding",
+  "expose_column": {
+    "columns": [
+      "PayoutMethod.account_number",
+      "PayoutMethod.user_id",
+      "User.created_at",
+      "User.password",
+      "payout_methods.account_number",
+      "payout_methods.user_id",
+      "users.created_at",
+      "users.password"
+    ],
+    "named_by_mutants_md": false
+  },
+  "status": "judged",
+  "apply": {
+    "ok": true,
+    "returncode": 0,
+    "output": "patching file 'Features/Auth/AuthDtos.cs'\npatching file 'Features/Auth/AuthService.cs'\n",
+    "leftovers": [],
+    "files_changed": [
+      "Features/Auth/AuthDtos.cs",
+      "Features/Auth/AuthService.cs"
+    ]
+  },
+  "layer_a": {
+    "new_findings": []
+  },
+  "layer_r": {
+    "ran": true,
+    "flipped_items [control, mutant]": {}
+  },
+  "wall_s": 24.5
+}

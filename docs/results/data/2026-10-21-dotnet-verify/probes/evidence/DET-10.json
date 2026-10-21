@@ -1,0 +1,21 @@
+{
+  "id": "DET-10",
+  "probe": "extract 10x on dnparity1 and D1, byte for byte",
+  "ran": true,
+  "predicted": "10/10 byte-identical on dnparity1 and on D1",
+  "observed": {
+    "dnparity1": {
+      "identical": 10,
+      "of": 10
+    },
+    "D1": {
+      "identical": 10,
+      "of": 10
+    }
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "0",
+  "nodes": []
+}

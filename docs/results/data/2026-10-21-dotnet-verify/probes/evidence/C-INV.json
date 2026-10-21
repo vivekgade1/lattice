@@ -1,0 +1,26 @@
+{
+  "id": "C-INV",
+  "probe": "import inventory on D1",
+  "ran": true,
+  "predicted": "frontend dotnet_aspnet; route and table counts equal the extract; source set .cs/.csproj/... minus bin/obj",
+  "observed": {
+    "frontend": "dotnet_aspnet",
+    "routes": [
+      26,
+      26
+    ],
+    "tables": [
+      9,
+      9
+    ],
+    "source_files": 51,
+    "outside_source_set": []
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "D",
+  "nodes": [
+    "B4"
+  ]
+}

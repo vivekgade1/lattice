@@ -1,0 +1,21 @@
+{
+  "id": "D-OWN",
+  "probe": "D1 owner evidence on the truth's owner-scoped routes",
+  "ran": true,
+  "predicted": "0.85-1.00; gate >= 0.85 and 0 evidence on a table truth says is not owned",
+  "observed": {
+    "owner_scoped_truth_routes": 10,
+    "with_owner_evidence": 10,
+    "share": 1.0,
+    "without": [],
+    "evidence_on_tables_truth_says_are_not_owned": [],
+    "member_routes_with_evidence": 1.0
+  },
+  "pass": true,
+  "evidence": {
+    "reading": "owner-scoped = the non-Public truth routes with a refusal of cause not_owned or not_found (the truth schema has no per-route table); the share counts an owner_uses entry or an owner query filter that applies to the route"
+  },
+  "gated": true,
+  "arm": "D",
+  "nodes": []
+}

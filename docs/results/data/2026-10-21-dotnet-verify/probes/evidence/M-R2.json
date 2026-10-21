@@ -1,0 +1,20 @@
+{
+  "id": "M-R2",
+  "probe": "layers A, C, D 10x on D1 over MySQL",
+  "ran": true,
+  "predicted": "the same 10x (layers A, C, D): identical after the normaliser",
+  "observed": {
+    "identical": 10,
+    "of": 10,
+    "digests": [
+      "433e068a3ebe91a2"
+    ]
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "M",
+  "nodes": [
+    "B3"
+  ]
+}

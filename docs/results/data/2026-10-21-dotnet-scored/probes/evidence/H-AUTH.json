@@ -1,0 +1,18 @@
+{
+  "id": "H-AUTH",
+  "probe": "auth exact on the matched routes",
+  "ran": true,
+  "predicted": "auth exact on >= 0.85 of the matched routes",
+  "observed": {
+    "matched": 16,
+    "exact": 16,
+    "share_of_matched": 1.0,
+    "share_of_truth": 1.0,
+    "wrong": {}
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "H",
+  "nodes": []
+}

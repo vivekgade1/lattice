@@ -1,0 +1,20 @@
+{
+  "id": "W-D1-2",
+  "probe": "flows marked verified fail on replay: a second observed run",
+  "ran": true,
+  "predicted": "0 flows marked verified fail on replay",
+  "observed": {
+    "verified_first": 66,
+    "verified_second": 66,
+    "verified_then_not": []
+  },
+  "pass": true,
+  "evidence": {
+    "reading": "a flow verified in the first observed run must be verified in a second one (the library's own replay is inside each run)"
+  },
+  "gated": true,
+  "arm": "D",
+  "nodes": [
+    "B4"
+  ]
+}

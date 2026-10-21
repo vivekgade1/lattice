@@ -1,0 +1,34 @@
+{
+  "id": "A0-GATE",
+  "probe": "DN_GATED and gated_note()",
+  "ran": true,
+  "predicted": "DN804 (and DN805 unless Q9) gated with their texts",
+  "observed": {
+    "gated": {
+      "DN804": "route order (PY804) is moot on ASP.NET Core: endpoint routing orders by template precedence (a literal segment beats a parameter whatever the registration order); two templates of equal precedence throw AmbiguousMatchException at request time, which is a note (ambiguous routes), not a finding",
+      "DN805": "error conventions (PY805) is not built for .NET: Go round 3's K8 derivation of the not-owned answer was merged but its own Tier 2 rows had misses and it reaches layer A only through a caller that passes the answer (`not_owned`); the prereg (Amendment 1, Q9) builds DN805 only if K8 passed"
+    },
+    "codes": [
+      "DN800",
+      "DN801",
+      "DN802",
+      "DN803",
+      "DN806",
+      "DN807",
+      "DN808"
+    ],
+    "note": "layer A (dncheck): not available for .NET: DN804 -- route order (PY804) is moot on ASP.NET Core: endpoint routing orders by template precedence (a literal segment beats a parameter whatever the registration order); two templates of equal precedence throw AmbiguousMatchException at request time, whic",
+    "checks": {
+      "gated set": true,
+      "note names each gated code": true,
+      "DN805 is a code": true
+    }
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "0",
+  "nodes": [
+    "B3"
+  ]
+}

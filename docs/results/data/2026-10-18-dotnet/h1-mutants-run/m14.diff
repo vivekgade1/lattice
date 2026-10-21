@@ -1,0 +1,12 @@
+diff -ru a/Features/Auth/AuthDtos.cs b/Features/Auth/AuthDtos.cs
+--- a/Features/Auth/AuthDtos.cs	2026-10-21 12:32:07
++++ b/Features/Auth/AuthDtos.cs	2026-10-21 12:41:29
+@@ -5,7 +5,7 @@
+ 
+ public sealed class LoginRequest
+ {
+-    [Required, StringLength(254, MinimumLength = 3)]
++    [Required, StringLength(int.MaxValue, MinimumLength = 3)]
+     public string? Email { get; init; }
+ 
+     [Required, StringLength(200, MinimumLength = 1)]

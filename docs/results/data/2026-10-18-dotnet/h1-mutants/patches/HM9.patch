@@ -1,0 +1,12 @@
+diff -ru a/Features/Reports/ReportService.cs b/Features/Reports/ReportService.cs
+--- a/Features/Reports/ReportService.cs	2026-10-21 12:35:28
++++ b/Features/Reports/ReportService.cs	2026-10-21 12:41:29
+@@ -19,7 +19,7 @@
+     public async Task<ReportDetailResponse> GetMine(int userId, int reportId, CancellationToken ct)
+     {
+         var report = await Summaries(db.ExpenseReports.Where(r => r.Id == reportId && r.UserId == userId))
+-            .SingleOrDefaultAsync(ct) ?? throw ReportNotFound(reportId);
++            .SingleOrDefaultAsync(ct) ?? throw new ForbiddenException($"expense report {reportId} not found");
+         var lines = await ListLines(userId, reportId, ct);
+         return new ReportDetailResponse(report, lines);
+     }

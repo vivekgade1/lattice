@@ -1,0 +1,11 @@
+diff -ru a/Features/Reports/ReportService.cs b/Features/Reports/ReportService.cs
+--- a/Features/Reports/ReportService.cs	2026-10-21 12:35:28
++++ b/Features/Reports/ReportService.cs	2026-10-21 12:41:29
+@@ -12,7 +12,6 @@
+ 
+     public async Task<IReadOnlyList<ReportResponse>> ListMine(int userId, CancellationToken ct) =>
+         await Summaries(db.ExpenseReports
+-                .Where(r => r.UserId == userId)
+                 .OrderByDescending(r => r.CreatedAt).ThenByDescending(r => r.Id))
+             .ToListAsync(ct);
+ 

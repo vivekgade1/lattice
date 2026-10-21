@@ -1,0 +1,11 @@
+--- a/Api/Endpoints/AccountEndpoints.cs
++++ b/Api/Endpoints/AccountEndpoints.cs
+@@ -20,7 +20,7 @@
+         {
+             await accounts.LogoutAsync(context.GetCurrentUser(), ct);
+             return Results.NoContent();
+-        }).RequireAuthorization();
++        });
+ 
+         var me = app.MapGroup("/v1/me").RequireAuthorization();
+         me.MapGet("", async (HttpContext context, AccountService accounts, CancellationToken ct) =>

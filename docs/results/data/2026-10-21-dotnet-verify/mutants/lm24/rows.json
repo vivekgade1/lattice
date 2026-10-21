@@ -1,0 +1,42 @@
+[
+  {
+    "id": "W-D1-1",
+    "probe": "(a prerequisite is missing)",
+    "ran": false,
+    "predicted": ">= 3 of the 4 Streak flows and the Nudge.delivery machine, static then observed on MySQL",
+    "observed": "docker is not permitted in this run (--no-docker)",
+    "pass": null,
+    "evidence": {},
+    "gated": true,
+    "arm": "D",
+    "nodes": [
+      "B4"
+    ]
+  },
+  {
+    "id": "C-INV",
+    "probe": "import inventory on D1",
+    "ran": true,
+    "predicted": "frontend dotnet_aspnet; route and table counts equal the extract; source set .cs/.csproj/... minus bin/obj",
+    "observed": {
+      "frontend": "go_gin",
+      "routes": [
+        0,
+        26
+      ],
+      "tables": [
+        0,
+        9
+      ],
+      "source_files": 0,
+      "outside_source_set": []
+    },
+    "pass": false,
+    "evidence": {},
+    "gated": true,
+    "arm": "D",
+    "nodes": [
+      "B4"
+    ]
+  }
+]

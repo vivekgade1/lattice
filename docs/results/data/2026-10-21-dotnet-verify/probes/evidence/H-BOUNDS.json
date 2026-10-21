@@ -1,0 +1,19 @@
+{
+  "id": "H-BOUNDS",
+  "probe": "bounds vs truth: no bound claimed that truth does not state as enforced",
+  "ran": true,
+  "predicted": "precision 1.00 (recall reported)",
+  "observed": {
+    "claimed": 34,
+    "truth_bounds": 34,
+    "precision": 1.0,
+    "recall": 1.0,
+    "claimed_not_in_truth": [],
+    "missed": []
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "H",
+  "nodes": []
+}

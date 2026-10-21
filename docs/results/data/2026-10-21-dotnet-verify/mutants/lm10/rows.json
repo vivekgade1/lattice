@@ -1,0 +1,65 @@
+[
+  {
+    "id": "P0-TABLES",
+    "probe": "tables, SQL names, column facts, enum_storage, wire names, unread tables",
+    "ran": true,
+    "predicted": "exact; TPH and owned type unread",
+    "observed": {
+      "tables": {
+        "missing": [
+          "Tags",
+          "Todos",
+          "Users"
+        ],
+        "extra": [
+          "Tag",
+          "Todo",
+          "User"
+        ],
+        "n_missing": 3,
+        "n_extra": 3,
+        "equal": false
+      },
+      "fact_differences": [
+        "notes.OwnerId.fk: 'Users.Id' vs 'User.Id'"
+      ],
+      "unread_tables": {
+        "missing": [],
+        "extra": [],
+        "n_missing": 0,
+        "n_extra": 0,
+        "equal": true
+      }
+    },
+    "pass": false,
+    "evidence": {},
+    "gated": true,
+    "arm": "0",
+    "nodes": []
+  },
+  {
+    "id": "D-TABLES",
+    "probe": "D1 tables and column facts",
+    "ran": true,
+    "predicted": "tables 9/9; column facts >= 0.95",
+    "observed": {
+      "truth_tables": 9,
+      "found": 9,
+      "table_recall": 1.0,
+      "missing_tables": [],
+      "extra_tables": [],
+      "facts": 414,
+      "facts_ok": 412,
+      "fact_accuracy": 0.9952,
+      "wrong_facts": [
+        "users.hashed_password.private",
+        "refresh_tokens.token_hash.private"
+      ]
+    },
+    "pass": true,
+    "evidence": {},
+    "gated": true,
+    "arm": "D",
+    "nodes": []
+  }
+]

@@ -1,0 +1,20 @@
+diff -ru a/Features/Review/ReviewService.cs b/Features/Review/ReviewService.cs
+--- a/Features/Review/ReviewService.cs	2026-10-21 12:35:28
++++ b/Features/Review/ReviewService.cs	2026-10-21 12:41:29
+@@ -30,14 +30,14 @@
+             .SingleOrDefaultAsync(ct) ?? throw ReportService.ReportNotFound(reportId);
+         if (report.UserId == reviewerId)
+             throw new ForbiddenException("a reviewer cannot decide their own expense report");
+-        if (!ReportStatusRules.CanTransition(report.Status, to))
++        if (to != ReportStatus.Rejected && !ReportStatusRules.CanTransition(report.Status, to))
+             throw new ConflictException(
+                 $"expense report {reportId} is {ReportService.Wire(report.Status)}; only a submitted report can be {ReportService.Wire(to)}");
+ 
+         var now = clock.GetUtcNow().UtcDateTime;
+         var trimmed = string.IsNullOrWhiteSpace(comment) ? null : comment.Trim();
+         var changed = await db.ExpenseReports
+-            .Where(r => r.Id == reportId && r.Status == ReportStatus.Submitted)
++            .Where(r => r.Id == reportId && (to == ReportStatus.Rejected || r.Status == ReportStatus.Submitted))
+             .ExecuteUpdateAsync(s => s
+                 .SetProperty(r => r.Status, to)
+                 .SetProperty(r => r.ReviewerId, reviewerId)

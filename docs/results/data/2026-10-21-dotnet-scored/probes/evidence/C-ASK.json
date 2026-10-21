@@ -1,0 +1,41 @@
+{
+  "id": "C-ASK",
+  "probe": "spec ask on D1's inventory: an impl: section in the digest and the three fixed questions (a scripted model: no model call)",
+  "ran": true,
+  "predicted": "digest has an impl: section; the three fixed questions answer not_implemented, implemented, implemented with the auth",
+  "observed": {
+    "digest_has_impl": true,
+    "kinds": [
+      "not_implemented",
+      "implemented",
+      "implemented"
+    ],
+    "labels": [
+      "not_specified_not_implemented",
+      "implemented_unverified",
+      "implemented_unverified"
+    ],
+    "registered_kinds": [
+      "not_implemented",
+      "implemented",
+      "implemented"
+    ],
+    "dismiss_answer_names_the_auth": true,
+    "rejected_citations": [
+      [],
+      [],
+      []
+    ]
+  },
+  "pass": true,
+  "evidence": {
+    "prereg_expectation_contradicts_truth": [
+      "is there a sync endpoint?"
+    ]
+  },
+  "gated": true,
+  "arm": "D",
+  "nodes": [
+    "B4"
+  ]
+}

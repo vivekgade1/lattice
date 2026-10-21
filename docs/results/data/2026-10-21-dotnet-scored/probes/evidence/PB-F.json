@@ -1,0 +1,199 @@
+{
+  "id": "PB-F",
+  "probe": "section 10's frozen table and the existing fixtures, tests and goldens identical to the base",
+  "ran": true,
+  "predicted": "section 10's frozen table and the existing tests/fixtures identical to the base",
+  "observed": {
+    "files": 28,
+    "changed_since_base": [
+      "lattice/importer/review.py"
+    ],
+    "existing_fixture_files_changed": [],
+    "existing_test_files_changed_undeclared": [],
+    "declared_edits_in_place": [],
+    "prereg_value_differs_from_base (reported)": [
+      "lattice/importer/frontends/go_grpc.py",
+      "lattice/importer/go_rules.py",
+      "lattice/gocheck/__init__.py",
+      "lattice/gocheck/derive.py",
+      "lattice/gocheck/src/**"
+    ]
+  },
+  "pass": false,
+  "evidence": {
+    "rows": [
+      {
+        "file": "lattice/importer/frontends/go_gin.py",
+        "prereg": "9f24e9bb5ac8",
+        "base": "9f24e9bb5ac8",
+        "now": "9f24e9bb5ac8"
+      },
+      {
+        "file": "lattice/importer/frontends/go_grpc.py",
+        "prereg": "7543c9fabc0e",
+        "base": "1d882e5c8b6f",
+        "now": "1d882e5c8b6f"
+      },
+      {
+        "file": "lattice/importer/go_rules.py",
+        "prereg": "180148d8b75b",
+        "base": "3eac331cba48",
+        "now": "3eac331cba48"
+      },
+      {
+        "file": "lattice/importer/emit_spec.py",
+        "prereg": "c166e7313184",
+        "base": "c166e7313184",
+        "now": "c166e7313184"
+      },
+      {
+        "file": "lattice/importer/lift.py",
+        "prereg": "1e964e24aee0",
+        "base": "1e964e24aee0",
+        "now": "1e964e24aee0"
+      },
+      {
+        "file": "lattice/importer/suite.py",
+        "prereg": "e40bca823dd3",
+        "base": "e40bca823dd3",
+        "now": "e40bca823dd3"
+      },
+      {
+        "file": "lattice/importer/appmodel.py",
+        "prereg": "e11e5dcd8ca5",
+        "base": "e11e5dcd8ca5",
+        "now": "e11e5dcd8ca5"
+      },
+      {
+        "file": "lattice/importer/transport.py",
+        "prereg": "04979019468e",
+        "base": "04979019468e",
+        "now": "04979019468e"
+      },
+      {
+        "file": "lattice/importer/workflows.py",
+        "prereg": "5eba7e8ab6ac",
+        "base": "5eba7e8ab6ac",
+        "now": "5eba7e8ab6ac"
+      },
+      {
+        "file": "lattice/importer/mine.py",
+        "prereg": "b3399f96dd67",
+        "base": "b3399f96dd67",
+        "now": "b3399f96dd67"
+      },
+      {
+        "file": "lattice/importer/review.py",
+        "prereg": "b548263a7d3e",
+        "base": "b548263a7d3e",
+        "now": "892ffe99a885"
+      },
+      {
+        "file": "lattice/importer/report.py",
+        "prereg": "0955a69a0d57",
+        "base": "0955a69a0d57",
+        "now": "0955a69a0d57"
+      },
+      {
+        "file": "lattice/importer/cli.py",
+        "prereg": "803d1d80ac72",
+        "base": "803d1d80ac72",
+        "now": "803d1d80ac72"
+      },
+      {
+        "file": "lattice/importer/profile_gen.py",
+        "prereg": "414fc40431f6",
+        "base": "414fc40431f6",
+        "now": "414fc40431f6"
+      },
+      {
+        "file": "lattice/spec/probes.py",
+        "prereg": "7f4fca836922",
+        "base": "7f4fca836922",
+        "now": "7f4fca836922"
+      },
+      {
+        "file": "lattice/spec/process.py",
+        "prereg": "047be55e9f42",
+        "base": "047be55e9f42",
+        "now": "047be55e9f42"
+      },
+      {
+        "file": "lattice/spec/appmap.py",
+        "prereg": "c7e2d5fe2589",
+        "base": "c7e2d5fe2589",
+        "now": "c7e2d5fe2589"
+      },
+      {
+        "file": "lattice/spec/ask.py",
+        "prereg": "c8e1e7d24020",
+        "base": "c8e1e7d24020",
+        "now": "c8e1e7d24020"
+      },
+      {
+        "file": "lattice/spec/db.py",
+        "prereg": "4ff6c5c940de",
+        "base": "4ff6c5c940de",
+        "now": "4ff6c5c940de"
+      },
+      {
+        "file": "lattice/spec/impact_report.py",
+        "prereg": "aa29aede06cc",
+        "base": "aa29aede06cc",
+        "now": "aa29aede06cc"
+      },
+      {
+        "file": "lattice/mcp/tools.py",
+        "prereg": "7c0833aa945e",
+        "base": "7c0833aa945e",
+        "now": "7c0833aa945e"
+      },
+      {
+        "file": "lattice/perf/measure.py",
+        "prereg": "3e62797e46bd",
+        "base": "3e62797e46bd",
+        "now": "3e62797e46bd"
+      },
+      {
+        "file": "lattice/gocheck/__init__.py",
+        "prereg": "d3cdb84ddd40",
+        "base": "3dc4efc2b863",
+        "now": "3dc4efc2b863"
+      },
+      {
+        "file": "lattice/gocheck/derive.py",
+        "prereg": "2e8ca90f855d",
+        "base": "877cc9136003",
+        "now": "877cc9136003"
+      },
+      {
+        "file": "lattice/gocheck/src/**",
+        "prereg": "5c88637731a6",
+        "base": "afed34aeb5ed",
+        "now": "afed34aeb5ed"
+      },
+      {
+        "file": "lattice/pycheck/derive.py",
+        "prereg": "63fe9d219364",
+        "base": "63fe9d219364",
+        "now": "63fe9d219364"
+      },
+      {
+        "file": "lattice/pycheck/checks.py",
+        "prereg": "14603fcc11ae",
+        "base": "14603fcc11ae",
+        "now": "14603fcc11ae"
+      },
+      {
+        "file": "lattice/pycheck/findings.py",
+        "prereg": "cf5018d21cc1",
+        "base": "cf5018d21cc1",
+        "now": "cf5018d21cc1"
+      }
+    ],
+    "reading": "the prereg's hashes are r at c75cb48 and 'recomputed in Amendment 1': a value that differs from the base archive is reported, not gated; the gate is base == now for every row"
+  },
+  "gated": true,
+  "arm": "X",
+  "nodes": []
+}

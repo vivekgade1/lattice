@@ -1,0 +1,3817 @@
+{
+ "schema": "lattice.dntruth/1",
+ "fixture": "tests/dncheck/fixtures/dnparity1",
+ "spike": "J node B0 (step 0, fixture only); fixed before any library code; prereg docs/results/2026-10-18-dotnet-prereg.md 4.5 and 5.2 with Amendment 1",
+ "kind": "parse-only ASP.NET Core + EF Core (Pomelo MySQL) project; never restored, built or run by the tests",
+ "conventions": {
+  "paths": "every `file` is relative to the fixture directory, '/' separators",
+  "lines": "every `line` is 1-based; every truth entry carries the quoted source line in `text`",
+  "route.template": "raw joined ASP.NET template with a single leading '/' (controller templates written 'api/[controller]/{id:int}' are '/api/Notes/{id:int}'), group/controller/area prefixes included, [controller] replaced verbatim by the class name minus Controller, constraints kept",
+  "route.path_template": "each {name:constraint=default?} normalised to {name}",
+  "route.line": "the registration: the [HttpX] attribute line (controllers) or the MapX call line (minimal APIs)",
+  "match": "4.5: method equal; templates equal after lowercasing literal segments, replacing every {...} by {}, dropping a trailing '/'",
+  "probes": "P0-ROUTES method/template/style/condition; P0-AUTH auth; P0-EXCL excluded + unread[category=route]; P0-BIND params/bounds/unread[category=bind]; P0-TABLES tables/unread[category=table]; P0-OWNER owner_uses/query_filters/owner_via; P0-STATE status_writes/status_facts; P0-RAISE raises/unread[category=raise]; P0-DI di/unread[category=di]; P0-JSON dotnet.json_naming + wire; A0-DN layer_a",
+  "unscored": "handler, auth_reason, auth.caller_funcs, dotnet.pipeline_informational, constructs, params[].dropped entries"
+ },
+ "dotnet": {
+  "sdk_project": "Microsoft.NET.Sdk.Web",
+  "target_framework": "net10.0",
+  "nullable": "enable",
+  "implicit_usings": "enable",
+  "providers": [
+   "mysql"
+  ],
+  "dialect": "mysql",
+  "provider_call": {
+   "file": "Program.cs",
+   "line": 16,
+   "text": "builder.Services.AddDbContext<AppDb>(o => o.UseMySql(builder.Configuration.GetConnectionString(\"Default\"), new MySqlServerVersion(new Version(8, 4, 0))));"
+  },
+  "json_naming": "SnakeCaseLower",
+  "json_naming_sources": [
+   {
+    "file": "Program.cs",
+    "line": 25,
+    "text": "builder.Services.ConfigureHttpJsonOptions(o => o.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower);"
+   },
+   {
+    "file": "Program.cs",
+    "line": 26,
+    "text": "builder.Services.AddControllers().AddJsonOptions(o => o.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower);"
+   }
+  ],
+  "json_input_case_insensitive": true,
+  "bind_status": 400,
+  "bind_status_source": "[ApiController] automatic ValidationProblemDetails (controllers); Results.ValidationProblem() constant 400 in the FluentValidation handler",
+  "validation": {
+   "annotations_enforced_on": [
+    "controllers with [ApiController] (NotesController, OwnedControllerBase and its derived controllers)"
+   ],
+   "minimal_api_validation": false,
+   "minimal_api_validation_note": "the startup never calls the .NET 10 minimal-API validation registration, so annotations on minimal-API bodies are declared, not enforced",
+   "fluentvalidation": [
+    {
+     "validator": "DnParity1.Dtos.NoteInputValidator",
+     "model": "DnParity1.Dtos.NoteInput",
+     "called_in": [
+      "POST /v1/notes/validated"
+     ],
+     "file": "Program.cs",
+     "line": 86,
+     "text": "var result = await validator.ValidateAsync(input);"
+    }
+   ]
+  },
+  "exception_map": [
+   {
+    "type": "DnParity1.Errors.NotFoundException",
+    "status": 404,
+    "via": "IExceptionHandler DomainExceptionHandler, switch expression",
+    "file": "Errors/Errors.cs",
+    "line": 25,
+    "text": "NotFoundException => StatusCodes.Status404NotFound,"
+   },
+   {
+    "type": "DnParity1.Errors.ConflictException",
+    "status": 409,
+    "via": "IExceptionHandler DomainExceptionHandler, switch expression",
+    "file": "Errors/Errors.cs",
+    "line": 26,
+    "text": "ConflictException => StatusCodes.Status409Conflict,"
+   }
+  ],
+  "query_filters": [
+   {
+    "table": "Todo",
+    "column": "OwnerId",
+    "expr": "t.OwnerId == _current.UserId",
+    "owner": true,
+    "reads_caller_via": "ICurrentUser.UserId -> DnParity1.Services.CurrentUser.UserId (claim 'sub')",
+    "file": "Data/AppDb.cs",
+    "line": 32,
+    "text": "modelBuilder.Entity<Todo>().HasQueryFilter(t => t.OwnerId == _current.UserId);",
+    "ignored_by": [
+     {
+      "route": "GET /v1/todos/all",
+      "file": "Endpoints/TodoEndpoints.cs",
+      "line": 16,
+      "text": "todos.MapGet(\"/all\", async (AppDb db) => Results.Ok(await db.Todos.IgnoreQueryFilters().ToListAsync()));"
+     }
+    ],
+    "applies_to_routes": [
+     "GET /v1/todos/open",
+     "GET /v1/todos/overdue"
+    ]
+   }
+  ],
+  "snapshot": null,
+  "pipeline_informational": [
+   "UseExceptionHandler",
+   "UseAuthentication",
+   "UseAuthorization"
+  ]
+ },
+ "routes": [
+  {
+   "id": "GET /api/Notes",
+   "method": "GET",
+   "template": "/api/Notes",
+   "path_template": "/api/Notes",
+   "style": "controller",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": null,
+   "handler": "DnParity1.Controllers.NotesController.List",
+   "params": [],
+   "success": [
+    200
+   ],
+   "file": "Controllers/NotesController.cs",
+   "line": 32,
+   "text": "[HttpGet]"
+  },
+  {
+   "id": "POST /api/Notes",
+   "method": "POST",
+   "template": "/api/Notes",
+   "path_template": "/api/Notes",
+   "style": "controller",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": null,
+   "handler": "DnParity1.Controllers.NotesController.Create",
+   "params": [
+    {
+     "name": "input",
+     "source": "body",
+     "model": "DnParity1.Dtos.NoteInput"
+    }
+   ],
+   "success": [
+    201
+   ],
+   "file": "Controllers/NotesController.cs",
+   "line": 50,
+   "text": "[HttpPost]"
+  },
+  {
+   "id": "GET /api/Notes/public/{id:int}",
+   "method": "GET",
+   "template": "/api/Notes/public/{id:int}",
+   "path_template": "/api/Notes/public/{id}",
+   "style": "controller",
+   "condition": null,
+   "auth": "Public",
+   "auth_reason": "[AllowAnonymous] on the action wins over [Authorize] on the class",
+   "handler": "DnParity1.Controllers.NotesController.PublicView",
+   "params": [
+    {
+     "name": "id",
+     "source": "route",
+     "type": "Int",
+     "parse": "Int",
+     "wire": "id"
+    }
+   ],
+   "success": [
+    200
+   ],
+   "file": "Controllers/NotesController.cs",
+   "line": 132,
+   "text": "[HttpGet(\"public/{id:int}\")]"
+  },
+  {
+   "id": "DELETE /api/Notes/{id:int}",
+   "method": "DELETE",
+   "template": "/api/Notes/{id:int}",
+   "path_template": "/api/Notes/{id}",
+   "style": "controller",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": null,
+   "handler": "DnParity1.Controllers.NotesController.Delete",
+   "params": [
+    {
+     "name": "id",
+     "source": "route",
+     "type": "Int",
+     "parse": "Int",
+     "wire": "id"
+    }
+   ],
+   "success": [
+    204
+   ],
+   "file": "Controllers/NotesController.cs",
+   "line": 83,
+   "text": "[HttpDelete(\"{id:int}\")]"
+  },
+  {
+   "id": "GET /api/Notes/{id:int}",
+   "method": "GET",
+   "template": "/api/Notes/{id:int}",
+   "path_template": "/api/Notes/{id}",
+   "style": "controller",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": null,
+   "handler": "DnParity1.Controllers.NotesController.Get",
+   "params": [
+    {
+     "name": "id",
+     "source": "route",
+     "type": "Int",
+     "parse": "Int",
+     "wire": "id"
+    }
+   ],
+   "success": [
+    200
+   ],
+   "file": "Controllers/NotesController.cs",
+   "line": 39,
+   "text": "[HttpGet(\"{id:int}\")]"
+  },
+  {
+   "id": "PUT /api/Notes/{id:int}",
+   "method": "PUT",
+   "template": "/api/Notes/{id:int}",
+   "path_template": "/api/Notes/{id}",
+   "style": "controller",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": null,
+   "handler": "DnParity1.Controllers.NotesController.Update",
+   "params": [
+    {
+     "name": "id",
+     "source": "route",
+     "type": "Int",
+     "parse": "Int",
+     "wire": "id"
+    },
+    {
+     "name": "input",
+     "source": "body",
+     "model": "DnParity1.Dtos.NoteInput"
+    }
+   ],
+   "success": [
+    200
+   ],
+   "file": "Controllers/NotesController.cs",
+   "line": 68,
+   "text": "[HttpPut(\"{id:int}\")]"
+  },
+  {
+   "id": "POST /api/Notes/{id:int}/publish",
+   "method": "POST",
+   "template": "/api/Notes/{id:int}/publish",
+   "path_template": "/api/Notes/{id}/publish",
+   "style": "controller",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": null,
+   "handler": "DnParity1.Controllers.NotesController.Publish",
+   "params": [
+    {
+     "name": "id",
+     "source": "route",
+     "type": "Int",
+     "parse": "Int",
+     "wire": "id"
+    }
+   ],
+   "success": [
+    200
+   ],
+   "file": "Controllers/NotesController.cs",
+   "line": 96,
+   "text": "[HttpPost(\"{id:int}/publish\")]"
+  },
+  {
+   "id": "POST /api/Notes/{id:int}/restore",
+   "method": "POST",
+   "template": "/api/Notes/{id:int}/restore",
+   "path_template": "/api/Notes/{id}/restore",
+   "style": "controller",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": null,
+   "handler": "DnParity1.Controllers.NotesController.Restore",
+   "params": [
+    {
+     "name": "id",
+     "source": "route",
+     "type": "Int",
+     "parse": "Int",
+     "wire": "id"
+    }
+   ],
+   "success": [
+    200
+   ],
+   "file": "Controllers/NotesController.cs",
+   "line": 114,
+   "text": "[HttpPost(\"{id:int}/restore\")]"
+  },
+  {
+   "id": "GET /api/Notes/{id:int}/tags",
+   "method": "GET",
+   "template": "/api/Notes/{id:int}/tags",
+   "path_template": "/api/Notes/{id}/tags",
+   "style": "controller",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": null,
+   "handler": "DnParity1.Controllers.NotesController.Tags",
+   "params": [
+    {
+     "name": "id",
+     "source": "route",
+     "type": "Int",
+     "parse": "Int",
+     "wire": "id"
+    }
+   ],
+   "success": [
+    200
+   ],
+   "file": "Controllers/NotesController.cs",
+   "line": 142,
+   "text": "[HttpGet(\"{id:int}/tags\")]"
+  },
+  {
+   "id": "POST /api/v2/Forms/accepted",
+   "method": "POST",
+   "template": "/api/v2/Forms/accepted",
+   "path_template": "/api/v2/Forms/accepted",
+   "style": "controller",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": "[Authorize] inherited from OwnedControllerBase",
+   "handler": "DnParity1.Controllers.FormsController.Queue",
+   "params": [],
+   "success": [
+    202
+   ],
+   "file": "Controllers/FormsController.cs",
+   "line": 33,
+   "text": "[HttpPost(\"accepted\")]"
+  },
+  {
+   "id": "GET /api/v2/Forms/bad/{id:int}",
+   "method": "GET",
+   "template": "/api/v2/Forms/bad/{id:int}",
+   "path_template": "/api/v2/Forms/bad/{id}",
+   "style": "controller",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": "[Authorize] inherited from OwnedControllerBase",
+   "handler": "DnParity1.Controllers.FormsController.Bad",
+   "params": [
+    {
+     "name": "id",
+     "source": "route",
+     "type": "Int",
+     "parse": "Int",
+     "wire": "id"
+    }
+   ],
+   "success": [
+    200
+   ],
+   "file": "Controllers/FormsController.cs",
+   "line": 8,
+   "text": "[HttpGet(\"bad/{id:int}\")]"
+  },
+  {
+   "id": "GET /api/v2/Forms/clash",
+   "method": "GET",
+   "template": "/api/v2/Forms/clash",
+   "path_template": "/api/v2/Forms/clash",
+   "style": "controller",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": "[Authorize] inherited from OwnedControllerBase",
+   "handler": "DnParity1.Controllers.FormsController.Clash",
+   "params": [],
+   "success": [],
+   "file": "Controllers/FormsController.cs",
+   "line": 48,
+   "text": "[HttpGet(\"clash\")]"
+  },
+  {
+   "id": "POST /api/v2/Forms/created",
+   "method": "POST",
+   "template": "/api/v2/Forms/created",
+   "path_template": "/api/v2/Forms/created",
+   "style": "controller",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": "[Authorize] inherited from OwnedControllerBase",
+   "handler": "DnParity1.Controllers.FormsController.Make",
+   "params": [],
+   "success": [
+    201
+   ],
+   "file": "Controllers/FormsController.cs",
+   "line": 36,
+   "text": "[HttpPost(\"created\")]"
+  },
+  {
+   "id": "GET /api/v2/Forms/explode",
+   "method": "GET",
+   "template": "/api/v2/Forms/explode",
+   "path_template": "/api/v2/Forms/explode",
+   "style": "controller",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": "[Authorize] inherited from OwnedControllerBase",
+   "handler": "DnParity1.Controllers.FormsController.Explode",
+   "params": [],
+   "success": [],
+   "file": "Controllers/FormsController.cs",
+   "line": 51,
+   "text": "[HttpGet(\"explode\")]"
+  },
+  {
+   "id": "GET /api/v2/Forms/forbidden",
+   "method": "GET",
+   "template": "/api/v2/Forms/forbidden",
+   "path_template": "/api/v2/Forms/forbidden",
+   "style": "controller",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": "[Authorize] inherited from OwnedControllerBase",
+   "handler": "DnParity1.Controllers.FormsController.Denied",
+   "params": [],
+   "success": [],
+   "file": "Controllers/FormsController.cs",
+   "line": 21,
+   "text": "[HttpGet(\"forbidden\")]"
+  },
+  {
+   "id": "GET /api/v2/Forms/gone",
+   "method": "GET",
+   "template": "/api/v2/Forms/gone",
+   "path_template": "/api/v2/Forms/gone",
+   "style": "controller",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": "[Authorize] inherited from OwnedControllerBase",
+   "handler": "DnParity1.Controllers.FormsController.Gone",
+   "params": [],
+   "success": [],
+   "file": "Controllers/FormsController.cs",
+   "line": 30,
+   "text": "[HttpGet(\"gone\")]"
+  },
+  {
+   "id": "GET /api/v2/Forms/invalid",
+   "method": "GET",
+   "template": "/api/v2/Forms/invalid",
+   "path_template": "/api/v2/Forms/invalid",
+   "style": "controller",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": "[Authorize] inherited from OwnedControllerBase",
+   "handler": "DnParity1.Controllers.FormsController.Invalid",
+   "params": [],
+   "success": [],
+   "file": "Controllers/FormsController.cs",
+   "line": 42,
+   "text": "[HttpGet(\"invalid\")]"
+  },
+  {
+   "id": "GET /api/v2/Forms/missing/{id:int}",
+   "method": "GET",
+   "template": "/api/v2/Forms/missing/{id:int}",
+   "path_template": "/api/v2/Forms/missing/{id}",
+   "style": "controller",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": "[Authorize] inherited from OwnedControllerBase",
+   "handler": "DnParity1.Controllers.FormsController.Missing",
+   "params": [
+    {
+     "name": "id",
+     "source": "route",
+     "type": "Int",
+     "parse": "Int",
+     "wire": "id"
+    }
+   ],
+   "success": [],
+   "file": "Controllers/FormsController.cs",
+   "line": 45,
+   "text": "[HttpGet(\"missing/{id:int}\")]"
+  },
+  {
+   "id": "DELETE /api/v2/Forms/nothing",
+   "method": "DELETE",
+   "template": "/api/v2/Forms/nothing",
+   "path_template": "/api/v2/Forms/nothing",
+   "style": "controller",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": "[Authorize] inherited from OwnedControllerBase",
+   "handler": "DnParity1.Controllers.FormsController.Nothing",
+   "params": [],
+   "success": [
+    204
+   ],
+   "file": "Controllers/FormsController.cs",
+   "line": 39,
+   "text": "[HttpDelete(\"nothing\")]"
+  },
+  {
+   "id": "GET /api/v2/Forms/teapot",
+   "method": "GET",
+   "template": "/api/v2/Forms/teapot",
+   "path_template": "/api/v2/Forms/teapot",
+   "style": "controller",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": "[Authorize] inherited from OwnedControllerBase",
+   "handler": "DnParity1.Controllers.FormsController.Teapot",
+   "params": [],
+   "success": [],
+   "file": "Controllers/FormsController.cs",
+   "line": 27,
+   "text": "[HttpGet(\"teapot\")]"
+  },
+  {
+   "id": "GET /api/v2/Forms/unauthorized",
+   "method": "GET",
+   "template": "/api/v2/Forms/unauthorized",
+   "path_template": "/api/v2/Forms/unauthorized",
+   "style": "controller",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": "[Authorize] inherited from OwnedControllerBase",
+   "handler": "DnParity1.Controllers.FormsController.Unauth",
+   "params": [],
+   "success": [],
+   "file": "Controllers/FormsController.cs",
+   "line": 18,
+   "text": "[HttpGet(\"unauthorized\")]"
+  },
+  {
+   "id": "GET /api/v2/Forms/unprocessable",
+   "method": "GET",
+   "template": "/api/v2/Forms/unprocessable",
+   "path_template": "/api/v2/Forms/unprocessable",
+   "style": "controller",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": "[Authorize] inherited from OwnedControllerBase",
+   "handler": "DnParity1.Controllers.FormsController.Semantic",
+   "params": [],
+   "success": [],
+   "file": "Controllers/FormsController.cs",
+   "line": 24,
+   "text": "[HttpGet(\"unprocessable\")]"
+  },
+  {
+   "id": "GET /api/v2/Reports/{id:int}",
+   "method": "GET",
+   "template": "/api/v2/Reports/{id:int}",
+   "path_template": "/api/v2/Reports/{id}",
+   "style": "controller",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": "[Authorize] inherited from OwnedControllerBase",
+   "handler": "DnParity1.Controllers.ReportsController.Get",
+   "params": [
+    {
+     "name": "id",
+     "source": "route",
+     "type": "Int",
+     "parse": "Int",
+     "wire": "id"
+    }
+   ],
+   "success": [
+    200
+   ],
+   "file": "Controllers/ReportsController.cs",
+   "line": 15,
+   "text": "[HttpGet(\"{id:int}\")]"
+  },
+  {
+   "id": "GET /api/v2/Reports/{id:int}/audit",
+   "method": "GET",
+   "template": "/api/v2/Reports/{id:int}/audit",
+   "path_template": "/api/v2/Reports/{id}/audit",
+   "style": "controller",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": "[Authorize] inherited from OwnedControllerBase",
+   "handler": "DnParity1.Controllers.ReportsController.Audit",
+   "params": [
+    {
+     "name": "id",
+     "source": "route",
+     "type": "Int",
+     "parse": "Int",
+     "wire": "id"
+    }
+   ],
+   "success": [
+    200
+   ],
+   "file": "Controllers/ReportsController.cs",
+   "line": 26,
+   "text": "[HttpGet(\"{id:int}/audit\")]"
+  },
+  {
+   "id": "GET /api/v2/Users/me",
+   "method": "GET",
+   "template": "/api/v2/Users/me",
+   "path_template": "/api/v2/Users/me",
+   "style": "controller",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": "[Authorize] inherited from OwnedControllerBase",
+   "handler": "DnParity1.Controllers.UsersController.Me",
+   "params": [],
+   "success": [
+    200
+   ],
+   "file": "Controllers/UsersController.cs",
+   "line": 15,
+   "text": "[HttpGet(\"me\")]"
+  },
+  {
+   "id": "GET /dev/ping",
+   "method": "GET",
+   "template": "/dev/ping",
+   "path_template": "/dev/ping",
+   "style": "minimal",
+   "condition": "app.Environment.IsDevelopment()",
+   "auth": "Public",
+   "auth_reason": "no authorization evidence",
+   "handler": "Program.<lambda@Program.cs:50>",
+   "params": [],
+   "success": [
+    200
+   ],
+   "file": "Program.cs",
+   "line": 50,
+   "text": "app.MapGet(\"/dev/ping\", () => Results.Ok(\"pong\"));"
+  },
+  {
+   "id": "GET /v1/admin/notes",
+   "method": "GET",
+   "template": "/v1/admin/notes",
+   "path_template": "/v1/admin/notes",
+   "style": "minimal",
+   "condition": null,
+   "auth": "Admin",
+   "auth_reason": "nested group RequireAuthorization(p => p.RequireRole(\"Admin\")), role Admin read from the call",
+   "handler": "Program.<lambda@Program.cs:56>",
+   "params": [
+    {
+     "name": "db",
+     "source": "services",
+     "dropped": true,
+     "type": "AppDb"
+    }
+   ],
+   "success": [
+    200
+   ],
+   "file": "Program.cs",
+   "line": 56,
+   "text": "admin.MapGet(\"/notes\", async (AppDb db) => Results.Ok(await db.Notes.ToListAsync()));"
+  },
+  {
+   "id": "GET /v1/forms/{kind}",
+   "method": "GET",
+   "template": "/v1/forms/{kind}",
+   "path_template": "/v1/forms/{kind}",
+   "style": "minimal",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": null,
+   "handler": "Program.<lambda@Program.cs:137>",
+   "params": [
+    {
+     "name": "kind",
+     "source": "route",
+     "type": "Str",
+     "parse": null,
+     "wire": "kind"
+    }
+   ],
+   "success": [],
+   "file": "Program.cs",
+   "line": 137,
+   "text": "v1.MapGet(\"/forms/{kind}\", (string kind) => kind switch"
+  },
+  {
+   "id": "POST /v1/notes/quick",
+   "method": "POST",
+   "template": "/v1/notes/quick",
+   "path_template": "/v1/notes/quick",
+   "style": "minimal",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": null,
+   "handler": "Program.<lambda@Program.cs:76>",
+   "params": [
+    {
+     "name": "input",
+     "source": "body",
+     "model": "DnParity1.Dtos.NoteInput"
+    },
+    {
+     "name": "user",
+     "source": "special",
+     "dropped": true,
+     "type": "ClaimsPrincipal"
+    },
+    {
+     "name": "db",
+     "source": "services",
+     "dropped": true,
+     "type": "AppDb"
+    }
+   ],
+   "success": [
+    201
+   ],
+   "file": "Program.cs",
+   "line": 76,
+   "text": "v1.MapPost(\"/notes/quick\", async (NoteInput input, ClaimsPrincipal user, AppDb db) =>"
+  },
+  {
+   "id": "POST /v1/notes/validated",
+   "method": "POST",
+   "template": "/v1/notes/validated",
+   "path_template": "/v1/notes/validated",
+   "style": "minimal",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": null,
+   "handler": "Program.<lambda@Program.cs:84>",
+   "params": [
+    {
+     "name": "input",
+     "source": "body",
+     "model": "DnParity1.Dtos.NoteInput"
+    },
+    {
+     "name": "validator",
+     "source": "services",
+     "dropped": true,
+     "type": "IValidator<NoteInput>"
+    },
+    {
+     "name": "user",
+     "source": "special",
+     "dropped": true,
+     "type": "ClaimsPrincipal"
+    },
+    {
+     "name": "db",
+     "source": "services",
+     "dropped": true,
+     "type": "AppDb"
+    }
+   ],
+   "success": [
+    201
+   ],
+   "file": "Program.cs",
+   "line": 84,
+   "text": "v1.MapPost(\"/notes/validated\", async (NoteInput input, IValidator<NoteInput> validator, ClaimsPrincipal user, AppDb db) =>"
+  },
+  {
+   "id": "PATCH /v1/notes/{id:int}",
+   "method": "PATCH",
+   "template": "/v1/notes/{id:int}",
+   "path_template": "/v1/notes/{id}",
+   "style": "minimal",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": null,
+   "handler": "Program.<lambda@Program.cs:67>",
+   "params": [
+    {
+     "name": "id",
+     "source": "route",
+     "type": "Int",
+     "parse": "Int",
+     "wire": "id"
+    },
+    {
+     "name": "user",
+     "source": "special",
+     "dropped": true,
+     "type": "ClaimsPrincipal"
+    },
+    {
+     "name": "db",
+     "source": "services",
+     "dropped": true,
+     "type": "AppDb"
+    }
+   ],
+   "success": [
+    204
+   ],
+   "file": "Program.cs",
+   "line": 67,
+   "text": "v1.MapMethods(\"/notes/{id:int}\", new[] { \"PATCH\" }, async (int id, ClaimsPrincipal user, AppDb db) =>"
+  },
+  {
+   "id": "POST /v1/notes/{id:int}/split",
+   "method": "POST",
+   "template": "/v1/notes/{id:int}/split",
+   "path_template": "/v1/notes/{id}/split",
+   "style": "minimal",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": null,
+   "handler": "Program.<lambda@Program.cs:97>",
+   "params": [
+    {
+     "name": "id",
+     "source": "route",
+     "type": "Int",
+     "parse": "Int",
+     "wire": "id"
+    },
+    {
+     "name": "user",
+     "source": "special",
+     "dropped": true,
+     "type": "ClaimsPrincipal"
+    },
+    {
+     "name": "db",
+     "source": "services",
+     "dropped": true,
+     "type": "AppDb"
+    }
+   ],
+   "success": [
+    200
+   ],
+   "file": "Program.cs",
+   "line": 97,
+   "text": "v1.MapPost(\"/notes/{id:int}/split\", async (int id, ClaimsPrincipal user, AppDb db) =>"
+  },
+  {
+   "id": "POST /v1/notes/{id:int}/split-safe",
+   "method": "POST",
+   "template": "/v1/notes/{id:int}/split-safe",
+   "path_template": "/v1/notes/{id}/split-safe",
+   "style": "minimal",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": null,
+   "handler": "Program.<lambda@Program.cs:116>",
+   "params": [
+    {
+     "name": "id",
+     "source": "route",
+     "type": "Int",
+     "parse": "Int",
+     "wire": "id"
+    },
+    {
+     "name": "user",
+     "source": "special",
+     "dropped": true,
+     "type": "ClaimsPrincipal"
+    },
+    {
+     "name": "db",
+     "source": "services",
+     "dropped": true,
+     "type": "AppDb"
+    }
+   ],
+   "success": [
+    200
+   ],
+   "file": "Program.cs",
+   "line": 116,
+   "text": "v1.MapPost(\"/notes/{id:int}/split-safe\", async (int id, ClaimsPrincipal user, AppDb db) =>"
+  },
+  {
+   "id": "GET /v1/notes/{id:int}/summary",
+   "method": "GET",
+   "template": "/v1/notes/{id:int}/summary",
+   "path_template": "/v1/notes/{id}/summary",
+   "style": "minimal",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": null,
+   "handler": "DnParity1.Endpoints.NoteHandlers.Summary",
+   "params": [
+    {
+     "name": "id",
+     "source": "route",
+     "type": "Int",
+     "parse": "Int",
+     "wire": "id"
+    },
+    {
+     "name": "user",
+     "source": "special",
+     "dropped": true,
+     "type": "ClaimsPrincipal"
+    },
+    {
+     "name": "store",
+     "source": "services",
+     "dropped": true,
+     "type": "INoteStore"
+    }
+   ],
+   "success": [
+    200
+   ],
+   "file": "Program.cs",
+   "line": 65,
+   "text": "v1.MapGet(\"/notes/{id:int}/summary\", NoteHandlers.Summary);"
+  },
+  {
+   "id": "GET /v1/todos/all",
+   "method": "GET",
+   "template": "/v1/todos/all",
+   "path_template": "/v1/todos/all",
+   "style": "minimal",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": "group /v1 RequireAuthorization passed through MapTodos(this RouteGroupBuilder)",
+   "handler": "DnParity1.Endpoints.TodoEndpoints.<lambda@Endpoints/TodoEndpoints.cs:16>",
+   "params": [
+    {
+     "name": "db",
+     "source": "services",
+     "dropped": true,
+     "type": "AppDb"
+    }
+   ],
+   "success": [
+    200
+   ],
+   "file": "Endpoints/TodoEndpoints.cs",
+   "line": 16,
+   "text": "todos.MapGet(\"/all\", async (AppDb db) => Results.Ok(await db.Todos.IgnoreQueryFilters().ToListAsync()));"
+  },
+  {
+   "id": "GET /v1/todos/open",
+   "method": "GET",
+   "template": "/v1/todos/open",
+   "path_template": "/v1/todos/open",
+   "style": "minimal",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": "group /v1 RequireAuthorization passed through MapTodos(this RouteGroupBuilder)",
+   "handler": "DnParity1.Endpoints.TodoEndpoints.<lambda@Endpoints/TodoEndpoints.cs:14>",
+   "params": [
+    {
+     "name": "db",
+     "source": "services",
+     "dropped": true,
+     "type": "AppDb"
+    }
+   ],
+   "success": [
+    200
+   ],
+   "file": "Endpoints/TodoEndpoints.cs",
+   "line": 14,
+   "text": "todos.MapGet(\"/open\", async (AppDb db) => Results.Ok(await db.Todos.ToListAsync()));"
+  },
+  {
+   "id": "GET /v1/todos/overdue",
+   "method": "GET",
+   "template": "/v1/todos/overdue",
+   "path_template": "/v1/todos/overdue",
+   "style": "minimal",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": "group /v1 RequireAuthorization passed through MapTodos(this RouteGroupBuilder)",
+   "handler": "DnParity1.Endpoints.TodoEndpoints.<lambda@Endpoints/TodoEndpoints.cs:24>",
+   "params": [
+    {
+     "name": "db",
+     "source": "services",
+     "dropped": true,
+     "type": "AppDb"
+    }
+   ],
+   "success": [
+    200
+   ],
+   "file": "Endpoints/TodoEndpoints.cs",
+   "line": 24,
+   "text": "todos.MapGet(\"/overdue\", async (AppDb db) =>"
+  },
+  {
+   "id": "GET /v1/todos/{id:int}",
+   "method": "GET",
+   "template": "/v1/todos/{id:int}",
+   "path_template": "/v1/todos/{id}",
+   "style": "minimal",
+   "condition": null,
+   "auth": "Member",
+   "auth_reason": "group /v1 RequireAuthorization passed through MapTodos(this RouteGroupBuilder)",
+   "handler": "DnParity1.Endpoints.TodoEndpoints.<lambda@Endpoints/TodoEndpoints.cs:18>",
+   "params": [
+    {
+     "name": "id",
+     "source": "route",
+     "type": "Int",
+     "parse": "Int",
+     "wire": "id"
+    },
+    {
+     "name": "user",
+     "source": "special",
+     "dropped": true,
+     "type": "ClaimsPrincipal"
+    },
+    {
+     "name": "db",
+     "source": "services",
+     "dropped": true,
+     "type": "AppDb"
+    }
+   ],
+   "success": [
+    200
+   ],
+   "file": "Endpoints/TodoEndpoints.cs",
+   "line": 18,
+   "text": "todos.MapGet(\"/{id:int}\", async (int id, ClaimsPrincipal user, AppDb db) =>"
+  },
+  {
+   "id": "GET /v1/version",
+   "method": "GET",
+   "template": "/v1/version",
+   "path_template": "/v1/version",
+   "style": "minimal",
+   "condition": null,
+   "auth": "Public",
+   "auth_reason": ".AllowAnonymous() on the endpoint wins over the group's RequireAuthorization()",
+   "handler": "Program.<lambda@Program.cs:60>",
+   "params": [],
+   "success": [
+    200
+   ],
+   "file": "Program.cs",
+   "line": 60,
+   "text": "v1.MapGet(\"/version\", () => Results.Ok(new { version = \"1\" })).AllowAnonymous();"
+  }
+ ],
+ "excluded": [
+  {
+   "kind": "framework",
+   "construct": "x1",
+   "what": "MapHealthChecks",
+   "method": null,
+   "path": "/health",
+   "file": "Program.cs",
+   "line": 44,
+   "text": "app.MapHealthChecks(\"/health\");",
+   "reason": "framework endpoint"
+  },
+  {
+   "kind": "grpc",
+   "construct": "x1",
+   "what": "MapGrpcService<PingService>",
+   "method": null,
+   "path": null,
+   "file": "Program.cs",
+   "line": 45,
+   "text": "app.MapGrpcService<PingService>();",
+   "reason": "gRPC for .NET is out of scope in Spike J round 1"
+  },
+  {
+   "kind": "framework",
+   "construct": "x1",
+   "what": "MapHub<NoteHub>",
+   "method": null,
+   "path": "/hubs/notes",
+   "file": "Program.cs",
+   "line": 46,
+   "text": "app.MapHub<NoteHub>(\"/hubs/notes\");",
+   "reason": "framework endpoint (SignalR hub)"
+  }
+ ],
+ "unread": [
+  {
+   "category": "raise",
+   "probe": "P0-RAISE",
+   "route": "GET /api/v2/Forms/explode",
+   "file": "Controllers/FormsController.cs",
+   "line": 52,
+   "text": "public IActionResult Explode() => throw new InvalidOperationException(\"boom\");",
+   "what": "throw new InvalidOperationException",
+   "reason": "thrown, no constant mapping"
+  },
+  {
+   "category": "route",
+   "probe": "P0-EXCL",
+   "construct": "m6",
+   "file": "Program.cs",
+   "line": 63,
+   "text": "v1.MapGet(statusPath, () => Results.Ok(new { ok = true }));",
+   "what": "MapGet with a non-constant template (statusPath)",
+   "reason": "template is not a compile-time constant"
+  },
+  {
+   "category": "route",
+   "probe": "P0-EXCL",
+   "construct": "x2",
+   "file": "Program.cs",
+   "line": 42,
+   "text": "app.MapControllerRoute(name: \"legacy\", pattern: \"legacy/{action=Ping}/{id?}\", defaults: new { controller = \"Legacy\" });",
+   "what": "conventional route (MapControllerRoute) for the attribute-less LegacyController",
+   "reason": "conventional routing is not read"
+  },
+  {
+   "category": "bind",
+   "probe": "P0-BIND",
+   "route": "POST /v1/notes/quick",
+   "file": "Dtos/NoteInput.cs",
+   "line": 7,
+   "text": "[Required]",
+   "what": "[Required] on NoteInput.Title",
+   "reason": "declared, not enforced"
+  },
+  {
+   "category": "bind",
+   "probe": "P0-BIND",
+   "route": "POST /v1/notes/quick",
+   "file": "Dtos/NoteInput.cs",
+   "line": 8,
+   "text": "[StringLength(120, MinimumLength = 1)]",
+   "what": "[StringLength(120, MinimumLength = 1)] on NoteInput.Title",
+   "reason": "declared, not enforced"
+  },
+  {
+   "category": "bind",
+   "probe": "P0-BIND",
+   "route": "POST /v1/notes/quick",
+   "file": "Dtos/NoteInput.cs",
+   "line": 11,
+   "text": "[MaxLength(2000)]",
+   "what": "[MaxLength(2000)] on NoteInput.Body",
+   "reason": "declared, not enforced"
+  },
+  {
+   "category": "bind",
+   "probe": "P0-BIND",
+   "route": "POST /v1/notes/quick",
+   "file": "Dtos/NoteInput.cs",
+   "line": 14,
+   "text": "[Range(1, 5)]",
+   "what": "[Range(1, 5)] on NoteInput.Priority",
+   "reason": "declared, not enforced"
+  },
+  {
+   "category": "bind",
+   "probe": "P0-BIND",
+   "route": "POST /v1/notes/validated",
+   "file": "Dtos/NoteInput.cs",
+   "line": 7,
+   "text": "[Required]",
+   "what": "[Required] on NoteInput.Title",
+   "reason": "declared, not enforced"
+  },
+  {
+   "category": "bind",
+   "probe": "P0-BIND",
+   "route": "POST /v1/notes/validated",
+   "file": "Dtos/NoteInput.cs",
+   "line": 8,
+   "text": "[StringLength(120, MinimumLength = 1)]",
+   "what": "[StringLength(120, MinimumLength = 1)] on NoteInput.Title",
+   "reason": "declared, not enforced"
+  },
+  {
+   "category": "bind",
+   "probe": "P0-BIND",
+   "route": "POST /v1/notes/validated",
+   "file": "Dtos/NoteInput.cs",
+   "line": 11,
+   "text": "[MaxLength(2000)]",
+   "what": "[MaxLength(2000)] on NoteInput.Body",
+   "reason": "declared, not enforced"
+  },
+  {
+   "category": "bind",
+   "probe": "P0-BIND",
+   "route": "POST /v1/notes/validated",
+   "file": "Dtos/NoteInput.cs",
+   "line": 14,
+   "text": "[Range(1, 5)]",
+   "what": "[Range(1, 5)] on NoteInput.Priority",
+   "reason": "declared, not enforced"
+  },
+  {
+   "category": "table",
+   "probe": "P0-TABLES",
+   "construct": "e1-tph",
+   "file": "Data/AppDb.cs",
+   "line": 31,
+   "text": "modelBuilder.Entity<Vehicle>().HasDiscriminator<string>(\"Kind\").HasValue<Car>(\"car\").HasValue<Truck>(\"truck\");",
+   "what": "TPH inheritance Vehicle / Car / Truck (HasDiscriminator)",
+   "reason": "inheritance mapping is not read"
+  },
+  {
+   "category": "table",
+   "probe": "P0-TABLES",
+   "construct": "e1-owned",
+   "file": "Data/AppDb.cs",
+   "line": 29,
+   "text": "modelBuilder.Entity<User>().OwnsOne(u => u.Address);",
+   "what": "owned type Address (OwnsOne)",
+   "reason": "owned types are not read"
+  },
+  {
+   "category": "di",
+   "probe": "P0-DI",
+   "reason": "2 registrations (EmailNotifier, SmsNotifier): never the first match; the route's reach is incomplete (an opaque call receives an entity)",
+   "file": "Controllers/NotesController.cs",
+   "line": 110,
+   "text": "await _notifier.NotifyAsync(note);",
+   "what": "INoteNotifier.NotifyAsync",
+   "route": "POST /api/Notes/{id:int}/publish"
+  }
+ ],
+ "tables": [
+  {
+   "entity": "User",
+   "table": "Users",
+   "name_source": "DbSet<User> Users",
+   "dbset": {
+    "file": "Data/AppDb.cs",
+    "line": 16,
+    "text": "public DbSet<User> Users { get; set; } = null!;"
+   },
+   "file": "Models/User.cs",
+   "line": 8,
+   "text": "public class User",
+   "columns": [
+    {
+     "name": "Id",
+     "property": "Id",
+     "csharp_type": "int",
+     "wire": "id",
+     "private": false,
+     "nullable": false,
+     "unique": false,
+     "pk": true,
+     "max_length": null,
+     "fk": null,
+     "default": null,
+     "enum_storage": null,
+     "choices": null,
+     "file": "Models/User.cs",
+     "line": 10,
+     "text": "public int Id { get; set; }"
+    },
+    {
+     "name": "Email",
+     "property": "Email",
+     "csharp_type": "string",
+     "wire": "email",
+     "private": false,
+     "nullable": false,
+     "unique": true,
+     "pk": false,
+     "max_length": 254,
+     "fk": null,
+     "default": null,
+     "enum_storage": null,
+     "choices": null,
+     "file": "Models/User.cs",
+     "line": 13,
+     "text": "public string Email { get; set; } = \"\";",
+     "evidence": {
+      "max_length": {
+       "file": "Models/User.cs",
+       "line": 12,
+       "text": "[MaxLength(254)]"
+      },
+      "unique": {
+       "file": "Models/User.cs",
+       "line": 7,
+       "text": "[Index(nameof(Email), IsUnique = true)]"
+      }
+     }
+    },
+    {
+     "name": "PasswordHash",
+     "property": "PasswordHash",
+     "csharp_type": "string",
+     "wire": null,
+     "private": true,
+     "nullable": false,
+     "unique": false,
+     "pk": false,
+     "max_length": 100,
+     "fk": null,
+     "default": null,
+     "enum_storage": null,
+     "choices": null,
+     "file": "Models/User.cs",
+     "line": 17,
+     "text": "public string PasswordHash { get; set; } = \"\";",
+     "evidence": {
+      "json_ignore": {
+       "file": "Models/User.cs",
+       "line": 15,
+       "text": "[JsonIgnore]"
+      }
+     }
+    },
+    {
+     "name": "Role",
+     "property": "Role",
+     "csharp_type": "string",
+     "wire": "role",
+     "private": false,
+     "nullable": false,
+     "unique": false,
+     "pk": false,
+     "max_length": 16,
+     "fk": null,
+     "default": "Member",
+     "enum_storage": null,
+     "choices": null,
+     "file": "Models/User.cs",
+     "line": 20,
+     "text": "public string Role { get; set; } = \"Member\";",
+     "evidence": {
+      "default": {
+       "file": "Data/AppDb.cs",
+       "line": 30,
+       "text": "modelBuilder.Entity<User>().Property(u => u.Role).HasDefaultValue(\"Member\");"
+      }
+     }
+    }
+   ],
+   "unique_together": [],
+   "checks": [],
+   "unread": []
+  },
+  {
+   "entity": "Note",
+   "table": "notes",
+   "name_source": "ToTable(\"notes\") in NoteConfiguration (applied by ApplyConfigurationsFromAssembly); the DbSet<Note> property is Notes",
+   "dbset": {
+    "file": "Data/AppDb.cs",
+    "line": 18,
+    "text": "public DbSet<Note> Notes { get; set; } = null!;"
+   },
+   "to_table": {
+    "file": "Data/NoteConfiguration.cs",
+    "line": 11,
+    "text": "builder.ToTable(\"notes\");"
+   },
+   "file": "Models/Note.cs",
+   "line": 13,
+   "text": "public class Note",
+   "columns": [
+    {
+     "name": "Id",
+     "property": "Id",
+     "csharp_type": "int",
+     "wire": "id",
+     "private": false,
+     "nullable": false,
+     "unique": false,
+     "pk": true,
+     "max_length": null,
+     "fk": null,
+     "default": null,
+     "enum_storage": null,
+     "choices": null,
+     "file": "Models/Note.cs",
+     "line": 15,
+     "text": "public int Id { get; set; }"
+    },
+    {
+     "name": "OwnerId",
+     "property": "OwnerId",
+     "csharp_type": "int",
+     "wire": "owner_id",
+     "private": false,
+     "nullable": false,
+     "unique": false,
+     "pk": false,
+     "max_length": null,
+     "fk": "Users.Id",
+     "default": null,
+     "enum_storage": null,
+     "choices": null,
+     "file": "Models/Note.cs",
+     "line": 17,
+     "text": "public int OwnerId { get; set; }",
+     "evidence": {
+      "fk": "convention: navigation Owner + Id",
+      "nav": {
+       "file": "Models/Note.cs",
+       "line": 19,
+       "text": "public User? Owner { get; set; }"
+      }
+     }
+    },
+    {
+     "name": "Title",
+     "property": "Title",
+     "csharp_type": "string",
+     "wire": "title",
+     "private": false,
+     "nullable": false,
+     "unique": false,
+     "pk": false,
+     "max_length": 120,
+     "fk": null,
+     "default": null,
+     "enum_storage": null,
+     "choices": null,
+     "file": "Models/Note.cs",
+     "line": 22,
+     "text": "public string Title { get; set; } = \"\";",
+     "evidence": {
+      "max_length": {
+       "file": "Models/Note.cs",
+       "line": 21,
+       "text": "[MaxLength(120)]"
+      }
+     }
+    },
+    {
+     "name": "Body",
+     "property": "Body",
+     "csharp_type": "string?",
+     "wire": "body",
+     "private": false,
+     "nullable": true,
+     "unique": false,
+     "pk": false,
+     "max_length": 2000,
+     "fk": null,
+     "default": null,
+     "enum_storage": null,
+     "choices": null,
+     "file": "Models/Note.cs",
+     "line": 24,
+     "text": "public string? Body { get; set; }",
+     "evidence": {
+      "max_length": {
+       "file": "Data/NoteConfiguration.cs",
+       "line": 13,
+       "text": "builder.Property(n => n.Body).HasMaxLength(2000);"
+      }
+     }
+    },
+    {
+     "name": "Priority",
+     "property": "Priority",
+     "csharp_type": "int",
+     "wire": "priority",
+     "private": false,
+     "nullable": false,
+     "unique": false,
+     "pk": false,
+     "max_length": null,
+     "fk": null,
+     "default": "3",
+     "enum_storage": null,
+     "choices": null,
+     "file": "Models/Note.cs",
+     "line": 26,
+     "text": "public int Priority { get; set; }",
+     "evidence": {
+      "default": {
+       "file": "Data/NoteConfiguration.cs",
+       "line": 14,
+       "text": "builder.Property(n => n.Priority).HasDefaultValue(3);"
+      }
+     }
+    },
+    {
+     "name": "Status",
+     "property": "Status",
+     "csharp_type": "NoteStatus",
+     "wire": "status",
+     "private": false,
+     "nullable": false,
+     "unique": false,
+     "pk": false,
+     "max_length": 16,
+     "fk": null,
+     "default": "Draft",
+     "enum_storage": "string",
+     "choices": [
+      "Draft",
+      "Published",
+      "Archived"
+     ],
+     "file": "Models/Note.cs",
+     "line": 28,
+     "text": "public NoteStatus Status { get; set; }",
+     "evidence": {
+      "conversion": {
+       "file": "Data/NoteConfiguration.cs",
+       "line": 15,
+       "text": "builder.Property(n => n.Status).HasConversion<string>().HasMaxLength(16).HasDefaultValue(NoteStatus.Draft);"
+      },
+      "enum": {
+       "file": "Models/Note.cs",
+       "line": 6,
+       "text": "public enum NoteStatus"
+      },
+      "choices_rule": "status-like: written with >= 2 distinct constants (Draft, Published, Archived)"
+     }
+    },
+    {
+     "name": "ModerationNote",
+     "property": "ModerationNote",
+     "csharp_type": "string?",
+     "wire": null,
+     "private": true,
+     "nullable": true,
+     "unique": false,
+     "pk": false,
+     "max_length": null,
+     "fk": null,
+     "default": null,
+     "enum_storage": null,
+     "choices": null,
+     "file": "Models/Note.cs",
+     "line": 31,
+     "text": "public string? ModerationNote { get; set; }",
+     "evidence": {
+      "json_ignore": {
+       "file": "Models/Note.cs",
+       "line": 30,
+       "text": "[JsonIgnore]"
+      }
+     }
+    },
+    {
+     "name": "CreatedAt",
+     "property": "CreatedAt",
+     "csharp_type": "DateTime",
+     "wire": "created",
+     "private": false,
+     "nullable": false,
+     "unique": false,
+     "pk": false,
+     "max_length": null,
+     "fk": null,
+     "default": null,
+     "enum_storage": null,
+     "choices": null,
+     "file": "Models/Note.cs",
+     "line": 34,
+     "text": "public DateTime CreatedAt { get; set; }",
+     "evidence": {
+      "wire": "[JsonPropertyName(\"created\")] overrides the SnakeCaseLower policy (created_at)",
+      "attr": {
+       "file": "Models/Note.cs",
+       "line": 33,
+       "text": "[JsonPropertyName(\"created\")]"
+      }
+     }
+    }
+   ],
+   "unique_together": [
+    {
+     "columns": [
+      "OwnerId",
+      "Title"
+     ],
+     "file": "Data/NoteConfiguration.cs",
+     "line": 12,
+     "text": "builder.HasIndex(n => new { n.OwnerId, n.Title }).IsUnique();"
+    }
+   ],
+   "checks": [],
+   "unread": []
+  },
+  {
+   "entity": "Tag",
+   "table": "Tags",
+   "name_source": "DbSet<Tag> Tags",
+   "dbset": {
+    "file": "Data/AppDb.cs",
+    "line": 20,
+    "text": "public DbSet<Tag> Tags { get; set; } = null!;"
+   },
+   "file": "Models/Tag.cs",
+   "line": 5,
+   "text": "public class Tag",
+   "columns": [
+    {
+     "name": "Id",
+     "property": "Id",
+     "csharp_type": "int",
+     "wire": "id",
+     "private": false,
+     "nullable": false,
+     "unique": false,
+     "pk": true,
+     "max_length": null,
+     "fk": null,
+     "default": null,
+     "enum_storage": null,
+     "choices": null,
+     "file": "Models/Tag.cs",
+     "line": 7,
+     "text": "public int Id { get; set; }"
+    },
+    {
+     "name": "NoteId",
+     "property": "NoteId",
+     "csharp_type": "int",
+     "wire": "note_id",
+     "private": false,
+     "nullable": false,
+     "unique": false,
+     "pk": false,
+     "max_length": null,
+     "fk": "notes.Id",
+     "default": null,
+     "enum_storage": null,
+     "choices": null,
+     "file": "Models/Tag.cs",
+     "line": 9,
+     "text": "public int NoteId { get; set; }",
+     "evidence": {
+      "fk": {
+       "file": "Data/NoteConfiguration.cs",
+       "line": 16,
+       "text": "builder.HasMany(n => n.Tags).WithOne(t => t.Note).HasForeignKey(t => t.NoteId);"
+      }
+     }
+    },
+    {
+     "name": "Label",
+     "property": "Label",
+     "csharp_type": "string",
+     "wire": "label",
+     "private": false,
+     "nullable": false,
+     "unique": false,
+     "pk": false,
+     "max_length": 40,
+     "fk": null,
+     "default": null,
+     "enum_storage": null,
+     "choices": null,
+     "file": "Models/Tag.cs",
+     "line": 14,
+     "text": "public string Label { get; set; } = \"\";",
+     "evidence": {
+      "max_length": {
+       "file": "Models/Tag.cs",
+       "line": 13,
+       "text": "[MaxLength(40)]"
+      }
+     }
+    }
+   ],
+   "unique_together": [],
+   "checks": [],
+   "unread": []
+  },
+  {
+   "entity": "Todo",
+   "table": "Todos",
+   "name_source": "DbSet<Todo> Todos",
+   "dbset": {
+    "file": "Data/AppDb.cs",
+    "line": 22,
+    "text": "public DbSet<Todo> Todos { get; set; } = null!;"
+   },
+   "file": "Models/Todo.cs",
+   "line": 5,
+   "text": "public class Todo",
+   "columns": [
+    {
+     "name": "Id",
+     "property": "Id",
+     "csharp_type": "int",
+     "wire": "id",
+     "private": false,
+     "nullable": false,
+     "unique": false,
+     "pk": true,
+     "max_length": null,
+     "fk": null,
+     "default": null,
+     "enum_storage": null,
+     "choices": null,
+     "file": "Models/Todo.cs",
+     "line": 7,
+     "text": "public int Id { get; set; }"
+    },
+    {
+     "name": "OwnerId",
+     "property": "OwnerId",
+     "csharp_type": "int",
+     "wire": "owner_id",
+     "private": false,
+     "nullable": false,
+     "unique": false,
+     "pk": false,
+     "max_length": null,
+     "fk": null,
+     "default": null,
+     "enum_storage": null,
+     "choices": null,
+     "file": "Models/Todo.cs",
+     "line": 9,
+     "text": "public int OwnerId { get; set; }"
+    },
+    {
+     "name": "Text",
+     "property": "Text",
+     "csharp_type": "string",
+     "wire": "text",
+     "private": false,
+     "nullable": false,
+     "unique": false,
+     "pk": false,
+     "max_length": 200,
+     "fk": null,
+     "default": null,
+     "enum_storage": null,
+     "choices": null,
+     "file": "Models/Todo.cs",
+     "line": 12,
+     "text": "public string Text { get; set; } = \"\";",
+     "evidence": {
+      "max_length": {
+       "file": "Models/Todo.cs",
+       "line": 11,
+       "text": "[MaxLength(200)]"
+      }
+     }
+    },
+    {
+     "name": "DueAt",
+     "property": "DueAt",
+     "csharp_type": "DateTime?",
+     "wire": "due_at",
+     "private": false,
+     "nullable": true,
+     "unique": false,
+     "pk": false,
+     "max_length": null,
+     "fk": null,
+     "default": null,
+     "enum_storage": null,
+     "choices": null,
+     "file": "Models/Todo.cs",
+     "line": 14,
+     "text": "public DateTime? DueAt { get; set; }"
+    },
+    {
+     "name": "Done",
+     "property": "Done",
+     "csharp_type": "bool",
+     "wire": "done",
+     "private": false,
+     "nullable": false,
+     "unique": false,
+     "pk": false,
+     "max_length": null,
+     "fk": null,
+     "default": null,
+     "enum_storage": null,
+     "choices": null,
+     "file": "Models/Todo.cs",
+     "line": 16,
+     "text": "public bool Done { get; set; }"
+    }
+   ],
+   "unique_together": [],
+   "checks": [],
+   "unread": []
+  }
+ ],
+ "models": [
+  {
+   "name": "DnParity1.Dtos.NoteInput",
+   "kind": "request",
+   "file": "Dtos/NoteInput.cs",
+   "line": 5,
+   "text": "public class NoteInput",
+   "fields": [
+    {
+     "name": "Title",
+     "wire": "title",
+     "csharp_type": "string",
+     "file": "Dtos/NoteInput.cs",
+     "line": 9,
+     "text": "public string Title { get; set; } = \"\";"
+    },
+    {
+     "name": "Body",
+     "wire": "body",
+     "csharp_type": "string?",
+     "file": "Dtos/NoteInput.cs",
+     "line": 12,
+     "text": "public string? Body { get; set; }"
+    },
+    {
+     "name": "Priority",
+     "wire": "priority",
+     "csharp_type": "int",
+     "file": "Dtos/NoteInput.cs",
+     "line": 15,
+     "text": "public int Priority { get; set; }"
+    },
+    {
+     "name": "Category",
+     "wire": "category",
+     "csharp_type": "string",
+     "file": "Dtos/NoteInput.cs",
+     "line": 17,
+     "text": "public string Category { get; set; } = \"\";"
+    }
+   ]
+  },
+  {
+   "name": "DnParity1.Dtos.TagView",
+   "kind": "response",
+   "file": "Dtos/NoteInput.cs",
+   "line": 20,
+   "text": "public record TagView(int Id, string Label);",
+   "fields": [
+    {
+     "name": "Id",
+     "wire": "id",
+     "csharp_type": "int"
+    },
+    {
+     "name": "Label",
+     "wire": "label",
+     "csharp_type": "string"
+    }
+   ]
+  }
+ ],
+ "not_tables": [
+  {
+   "entity": "Vehicle",
+   "reason": "TPH hierarchy: listed only in unread, no table entry"
+  },
+  {
+   "entity": "Car",
+   "reason": "TPH hierarchy: listed only in unread, no table entry"
+  },
+  {
+   "entity": "Truck",
+   "reason": "TPH hierarchy: listed only in unread, no table entry"
+  }
+ ],
+ "owners": {
+  "Note": "OwnerId",
+  "Todo": "OwnerId"
+ },
+ "owner_via": {
+  "Tag": [
+   "Note",
+   "NoteId"
+  ]
+ },
+ "owner_uses": [
+  {
+   "route": "GET /api/Notes",
+   "table": "Note",
+   "column": "OwnerId",
+   "kind": "compare",
+   "value": "UserId",
+   "file": "Controllers/NotesController.cs",
+   "line": 35,
+   "text": "var notes = await _db.Notes.Where(n => n.OwnerId == UserId).ToListAsync();"
+  },
+  {
+   "route": "GET /api/Notes/{id:int}",
+   "table": "Note",
+   "column": "OwnerId",
+   "kind": "compare",
+   "value": "UserId",
+   "file": "Controllers/NotesController.cs",
+   "line": 42,
+   "text": "var note = await _db.Notes.FirstOrDefaultAsync(n => n.Id == id && n.OwnerId == UserId);"
+  },
+  {
+   "route": "POST /api/Notes",
+   "table": "Note",
+   "column": "OwnerId",
+   "kind": "assign",
+   "value": "UserId",
+   "file": "Controllers/NotesController.cs",
+   "line": 56,
+   "text": "OwnerId = UserId,"
+  },
+  {
+   "route": "PUT /api/Notes/{id:int}",
+   "table": "Note",
+   "column": "OwnerId",
+   "kind": "compare",
+   "value": "UserId",
+   "file": "Controllers/NotesController.cs",
+   "line": 72,
+   "text": "if (row is null || row.OwnerId != UserId)"
+  },
+  {
+   "route": "POST /api/Notes/{id:int}/publish",
+   "table": "Note",
+   "column": "OwnerId",
+   "kind": "compare",
+   "value": "UserId",
+   "file": "Controllers/NotesController.cs",
+   "line": 99,
+   "text": "var note = await _db.Notes.FirstOrDefaultAsync(n => n.Id == id && n.OwnerId == UserId);"
+  },
+  {
+   "route": "POST /api/Notes/{id:int}/restore",
+   "table": "Note",
+   "column": "OwnerId",
+   "kind": "compare",
+   "value": "UserId",
+   "file": "Controllers/NotesController.cs",
+   "line": 117,
+   "text": "var note = await _db.Notes.FirstOrDefaultAsync(n => n.Id == id && n.OwnerId == UserId);"
+  },
+  {
+   "route": "GET /api/Notes/{id:int}/tags",
+   "table": "Tag",
+   "column": "OwnerId",
+   "kind": "compare",
+   "value": "UserId",
+   "file": "Controllers/NotesController.cs",
+   "line": 146,
+   "text": ".Where(t => t.NoteId == id && t.Note!.OwnerId == UserId)",
+   "via": {
+    "table": "Tag",
+    "parent": "Note",
+    "fk": "NoteId"
+   }
+  },
+  {
+   "route": "GET /api/v2/Reports/{id:int}",
+   "table": "Note",
+   "column": "OwnerId",
+   "kind": "compare",
+   "value": "ownerId",
+   "file": "Services/NoteStore.cs",
+   "line": 23,
+   "text": "return _db.Notes.FirstOrDefaultAsync(n => n.Id == id && n.OwnerId == ownerId);",
+   "via": {
+    "call": "INoteStore.GetOwnedAsync",
+    "resolved_to": "DnParity1.Services.EfNoteStore.GetOwnedAsync"
+   }
+  },
+  {
+   "route": "GET /api/v2/Reports/{id:int}/audit",
+   "table": "Note",
+   "column": "OwnerId",
+   "kind": "compare",
+   "value": "ownerId",
+   "file": "Services/NoteStore.cs",
+   "line": 23,
+   "text": "return _db.Notes.FirstOrDefaultAsync(n => n.Id == id && n.OwnerId == ownerId);",
+   "via": {
+    "call": "INoteStore.GetOwnedAsync",
+    "resolved_to": "DnParity1.Services.EfNoteStore.GetOwnedAsync"
+   }
+  },
+  {
+   "route": "GET /v1/todos/{id:int}",
+   "table": "Todo",
+   "column": "OwnerId",
+   "kind": "compare",
+   "value": "user.GetUserId()",
+   "file": "Endpoints/TodoEndpoints.cs",
+   "line": 20,
+   "text": "var todo = await db.Todos.FirstOrDefaultAsync(t => t.Id == id && t.OwnerId == user.GetUserId());"
+  },
+  {
+   "route": "GET /v1/notes/{id:int}/summary",
+   "table": "Note",
+   "column": "OwnerId",
+   "kind": "compare",
+   "value": "ownerId",
+   "file": "Services/NoteStore.cs",
+   "line": 23,
+   "text": "return _db.Notes.FirstOrDefaultAsync(n => n.Id == id && n.OwnerId == ownerId);",
+   "via": {
+    "call": "INoteStore.GetOwnedAsync",
+    "resolved_to": "DnParity1.Services.EfNoteStore.GetOwnedAsync"
+   }
+  },
+  {
+   "route": "PATCH /v1/notes/{id:int}",
+   "table": "Note",
+   "column": "OwnerId",
+   "kind": "compare",
+   "value": "uid",
+   "file": "Program.cs",
+   "line": 71,
+   "text": ".Where(n => n.Id == id && n.OwnerId == uid && n.Status == NoteStatus.Published)"
+  },
+  {
+   "route": "POST /v1/notes/quick",
+   "table": "Note",
+   "column": "OwnerId",
+   "kind": "assign",
+   "value": "user.GetUserId()",
+   "file": "Program.cs",
+   "line": 78,
+   "text": "var note = new Note { OwnerId = user.GetUserId(), Title = input.Title, Priority = 3 };"
+  },
+  {
+   "route": "POST /v1/notes/validated",
+   "table": "Note",
+   "column": "OwnerId",
+   "kind": "assign",
+   "value": "user.GetUserId()",
+   "file": "Program.cs",
+   "line": 91,
+   "text": "var note = new Note { OwnerId = user.GetUserId(), Title = input.Title, Priority = input.Priority };"
+  },
+  {
+   "route": "POST /v1/notes/{id:int}/split",
+   "table": "Note",
+   "column": "OwnerId",
+   "kind": "compare",
+   "value": "uid",
+   "file": "Program.cs",
+   "line": 100,
+   "text": "var src = await db.Notes.FirstOrDefaultAsync(n => n.Id == id && n.OwnerId == uid);"
+  },
+  {
+   "route": "POST /v1/notes/{id:int}/split",
+   "table": "Note",
+   "column": "OwnerId",
+   "kind": "assign",
+   "value": "uid",
+   "file": "Program.cs",
+   "line": 105,
+   "text": "db.Notes.Add(new Note { OwnerId = uid, Title = src.Title + \" (a)\", Priority = src.Priority });"
+  },
+  {
+   "route": "POST /v1/notes/{id:int}/split",
+   "table": "Note",
+   "column": "OwnerId",
+   "kind": "assign",
+   "value": "uid",
+   "file": "Program.cs",
+   "line": 111,
+   "text": "db.Notes.Add(new Note { OwnerId = uid, Title = src.Title + \" (b)\", Body = src.Body, Priority = src.Priority });"
+  },
+  {
+   "route": "POST /v1/notes/{id:int}/split-safe",
+   "table": "Note",
+   "column": "OwnerId",
+   "kind": "compare",
+   "value": "uid",
+   "file": "Program.cs",
+   "line": 119,
+   "text": "var src = await db.Notes.FirstOrDefaultAsync(n => n.Id == id && n.OwnerId == uid);"
+  },
+  {
+   "route": "POST /v1/notes/{id:int}/split-safe",
+   "table": "Note",
+   "column": "OwnerId",
+   "kind": "assign",
+   "value": "uid",
+   "file": "Program.cs",
+   "line": 125,
+   "text": "db.Notes.Add(new Note { OwnerId = uid, Title = src.Title + \" (a)\", Priority = src.Priority });"
+  },
+  {
+   "route": "POST /v1/notes/{id:int}/split-safe",
+   "table": "Note",
+   "column": "OwnerId",
+   "kind": "assign",
+   "value": "uid",
+   "file": "Program.cs",
+   "line": 131,
+   "text": "db.Notes.Add(new Note { OwnerId = uid, Title = src.Title + \" (b)\", Body = src.Body, Priority = src.Priority });"
+  },
+  {
+   "route": "GET /v1/todos/open",
+   "table": "Todo",
+   "column": "OwnerId",
+   "kind": "filter",
+   "value": "_current.UserId",
+   "file": "Data/AppDb.cs",
+   "line": 32,
+   "text": "modelBuilder.Entity<Todo>().HasQueryFilter(t => t.OwnerId == _current.UserId);"
+  },
+  {
+   "route": "GET /v1/todos/overdue",
+   "table": "Todo",
+   "column": "OwnerId",
+   "kind": "filter",
+   "value": "_current.UserId",
+   "file": "Data/AppDb.cs",
+   "line": 32,
+   "text": "modelBuilder.Entity<Todo>().HasQueryFilter(t => t.OwnerId == _current.UserId);"
+  }
+ ],
+ "private": {
+  "User": [
+   "PasswordHash"
+  ],
+  "Note": [
+   "ModerationNote"
+  ]
+ },
+ "not_returned": [
+  {
+   "entity": "User",
+   "column": "PasswordHash"
+  },
+  {
+   "entity": "Note",
+   "column": "ModerationNote"
+  }
+ ],
+ "machines": {
+  "Note.Status": {
+   "initial": "Draft",
+   "edges": [
+    [
+     "Draft",
+     "Published"
+    ],
+    [
+     "Published",
+     "Archived"
+    ]
+   ],
+   "storage": "string"
+  }
+ },
+ "status_writes": [
+  {
+   "route": "POST /api/Notes",
+   "table": "Note",
+   "column": "Status",
+   "value": "Draft",
+   "stored": "Draft",
+   "kind": "initial",
+   "from": null,
+   "guard": null,
+   "file": "Controllers/NotesController.cs",
+   "line": 60,
+   "text": "Status = NoteStatus.Draft,"
+  },
+  {
+   "route": "POST /api/Notes/{id:int}/publish",
+   "table": "Note",
+   "column": "Status",
+   "value": "Published",
+   "stored": "Published",
+   "kind": "assign",
+   "from": [
+    "Draft"
+   ],
+   "guard": {
+    "status_if_not": 409,
+    "file": "Controllers/NotesController.cs",
+    "line": 104,
+    "text": "if (note.Status != NoteStatus.Draft)"
+   },
+   "file": "Controllers/NotesController.cs",
+   "line": 108,
+   "text": "note.Status = NoteStatus.Published;"
+  },
+  {
+   "route": "PATCH /v1/notes/{id:int}",
+   "table": "Note",
+   "column": "Status",
+   "value": "Archived",
+   "stored": "Archived",
+   "kind": "bulk",
+   "from": [
+    "Published"
+   ],
+   "guard": {
+    "where": "n.Status == NoteStatus.Published",
+    "file": "Program.cs",
+    "line": 71,
+    "text": ".Where(n => n.Id == id && n.OwnerId == uid && n.Status == NoteStatus.Published)"
+   },
+   "file": "Program.cs",
+   "line": 72,
+   "text": ".ExecuteUpdateAsync(s => s.SetProperty(n => n.Status, NoteStatus.Archived));"
+  },
+  {
+   "route": "POST /api/Notes/{id:int}/restore",
+   "table": "Note",
+   "column": "Status",
+   "value": "Draft",
+   "stored": "Draft",
+   "kind": "assign",
+   "from": [
+    "Archived"
+   ],
+   "guard": {
+    "status_if_not": 409,
+    "file": "Controllers/NotesController.cs",
+    "line": 122,
+    "text": "if (note.Status != NoteStatus.Archived)"
+   },
+   "planted_bad_edge": true,
+   "file": "Controllers/NotesController.cs",
+   "line": 126,
+   "text": "note.Status = NoteStatus.Draft;"
+  }
+ ],
+ "status_facts": [
+  {
+   "route": "POST /api/Notes",
+   "table": "Note",
+   "column": "Status",
+   "to": "Draft",
+   "from": null,
+   "file": "Controllers/NotesController.cs",
+   "line": 60
+  },
+  {
+   "route": "POST /api/Notes/{id:int}/publish",
+   "table": "Note",
+   "column": "Status",
+   "to": "Published",
+   "from": [
+    "Draft"
+   ],
+   "file": "Controllers/NotesController.cs",
+   "line": 108
+  },
+  {
+   "route": "PATCH /v1/notes/{id:int}",
+   "table": "Note",
+   "column": "Status",
+   "to": "Archived",
+   "from": [
+    "Published"
+   ],
+   "file": "Program.cs",
+   "line": 72
+  },
+  {
+   "route": "POST /api/Notes/{id:int}/restore",
+   "table": "Note",
+   "column": "Status",
+   "to": "Draft",
+   "from": [
+    "Archived"
+   ],
+   "file": "Controllers/NotesController.cs",
+   "line": 126
+  }
+ ],
+ "raises": [
+  {
+   "route": "GET /api/Notes/{id:int}",
+   "status": 404,
+   "code": null,
+   "detail": null,
+   "kind": "return",
+   "sentinel": null,
+   "form": "NotFound()",
+   "file": "Controllers/NotesController.cs",
+   "line": 45,
+   "text": "return NotFound();"
+  },
+  {
+   "route": "PUT /api/Notes/{id:int}",
+   "status": 404,
+   "code": null,
+   "detail": null,
+   "kind": "return",
+   "sentinel": null,
+   "form": "NotFound()",
+   "file": "Controllers/NotesController.cs",
+   "line": 74,
+   "text": "return NotFound();"
+  },
+  {
+   "route": "DELETE /api/Notes/{id:int}",
+   "status": 404,
+   "code": null,
+   "detail": null,
+   "kind": "return",
+   "sentinel": null,
+   "form": "NotFound()",
+   "file": "Controllers/NotesController.cs",
+   "line": 89,
+   "text": "return NotFound();"
+  },
+  {
+   "route": "POST /api/Notes/{id:int}/publish",
+   "status": 404,
+   "code": null,
+   "detail": null,
+   "kind": "return",
+   "sentinel": null,
+   "form": "NotFound()",
+   "file": "Controllers/NotesController.cs",
+   "line": 102,
+   "text": "return NotFound();"
+  },
+  {
+   "route": "POST /api/Notes/{id:int}/publish",
+   "status": 409,
+   "code": null,
+   "detail": null,
+   "kind": "return",
+   "sentinel": null,
+   "form": "Conflict()",
+   "file": "Controllers/NotesController.cs",
+   "line": 106,
+   "text": "return Conflict();"
+  },
+  {
+   "route": "POST /api/Notes/{id:int}/restore",
+   "status": 404,
+   "code": null,
+   "detail": null,
+   "kind": "return",
+   "sentinel": null,
+   "form": "NotFound()",
+   "file": "Controllers/NotesController.cs",
+   "line": 120,
+   "text": "return NotFound();"
+  },
+  {
+   "route": "POST /api/Notes/{id:int}/restore",
+   "status": 409,
+   "code": null,
+   "detail": null,
+   "kind": "return",
+   "sentinel": null,
+   "form": "Conflict()",
+   "file": "Controllers/NotesController.cs",
+   "line": 124,
+   "text": "return Conflict();"
+  },
+  {
+   "route": "GET /api/Notes/public/{id:int}",
+   "status": 404,
+   "code": null,
+   "detail": null,
+   "kind": "return",
+   "sentinel": null,
+   "form": "NotFound()",
+   "file": "Controllers/NotesController.cs",
+   "line": 139,
+   "text": "return view is null ? NotFound() : Ok(view);"
+  },
+  {
+   "route": "GET /api/v2/Reports/{id:int}",
+   "status": 404,
+   "code": null,
+   "detail": null,
+   "kind": "return",
+   "sentinel": null,
+   "form": "NotFound()",
+   "file": "Controllers/ReportsController.cs",
+   "line": 21,
+   "text": "return NotFound();"
+  },
+  {
+   "route": "GET /api/v2/Reports/{id:int}/audit",
+   "status": 404,
+   "code": null,
+   "detail": null,
+   "kind": "return",
+   "sentinel": null,
+   "form": "NotFound()",
+   "file": "Controllers/ReportsController.cs",
+   "line": 32,
+   "text": "return NotFound();"
+  },
+  {
+   "route": "GET /api/v2/Users/me",
+   "status": 404,
+   "code": null,
+   "detail": null,
+   "kind": "return",
+   "sentinel": null,
+   "form": "NotFound()",
+   "file": "Controllers/UsersController.cs",
+   "line": 21,
+   "text": "return NotFound();"
+  },
+  {
+   "route": "GET /api/v2/Forms/bad/{id:int}",
+   "status": 400,
+   "code": "bad_id",
+   "detail": "id must be positive",
+   "kind": "return",
+   "sentinel": null,
+   "form": "BadRequest(new { code, message })",
+   "file": "Controllers/FormsController.cs",
+   "line": 13,
+   "text": "return BadRequest(new { code = \"bad_id\", message = \"id must be positive\" });"
+  },
+  {
+   "route": "GET /api/v2/Forms/unauthorized",
+   "status": 401,
+   "code": null,
+   "detail": null,
+   "kind": "return",
+   "sentinel": null,
+   "form": "Unauthorized()",
+   "file": "Controllers/FormsController.cs",
+   "line": 19,
+   "text": "public IActionResult Unauth() => Unauthorized();"
+  },
+  {
+   "route": "GET /api/v2/Forms/forbidden",
+   "status": 403,
+   "code": null,
+   "detail": null,
+   "kind": "return",
+   "sentinel": null,
+   "form": "Forbid()",
+   "file": "Controllers/FormsController.cs",
+   "line": 22,
+   "text": "public IActionResult Denied() => Forbid();"
+  },
+  {
+   "route": "GET /api/v2/Forms/unprocessable",
+   "status": 422,
+   "code": "semantic",
+   "detail": null,
+   "kind": "return",
+   "sentinel": null,
+   "form": "UnprocessableEntity(new { error })",
+   "file": "Controllers/FormsController.cs",
+   "line": 25,
+   "text": "public IActionResult Semantic() => UnprocessableEntity(new { error = \"semantic\" });"
+  },
+  {
+   "route": "GET /api/v2/Forms/teapot",
+   "status": 418,
+   "code": null,
+   "detail": null,
+   "kind": "return",
+   "sentinel": null,
+   "form": "StatusCode(const)",
+   "file": "Controllers/FormsController.cs",
+   "line": 28,
+   "text": "public IActionResult Teapot() => StatusCode(418);"
+  },
+  {
+   "route": "GET /api/v2/Forms/gone",
+   "status": 410,
+   "code": null,
+   "detail": "gone",
+   "kind": "return",
+   "sentinel": null,
+   "form": "Problem(statusCode:, detail:)",
+   "file": "Controllers/FormsController.cs",
+   "line": 31,
+   "text": "public IActionResult Gone() => Problem(statusCode: 410, detail: \"gone\");"
+  },
+  {
+   "route": "GET /api/v2/Forms/invalid",
+   "status": 400,
+   "code": null,
+   "detail": null,
+   "kind": "return",
+   "sentinel": null,
+   "form": "ValidationProblem() (the bind status)",
+   "file": "Controllers/FormsController.cs",
+   "line": 43,
+   "text": "public IActionResult Invalid() => ValidationProblem();"
+  },
+  {
+   "route": "GET /api/v2/Forms/missing/{id:int}",
+   "status": 404,
+   "code": null,
+   "detail": null,
+   "kind": "exception",
+   "sentinel": "DnParity1.Errors.NotFoundException",
+   "form": "throw, mapped by DomainExceptionHandler switch",
+   "file": "Controllers/FormsController.cs",
+   "line": 46,
+   "text": "public IActionResult Missing(int id) => throw new NotFoundException(\"note \" + id);"
+  },
+  {
+   "route": "GET /api/v2/Forms/clash",
+   "status": 409,
+   "code": null,
+   "detail": null,
+   "kind": "exception",
+   "sentinel": "DnParity1.Errors.ConflictException",
+   "form": "throw, mapped by DomainExceptionHandler switch",
+   "file": "Controllers/FormsController.cs",
+   "line": 49,
+   "text": "public IActionResult Clash() => throw new ConflictException(\"clash\");"
+  },
+  {
+   "route": "GET /v1/todos/{id:int}",
+   "status": 404,
+   "code": null,
+   "detail": null,
+   "kind": "return",
+   "sentinel": null,
+   "form": "Results.NotFound()",
+   "file": "Endpoints/TodoEndpoints.cs",
+   "line": 21,
+   "text": "return todo is null ? Results.NotFound() : Results.Ok(todo);"
+  },
+  {
+   "route": "GET /v1/notes/{id:int}/summary",
+   "status": 404,
+   "code": null,
+   "detail": null,
+   "kind": "return",
+   "sentinel": null,
+   "form": "Results.NotFound()",
+   "file": "Endpoints/NoteHandlers.cs",
+   "line": 14,
+   "text": "return Results.NotFound();"
+  },
+  {
+   "route": "PATCH /v1/notes/{id:int}",
+   "status": 404,
+   "code": null,
+   "detail": null,
+   "kind": "return",
+   "sentinel": null,
+   "form": "Results.NotFound()",
+   "file": "Program.cs",
+   "line": 73,
+   "text": "return rows == 0 ? Results.NotFound() : TypedResults.NoContent();"
+  },
+  {
+   "route": "POST /v1/notes/validated",
+   "status": 400,
+   "code": null,
+   "detail": null,
+   "kind": "return",
+   "sentinel": null,
+   "form": "Results.ValidationProblem()",
+   "file": "Program.cs",
+   "line": 89,
+   "text": "return Results.ValidationProblem(result.ToDictionary());"
+  },
+  {
+   "route": "POST /v1/notes/{id:int}/split",
+   "status": 404,
+   "code": null,
+   "detail": null,
+   "kind": "return",
+   "sentinel": null,
+   "form": "Results.NotFound()",
+   "file": "Program.cs",
+   "line": 103,
+   "text": "return Results.NotFound();"
+  },
+  {
+   "route": "POST /v1/notes/{id:int}/split",
+   "status": 400,
+   "code": null,
+   "detail": null,
+   "kind": "return",
+   "sentinel": null,
+   "form": "Results.BadRequest()",
+   "file": "Program.cs",
+   "line": 109,
+   "text": "return Results.BadRequest();"
+  },
+  {
+   "route": "POST /v1/notes/{id:int}/split-safe",
+   "status": 404,
+   "code": null,
+   "detail": null,
+   "kind": "return",
+   "sentinel": null,
+   "form": "Results.NotFound()",
+   "file": "Program.cs",
+   "line": 122,
+   "text": "return Results.NotFound();"
+  },
+  {
+   "route": "POST /v1/notes/{id:int}/split-safe",
+   "status": 400,
+   "code": null,
+   "detail": null,
+   "kind": "return",
+   "sentinel": null,
+   "form": "Results.BadRequest()",
+   "file": "Program.cs",
+   "line": 129,
+   "text": "return Results.BadRequest();"
+  },
+  {
+   "route": "GET /v1/forms/{kind}",
+   "status": 401,
+   "code": null,
+   "detail": null,
+   "kind": "return",
+   "sentinel": null,
+   "form": "Results.Unauthorized()",
+   "file": "Program.cs",
+   "line": 139,
+   "text": "\"unauthorized\" => Results.Unauthorized(),"
+  },
+  {
+   "route": "GET /v1/forms/{kind}",
+   "status": 422,
+   "code": null,
+   "detail": null,
+   "kind": "return",
+   "sentinel": null,
+   "form": "TypedResults.UnprocessableEntity()",
+   "file": "Program.cs",
+   "line": 140,
+   "text": "\"unprocessable\" => TypedResults.UnprocessableEntity(),"
+  },
+  {
+   "route": "GET /v1/forms/{kind}",
+   "status": 418,
+   "code": null,
+   "detail": null,
+   "kind": "return",
+   "sentinel": null,
+   "form": "Results.StatusCode(const)",
+   "file": "Program.cs",
+   "line": 141,
+   "text": "\"teapot\" => Results.StatusCode(418),"
+  },
+  {
+   "route": "GET /v1/forms/{kind}",
+   "status": 429,
+   "code": null,
+   "detail": "quota exceeded",
+   "kind": "return",
+   "sentinel": null,
+   "form": "Results.Problem(statusCode:, detail:)",
+   "file": "Program.cs",
+   "line": 142,
+   "text": "\"quota\" => Results.Problem(statusCode: 429, detail: \"quota exceeded\"),"
+  },
+  {
+   "route": "GET /v1/forms/{kind}",
+   "status": 409,
+   "code": null,
+   "detail": null,
+   "kind": "return",
+   "sentinel": null,
+   "form": "TypedResults.Conflict()",
+   "file": "Program.cs",
+   "line": 143,
+   "text": "\"conflict\" => TypedResults.Conflict(),"
+  },
+  {
+   "route": "GET /v1/forms/{kind}",
+   "status": 404,
+   "code": null,
+   "detail": null,
+   "kind": "return",
+   "sentinel": null,
+   "form": "Results.NotFound()",
+   "file": "Program.cs",
+   "line": 144,
+   "text": "_ => Results.NotFound(),"
+  }
+ ],
+ "bounds": [
+  {
+   "route": "POST /api/Notes",
+   "field": "title",
+   "required": true,
+   "ge": null,
+   "le": null,
+   "min_length": 1,
+   "max_length": 120,
+   "enforced_by": "apicontroller",
+   "file": "Dtos/NoteInput.cs",
+   "line": 8,
+   "text": "[StringLength(120, MinimumLength = 1)]"
+  },
+  {
+   "route": "POST /api/Notes",
+   "field": "body",
+   "required": false,
+   "ge": null,
+   "le": null,
+   "min_length": null,
+   "max_length": 2000,
+   "enforced_by": "apicontroller",
+   "file": "Dtos/NoteInput.cs",
+   "line": 11,
+   "text": "[MaxLength(2000)]"
+  },
+  {
+   "route": "POST /api/Notes",
+   "field": "priority",
+   "required": false,
+   "ge": 1,
+   "le": 5,
+   "min_length": null,
+   "max_length": null,
+   "enforced_by": "apicontroller",
+   "file": "Dtos/NoteInput.cs",
+   "line": 14,
+   "text": "[Range(1, 5)]"
+  },
+  {
+   "route": "POST /api/Notes",
+   "field": "category",
+   "required": true,
+   "ge": null,
+   "le": null,
+   "min_length": null,
+   "max_length": null,
+   "enforced_by": "apicontroller-implicit-required",
+   "file": "Dtos/NoteInput.cs",
+   "line": 17,
+   "text": "public string Category { get; set; } = \"\";"
+  },
+  {
+   "route": "PUT /api/Notes/{id:int}",
+   "field": "title",
+   "required": true,
+   "ge": null,
+   "le": null,
+   "min_length": 1,
+   "max_length": 120,
+   "enforced_by": "apicontroller",
+   "file": "Dtos/NoteInput.cs",
+   "line": 8,
+   "text": "[StringLength(120, MinimumLength = 1)]"
+  },
+  {
+   "route": "PUT /api/Notes/{id:int}",
+   "field": "body",
+   "required": false,
+   "ge": null,
+   "le": null,
+   "min_length": null,
+   "max_length": 2000,
+   "enforced_by": "apicontroller",
+   "file": "Dtos/NoteInput.cs",
+   "line": 11,
+   "text": "[MaxLength(2000)]"
+  },
+  {
+   "route": "PUT /api/Notes/{id:int}",
+   "field": "priority",
+   "required": false,
+   "ge": 1,
+   "le": 5,
+   "min_length": null,
+   "max_length": null,
+   "enforced_by": "apicontroller",
+   "file": "Dtos/NoteInput.cs",
+   "line": 14,
+   "text": "[Range(1, 5)]"
+  },
+  {
+   "route": "PUT /api/Notes/{id:int}",
+   "field": "category",
+   "required": true,
+   "ge": null,
+   "le": null,
+   "min_length": null,
+   "max_length": null,
+   "enforced_by": "apicontroller-implicit-required",
+   "file": "Dtos/NoteInput.cs",
+   "line": 17,
+   "text": "public string Category { get; set; } = \"\";"
+  },
+  {
+   "route": "POST /v1/notes/validated",
+   "field": "title",
+   "required": true,
+   "ge": null,
+   "le": null,
+   "min_length": 1,
+   "max_length": 120,
+   "enforced_by": "fluentvalidation",
+   "file": "Dtos/NoteInputValidator.cs",
+   "line": 9,
+   "text": "RuleFor(x => x.Title).NotEmpty().Length(1, 120);"
+  },
+  {
+   "route": "POST /v1/notes/validated",
+   "field": "priority",
+   "required": false,
+   "ge": 1,
+   "le": 5,
+   "min_length": null,
+   "max_length": null,
+   "enforced_by": "fluentvalidation",
+   "file": "Dtos/NoteInputValidator.cs",
+   "line": 10,
+   "text": "RuleFor(x => x.Priority).InclusiveBetween(1, 5);"
+  }
+ ],
+ "declared_bounds": [
+  {
+   "route": "POST /api/Notes",
+   "field": "title",
+   "kind": "required",
+   "value": true,
+   "enforced": true,
+   "enforced_by": "apicontroller",
+   "what": "[Required] on NoteInput.Title",
+   "file": "Dtos/NoteInput.cs",
+   "line": 7,
+   "text": "[Required]"
+  },
+  {
+   "route": "POST /api/Notes",
+   "field": "title",
+   "kind": "min_length",
+   "value": 1,
+   "enforced": true,
+   "enforced_by": "apicontroller",
+   "what": "[StringLength(120, MinimumLength = 1)] on NoteInput.Title",
+   "file": "Dtos/NoteInput.cs",
+   "line": 8,
+   "text": "[StringLength(120, MinimumLength = 1)]"
+  },
+  {
+   "route": "POST /api/Notes",
+   "field": "title",
+   "kind": "max_length",
+   "value": 120,
+   "enforced": true,
+   "enforced_by": "apicontroller",
+   "what": "[StringLength(120, MinimumLength = 1)] on NoteInput.Title",
+   "file": "Dtos/NoteInput.cs",
+   "line": 8,
+   "text": "[StringLength(120, MinimumLength = 1)]"
+  },
+  {
+   "route": "POST /api/Notes",
+   "field": "body",
+   "kind": "max_length",
+   "value": 2000,
+   "enforced": true,
+   "enforced_by": "apicontroller",
+   "what": "[MaxLength(2000)] on NoteInput.Body",
+   "file": "Dtos/NoteInput.cs",
+   "line": 11,
+   "text": "[MaxLength(2000)]"
+  },
+  {
+   "route": "POST /api/Notes",
+   "field": "priority",
+   "kind": "ge",
+   "value": 1,
+   "enforced": true,
+   "enforced_by": "apicontroller",
+   "what": "[Range(1, 5)] on NoteInput.Priority",
+   "file": "Dtos/NoteInput.cs",
+   "line": 14,
+   "text": "[Range(1, 5)]"
+  },
+  {
+   "route": "POST /api/Notes",
+   "field": "priority",
+   "kind": "le",
+   "value": 5,
+   "enforced": true,
+   "enforced_by": "apicontroller",
+   "what": "[Range(1, 5)] on NoteInput.Priority",
+   "file": "Dtos/NoteInput.cs",
+   "line": 14,
+   "text": "[Range(1, 5)]"
+  },
+  {
+   "route": "POST /api/Notes",
+   "field": "category",
+   "kind": "required",
+   "value": true,
+   "enforced": true,
+   "enforced_by": "apicontroller-implicit-required",
+   "what": "non-nullable reference property NoteInput.Category under <Nullable>enable</Nullable>",
+   "file": "Dtos/NoteInput.cs",
+   "line": 17,
+   "text": "public string Category { get; set; } = \"\";"
+  },
+  {
+   "route": "PUT /api/Notes/{id:int}",
+   "field": "title",
+   "kind": "required",
+   "value": true,
+   "enforced": true,
+   "enforced_by": "apicontroller",
+   "what": "[Required] on NoteInput.Title",
+   "file": "Dtos/NoteInput.cs",
+   "line": 7,
+   "text": "[Required]"
+  },
+  {
+   "route": "PUT /api/Notes/{id:int}",
+   "field": "title",
+   "kind": "min_length",
+   "value": 1,
+   "enforced": true,
+   "enforced_by": "apicontroller",
+   "what": "[StringLength(120, MinimumLength = 1)] on NoteInput.Title",
+   "file": "Dtos/NoteInput.cs",
+   "line": 8,
+   "text": "[StringLength(120, MinimumLength = 1)]"
+  },
+  {
+   "route": "PUT /api/Notes/{id:int}",
+   "field": "title",
+   "kind": "max_length",
+   "value": 120,
+   "enforced": true,
+   "enforced_by": "apicontroller",
+   "what": "[StringLength(120, MinimumLength = 1)] on NoteInput.Title",
+   "file": "Dtos/NoteInput.cs",
+   "line": 8,
+   "text": "[StringLength(120, MinimumLength = 1)]"
+  },
+  {
+   "route": "PUT /api/Notes/{id:int}",
+   "field": "body",
+   "kind": "max_length",
+   "value": 2000,
+   "enforced": true,
+   "enforced_by": "apicontroller",
+   "what": "[MaxLength(2000)] on NoteInput.Body",
+   "file": "Dtos/NoteInput.cs",
+   "line": 11,
+   "text": "[MaxLength(2000)]"
+  },
+  {
+   "route": "PUT /api/Notes/{id:int}",
+   "field": "priority",
+   "kind": "ge",
+   "value": 1,
+   "enforced": true,
+   "enforced_by": "apicontroller",
+   "what": "[Range(1, 5)] on NoteInput.Priority",
+   "file": "Dtos/NoteInput.cs",
+   "line": 14,
+   "text": "[Range(1, 5)]"
+  },
+  {
+   "route": "PUT /api/Notes/{id:int}",
+   "field": "priority",
+   "kind": "le",
+   "value": 5,
+   "enforced": true,
+   "enforced_by": "apicontroller",
+   "what": "[Range(1, 5)] on NoteInput.Priority",
+   "file": "Dtos/NoteInput.cs",
+   "line": 14,
+   "text": "[Range(1, 5)]"
+  },
+  {
+   "route": "PUT /api/Notes/{id:int}",
+   "field": "category",
+   "kind": "required",
+   "value": true,
+   "enforced": true,
+   "enforced_by": "apicontroller-implicit-required",
+   "what": "non-nullable reference property NoteInput.Category under <Nullable>enable</Nullable>",
+   "file": "Dtos/NoteInput.cs",
+   "line": 17,
+   "text": "public string Category { get; set; } = \"\";"
+  },
+  {
+   "route": "POST /v1/notes/quick",
+   "field": "title",
+   "kind": "required",
+   "value": true,
+   "enforced": false,
+   "enforced_by": null,
+   "what": "[Required] on NoteInput.Title",
+   "file": "Dtos/NoteInput.cs",
+   "line": 7,
+   "text": "[Required]"
+  },
+  {
+   "route": "POST /v1/notes/quick",
+   "field": "title",
+   "kind": "min_length",
+   "value": 1,
+   "enforced": false,
+   "enforced_by": null,
+   "what": "[StringLength(120, MinimumLength = 1)] on NoteInput.Title",
+   "file": "Dtos/NoteInput.cs",
+   "line": 8,
+   "text": "[StringLength(120, MinimumLength = 1)]"
+  },
+  {
+   "route": "POST /v1/notes/quick",
+   "field": "title",
+   "kind": "max_length",
+   "value": 120,
+   "enforced": false,
+   "enforced_by": null,
+   "what": "[StringLength(120, MinimumLength = 1)] on NoteInput.Title",
+   "file": "Dtos/NoteInput.cs",
+   "line": 8,
+   "text": "[StringLength(120, MinimumLength = 1)]"
+  },
+  {
+   "route": "POST /v1/notes/quick",
+   "field": "body",
+   "kind": "max_length",
+   "value": 2000,
+   "enforced": false,
+   "enforced_by": null,
+   "what": "[MaxLength(2000)] on NoteInput.Body",
+   "file": "Dtos/NoteInput.cs",
+   "line": 11,
+   "text": "[MaxLength(2000)]"
+  },
+  {
+   "route": "POST /v1/notes/quick",
+   "field": "priority",
+   "kind": "ge",
+   "value": 1,
+   "enforced": false,
+   "enforced_by": null,
+   "what": "[Range(1, 5)] on NoteInput.Priority",
+   "file": "Dtos/NoteInput.cs",
+   "line": 14,
+   "text": "[Range(1, 5)]"
+  },
+  {
+   "route": "POST /v1/notes/quick",
+   "field": "priority",
+   "kind": "le",
+   "value": 5,
+   "enforced": false,
+   "enforced_by": null,
+   "what": "[Range(1, 5)] on NoteInput.Priority",
+   "file": "Dtos/NoteInput.cs",
+   "line": 14,
+   "text": "[Range(1, 5)]"
+  },
+  {
+   "route": "POST /v1/notes/validated",
+   "field": "title",
+   "kind": "required",
+   "value": true,
+   "enforced": false,
+   "enforced_by": null,
+   "what": "[Required] on NoteInput.Title",
+   "file": "Dtos/NoteInput.cs",
+   "line": 7,
+   "text": "[Required]"
+  },
+  {
+   "route": "POST /v1/notes/validated",
+   "field": "title",
+   "kind": "min_length",
+   "value": 1,
+   "enforced": false,
+   "enforced_by": null,
+   "what": "[StringLength(120, MinimumLength = 1)] on NoteInput.Title",
+   "file": "Dtos/NoteInput.cs",
+   "line": 8,
+   "text": "[StringLength(120, MinimumLength = 1)]"
+  },
+  {
+   "route": "POST /v1/notes/validated",
+   "field": "title",
+   "kind": "max_length",
+   "value": 120,
+   "enforced": false,
+   "enforced_by": null,
+   "what": "[StringLength(120, MinimumLength = 1)] on NoteInput.Title",
+   "file": "Dtos/NoteInput.cs",
+   "line": 8,
+   "text": "[StringLength(120, MinimumLength = 1)]"
+  },
+  {
+   "route": "POST /v1/notes/validated",
+   "field": "body",
+   "kind": "max_length",
+   "value": 2000,
+   "enforced": false,
+   "enforced_by": null,
+   "what": "[MaxLength(2000)] on NoteInput.Body",
+   "file": "Dtos/NoteInput.cs",
+   "line": 11,
+   "text": "[MaxLength(2000)]"
+  },
+  {
+   "route": "POST /v1/notes/validated",
+   "field": "priority",
+   "kind": "ge",
+   "value": 1,
+   "enforced": false,
+   "enforced_by": null,
+   "what": "[Range(1, 5)] on NoteInput.Priority",
+   "file": "Dtos/NoteInput.cs",
+   "line": 14,
+   "text": "[Range(1, 5)]"
+  },
+  {
+   "route": "POST /v1/notes/validated",
+   "field": "priority",
+   "kind": "le",
+   "value": 5,
+   "enforced": false,
+   "enforced_by": null,
+   "what": "[Range(1, 5)] on NoteInput.Priority",
+   "file": "Dtos/NoteInput.cs",
+   "line": 14,
+   "text": "[Range(1, 5)]"
+  },
+  {
+   "route": "POST /v1/notes/validated",
+   "field": "title",
+   "kind": "required",
+   "value": true,
+   "enforced": true,
+   "enforced_by": "fluentvalidation",
+   "what": "FluentValidation rule NoteInputValidator, called by validator.ValidateAsync in the handler",
+   "file": "Dtos/NoteInputValidator.cs",
+   "line": 9,
+   "text": "RuleFor(x => x.Title).NotEmpty().Length(1, 120);"
+  },
+  {
+   "route": "POST /v1/notes/validated",
+   "field": "title",
+   "kind": "min_length",
+   "value": 1,
+   "enforced": true,
+   "enforced_by": "fluentvalidation",
+   "what": "FluentValidation rule NoteInputValidator, called by validator.ValidateAsync in the handler",
+   "file": "Dtos/NoteInputValidator.cs",
+   "line": 9,
+   "text": "RuleFor(x => x.Title).NotEmpty().Length(1, 120);"
+  },
+  {
+   "route": "POST /v1/notes/validated",
+   "field": "title",
+   "kind": "max_length",
+   "value": 120,
+   "enforced": true,
+   "enforced_by": "fluentvalidation",
+   "what": "FluentValidation rule NoteInputValidator, called by validator.ValidateAsync in the handler",
+   "file": "Dtos/NoteInputValidator.cs",
+   "line": 9,
+   "text": "RuleFor(x => x.Title).NotEmpty().Length(1, 120);"
+  },
+  {
+   "route": "POST /v1/notes/validated",
+   "field": "priority",
+   "kind": "ge",
+   "value": 1,
+   "enforced": true,
+   "enforced_by": "fluentvalidation",
+   "what": "FluentValidation rule NoteInputValidator, called by validator.ValidateAsync in the handler",
+   "file": "Dtos/NoteInputValidator.cs",
+   "line": 10,
+   "text": "RuleFor(x => x.Priority).InclusiveBetween(1, 5);"
+  },
+  {
+   "route": "POST /v1/notes/validated",
+   "field": "priority",
+   "kind": "le",
+   "value": 5,
+   "enforced": true,
+   "enforced_by": "fluentvalidation",
+   "what": "FluentValidation rule NoteInputValidator, called by validator.ValidateAsync in the handler",
+   "file": "Dtos/NoteInputValidator.cs",
+   "line": 10,
+   "text": "RuleFor(x => x.Priority).InclusiveBetween(1, 5);"
+  }
+ ],
+ "bind_status": 400,
+ "json_naming": "SnakeCaseLower",
+ "login": null,
+ "seed_users": [],
+ "auth": {
+  "scheme": "Bearer",
+  "login": null,
+  "users_table": "Users",
+  "admin_role": "Admin",
+  "admin_role_source": {
+   "file": "Program.cs",
+   "line": 54,
+   "text": "var admin = v1.MapGroup(\"/admin\").RequireAuthorization(p => p.RequireRole(\"Admin\"));"
+  },
+  "caller_keys": [
+   "sub"
+  ],
+  "caller_funcs": [
+   "DnParity1.Auth.ClaimsExtensions.GetUserId",
+   "DnParity1.Services.CurrentUser.UserId"
+  ],
+  "fallback_policy": null,
+  "note": "caller_funcs / pipeline are informational (not scored by P0-AUTH)"
+ },
+ "di": {
+  "registrations": [
+   {
+    "interface": "ICurrentUser",
+    "implementation": "CurrentUser",
+    "lifetime": "scoped",
+    "file": "Program.cs",
+    "line": 18,
+    "text": "builder.Services.AddScoped<ICurrentUser, CurrentUser>();"
+   },
+   {
+    "interface": "IClock",
+    "implementation": "SystemClock",
+    "lifetime": "scoped",
+    "file": "Program.cs",
+    "line": 19,
+    "text": "builder.Services.AddScoped<IClock, SystemClock>();"
+   },
+   {
+    "interface": "INoteStore",
+    "implementation": "EfNoteStore",
+    "lifetime": "scoped",
+    "file": "Program.cs",
+    "line": 20,
+    "text": "builder.Services.AddScoped<INoteStore, EfNoteStore>();"
+   },
+   {
+    "interface": "INoteNotifier",
+    "implementation": "EmailNotifier",
+    "lifetime": "scoped",
+    "file": "Program.cs",
+    "line": 21,
+    "text": "builder.Services.AddScoped<INoteNotifier, EmailNotifier>();"
+   },
+   {
+    "interface": "INoteNotifier",
+    "implementation": "SmsNotifier",
+    "lifetime": "scoped",
+    "file": "Program.cs",
+    "line": 22,
+    "text": "builder.Services.AddScoped<INoteNotifier, SmsNotifier>();"
+   },
+   {
+    "interface": "IValidator<NoteInput>",
+    "implementation": "NoteInputValidator",
+    "lifetime": "scoped",
+    "file": "Program.cs",
+    "line": 23,
+    "text": "builder.Services.AddScoped<IValidator<NoteInput>, NoteInputValidator>();"
+   }
+  ],
+  "single": [
+   "ICurrentUser",
+   "IClock",
+   "INoteStore",
+   "IValidator<NoteInput>"
+  ],
+  "multiple": [
+   "INoteNotifier"
+  ],
+  "resolved_calls": [
+   {
+    "route": "POST /api/Notes",
+    "call": "IClock.Now",
+    "resolved_to": "DnParity1.Services.SystemClock.Now",
+    "file": "Controllers/NotesController.cs",
+    "line": 61,
+    "text": "CreatedAt = _clock.Now(),"
+   },
+   {
+    "route": "GET /api/v2/Reports/{id:int}",
+    "call": "INoteStore.GetOwnedAsync",
+    "resolved_to": "DnParity1.Services.EfNoteStore.GetOwnedAsync",
+    "file": "Controllers/ReportsController.cs",
+    "line": 18,
+    "text": "var note = await _store.GetOwnedAsync(id, UserId);"
+   },
+   {
+    "route": "GET /api/v2/Reports/{id:int}/audit",
+    "call": "INoteStore.GetOwnedAsync",
+    "resolved_to": "DnParity1.Services.EfNoteStore.GetOwnedAsync",
+    "file": "Controllers/ReportsController.cs",
+    "line": 29,
+    "text": "var note = await _store.GetOwnedAsync(id, UserId);"
+   },
+   {
+    "route": "GET /v1/notes/{id:int}/summary",
+    "call": "INoteStore.GetOwnedAsync",
+    "resolved_to": "DnParity1.Services.EfNoteStore.GetOwnedAsync",
+    "file": "Endpoints/NoteHandlers.cs",
+    "line": 11,
+    "text": "var note = await store.GetOwnedAsync(id, user.GetUserId());"
+   },
+   {
+    "route": "GET /v1/todos/open",
+    "call": "ICurrentUser.UserId (inside the HasQueryFilter lambda)",
+    "resolved_to": "DnParity1.Services.CurrentUser.UserId",
+    "file": "Data/AppDb.cs",
+    "line": 32,
+    "text": "modelBuilder.Entity<Todo>().HasQueryFilter(t => t.OwnerId == _current.UserId);"
+   }
+  ],
+  "unread_calls": [
+   {
+    "route": "POST /api/Notes/{id:int}/publish",
+    "call": "INoteNotifier.NotifyAsync",
+    "reason": "2 registrations (EmailNotifier, SmsNotifier): never the first match; the route's reach is incomplete (an opaque call receives an entity)",
+    "file": "Controllers/NotesController.cs",
+    "line": 110,
+    "text": "await _notifier.NotifyAsync(note);"
+   }
+  ]
+ },
+ "datetime": [
+  {
+   "id": "dt1-case1",
+   "expect": "DN806",
+   "route": "GET /v1/todos/overdue",
+   "file": "Endpoints/TodoEndpoints.cs",
+   "line": 26,
+   "text": "var skew = (DateTime.Now - DateTime.UtcNow).TotalMinutes;",
+   "why": "subtraction of a Local-kind (DateTime.Now) and a Utc-kind (DateTime.UtcNow) value"
+  },
+  {
+   "id": "dt1-case2",
+   "expect": null,
+   "route": "GET /v1/todos/overdue",
+   "file": "Endpoints/TodoEndpoints.cs",
+   "line": 27,
+   "text": "var offsetSkew = (DateTimeOffset.UtcNow - DateTimeOffset.Now).TotalMinutes;",
+   "why": "DateTimeOffset values compare as instants (LM20: DN806 must not fire on them)"
+  },
+  {
+   "id": "dt1-case3",
+   "expect": null,
+   "route": "GET /v1/todos/overdue",
+   "file": "Endpoints/TodoEndpoints.cs",
+   "line": 28,
+   "text": "var open = await db.Todos.Where(t => !t.Done && t.DueAt < DateTime.UtcNow).ToListAsync();",
+   "why": "a column read (Unspecified kind) compared with UtcNow is not claimed"
+  }
+ ],
+ "partial_writes": [
+  {
+   "id": "pw1-case1",
+   "expect": "DN807",
+   "route": "POST /v1/notes/{id:int}/split",
+   "file": "Program.cs",
+   "line": 106,
+   "text": "await db.SaveChangesAsync();",
+   "refusal": {
+    "file": "Program.cs",
+    "line": 109,
+    "text": "return Results.BadRequest();"
+   },
+   "second_save": {
+    "file": "Program.cs",
+    "line": 112,
+    "text": "await db.SaveChangesAsync();"
+   }
+  },
+  {
+   "id": "pw1-case2",
+   "expect": null,
+   "route": "POST /v1/notes/{id:int}/split-safe",
+   "file": "Program.cs",
+   "line": 126,
+   "text": "await db.SaveChangesAsync();",
+   "transaction": {
+    "file": "Program.cs",
+    "line": 124,
+    "text": "await using var tx = await db.Database.BeginTransactionAsync();"
+   },
+   "commit": {
+    "file": "Program.cs",
+    "line": 133,
+    "text": "await tx.CommitAsync();"
+   }
+  }
+ ],
+ "layer_a": {
+  "policy": {
+   "tables": {
+    "User": "Users",
+    "Note": "notes",
+    "Tag": "Tags",
+    "Todo": "Todos"
+   },
+   "users_table": "User",
+   "owners": {
+    "Note": "OwnerId",
+    "Todo": "OwnerId"
+   },
+   "owner_via": {
+    "Tag": [
+     "Note",
+     "NoteId"
+    ]
+   },
+   "private": {
+    "User": [
+     "PasswordHash"
+    ],
+    "Note": [
+     "ModerationNote"
+    ]
+   },
+   "machines": {
+    "Note": {
+     "column": "Status",
+     "initial": "Draft",
+     "storage": "string",
+     "edges": [
+      [
+       "Draft",
+       "Published"
+      ],
+      [
+       "Published",
+       "Archived"
+      ]
+     ]
+    }
+   },
+   "admin_routes": [
+    [
+     "GET",
+     "/v1/admin/notes"
+    ]
+   ],
+   "open_routes": [
+    [
+     "GET",
+     "/api/Notes/public/{id}"
+    ]
+   ],
+   "admin_role": "Admin",
+   "note": "the machine is the policy's (as a spec states it), not derived: the planted Archived -> Draft write has no edge"
+  },
+  "findings": [
+   {
+    "code": "DN801",
+    "route": "DELETE /api/Notes/{id:int}",
+    "subject": "Note",
+    "key": "DN801|DELETE /api/Notes/{id:int}|Note",
+    "construct": "o3",
+    "file": "Controllers/NotesController.cs",
+    "line": 86,
+    "text": "var row = await _db.Notes.FindAsync(id);"
+   },
+   {
+    "code": "DN801",
+    "route": "GET /v1/todos/all",
+    "subject": "Todo",
+    "key": "DN801|GET /v1/todos/all|Todo",
+    "construct": "o4",
+    "file": "Endpoints/TodoEndpoints.cs",
+    "line": 16,
+    "text": "todos.MapGet(\"/all\", async (AppDb db) => Results.Ok(await db.Todos.IgnoreQueryFilters().ToListAsync()));"
+   },
+   {
+    "code": "DN802",
+    "route": "GET /api/v2/Reports/{id:int}/audit",
+    "subject": "Note.ModerationNote",
+    "key": "DN802|GET /api/v2/Reports/{id:int}/audit|Note.ModerationNote",
+    "construct": "e1",
+    "file": "Controllers/ReportsController.cs",
+    "line": 34,
+    "text": "return Ok(new { note.Id, note.Title, note.ModerationNote });"
+   },
+   {
+    "code": "DN803",
+    "route": "POST /v1/notes/quick",
+    "subject": "NoteInput.Title",
+    "key": "DN803|POST /v1/notes/quick|NoteInput.Title",
+    "construct": "b1",
+    "file": "Program.cs",
+    "line": 78,
+    "text": "var note = new Note { OwnerId = user.GetUserId(), Title = input.Title, Priority = 3 };"
+   },
+   {
+    "code": "DN806",
+    "route": "GET /v1/todos/overdue",
+    "subject": "DateTime.Now - DateTime.UtcNow",
+    "key": null,
+    "construct": "dt1",
+    "file": "Endpoints/TodoEndpoints.cs",
+    "line": 26,
+    "text": "var skew = (DateTime.Now - DateTime.UtcNow).TotalMinutes;"
+   },
+   {
+    "code": "DN807",
+    "route": "POST /v1/notes/{id:int}/split",
+    "subject": "SaveChangesAsync then a refusal",
+    "key": null,
+    "construct": "pw1",
+    "file": "Program.cs",
+    "line": 106,
+    "text": "await db.SaveChangesAsync();"
+   },
+   {
+    "code": "DN808",
+    "route": "POST /api/Notes/{id:int}/restore",
+    "subject": "Note.Status=Draft",
+    "key": null,
+    "construct": "s3",
+    "file": "Controllers/NotesController.cs",
+    "line": 126,
+    "text": "note.Status = NoteStatus.Draft;"
+   }
+  ],
+  "key_note": "DN801-DN803 keys follow the Go shape DNxxx|<METHOD template>|<subject>; DN806-DN808 keys are B3's to spell: match on (code, route, file, line). Templates in keys are the raw ASP.NET templates of routes[].template (constraints kept).",
+  "silent": [
+   {
+    "route": "GET /api/Notes/public/{id:int}",
+    "why": "open_routes: an unscoped published-note read the policy states as not owner-scoped"
+   },
+   {
+    "route": "GET /v1/admin/notes",
+    "why": "admin_routes"
+   },
+   {
+    "route": "PUT /api/Notes/{id:int}",
+    "why": "o2: find-then-check is owner evidence"
+   },
+   {
+    "route": "GET /api/Notes/{id:int}",
+    "why": "o1: conjunction"
+   },
+   {
+    "route": "POST /api/Notes/{id:int}/publish",
+    "why": "owner-scoped; its reach is incomplete because of the two-registration notifier call (not judged), and the status write Draft -> Published has an edge"
+   },
+   {
+    "route": "GET /api/v2/Reports/{id:int}",
+    "why": "owner evidence found through the single DI registration (EfNoteStore)"
+   },
+   {
+    "route": "GET /v1/todos/open",
+    "why": "the global query filter is owner evidence"
+   },
+   {
+    "route": "GET /v1/todos/overdue",
+    "why": "the filter is owner evidence; DateTimeOffset subtraction and a Unspecified column vs UtcNow comparison are not DN806"
+   },
+   {
+    "route": "GET /api/v2/Users/me",
+    "why": "DN802: PasswordHash carries [JsonIgnore]"
+   },
+   {
+    "route": "POST /api/Notes",
+    "why": "DN803: annotations enforced by [ApiController]; DN807: one SaveChangesAsync, no refusal after"
+   },
+   {
+    "route": "PUT /api/Notes/{id:int}",
+    "why": "DN803: enforced"
+   },
+   {
+    "route": "POST /v1/notes/validated",
+    "why": "DN803: Title and Priority bounded by FluentValidation that the handler calls and refuses on; Body is not written"
+   },
+   {
+    "route": "POST /v1/notes/{id:int}/split-safe",
+    "why": "DN807: both SaveChangesAsync inside BeginTransactionAsync ... CommitAsync"
+   },
+   {
+    "route": "PATCH /v1/notes/{id:int}",
+    "why": "DN808: Published -> Archived is an edge; guard is the bulk update's Where"
+   },
+   {
+    "route": "POST /api/Notes/{id:int}/publish",
+    "why": "DN808: Draft -> Published is an edge"
+   }
+  ]
+ },
+ "constructs": {
+  "c1": {
+   "routes": [
+    "GET /api/Notes",
+    "GET /api/Notes/{id:int}",
+    "POST /api/Notes",
+    "PUT /api/Notes/{id:int}",
+    "DELETE /api/Notes/{id:int}",
+    "POST /api/Notes/{id:int}/publish",
+    "POST /api/Notes/{id:int}/restore",
+    "GET /api/Notes/public/{id:int}",
+    "GET /api/Notes/{id:int}/tags"
+   ],
+   "note": "[ApiController] [Route(\"api/[controller]\")] [Authorize] NotesController; one [AllowAnonymous] action; {id:int} routes"
+  },
+  "c2": {
+   "routes": [
+    "GET /api/v2/Reports/{id:int}",
+    "GET /api/v2/Reports/{id:int}/audit",
+    "GET /api/v2/Users/me",
+    "GET /api/v2/Forms/bad/{id:int}",
+    "GET /api/v2/Forms/unauthorized",
+    "GET /api/v2/Forms/forbidden",
+    "GET /api/v2/Forms/unprocessable",
+    "GET /api/v2/Forms/teapot",
+    "GET /api/v2/Forms/gone",
+    "POST /api/v2/Forms/accepted",
+    "POST /api/v2/Forms/created",
+    "DELETE /api/v2/Forms/nothing",
+    "GET /api/v2/Forms/invalid",
+    "GET /api/v2/Forms/missing/{id:int}",
+    "GET /api/v2/Forms/clash",
+    "GET /api/v2/Forms/explode"
+   ],
+   "note": "ReportsController / UsersController / FormsController have no [Route]: they inherit api/v2/[controller] from the abstract OwnedControllerBase"
+  },
+  "m1": {
+   "routes": [
+    "GET /v1/admin/notes",
+    "GET /v1/version",
+    "GET /v1/notes/{id:int}/summary",
+    "PATCH /v1/notes/{id:int}",
+    "POST /v1/notes/quick",
+    "POST /v1/notes/validated",
+    "POST /v1/notes/{id:int}/split",
+    "POST /v1/notes/{id:int}/split-safe",
+    "GET /v1/forms/{kind}",
+    "GET /v1/todos/open",
+    "GET /v1/todos/all",
+    "GET /v1/todos/{id:int}",
+    "GET /v1/todos/overdue"
+   ],
+   "note": "MapGroup(\"/v1\").RequireAuthorization() with nested MapGroup(\"/admin\").RequireAuthorization(p => p.RequireRole(\"Admin\")); /v1/version is .AllowAnonymous()"
+  },
+  "m2": {
+   "routes": [
+    "GET /v1/todos/open",
+    "GET /v1/todos/all",
+    "GET /v1/todos/{id:int}",
+    "GET /v1/todos/overdue"
+   ],
+   "note": "MapTodos(this RouteGroupBuilder g), one call site (v1.MapTodos())"
+  },
+  "m3": {
+   "routes": [
+    "GET /dev/ping"
+   ],
+   "condition": "app.Environment.IsDevelopment()"
+  },
+  "m4": {
+   "routes": [
+    "GET /v1/notes/{id:int}/summary"
+   ],
+   "note": "method-group handler NoteHandlers.Summary"
+  },
+  "m5": {
+   "routes": [
+    "PATCH /v1/notes/{id:int}"
+   ],
+   "note": "MapMethods with new[] { \"PATCH\" }"
+  },
+  "m6": {
+   "unread": "Program.cs:63"
+  },
+  "x1": {
+   "excluded": [
+    "MapHealthChecks",
+    "MapGrpcService<PingService>",
+    "MapHub<NoteHub>"
+   ]
+  },
+  "x2": {
+   "unread": "Program.cs:42"
+  },
+  "b1": {
+   "routes": [
+    "POST /api/Notes",
+    "PUT /api/Notes/{id:int}",
+    "POST /v1/notes/quick",
+    "POST /v1/notes/validated"
+   ],
+   "note": "NoteInput: enforced by [ApiController] (POST/PUT /api/Notes), declared-not-enforced on the minimal API (quick), enforced by a called FluentValidation validator (validated)"
+  },
+  "b2": {
+   "routes": [
+    "POST /api/Notes",
+    "PUT /api/Notes/{id:int}"
+   ],
+   "note": "NoteInput.Category (string, non-nullable, no attribute) is implicitly required under <Nullable>enable</Nullable> on controllers only"
+  },
+  "e1": {
+   "tables": [
+    "User",
+    "Note",
+    "Tag"
+   ],
+   "note": "User.PasswordHash [JsonIgnore]; Note owner OwnerId + enum Status HasConversion<string>(); Tag owned through Note (owner_via); NoteConfiguration : IEntityTypeConfiguration<Note> (ToTable(\"notes\"), unique index); TPH Vehicle/Car/Truck and owned Address are unread"
+  },
+  "o1": {
+   "routes": [
+    "GET /api/Notes/{id:int}",
+    "POST /api/Notes/{id:int}/publish",
+    "POST /api/Notes/{id:int}/restore",
+    "PATCH /v1/notes/{id:int}",
+    "POST /v1/notes/{id:int}/split",
+    "POST /v1/notes/{id:int}/split-safe",
+    "GET /v1/todos/{id:int}"
+   ],
+   "note": "conjunction n.Id == id && n.OwnerId == <caller>"
+  },
+  "o2": {
+   "routes": [
+    "PUT /api/Notes/{id:int}"
+   ],
+   "note": "FindAsync then if (row is null || row.OwnerId != UserId) return NotFound()"
+  },
+  "o3": {
+   "routes": [
+    "DELETE /api/Notes/{id:int}"
+   ],
+   "note": "unscoped FindAsync: DN801"
+  },
+  "o4": {
+   "routes": [
+    "GET /v1/todos/open",
+    "GET /v1/todos/overdue",
+    "GET /v1/todos/all",
+    "GET /v1/todos/{id:int}"
+   ],
+   "note": "HasQueryFilter on Todo (owner evidence for every query), one IgnoreQueryFilters() route (r_t_all) with none; r_t_id also has an explicit predicate"
+  },
+  "s1": {
+   "routes": [
+    "POST /api/Notes/{id:int}/publish"
+   ],
+   "note": "guarded assign Draft -> Published + SaveChangesAsync; the initial Draft in POST /api/Notes"
+  },
+  "s2": {
+   "routes": [
+    "PATCH /v1/notes/{id:int}"
+   ],
+   "note": "ExecuteUpdateAsync(SetProperty) Published -> Archived, guard = the Where on Status"
+  },
+  "s3": {
+   "routes": [
+    "POST /api/Notes/{id:int}/restore"
+   ],
+   "note": "extra to the prereg list: the planted Archived -> Draft write with no edge (DN808)"
+  },
+  "r1": {
+   "routes": [
+    "GET /api/v2/Forms/bad/{id:int}",
+    "GET /api/v2/Forms/unauthorized",
+    "GET /api/v2/Forms/forbidden",
+    "GET /api/v2/Forms/unprocessable",
+    "GET /api/v2/Forms/teapot",
+    "GET /api/v2/Forms/gone",
+    "POST /api/v2/Forms/accepted",
+    "POST /api/v2/Forms/created",
+    "DELETE /api/v2/Forms/nothing",
+    "GET /api/v2/Forms/invalid",
+    "GET /api/v2/Forms/missing/{id:int}",
+    "GET /api/v2/Forms/clash",
+    "GET /api/v2/Forms/explode",
+    "GET /v1/forms/{kind}"
+   ],
+   "note": "every N9 raise form, an IExceptionHandler switch (NotFound/Conflict exceptions), one unmapped throw (explode)"
+  },
+  "d1": {
+   "routes": [
+    "POST /api/Notes",
+    "GET /api/v2/Reports/{id:int}",
+    "GET /api/v2/Reports/{id:int}/audit",
+    "GET /v1/notes/{id:int}/summary",
+    "POST /api/Notes/{id:int}/publish"
+   ],
+   "note": "single registrations IClock, INoteStore, ICurrentUser, IValidator<NoteInput>; INoteNotifier has two (unread call in publish)"
+  },
+  "dt1": {
+   "routes": [
+    "GET /v1/todos/overdue"
+   ]
+  },
+  "pw1": {
+   "routes": [
+    "POST /v1/notes/{id:int}/split",
+    "POST /v1/notes/{id:int}/split-safe"
+   ]
+  },
+  "j1": {
+   "json_naming": "SnakeCaseLower",
+   "note": "ConfigureHttpJsonOptions + AddJsonOptions; one [JsonPropertyName] override (Note.CreatedAt -> created)"
+  }
+ }
+}

@@ -1,0 +1,24 @@
+{
+  "id": "D-RAISE",
+  "probe": "D1 refusals (route, status)",
+  "ran": true,
+  "predicted": "precision >= 0.95 (p 0.95-1.00), recall >= 0.70 (p 0.75-0.95)",
+  "observed": {
+    "truth_pairs": 108,
+    "extract_pairs": 112,
+    "precision": 0.9643,
+    "recall": 1.0,
+    "false_positives": [
+      "POST /v1/completions/batch 404",
+      "POST /v1/completions/batch 409",
+      "POST /v1/devices 404",
+      "POST /v1/habits 404"
+    ],
+    "missed": []
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "D",
+  "nodes": []
+}

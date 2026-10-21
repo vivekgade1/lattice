@@ -1,0 +1,26 @@
+{
+ "assignments": [
+  {
+   "expr": "JsonNamingPolicy.SnakeCaseLower",
+   "file": "Api/Http/ErrorHandling.cs",
+   "line": 84,
+   "policy": "SnakeCaseLower"
+  }
+ ],
+ "custom_policy_classes": [],
+ "json_property_name_overrides": [],
+ "overrides_count": 0,
+ "policies": [
+  "SnakeCaseLower"
+ ],
+ "rc": "RC4",
+ "root": "dnstreak",
+ "serializer_defaults": [
+  {
+   "file": "Api/Http/ErrorHandling.cs",
+   "line": 80,
+   "what": "JsonSerializerDefaults.Web"
+  }
+ ],
+ "verdict": "SnakeCaseLower"
+}

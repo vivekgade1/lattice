@@ -1,0 +1,16 @@
+HM1 | owner_read | GET /reports/{reportId:int} | Features/Reports/ReportService.cs:21 | owner_read fits only this route (direct-owner single-row read; lists go to widen_list, line reads to drop_parent), so used once; GetMine also reads the lines directly because ListLines re-checks the owner
+HM2 | owner_write | PATCH /reports/{reportId:int} | Features/Reports/ReportService.cs:46 | owner_read had one fit, so owner_write takes HM2-HM4: the three direct-owner writes PATCH, DELETE, submit
+HM3 | owner_write | DELETE /reports/{reportId:int} | Features/Reports/ReportService.cs:59 | second of three owner_write instances (see HM2)
+HM4 | owner_write | POST /reports/{reportId:int}/submit | Features/Reports/ReportService.cs:68 | third of three owner_write instances (see HM2)
+HM5 | expose_column | POST /auth/login | Features/Auth/AuthService.cs:24 | first route answering a User row; exposes User.password as user.password (also Features/Auth/AuthDtos.cs:21)
+HM6 | expose_column | POST /payout-methods | Features/Payouts/PayoutService.cs:48 | last route answering a PayoutMethod row; exposes PayoutMethod.account_number as accountNumber on the create answer only (also Features/Payouts/PayoutDtos.cs:22)
+HM7 | drop_login | GET /reports | Features/Reports/ReportsController.cs:11 | none (first Member route); [AllowAnonymous] on the action, an anonymous call now reaches User.UserId() and answers 500 not 401
+HM8 | drop_login | POST /payout-methods | Features/Payouts/PayoutMethodsController.cs:15 | none (last Member route); [AllowAnonymous] on the action, an anonymous call answers 500 not 401
+HM9 | status_403 | GET /reports/{reportId:int} | Features/Reports/ReportService.cs:22 | none (first route with a not_found refusal); same detail text, status 403
+HM10 | status_403 | POST /review/reports/{reportId:int}/reject | Features/Review/ReviewService.cs:30 | none (last route with a not_found refusal); Decide is shared with approve, so 403 only when the decision is a rejection
+HM11 | drop_parent | GET /reports/{reportId:int}/lines | Features/Reports/ReportService.cs:93 | only owner_via table is ExpenseLine; first route reaching it (the parent check is in ListLines); a missing report still answers 404, another user's report no longer does
+HM12 | drop_guard | POST /reports/{reportId:int}/submit | Features/Reports/ReportService.cs:69 | none (first transition); drops the CanTransition conflict guard, the no-lines guard stays
+HM13 | drop_guard | POST /review/reports/{reportId:int}/reject | Features/Review/ReviewService.cs:33 | none (last transition); drops the CanTransition guard for reject only, and the atomic Status == Submitted backstop in the same method (ReviewService.cs:40) for reject only, otherwise the guard stays masked as a 409
+HM14 | loosen_bound | POST /auth/login | Features/Auth/AuthDtos.cs:8 | none (first route in truth.json order with an upper bound, email max_length 254); StringLength max becomes int.MaxValue, min length 3 stays
+HM15 | owner_body | POST /reports | Features/Reports/ReportService.cs:32 | none (first create route); request gains an optional userId that sets the owner, falling back to the caller (also Features/Reports/ReportDtos.cs:12)
+HM16 | widen_list | GET /reports | Features/Reports/ReportService.cs:15 | none (first owner-scoped list route); the UserId filter is removed so every user's reports are listed

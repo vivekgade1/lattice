@@ -1,0 +1,62 @@
+{
+  "id": "HM16",
+  "patch": "m16.diff",
+  "patch_sha256": "48c52692ba3b79386d8cb4134ab5148d8b1bf0a8ae94980d44bbd018b877519a",
+  "mutants_md_line": "HM16 | widen_list | GET /reports | Features/Reports/ReportService.cs:15 | none (first owner-scoped list route); the UserId filter is removed so every user's reports are listed",
+  "operator": {
+    "key": "widen_list",
+    "from_list": "widen_list",
+    "from_id": "widen_list",
+    "cell": "widen_list",
+    "shifted": false,
+    "source": "list"
+  },
+  "route": "GET /reports",
+  "file_line": [
+    "Features/Reports/ReportService.cs",
+    15
+  ],
+  "substitutions": "none (first owner-scoped list route); the UserId filter is removed so every user's reports are listed",
+  "operator_key": "widen_list",
+  "gated": false,
+  "detectors": [
+    {
+      "detector": "DN801 on GET /reports",
+      "layer": "A",
+      "armed": true,
+      "flipped": false,
+      "hits": [],
+      "control_findings": []
+    },
+    {
+      "detector": "R2 GET /reports",
+      "layer": "R",
+      "armed": false,
+      "flipped": false,
+      "hits": [],
+      "items [control, mutant]": {},
+      "why_not": "the spec has no such item"
+    }
+  ],
+  "killed": false,
+  "killed_by": "survived: DN801 on GET /reports: no new finding; R2 GET /reports: the spec has no such item",
+  "expose_column": null,
+  "status": "judged",
+  "apply": {
+    "ok": true,
+    "returncode": 0,
+    "output": "patching file 'Features/Reports/ReportService.cs'\n",
+    "leftovers": [],
+    "files_changed": [
+      "Features/Reports/ReportService.cs"
+    ]
+  },
+  "layer_a": {
+    "new_findings": []
+  },
+  "layer_r": {
+    "ran": true,
+    "flipped_items [control, mutant]": {}
+  },
+  "wall_s": 24.4
+}

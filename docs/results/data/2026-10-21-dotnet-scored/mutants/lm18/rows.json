@@ -1,0 +1,77 @@
+[
+  {
+    "id": "P0-RAISE",
+    "probe": "raises (status, code, detail, kind, sentinel) per route; unmapped throws unread",
+    "ran": true,
+    "predicted": "exact; the unmapped throw unread",
+    "observed": {
+      "raises": {
+        "missing": [
+          [
+            [
+              "GET",
+              "/api/v2/forms/clash"
+            ],
+            409,
+            null,
+            null,
+            "exception",
+            "DnParity1.Errors.ConflictException",
+            "Controllers/FormsController.cs",
+            49
+          ],
+          [
+            [
+              "GET",
+              "/api/v2/forms/missing/{}"
+            ],
+            404,
+            null,
+            null,
+            "exception",
+            "DnParity1.Errors.NotFoundException",
+            "Controllers/FormsController.cs",
+            46
+          ]
+        ],
+        "extra": [],
+        "n_missing": 2,
+        "n_extra": 0,
+        "equal": false
+      },
+      "unread_raises": {
+        "missing": [],
+        "extra": [
+          [
+            [
+              "GET",
+              "/api/v2/forms/clash"
+            ],
+            "Controllers/FormsController.cs",
+            49,
+            "throw new ConflictException",
+            "thrown, no constant mapping"
+          ],
+          [
+            [
+              "GET",
+              "/api/v2/forms/missing/{}"
+            ],
+            "Controllers/FormsController.cs",
+            46,
+            "throw new NotFoundException",
+            "thrown, no constant mapping"
+          ]
+        ],
+        "n_missing": 0,
+        "n_extra": 2,
+        "equal": false
+      }
+    },
+    "pass": false,
+    "evidence": {},
+    "gated": true,
+    "arm": "0",
+    "nodes": []
+  }
+]

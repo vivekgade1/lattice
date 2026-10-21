@@ -1,0 +1,31 @@
+{
+  "id": "PB-T",
+  "probe": "pytest tests/importer tests/pycheck tests/gocheck tests/spec tests/mcp tests/studio tests/dncheck",
+  "ran": true,
+  "predicted": "the base's failing, skipped and error ids plus the new tests passing",
+  "observed": {
+    "base": [
+      "2 failed",
+      "3784 passed",
+      "36 skipped"
+    ],
+    "now": [
+      "3 failed",
+      "3926 passed",
+      "36 skipped"
+    ],
+    "wall_s": 1598.6,
+    "failed_only_now": [
+      "tests/spec/test_go_parity_probes3.py::test_the_tier_2_rows_that_need_no_streak_copy_run_and_805d_discriminates_its_base"
+    ],
+    "failed_only_base": [],
+    "errors_only_now": []
+  },
+  "pass": false,
+  "evidence": {
+    "reading": "the failing, skipped and error ids are compared exactly; the new tests that pass add to the passed count only"
+  },
+  "gated": true,
+  "arm": "X",
+  "nodes": []
+}

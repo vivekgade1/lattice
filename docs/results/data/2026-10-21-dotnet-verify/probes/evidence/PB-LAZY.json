@@ -1,0 +1,42 @@
+{
+  "id": "PB-LAZY",
+  "probe": "after a FastAPI, a Flask and a Go front-end import: dotnet_aspnet not in sys.modules; Hypothesis's literal pool equal to the base's",
+  "ran": true,
+  "predicted": "dotnet_aspnet not in sys.modules after a FastAPI, a Flask and a Go import; the literal pool unchanged",
+  "observed": {
+    "fastapi": {
+      "dotnet_aspnet_loaded": "False",
+      "pool_now": "dae76c15ea10e4c2",
+      "pool_base": "dae76c15ea10e4c2",
+      "rc": [
+        0,
+        0
+      ]
+    },
+    "flask": {
+      "dotnet_aspnet_loaded": "False",
+      "pool_now": "e34a305074201178",
+      "pool_base": "e34a305074201178",
+      "rc": [
+        0,
+        0
+      ]
+    },
+    "go": {
+      "dotnet_aspnet_loaded": "False",
+      "pool_now": "46ac2b986f6e0d4f",
+      "pool_base": "46ac2b986f6e0d4f",
+      "rc": [
+        0,
+        0
+      ]
+    }
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "0",
+  "nodes": [
+    "B2"
+  ]
+}

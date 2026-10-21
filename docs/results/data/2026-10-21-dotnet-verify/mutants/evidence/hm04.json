@@ -1,0 +1,53 @@
+{
+  "id": "HM4",
+  "patch": "m04.diff",
+  "patch_sha256": "0273db3bcbd9ac6f6d20037f2bf8e2d989caf7db0f6c187565c4daf55990607e",
+  "mutants_md_line": "HM4 | owner_write | POST /reports/{reportId:int}/submit | Features/Reports/ReportService.cs:68 | third of three owner_write instances (see HM2)",
+  "operator": {
+    "key": "owner_write",
+    "from_list": "owner_write",
+    "from_id": "owner_write",
+    "cell": "owner_write",
+    "shifted": false,
+    "source": "list"
+  },
+  "route": "POST /reports/{}/submit",
+  "file_line": [
+    "Features/Reports/ReportService.cs",
+    68
+  ],
+  "substitutions": "third of three owner_write instances (see HM2)",
+  "operator_key": "owner_write",
+  "gated": true,
+  "detectors": [
+    {
+      "detector": "DN801 on POST /reports/{}/submit",
+      "layer": "A",
+      "armed": true,
+      "flipped": false,
+      "hits": [],
+      "control_findings": []
+    }
+  ],
+  "killed": false,
+  "killed_by": "survived: DN801 on POST /reports/{}/submit: no new finding",
+  "expose_column": null,
+  "status": "judged",
+  "apply": {
+    "ok": true,
+    "returncode": 0,
+    "output": "patching file 'Features/Reports/ReportService.cs'\n",
+    "leftovers": [],
+    "files_changed": [
+      "Features/Reports/ReportService.cs"
+    ]
+  },
+  "layer_a": {
+    "new_findings": []
+  },
+  "layer_r": {
+    "ran": true,
+    "flipped_items [control, mutant]": {}
+  },
+  "wall_s": 24.5
+}

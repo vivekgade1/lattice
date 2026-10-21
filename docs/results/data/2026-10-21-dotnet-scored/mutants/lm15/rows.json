@@ -1,0 +1,117 @@
+[
+  {
+    "id": "P0-OWNER",
+    "probe": "owner_uses, query_filters and owner_via evidence",
+    "ran": true,
+    "predicted": "exact (owner_uses, query_filters, owner_via evidence)",
+    "observed": {
+      "owner_uses": {
+        "missing": [
+          [
+            [
+              "GET",
+              "/v1/todos/open"
+            ],
+            "Todo",
+            "OwnerId",
+            "filter",
+            "Data/AppDb.cs",
+            32,
+            "_current.UserId",
+            null
+          ],
+          [
+            [
+              "GET",
+              "/v1/todos/overdue"
+            ],
+            "Todo",
+            "OwnerId",
+            "filter",
+            "Data/AppDb.cs",
+            32,
+            "_current.UserId",
+            null
+          ]
+        ],
+        "extra": [],
+        "n_missing": 2,
+        "n_extra": 0,
+        "equal": false
+      },
+      "query_filter [extract, truth]": [
+        [
+          [
+            "Todo",
+            "OwnerId",
+            true,
+            32
+          ]
+        ],
+        [
+          [
+            "Todo",
+            "OwnerId",
+            true,
+            32
+          ]
+        ]
+      ],
+      "ignored_by [truth, extract]": [
+        [
+          [
+            "GET",
+            "/v1/todos/all"
+          ]
+        ],
+        [
+          [
+            "GET",
+            "/v1/todos/all"
+          ]
+        ]
+      ]
+    },
+    "pass": false,
+    "evidence": {},
+    "gated": true,
+    "arm": "0",
+    "nodes": []
+  },
+  {
+    "id": "A0-DN",
+    "probe": "dncheck on dnparity1 under its truth policy (exact keys) and DN800 on dnparity1bad",
+    "ran": true,
+    "predicted": "DN801 on o3 and the IgnoreQueryFilters route; DN802 on the projection; DN803 on the unenforced copy; DN806, DN807, DN808 on the first cases; DN800 on dnparity1bad",
+    "observed": {
+      "missing": [],
+      "extra": [
+        [
+          "DN801",
+          "Endpoints/TodoEndpoints.cs",
+          14
+        ],
+        [
+          "DN801",
+          "Endpoints/TodoEndpoints.cs",
+          28
+        ]
+      ],
+      "keys_present": true,
+      "dn800": {
+        "fixture": "dnparity1bad",
+        "present": true,
+        "codes": [
+          "DN800"
+        ]
+      }
+    },
+    "pass": false,
+    "evidence": {},
+    "gated": true,
+    "arm": "0",
+    "nodes": [
+      "B3"
+    ]
+  }
+]

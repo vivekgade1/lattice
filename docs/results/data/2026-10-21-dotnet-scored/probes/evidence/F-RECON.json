@@ -1,0 +1,20 @@
+{
+  "id": "F-RECON",
+  "probe": "reconcile on D1 over MySQL 8.4 (Docker): every extracted route observed, control 404, no leftover container",
+  "ran": true,
+  "predicted": "every extracted route observed (!= 404/405); control 404; 0 leftover containers",
+  "observed": {
+    "routes": 26,
+    "truth_routes": 26,
+    "not_observed": [],
+    "control_not_404": [],
+    "containers_left": 0
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "D",
+  "nodes": [
+    "B2"
+  ]
+}

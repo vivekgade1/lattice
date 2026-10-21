@@ -1,0 +1,22 @@
+{
+  "id": "I-D1-1",
+  "probe": "rules-first import of D1 (SQLite): framework, contracts, tables",
+  "ran": true,
+  "predicted": "aspnetcore; 26 or 27 routes and contracts; 9 tables",
+  "observed": {
+    "framework": "aspnetcore",
+    "routes": 26,
+    "contracts": 26,
+    "tables": 9,
+    "truth_routes": 26
+  },
+  "pass": true,
+  "evidence": {
+    "health_is_a_contract": true
+  },
+  "gated": true,
+  "arm": "D",
+  "nodes": [
+    "B2"
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "id": "I-D1-PR3",
+  "probe": "layer R with the imported candidate_spec.py",
+  "ran": true,
+  "predicted": "layer R with the imported candidate_spec.py: the same verdict map after the correction map",
+  "observed": {
+    "items_import": 259,
+    "items_rerun": 259,
+    "differences [import, rerun]": {
+      "R3 DELETE /v1/devices/{id} 422": [
+        "verified (corrected)",
+        "verified"
+      ],
+      "R3 DELETE /v1/habits/{habit_id}/completions/{id} 422": [
+        "verified (corrected)",
+        "verified"
+      ],
+      "R3 DELETE /v1/habits/{id} 404": [
+        "verified (corrected)",
+        "verified"
+      ],
+      "R3 GET /v1/habits/{habit_id}/completions 404": [
+        "verified (corrected)",
+        "verified"
+      ],
+      "R3 GET /v1/habits/{id} 404": [
+        "verified (corrected)",
+        "verified"
+      ],
+      "R3 GET /v1/habits/{id}/history 404": [
+        "verified (corrected)",
+        "verified"
+      ],
+      "R3 GET /v1/habits/{id}/progress 404": [
+        "verified (corrected)",
+        "verified"
+      ],
+      "R3 PATCH /v1/habits/{id} 422": [
+        "verified (corrected)",
+        "verified"
+      ],
+      "R3 POST /v1/auth/login 422": [
+        "verified (corrected)",
+        "verified"
+      ],
+      "R3 POST /v1/habits/{habit_id}/completions 404": [
+        "verified (corrected)",
+        "verified"
+      ],
+      "R3 POST /v1/nudges/{id}/dismiss 404": [
+        "verified (corrected)",
+        "verified"
+      ]
+    }
+  },
+  "pass": false,
+  "evidence": {},
+  "gated": true,
+  "arm": "D",
+  "nodes": [
+    "B2"
+  ]
+}

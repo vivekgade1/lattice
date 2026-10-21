@@ -1,0 +1,45 @@
+{
+  "id": "PB-H",
+  "probe": "help texts and MCP tools/list identical to the base (check --help may gain `dotnet`)",
+  "ran": true,
+  "predicted": "help texts and MCP tools/list identical except check --help gaining dotnet",
+  "observed": {
+    "lattice --help": {
+      "same": true,
+      "rc": [
+        0,
+        0
+      ]
+    },
+    "python -m lattice.importer --help": {
+      "same": true,
+      "rc": [
+        0,
+        0
+      ]
+    },
+    "python -m lattice.spec --help": {
+      "same": true,
+      "rc": [
+        0,
+        0
+      ]
+    },
+    "python -m lattice.spec check --help": {
+      "same": true,
+      "rc": [
+        0,
+        0
+      ],
+      "declared_exception": true
+    },
+    "MCP tools/list": {
+      "same": true
+    }
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "X",
+  "nodes": []
+}

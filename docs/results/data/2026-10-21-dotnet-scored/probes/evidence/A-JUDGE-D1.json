@@ -1,0 +1,20 @@
+{
+  "id": "A-JUDGE-D1",
+  "probe": "share of D1's owner-scoped routes judged by DN801 (complete reach)",
+  "ran": true,
+  "predicted": "0.70-0.95 of D1's owner-scoped routes judged (reported)",
+  "observed": {
+    "method": "proxy: the extract (no judged list from B3's check output)",
+    "owner_scoped": 10,
+    "judged": 10,
+    "share": 1.0,
+    "not_judged": []
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": false,
+  "arm": "D",
+  "nodes": [
+    "B3"
+  ]
+}

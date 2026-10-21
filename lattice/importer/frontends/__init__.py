@@ -10,6 +10,7 @@ the first whose ``detect`` holds. The built-in front end is FastAPI + SQLModel
 (:mod:`.fastapi`); Django + DRF and Flask + SQLAlchemy register themselves the same way
 (:func:`register`). The Go front end (:mod:`.go_gin`: Gin + GORM, over ``gocheck extract``)
 is loaded by name, or last when every Python front end declined (:func:`_load_go`).
+The .NET one (:mod:`.dotnet_aspnet`, over ``dncheck extract``) follows (:func:`_load_dotnet`).
 
 (This package's ``__init__`` is loaded whenever any front end is: it holds no string
 literal, as the request suite's Hypothesis bodies draw from the importer's own -- see
@@ -44,6 +45,9 @@ _REGISTRY: dict[str, FrontEnd] = {}
 # front ends tried before the others once loaded: one whose framework is detected by a
 # narrower test than a front end it shares libraries with (grpc-go over Gin)
 _FIRST: list[FrontEnd] = []
+# why a front end declined a package it nearly recognised (a web project without EF Core, a
+# directory of two projects), added by its ``detect`` and named by ``select``'s LookupError
+DECLINED: list[str] = []
 
 
 def register(front_end: FrontEnd) -> FrontEnd:
@@ -80,6 +84,12 @@ def _load_go() -> None:
     from lattice.importer.frontends import go_gin, go_grpc  # noqa: F401 -- register
 
 
+def _load_dotnet() -> None:
+    """Register the .NET (ASP.NET Core + EF Core) front end: imported only on a request for it,
+    or after every Python and Go front end declined, so a Python or Go import never loads it."""
+    from lattice.importer.frontends import dotnet_aspnet  # noqa: F401 -- register
+
+
 def select(
     framework: str | None = None, root: Path | str | None = None, package: str | None = None
 ) -> FrontEnd:
@@ -95,12 +105,16 @@ def select(
             _load_go()
             known = {fe.name: fe for fe in front_ends()}
         if framework not in known:
+            _load_dotnet()
+            known = {fe.name: fe for fe in front_ends()}
+        if framework not in known:
             raise KeyError(f"no front end {framework!r} (known: {', '.join(sorted(known))})")
         return known[framework]
     if root is None or package is None:
         raise ValueError(f"detecting the framework needs a root and a package: {root}, {package}")
     tried: set[str] = set()
-    for load in (None, _load_others, _load_go):
+    DECLINED.clear()
+    for load in (None, _load_others, _load_go, _load_dotnet):
         if load is not None:
             load()
         for fe in sorted(front_ends(), key=lambda fe: fe not in _FIRST):
@@ -108,4 +122,5 @@ def select(
                 tried.add(fe.name)
                 if fe.detect(Path(root), package):
                     return fe
-    raise LookupError(f"no front end recognises {package!r} under {root}")
+    why = "".join(f" ({d})" for d in DECLINED)
+    raise LookupError(f"no front end recognises {package!r} under {root}{why}")

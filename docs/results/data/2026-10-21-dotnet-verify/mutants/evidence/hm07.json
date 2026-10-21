@@ -1,0 +1,64 @@
+{
+  "id": "HM7",
+  "patch": "m07.diff",
+  "patch_sha256": "ead59f3ae69b539a3eb9cb7335614bec29f407e4f0a7ffb69b7637f800d7599f",
+  "mutants_md_line": "HM7 | drop_login | GET /reports | Features/Reports/ReportsController.cs:11 | none (first Member route); [AllowAnonymous] on the action, an anonymous call now reaches User.UserId() and answers 500 not 401",
+  "operator": {
+    "key": "drop_login",
+    "from_list": "drop_login",
+    "from_id": "drop_login",
+    "cell": "drop_login",
+    "shifted": false,
+    "source": "list"
+  },
+  "route": "GET /reports",
+  "file_line": [
+    "Features/Reports/ReportsController.cs",
+    11
+  ],
+  "substitutions": "none (first Member route); [AllowAnonymous] on the action, an anonymous call now reaches User.UserId() and answers 500 not 401",
+  "operator_key": "drop_login",
+  "gated": true,
+  "detectors": [
+    {
+      "detector": "R1 GET /reports",
+      "layer": "R",
+      "armed": false,
+      "flipped": false,
+      "hits": [],
+      "items [control, mutant]": {
+        "R1 GET /reports": [
+          "unexercised",
+          "unexercised"
+        ]
+      },
+      "why_not": "no such item is verified on the control (or unstable)"
+    }
+  ],
+  "killed": false,
+  "killed_by": "survived: R1 GET /reports: no such item is verified on the control (or unstable)",
+  "expose_column": null,
+  "status": "judged",
+  "apply": {
+    "ok": true,
+    "returncode": 0,
+    "output": "patching file 'Features/Reports/ReportsController.cs'\n",
+    "leftovers": [],
+    "files_changed": [
+      "Features/Reports/ReportsController.cs"
+    ]
+  },
+  "layer_a": {
+    "new_findings": []
+  },
+  "layer_r": {
+    "ran": true,
+    "flipped_items [control, mutant]": {
+      "R3 GET /reports 5xx": [
+        "unexercised",
+        "refuted"
+      ]
+    }
+  },
+  "wall_s": 24.5
+}

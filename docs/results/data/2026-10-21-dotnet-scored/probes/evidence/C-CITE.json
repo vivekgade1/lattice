@@ -1,0 +1,35 @@
+{
+  "id": "C-CITE",
+  "probe": "every code:<path>:<line> citation of the report, workflows.json, the app map and the ask answers resolves",
+  "ran": true,
+  "predicted": "every code:<path>:<line> citation resolves (file, line, quoted text): 100%",
+  "observed": {
+    "per_source": {
+      "implementation report": {
+        "checked": 93,
+        "bad": []
+      },
+      "workflows.json": {
+        "checked": 0,
+        "bad": []
+      },
+      "app map": {
+        "checked": 110,
+        "bad": []
+      },
+      "ask answers": {
+        "checked": 2,
+        "bad": []
+      }
+    },
+    "total": 205,
+    "bad": 0
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "D",
+  "nodes": [
+    "B4"
+  ]
+}

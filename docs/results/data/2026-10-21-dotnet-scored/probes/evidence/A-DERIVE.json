@@ -1,0 +1,159 @@
+{
+  "id": "A-DERIVE",
+  "probe": "derive_dn_policy on dnparity1 and D1: owners and private exactly the truth's, baseline empty on D1",
+  "ran": true,
+  "predicted": "derive_dn_policy: owners and private exactly the truth's on dnparity1 and D1; baseline empty on D1",
+  "observed": {
+    "dnparity1": {
+      "owners": [
+        {
+          "Note": "OwnerId",
+          "Todo": "OwnerId"
+        },
+        {
+          "Note": "OwnerId",
+          "Todo": "OwnerId"
+        }
+      ],
+      "private": [
+        {
+          "User": [
+            "PasswordHash"
+          ],
+          "Note": [
+            "ModerationNote"
+          ]
+        },
+        {
+          "User": [
+            "PasswordHash"
+          ],
+          "Note": [
+            "ModerationNote"
+          ]
+        }
+      ]
+    },
+    "D1": {
+      "owners": [
+        {
+          "Habit": "user_id",
+          "NotificationPrefs": "user_id",
+          "Device": "user_id",
+          "RefreshToken": "user_id"
+        },
+        {
+          "NotificationPrefs": "user_id",
+          "Device": "user_id",
+          "RefreshToken": "user_id",
+          "Habit": "user_id"
+        }
+      ],
+      "private": [
+        {
+          "User": [
+            "change_seq",
+            "created_at",
+            "hashed_password"
+          ],
+          "NotificationPrefs": [
+            "last_pass_date",
+            "user_id"
+          ],
+          "Device": [
+            "created_at",
+            "updated_at",
+            "user_id"
+          ],
+          "RefreshToken": [
+            "created_at",
+            "expires_at",
+            "id",
+            "installation_id",
+            "revoked_at",
+            "rotated_at",
+            "token_hash",
+            "user_id"
+          ],
+          "Habit": [
+            "deleted_at",
+            "user_id"
+          ],
+          "HabitTarget": [
+            "effective_from",
+            "habit_id",
+            "id",
+            "target_count"
+          ],
+          "Completion": [
+            "deleted_at"
+          ],
+          "Nudge": [
+            "created_at",
+            "deleted_at",
+            "updated_at"
+          ],
+          "TestClockRow": [
+            "id",
+            "now"
+          ]
+        },
+        {
+          "User": [
+            "change_seq",
+            "created_at",
+            "hashed_password"
+          ],
+          "RefreshToken": [
+            "created_at",
+            "expires_at",
+            "id",
+            "installation_id",
+            "revoked_at",
+            "rotated_at",
+            "token_hash",
+            "user_id"
+          ],
+          "NotificationPrefs": [
+            "last_pass_date",
+            "user_id"
+          ],
+          "Device": [
+            "created_at",
+            "updated_at",
+            "user_id"
+          ],
+          "Habit": [
+            "deleted_at",
+            "user_id"
+          ],
+          "HabitTarget": [
+            "effective_from",
+            "habit_id",
+            "id",
+            "target_count"
+          ],
+          "Completion": [
+            "deleted_at"
+          ],
+          "Nudge": [
+            "created_at",
+            "deleted_at",
+            "updated_at"
+          ],
+          "TestClockRow": [
+            "id"
+          ]
+        }
+      ],
+      "baseline": []
+    }
+  },
+  "pass": false,
+  "evidence": {},
+  "gated": true,
+  "arm": "D",
+  "nodes": [
+    "B3"
+  ]
+}

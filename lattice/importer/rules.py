@@ -78,6 +78,9 @@ and writes it (:func:`write_rules`):
    (``go_rules.infer_owners``, recorded as ``inferences`` in ``report.json["rules"]``, present
    only when non-empty); and layer A's derived policy is written as ``go_policy.json``
    (:mod:`lattice.gocheck.derive`). A Python front end goes through the paths above unchanged.
+9. **.NET** (ASP.NET Core + EF Core, ``--framework aspnetcore``;
+   :mod:`lattice.importer.dotnet_rules`). The Go path with .NET inputs: the same factory, owner,
+   bind-status and private-column steps and the K4 skip; no policy file (the checker's own).
 
 Django keeps process-global state: one Django project per process (the CLI is one).
 """
@@ -581,6 +584,9 @@ class Callers:
     mint: Callable[[Any], str] | None = None
     # a session cookie: put in each probe's session (AuthDriver.present)
     present: Callable[[Any, str], Mapping[str, str]] | None = None
+    # a JSON login route that requires body fields besides the credentials (a device or
+    # installation id): (method, path, username field, password field), see probes._r1
+    json_login: tuple[str, str, str, str] | None = None
 
 
 def callers(result: Any, seeder: Seeder, variant: str = "seed") -> Callers:
@@ -644,6 +650,17 @@ def callers(result: Any, seeder: Seeder, variant: str = "seed") -> Callers:
         def login(client: Any, handle: str) -> str:
             return mint(keys[handle])
 
+    json_route = None
+    if fe.login_path is not None and fe.login_encoding == "json":
+        credentials = {fe.username_field, fe.password_field}
+        extra = any(
+            p.source == "body" and p.required and p.name not in credentials
+            for r in model.routes
+            if r.method == "POST" and r.path == fe.login_path
+            for p in r.params
+        )
+        if extra:  # takes_credentials() does not see such a route: say it is the login
+            json_route = ("POST", fe.login_path, fe.username_field, fe.password_field)
     return Callers(
         login,
         headers,
@@ -652,6 +669,7 @@ def callers(result: Any, seeder: Seeder, variant: str = "seed") -> Callers:
         route,
         inactive_login=True,
         present=driver.present if driver.cookie is not None else None,
+        json_login=json_route,
     )
 
 
@@ -920,6 +938,10 @@ def _hints(root: Path, package: str, model: RepoModel) -> Any:
     return MiningHints(tuple(checks), tuple(uniques), (), transitions)
 
 
+# the front ends with a rules module of their own (the Go one, the .NET one)
+NATIVE = {"gin": "go_rules", "aspnetcore": "dotnet_rules"}
+
+
 def import_rules(
     root: Path | str,
     package: str,
@@ -944,9 +966,8 @@ def import_rules(
         sys.path.insert(0, str(root))
     fe = select(framework, root, package)
     go_factory = None
-    if fe.name == "gin":  # Go (J1): the harness' factory, and owners inferred from the extract
-        from lattice.importer import go_rules
-
+    if fe.name in NATIVE:  # Go (J1), .NET: the harness' factory, owners inferred from the extract
+        go_rules = importlib.import_module(f"lattice.importer.{NATIVE[fe.name]}")
         if app_factory is None:
             go_factory = go_rules.harness_factory(root, package)
         fe = go_rules.InferringFrontEnd(fe)
@@ -955,12 +976,15 @@ def import_rules(
     runtime = _runtime(fe, root, package, model)
     result = lift_repo(root, package, factory, only=(), dialect=dialect, frontend=fe,
                        runtime=runtime)  # fmt: skip
-    if fe.name == "gin":  # E3, E5: the profile states the bind status and the private columns
+    if fe.name in NATIVE:  # E3, E5: the profile states the bind status and the private columns
         go_rules.patch_profile(result, fe.private, fe.validation_status)
     timing["extract"] = clock() - t0
     if fe.name == "gin" and (server := go_rules.server_dialect(root, package)):  # K4
         spec = candidate_spec(result, users={})
         return _skip_server(result, spec, fe, root, package, factory_name, server, timing)
+    if fe.name == "aspnetcore" and (dn_server := go_rules.server_dialect(root, package)):
+        spec = candidate_spec(result, users={})
+        return _skip_server(result, spec, fe, root, package, factory_name, dn_server, timing)
     ctx = result.context
     api = result.lattice_profile.api
     seeder = Seeder(result.model, ctx.inputs.tables, ctx.inputs.auth, ctx.inputs.insert_hook,
@@ -985,7 +1009,7 @@ def import_rules(
                         refusals=who.refusals, login_route=who.login_route,
                         auth_headers=who.headers, inactive_login=who.inactive_login,
                         unreachable=unreachable, variant=variant,
-                        auth_present=who.present)  # fmt: skip
+                        auth_present=who.present, json_login=who.json_login)  # fmt: skip
 
         t1 = clock()
         recorder = _Recording() if mine_proposals else None
@@ -1068,7 +1092,8 @@ def _skip_server(result: Any, spec: Spec, fe: Any, root: Path, package: str, fac
     return RulesImport(result, spec, spec, RuleResult(), [], [],
                        _excluded(result.model, fe, root, package, {}), fe.name, factory_name,
                        None, timing, inferences=inferences,
-                       go_policy=_go_policy(root, package, inferences, spec),
+                       go_policy=_go_policy(root, package, inferences, spec)
+                       if fe.name == "gin" else None,
                        not_run="not_run:server_dialect", dialect=server,
                        notes=[f"layer R was not run: the app's database is {server}"])  # fmt: skip
 

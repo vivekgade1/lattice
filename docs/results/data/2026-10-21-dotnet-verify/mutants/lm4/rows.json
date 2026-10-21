@@ -1,0 +1,50 @@
+[
+  {
+    "id": "P0-AUTH",
+    "probe": "auth per route",
+    "ran": true,
+    "predicted": "exact (Public/Member/Admin; the admin route Admin)",
+    "observed": {
+      "routes": 39,
+      "wrong": {
+        "GET /api/notes/public/{}": [
+          "Public",
+          "Member"
+        ],
+        "GET /v1/version": [
+          "Public",
+          "Member"
+        ]
+      },
+      "values": [
+        "Admin",
+        "Member",
+        "Public"
+      ]
+    },
+    "pass": false,
+    "evidence": {
+      "auth_object": {
+        "scheme": [
+          "Bearer",
+          "Bearer"
+        ],
+        "caller_keys": [
+          [
+            "sub"
+          ],
+          [
+            "sub"
+          ]
+        ],
+        "admin_role": [
+          "Admin",
+          "Admin"
+        ]
+      }
+    },
+    "gated": true,
+    "arm": "0",
+    "nodes": []
+  }
+]

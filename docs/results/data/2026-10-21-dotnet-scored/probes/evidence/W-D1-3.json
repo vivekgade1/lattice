@@ -1,0 +1,17 @@
+{
+  "id": "W-D1-3",
+  "probe": "workflows --static 10x",
+  "ran": true,
+  "predicted": "workflows --static 10x identical",
+  "observed": {
+    "identical": 10,
+    "of": 10
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "D",
+  "nodes": [
+    "B4"
+  ]
+}

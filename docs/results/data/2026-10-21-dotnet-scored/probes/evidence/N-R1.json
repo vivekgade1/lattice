@@ -1,0 +1,30 @@
+{
+  "id": "N-R1",
+  "probe": "layer R on dnapp with go_harness_rb's spec and rules",
+  "ran": true,
+  "predicted": "layer R on dnapp: refuted 0, verified share within 0.10 of Go S1's 0.6957",
+  "observed": {
+    "items": 23,
+    "verdicts": {
+      "verified": 16,
+      "refuted": 0,
+      "unexercised": 7,
+      "unclear": 0
+    },
+    "verified_share": 0.6957,
+    "refuted": []
+  },
+  "pass": true,
+  "evidence": {
+    "in_predicted_range": {
+      "items": true,
+      "share": true
+    }
+  },
+  "gated": true,
+  "arm": "N",
+  "nodes": [
+    "B2",
+    "B4"
+  ]
+}

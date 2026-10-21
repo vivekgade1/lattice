@@ -1,0 +1,22 @@
+{
+  "id": "I-D1-M",
+  "probe": "the same import on the MySQL studio.toml: not_run:server_dialect, contracts and inferences only",
+  "ran": true,
+  "predicted": "MySQL studio.toml: rules.status not_run:server_dialect, dialect mysql, 26 or 27 contracts, 0 rule items, 0 docker calls, no SQLite file",
+  "observed": {
+    "exit": 0,
+    "status": "not_run:server_dialect",
+    "dialect": "mysql",
+    "items": 0,
+    "contracts": 26,
+    "docker_calls": [],
+    "sqlite_files": []
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "D",
+  "nodes": [
+    "B2"
+  ]
+}

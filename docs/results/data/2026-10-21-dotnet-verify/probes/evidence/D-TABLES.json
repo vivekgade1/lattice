@@ -1,0 +1,25 @@
+{
+  "id": "D-TABLES",
+  "probe": "D1 tables and column facts",
+  "ran": true,
+  "predicted": "tables 9/9; column facts >= 0.95",
+  "observed": {
+    "truth_tables": 9,
+    "found": 9,
+    "table_recall": 1.0,
+    "missing_tables": [],
+    "extra_tables": [],
+    "facts": 414,
+    "facts_ok": 412,
+    "fact_accuracy": 0.9952,
+    "wrong_facts": [
+      "users.hashed_password.private",
+      "refresh_tokens.token_hash.private"
+    ]
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "D",
+  "nodes": []
+}

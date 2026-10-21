@@ -1,0 +1,28 @@
+{
+  "id": "P0-STATE",
+  "probe": "status_writes with guards; status_facts",
+  "ran": true,
+  "predicted": "exact (status_writes with guards, status_facts)",
+  "observed": {
+    "status_writes": {
+      "missing": [],
+      "extra": [],
+      "n_missing": 0,
+      "n_extra": 0,
+      "equal": true
+    },
+    "status_facts": {
+      "missing": [],
+      "extra": [],
+      "n_missing": 0,
+      "n_extra": 0,
+      "equal": true
+    },
+    "a_guarded_write_is_read": true
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "0",
+  "nodes": []
+}

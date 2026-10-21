@@ -1,0 +1,167 @@
+[
+  {
+    "id": "P0-BIND",
+    "probe": "params, sources, bounds, enforced_by, bind status, 'declared, not enforced' unread",
+    "ran": true,
+    "predicted": "exact; the minimal-API copy has no bounds and one 'declared, not enforced' unread per annotation",
+    "observed": {
+      "param_differences": {},
+      "bound_differences": {
+        "POST /api/notes": {
+          "want": [
+            [
+              "body",
+              null,
+              null,
+              null,
+              null,
+              2000,
+              "apicontroller"
+            ],
+            [
+              "category",
+              true,
+              null,
+              null,
+              null,
+              null,
+              "apicontroller-implicit-required"
+            ],
+            [
+              "priority",
+              null,
+              1,
+              5,
+              null,
+              null,
+              "apicontroller"
+            ],
+            [
+              "title",
+              true,
+              null,
+              null,
+              1,
+              120,
+              "apicontroller"
+            ]
+          ],
+          "got": [
+            [
+              "body",
+              null,
+              null,
+              null,
+              null,
+              2000,
+              "apicontroller"
+            ],
+            [
+              "priority",
+              null,
+              1,
+              5,
+              null,
+              null,
+              "apicontroller"
+            ],
+            [
+              "title",
+              true,
+              null,
+              null,
+              1,
+              120,
+              "apicontroller"
+            ]
+          ]
+        },
+        "PUT /api/notes/{}": {
+          "want": [
+            [
+              "body",
+              null,
+              null,
+              null,
+              null,
+              2000,
+              "apicontroller"
+            ],
+            [
+              "category",
+              true,
+              null,
+              null,
+              null,
+              null,
+              "apicontroller-implicit-required"
+            ],
+            [
+              "priority",
+              null,
+              1,
+              5,
+              null,
+              null,
+              "apicontroller"
+            ],
+            [
+              "title",
+              true,
+              null,
+              null,
+              1,
+              120,
+              "apicontroller"
+            ]
+          ],
+          "got": [
+            [
+              "body",
+              null,
+              null,
+              null,
+              null,
+              2000,
+              "apicontroller"
+            ],
+            [
+              "priority",
+              null,
+              1,
+              5,
+              null,
+              null,
+              "apicontroller"
+            ],
+            [
+              "title",
+              true,
+              null,
+              null,
+              1,
+              120,
+              "apicontroller"
+            ]
+          ]
+        }
+      },
+      "unread_bind": {
+        "missing": [],
+        "extra": [],
+        "n_missing": 0,
+        "n_extra": 0,
+        "equal": true
+      },
+      "bind_status [truth, extract]": [
+        400,
+        400
+      ]
+    },
+    "pass": false,
+    "evidence": {},
+    "gated": true,
+    "arm": "0",
+    "nodes": []
+  }
+]

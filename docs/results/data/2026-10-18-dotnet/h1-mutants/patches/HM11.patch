@@ -1,0 +1,12 @@
+diff -ru a/Features/Reports/ReportService.cs b/Features/Reports/ReportService.cs
+--- a/Features/Reports/ReportService.cs	2026-10-21 12:35:28
++++ b/Features/Reports/ReportService.cs	2026-10-21 12:41:29
+@@ -90,7 +90,7 @@
+ 
+     public async Task<IReadOnlyList<LineResponse>> ListLines(int userId, int reportId, CancellationToken ct)
+     {
+-        if (!await db.ExpenseReports.AnyAsync(r => r.Id == reportId && r.UserId == userId, ct))
++        if (!await db.ExpenseReports.AnyAsync(r => r.Id == reportId, ct))
+             throw ReportNotFound(reportId);
+         var lines = await db.ExpenseLines.AsNoTracking()
+             .Where(l => l.ReportId == reportId)

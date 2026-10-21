@@ -1,0 +1,42 @@
+{
+  "id": "PB-G",
+  "probe": "Go outputs identical to the base",
+  "ran": true,
+  "predicted": "Go layer A, workflows, inventory, implementation, app map, impact T3, ask digests identical to the base",
+  "observed": {
+    "layer_a_differences": {},
+    "differences_not_declared": [],
+    "other": {
+      "workflows --static": {
+        "same": true,
+        "rc": [
+          0,
+          0
+        ]
+      },
+      "inventory": {
+        "same": true,
+        "rc": [
+          0,
+          0
+        ]
+      },
+      "implementation report, ask digest, app map (fixture)": {
+        "same": true,
+        "rc": [
+          0,
+          0
+        ],
+        "err": ""
+      }
+    },
+    "modules": 21
+  },
+  "pass": true,
+  "evidence": {
+    "reading": "impact T3 on the Go fixtures is covered by PB-T's tests/spec; a layer-A difference passes only if dn_standin/declared_edits.json lists its key"
+  },
+  "gated": true,
+  "arm": "X",
+  "nodes": []
+}

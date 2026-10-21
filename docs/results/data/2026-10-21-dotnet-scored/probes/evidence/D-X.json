@@ -1,0 +1,14 @@
+{
+  "id": "D-X",
+  "probe": "extract wall time on D1 (helper prebuilt)",
+  "ran": true,
+  "predicted": "2-8 s; gate <= 60 s",
+  "observed": {
+    "wall_s": 1.57
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "D",
+  "nodes": []
+}

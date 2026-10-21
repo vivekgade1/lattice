@@ -1,0 +1,18 @@
+{
+  "id": "H-PA0",
+  "probe": "layer A on the original under dn_spec_policy of its candidate spec",
+  "ran": true,
+  "predicted": "layer A on the original under dn_spec_policy of its candidate spec: 0 findings outside the baseline",
+  "observed": {
+    "outside_baseline": [],
+    "baseline": []
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "H",
+  "nodes": [
+    "B2",
+    "B3"
+  ]
+}

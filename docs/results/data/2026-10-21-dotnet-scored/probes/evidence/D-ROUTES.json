@@ -1,0 +1,19 @@
+{
+  "id": "D-ROUTES",
+  "probe": "D1 routes vs truth (4.5 matching)",
+  "ran": true,
+  "predicted": "recall 1.00, 0 extra",
+  "observed": {
+    "truth_routes": 26,
+    "extract_routes": 26,
+    "recall": 1.0,
+    "missing": [],
+    "extra": [],
+    "style_wrong": []
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "D",
+  "nodes": []
+}

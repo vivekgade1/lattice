@@ -1,0 +1,25 @@
+{
+  "id": "H-TABLES",
+  "probe": "table recall and column-fact accuracy",
+  "ran": true,
+  "predicted": "table recall >= 0.90 and column-fact accuracy >= 0.90",
+  "observed": {
+    "truth_tables": 4,
+    "found": 4,
+    "table_recall": 1.0,
+    "missing_tables": [],
+    "extra_tables": [],
+    "facts": 192,
+    "facts_ok": 190,
+    "fact_accuracy": 0.9896,
+    "wrong_facts": [
+      "users.password.private",
+      "payout_methods.account_number.private"
+    ]
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "H",
+  "nodes": []
+}

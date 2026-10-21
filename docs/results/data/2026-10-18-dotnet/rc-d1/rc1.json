@@ -1,0 +1,820 @@
+{
+ "error_diagnostics_by_id": {
+  "CS0103": 15,
+  "CS0234": 41,
+  "CS0246": 57,
+  "CS0411": 2,
+  "CS1061": 52,
+  "CS1503": 1,
+  "CS1729": 3,
+  "CS1929": 1
+ },
+ "error_type_names": {
+  "BCrypt": 1,
+  "DbContext": 6,
+  "DbContextOptions": 6,
+  "DbContextOptionsBuilder": 12,
+  "DbSet": 92,
+  "DbUpdateException": 2,
+  "Design": 1,
+  "EntityFrameworkCore": 41,
+  "HistoryRow": 1,
+  "IDbContextTransaction": 6,
+  "IDesignTimeDbContextFactory": 2,
+  "IHistoryRepository": 4,
+  "Infrastructure": 5,
+  "Metadata": 3,
+  "Migration": 4,
+  "MigrationBuilder": 59,
+  "Migrations": 5,
+  "ModelBuilder": 85,
+  "ModelConfigurationBuilder": 3,
+  "ModelSnapshot": 2,
+  "MySqlConnectionStringBuilder": 3,
+  "MySqlConnector": 1,
+  "MySqlServerVersion": 2,
+  "Net": 1,
+  "SaltParseException": 1,
+  "Storage": 6,
+  "ValueConversion": 5,
+  "ValueConverter": 2,
+  "var": 45
+ },
+ "every_error_type_is_named": true,
+ "files": 49,
+ "global_usings": [
+  "System",
+  "System.Collections.Generic",
+  "System.IO",
+  "System.Linq",
+  "System.Net.Http",
+  "System.Threading",
+  "System.Threading.Tasks",
+  "System.Net.Http.Json",
+  "Microsoft.AspNetCore.Builder",
+  "Microsoft.AspNetCore.Hosting",
+  "Microsoft.AspNetCore.Http",
+  "Microsoft.AspNetCore.Routing",
+  "Microsoft.Extensions.Configuration",
+  "Microsoft.Extensions.DependencyInjection",
+  "Microsoft.Extensions.Hosting",
+  "Microsoft.Extensions.Logging"
+ ],
+ "helper_build_seconds": 1.14,
+ "invocations": {
+  "bound_to_framework_symbol": 331,
+  "bound_to_project_symbol": 479,
+  "total": 3255,
+  "unbound": 2445
+ },
+ "object_creations": {
+  "of_project_types": 50,
+  "project_type_constructor_unbound": 13,
+  "total": 88
+ },
+ "output_kind": "ConsoleApplication (top-level statements)",
+ "project_symbols_unbound": 66,
+ "project_symbols_unbound_detail": [
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Domain.UserTime.ZoneOrUtc(string?)"
+   ],
+   "file": "Api/Auth/BearerAuthentication.cs",
+   "line": 62,
+   "name": "ZoneOrUtc",
+   "text": "UserTime.ZoneOrUtc(user.Timezone)"
+  },
+  {
+   "candidate_reason": "None",
+   "candidates": [],
+   "file": "Application/AccountService.cs",
+   "line": 58,
+   "name": "CommitAsync",
+   "text": "tx.CommitAsync(ct)"
+  },
+  {
+   "candidate_reason": "None",
+   "candidates": [],
+   "file": "Application/AccountService.cs",
+   "line": 63,
+   "name": "Clear",
+   "text": "db.ChangeTracker.Clear()"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Infrastructure.Security.PasswordHasher.Verify(string, string)"
+   ],
+   "file": "Application/AccountService.cs",
+   "line": 88,
+   "name": "Verify",
+   "text": "passwords.Verify(password, user.HashedPassword)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Data.UserWriteScopes.BeginAsync(int, System.Threading.CancellationToken)"
+   ],
+   "file": "Application/AccountService.cs",
+   "line": 93,
+   "name": "BeginAsync",
+   "text": "writes.BeginAsync(user.Id, ct)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.AccountService.AddRefreshToken(int, string, System.DateTime)"
+   ],
+   "file": "Application/AccountService.cs",
+   "line": 99,
+   "name": "AddRefreshToken",
+   "text": "AddRefreshToken(user.Id, installationId, now)"
+  },
+  {
+   "candidate_reason": "None",
+   "candidates": [],
+   "file": "Application/AccountService.cs",
+   "line": 100,
+   "name": "CommitAsync",
+   "text": "scope.CommitAsync(ct)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.AccountService.Tokens(int, string, string, System.DateTime)"
+   ],
+   "file": "Application/AccountService.cs",
+   "line": 101,
+   "name": "Tokens",
+   "text": "Tokens(user.Id, installationId, refresh, now)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Data.UserWriteScopes.BeginAsync(int, System.Threading.CancellationToken)"
+   ],
+   "file": "Application/AccountService.cs",
+   "line": 120,
+   "name": "BeginAsync",
+   "text": "writes.BeginAsync(owner.Value, ct)"
+  },
+  {
+   "candidate_reason": "None",
+   "candidates": [],
+   "file": "Application/AccountService.cs",
+   "line": 129,
+   "name": "Clear",
+   "text": "db.ChangeTracker.Clear()"
+  },
+  {
+   "candidate_reason": "None",
+   "candidates": [],
+   "file": "Application/AccountService.cs",
+   "line": 130,
+   "name": "CommitAsync",
+   "text": "scope.CommitAsync(ct)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.AccountService.AddRefreshToken(int, string, System.DateTime)"
+   ],
+   "file": "Application/AccountService.cs",
+   "line": 141,
+   "name": "AddRefreshToken",
+   "text": "AddRefreshToken(token.UserId, token.InstallationId, now)"
+  },
+  {
+   "candidate_reason": "None",
+   "candidates": [],
+   "file": "Application/AccountService.cs",
+   "line": 142,
+   "name": "CommitAsync",
+   "text": "scope.CommitAsync(ct)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.AccountService.Tokens(int, string, string, System.DateTime)"
+   ],
+   "file": "Application/AccountService.cs",
+   "line": 143,
+   "name": "Tokens",
+   "text": "Tokens(token.UserId, token.InstallationId, refresh, now)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.PrefsBody.From(DnStreak.Domain.NotificationPrefs)"
+   ],
+   "file": "Application/AccountService.cs",
+   "line": 163,
+   "name": "From",
+   "text": "PrefsBody.From(prefs)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.PrefsBody.From(DnStreak.Domain.NotificationPrefs)"
+   ],
+   "file": "Application/AccountService.cs",
+   "line": 226,
+   "name": "From",
+   "text": "PrefsBody.From(prefs)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Api.Http.Cursors.Encode(string, string)"
+   ],
+   "file": "Application/CompletionService.cs",
+   "line": 89,
+   "name": "Encode",
+   "text": "Cursors.Encode(\"completions\", items[^1].Date.ToString(\"yyyy-MM-dd\"))"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.CompletionBody.From(DnStreak.Domain.Completion)"
+   ],
+   "file": "Application/CompletionService.cs",
+   "line": 130,
+   "name": "From",
+   "text": "CompletionBody.From(existing)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.DailyPassService.IsDue(System.DateTime, System.TimeZoneInfo, string, System.DateOnly?)"
+   ],
+   "file": "Application/DailyPassService.cs",
+   "line": 24,
+   "name": "IsDue",
+   "text": "IsDue(now, UserTime.ZoneOrUtc(c.Timezone), c.NudgeTime, c.LastPassDate)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Domain.UserTime.ZoneOrUtc(string?)"
+   ],
+   "file": "Application/DailyPassService.cs",
+   "line": 24,
+   "name": "ZoneOrUtc",
+   "text": "UserTime.ZoneOrUtc(c.Timezone)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Domain.UserTime.ZoneOrUtc(string?)"
+   ],
+   "file": "Application/DailyPassService.cs",
+   "line": 47,
+   "name": "ZoneOrUtc",
+   "text": "UserTime.ZoneOrUtc(user.Timezone)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.DailyPassService.IsDue(System.DateTime, System.TimeZoneInfo, string, System.DateOnly?)"
+   ],
+   "file": "Application/DailyPassService.cs",
+   "line": 48,
+   "name": "IsDue",
+   "text": "IsDue(now, zone, prefs.NudgeTime, prefs.LastPassDate)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.NudgeWriter.IsEligible(DnStreak.Domain.Habit, System.DateOnly)"
+   ],
+   "file": "Application/DailyPassService.cs",
+   "line": 56,
+   "name": "IsEligible",
+   "text": "NudgeWriter.IsEligible(h, today)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.NudgeWriter.RefreshTodayAsync(DnStreak.Data.UserWriteScope, DnStreak.Domain.Habit, System.DateOnly, System.DateTime, bool, System.Threading.CancellationToken)"
+   ],
+   "file": "Application/DailyPassService.cs",
+   "line": 58,
+   "name": "RefreshTodayAsync",
+   "text": "writer.RefreshTodayAsync(scope, habit, today, now, afterDailyPass: false, ct)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.DailyPassService.DeliverAsync(DnStreak.Data.UserWriteScope, int, DnStreak.Domain.NotificationPrefs, System.TimeZoneInfo, System.DateOnly, System.DateTime, System.Threading.CancellationToken)"
+   ],
+   "file": "Application/DailyPassService.cs",
+   "line": 62,
+   "name": "DeliverAsync",
+   "text": "DeliverAsync(scope, userId, prefs, zone, today, now, ct)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.DailyPassService.TrySendAsync(string, DnStreak.Infrastructure.Push.PushMessage, System.Threading.CancellationToken)"
+   ],
+   "file": "Application/DailyPassService.cs",
+   "line": 115,
+   "name": "TrySendAsync",
+   "text": "TrySendAsync(token, PushMessage.Nudge(nudge.Id, nudge.Message), ct)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Infrastructure.Push.PushMessage.Nudge(string, string)"
+   ],
+   "file": "Application/DailyPassService.cs",
+   "line": 115,
+   "name": "Nudge",
+   "text": "PushMessage.Nudge(nudge.Id, nudge.Message)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.DeviceBody.From(DnStreak.Domain.Device)"
+   ],
+   "file": "Application/DeviceService.cs",
+   "line": 75,
+   "name": "From",
+   "text": "DeviceBody.From(device)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Api.Http.Cursors.Encode(string, string)"
+   ],
+   "file": "Application/HabitService.cs",
+   "line": 36,
+   "name": "Encode",
+   "text": "Cursors.Encode(\"habits\", items[^1].Id)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.HabitBody.From(DnStreak.Domain.Habit)"
+   ],
+   "file": "Application/HabitService.cs",
+   "line": 70,
+   "name": "From",
+   "text": "HabitBody.From(existing)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.HabitBody.From(DnStreak.Domain.Habit)"
+   ],
+   "file": "Application/HabitService.cs",
+   "line": 110,
+   "name": "From",
+   "text": "HabitBody.From(habit)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.ProgressBody.From(string, DnStreak.Domain.Progress)"
+   ],
+   "file": "Application/HabitService.cs",
+   "line": 303,
+   "name": "From",
+   "text": "ProgressBody.From(habit.Id, ProgressCalculator.Compute(habit, await db.CheckInDatesAsync(id, ct), today))"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Domain.ProgressCalculator.Compute(DnStreak.Domain.Habit, System.Collections.Generic.IReadOnlyCollection<System.DateOnly>, System.DateOnly)"
+   ],
+   "file": "Application/HabitService.cs",
+   "line": 303,
+   "name": "Compute",
+   "text": "ProgressCalculator.Compute(habit, await db.CheckInDatesAsync(id, ct), today)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Domain.ProgressCalculator.History(DnStreak.Domain.Habit, System.Collections.Generic.IReadOnlyList<DnStreak.Domain.HabitTarget>, System.Collections.Generic.IReadOnlyCollection<System.DateOnly>, System.DateOnly, int)"
+   ],
+   "file": "Application/HabitService.cs",
+   "line": 320,
+   "name": "History",
+   "text": "ProgressCalculator.History(habit, targets, await db.CheckInDatesAsync(id, ct), today, limit)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.HomeHabitBody.From(DnStreak.Domain.Habit, DnStreak.Application.ProgressBody)"
+   ],
+   "file": "Application/HomeService.cs",
+   "line": 23,
+   "name": "From",
+   "text": "HomeHabitBody.From(h,"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.ProgressBody.From(string, DnStreak.Domain.Progress)"
+   ],
+   "file": "Application/HomeService.cs",
+   "line": 24,
+   "name": "From",
+   "text": "ProgressBody.From(h.Id, ProgressCalculator.Compute(h, dates[h.Id].ToList(), today))"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Domain.ProgressCalculator.Compute(DnStreak.Domain.Habit, System.Collections.Generic.IReadOnlyCollection<System.DateOnly>, System.DateOnly)"
+   ],
+   "file": "Application/HomeService.cs",
+   "line": 24,
+   "name": "Compute",
+   "text": "ProgressCalculator.Compute(h, dates[h.Id].ToList(), today)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Api.Http.Cursors.Encode(string, string)"
+   ],
+   "file": "Application/NudgeService.cs",
+   "line": 40,
+   "name": "Encode",
+   "text": "Cursors.Encode(\"nudges\", items[^1].HabitId)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Infrastructure.Push.IPushSender.SendAsync(string, DnStreak.Infrastructure.Push.PushMessage, System.Threading.CancellationToken)"
+   ],
+   "file": "Application/NudgeService.cs",
+   "line": 83,
+   "name": "SendAsync",
+   "text": "push.SendAsync(token, PushMessage.Clear(nudgeId), ct)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.HabitBody.From(DnStreak.Domain.Habit)"
+   ],
+   "file": "Application/SyncService.cs",
+   "line": 41,
+   "name": "From",
+   "text": "HabitBody.From(h)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.CompletionBody.From(DnStreak.Domain.Completion)"
+   ],
+   "file": "Application/SyncService.cs",
+   "line": 48,
+   "name": "From",
+   "text": "CompletionBody.From(c)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.NudgeBody.From(DnStreak.Domain.Nudge)"
+   ],
+   "file": "Application/SyncService.cs",
+   "line": 54,
+   "name": "From",
+   "text": "NudgeBody.From(n)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Data.DatabaseRegistration.ConfigureSqlite(DbContextOptionsBuilder, string)"
+   ],
+   "file": "Data/DatabaseRegistration.cs",
+   "line": 17,
+   "name": "ConfigureSqlite",
+   "text": "ConfigureSqlite(o, settings.ConnectionString)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Data.DatabaseRegistration.ConfigureMySql(DbContextOptionsBuilder, string)"
+   ],
+   "file": "Data/DatabaseRegistration.cs",
+   "line": 22,
+   "name": "ConfigureMySql",
+   "text": "ConfigureMySql(o, settings.ConnectionString)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Data.DatabaseRegistration.ConfigureMySql(DbContextOptionsBuilder, string)"
+   ],
+   "file": "Data/DatabaseRegistration.cs",
+   "line": 52,
+   "name": "ConfigureMySql",
+   "text": "DatabaseRegistration.ConfigureMySql(o, \"Server=127.0.0.1;Database=streak;User ID=root\")"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Data.DatabaseRegistration.ConfigureSqlite(DbContextOptionsBuilder, string)"
+   ],
+   "file": "Data/DatabaseRegistration.cs",
+   "line": 63,
+   "name": "ConfigureSqlite",
+   "text": "DatabaseRegistration.ConfigureSqlite(o, \"Data Source=design-time.db\")"
+  },
+  {
+   "candidate_reason": "None",
+   "candidates": [],
+   "file": "Data/UserWriteScope.cs",
+   "line": 39,
+   "name": "Clear",
+   "text": "db.ChangeTracker.Clear()"
+  },
+  {
+   "candidate_reason": "None",
+   "candidates": [],
+   "file": "Data/UserWriteScope.cs",
+   "line": 50,
+   "name": "DisposeAsync",
+   "text": "tx.DisposeAsync()"
+  },
+  {
+   "candidate_reason": "None",
+   "candidates": [],
+   "file": "Data/UserWriteScope.cs",
+   "line": 58,
+   "name": "DisposeAsync",
+   "text": "tx.DisposeAsync()"
+  },
+  {
+   "candidate_reason": "None",
+   "candidates": [],
+   "file": "Data/UserWriteScope.cs",
+   "line": 73,
+   "name": "CommitAsync",
+   "text": "_tx.CommitAsync(ct)"
+  },
+  {
+   "candidate_reason": "None",
+   "candidates": [],
+   "file": "Data/UserWriteScope.cs",
+   "line": 79,
+   "name": "DisposeAsync",
+   "text": "_tx.DisposeAsync()"
+  },
+  {
+   "candidate_reason": "None",
+   "candidates": [],
+   "file": "Data/UserWriteScope.cs",
+   "line": 82,
+   "name": "Clear",
+   "text": "_db.ChangeTracker.Clear()"
+  },
+  {
+   "candidate_reason": "None",
+   "candidates": [],
+   "file": "Infrastructure/Security/Security.cs",
+   "line": 21,
+   "name": "Verify",
+   "text": "BCrypt.Net.BCrypt.Verify(password, stored)"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Api.Http.CurrentUser.CurrentUser(int, string, string, System.TimeZoneInfo)"
+   ],
+   "file": "Api/Auth/BearerAuthentication.cs",
+   "line": 62,
+   "type": "CurrentUser"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.MeBody.MeBody(int, string, string, DnStreak.Application.PrefsBody)"
+   ],
+   "file": "Application/AccountService.cs",
+   "line": 163,
+   "type": "MeBody"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.MeBody.MeBody(int, string, string, DnStreak.Application.PrefsBody)"
+   ],
+   "file": "Application/AccountService.cs",
+   "line": 226,
+   "type": "MeBody"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.Page<DnStreak.Application.CompletionBody>.Page(System.Collections.Generic.IReadOnlyList<DnStreak.Application.CompletionBody>, string?, bool)"
+   ],
+   "file": "Application/CompletionService.cs",
+   "line": 88,
+   "type": "Page"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.Page<DnStreak.Application.HabitBody>.Page(System.Collections.Generic.IReadOnlyList<DnStreak.Application.HabitBody>, string?, bool)"
+   ],
+   "file": "Application/HabitService.cs",
+   "line": 36,
+   "type": "Page"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.HomeBody.HomeBody(System.DateOnly, System.Collections.Generic.IReadOnlyList<DnStreak.Application.HomeHabitBody>, System.Collections.Generic.IReadOnlyList<DnStreak.Application.NudgeBody>)"
+   ],
+   "file": "Application/HomeService.cs",
+   "line": 26,
+   "type": "HomeBody"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.Page<DnStreak.Application.NudgeBody>.Page(System.Collections.Generic.IReadOnlyList<DnStreak.Application.NudgeBody>, string?, bool)"
+   ],
+   "file": "Application/NudgeService.cs",
+   "line": 40,
+   "type": "Page"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.SyncChange.SyncChange(string, string, long, bool, object?)"
+   ],
+   "file": "Application/SyncService.cs",
+   "line": 41,
+   "type": "SyncChange"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.SyncChange.SyncChange(string, string, long, bool, object?)"
+   ],
+   "file": "Application/SyncService.cs",
+   "line": 48,
+   "type": "SyncChange"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Application.SyncChange.SyncChange(string, string, long, bool, object?)"
+   ],
+   "file": "Application/SyncService.cs",
+   "line": 54,
+   "type": "SyncChange"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Data.MySqlStreakDbContext.MySqlStreakDbContext(DbContextOptions<DnStreak.Data.MySqlStreakDbContext>)"
+   ],
+   "file": "Data/DatabaseRegistration.cs",
+   "line": 53,
+   "type": "MySqlStreakDbContext"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Data.SqliteStreakDbContext.SqliteStreakDbContext(DbContextOptions<DnStreak.Data.SqliteStreakDbContext>)"
+   ],
+   "file": "Data/DatabaseRegistration.cs",
+   "line": 64,
+   "type": "SqliteStreakDbContext"
+  },
+  {
+   "candidate_reason": "OverloadResolutionFailure",
+   "candidates": [
+    "DnStreak.Data.UserWriteScope.UserWriteScope(DnStreak.Data.StreakDbContext, IDbContextTransaction, int, long)"
+   ],
+   "file": "Data/UserWriteScope.cs",
+   "line": 54,
+   "type": "UserWriteScope"
+  }
+ ],
+ "rc": "RC1",
+ "reference_packs": [
+  "10.0.12/Microsoft.AspNetCore.App.Ref",
+  "10.0.12"
+ ],
+ "references": 307,
+ "run_seconds": 1.4,
+ "sdk": "10.0.401",
+ "unbound_invocation_names": {
+  "Add": 15,
+  "AddDbContext": 2,
+  "AddRefreshToken": 2,
+  "AlterDatabase": 1,
+  "Annotation": 46,
+  "Any": 1,
+  "AnyAsync": 4,
+  "AsNoTracking": 29,
+  "AutoIncrementColumns": 2,
+  "BeginAsync": 2,
+  "BeginTransactionAsync": 2,
+  "Clear": 4,
+  "Column": 138,
+  "CommandTimeout": 2,
+  "CommitAsync": 5,
+  "Compare": 1,
+  "Compute": 2,
+  "ConfigureMySql": 2,
+  "ConfigureSqlite": 2,
+  "Contains": 6,
+  "Count": 1,
+  "CountAsync": 1,
+  "CreateIndex": 18,
+  "CreateTable": 18,
+  "DeliverAsync": 1,
+  "DisposeAsync": 3,
+  "DropTable": 18,
+  "Encode": 3,
+  "Entity": 73,
+  "Equals": 1,
+  "ExecuteDeleteAsync": 10,
+  "ExecuteSqlRawAsync": 2,
+  "ExecuteUpdateAsync": 5,
+  "FirstAsync": 3,
+  "FirstOrDefaultAsync": 22,
+  "ForeignKey": 14,
+  "From": 12,
+  "GetAppliedMigrationsAsync": 1,
+  "GetCreateIfNotExistsScript": 1,
+  "GetEntityTypes": 1,
+  "GetInsertScript": 1,
+  "GetMigrations": 1,
+  "GetPendingMigrationsAsync": 1,
+  "GetProperties": 1,
+  "GetService": 1,
+  "HasAnnotation": 8,
+  "HasColumnName": 345,
+  "HasColumnType": 276,
+  "HasConstraintName": 35,
+  "HasDatabaseName": 45,
+  "HasDefaultValue": 10,
+  "HasForeignKey": 35,
+  "HasIndex": 45,
+  "HasKey": 45,
+  "HasMaxLength": 135,
+  "HasOne": 35,
+  "HasPrefixLength": 1,
+  "HashPassword": 2,
+  "HaveConversion": 2,
+  "History": 1,
+  "IsDue": 2,
+  "IsEligible": 1,
+  "IsFixedLength": 18,
+  "IsRequired": 133,
+  "IsSqlite": 1,
+  "IsUnique": 25,
+  "Join": 1,
+  "LastOrDefault": 1,
+  "MigrateAsync": 1,
+  "Nudge": 1,
+  "OnDelete": 35,
+  "OrderBy": 11,
+  "PrimaryKey": 18,
+  "Properties": 2,
+  "Property": 359,
+  "RefreshTodayAsync": 1,
+  "RemoveRange": 1,
+  "SaveChangesAsync": 8,
+  "Select": 19,
+  "SelectMany": 1,
+  "SendAsync": 1,
+  "Set": 9,
+  "SetCollation": 1,
+  "SetProperty": 5,
+  "SingleAsync": 1,
+  "SpecifyKind": 5,
+  "SqlQueryRaw": 1,
+  "Take": 8,
+  "ThenBy": 3,
+  "ToHashSet": 1,
+  "ToList": 9,
+  "ToListAsync": 20,
+  "ToLookup": 1,
+  "ToString": 2,
+  "ToTable": 45,
+  "ToUniversalTime": 2,
+  "Tokens": 2,
+  "TrySendAsync": 1,
+  "UseCollation": 54,
+  "UseMySql": 1,
+  "UseMySqlIdentityColumn": 8,
+  "UseSqlite": 1,
+  "ValueGeneratedNever": 5,
+  "ValueGeneratedOnAdd": 28,
+  "Verify": 2,
+  "Where": 51,
+  "WithMany": 30,
+  "WithOne": 5,
+  "ZoneOrUtc": 3
+ },
+ "verdict": "NO"
+}

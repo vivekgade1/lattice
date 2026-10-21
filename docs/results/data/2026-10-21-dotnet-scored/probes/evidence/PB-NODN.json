@@ -1,0 +1,27 @@
+{
+  "id": "PB-NODN",
+  "probe": "dotnet off PATH",
+  "ran": true,
+  "predicted": "dotnet off PATH: Python and Go outputs identical; a .NET import fails with DotnetToolchainMissing; layer A on a .NET runtime is a note",
+  "observed": {
+    "go workflows --static": true,
+    "go inventory": true,
+    ".NET import without dotnet": {
+      "rc": 1,
+      "names_the_toolchain": true,
+      "stderr": "line 75, in _dotnet\n    raise DotnetToolchainMissing(\"dncheck needs the .NET SDK: `dotnet` is not on PATH\")\nlattice.dncheck.DotnetToolchainMissing: dncheck needs the .NET SDK: `dotnet` is not on PATH\n"
+    },
+    "layer A without the SDK": {
+      "rc": 0,
+      "note": true
+    }
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "X",
+  "nodes": [
+    "B2",
+    "B3"
+  ]
+}

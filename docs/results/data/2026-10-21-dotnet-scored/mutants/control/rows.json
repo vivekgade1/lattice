@@ -1,0 +1,674 @@
+[
+  {
+    "id": "P0-ROUTES",
+    "probe": "routes of dnparity1 vs truth (method, full template, style, condition, path_template, success)",
+    "ran": true,
+    "predicted": "exact",
+    "observed": {
+      "routes_truth": 39,
+      "routes_extract": 39,
+      "set": {
+        "missing": [],
+        "extra": [],
+        "n_missing": 0,
+        "n_extra": 0,
+        "equal": true
+      },
+      "field_differences": {},
+      "status_differences": {}
+    },
+    "pass": true,
+    "evidence": {},
+    "gated": true,
+    "arm": "0",
+    "nodes": []
+  },
+  {
+    "id": "P0-AUTH",
+    "probe": "auth per route",
+    "ran": true,
+    "predicted": "exact (Public/Member/Admin; the admin route Admin)",
+    "observed": {
+      "routes": 39,
+      "wrong": {},
+      "values": [
+        "Admin",
+        "Member",
+        "Public"
+      ]
+    },
+    "pass": true,
+    "evidence": {
+      "auth_object": {
+        "scheme": [
+          "Bearer",
+          "Bearer"
+        ],
+        "caller_keys": [
+          [
+            "sub"
+          ],
+          [
+            "sub"
+          ]
+        ],
+        "admin_role": [
+          "Admin",
+          "Admin"
+        ]
+      }
+    },
+    "gated": true,
+    "arm": "0",
+    "nodes": []
+  },
+  {
+    "id": "P0-BIND",
+    "probe": "params, sources, bounds, enforced_by, bind status, 'declared, not enforced' unread",
+    "ran": true,
+    "predicted": "exact; the minimal-API copy has no bounds and one 'declared, not enforced' unread per annotation",
+    "observed": {
+      "param_differences": {},
+      "bound_differences": {},
+      "unread_bind": {
+        "missing": [],
+        "extra": [],
+        "n_missing": 0,
+        "n_extra": 0,
+        "equal": true
+      },
+      "bind_status [truth, extract]": [
+        400,
+        400
+      ]
+    },
+    "pass": true,
+    "evidence": {},
+    "gated": true,
+    "arm": "0",
+    "nodes": []
+  },
+  {
+    "id": "P0-TABLES",
+    "probe": "tables, SQL names, column facts, enum_storage, wire names, unread tables",
+    "ran": true,
+    "predicted": "exact; TPH and owned type unread",
+    "observed": {
+      "tables": {
+        "missing": [],
+        "extra": [],
+        "n_missing": 0,
+        "n_extra": 0,
+        "equal": true
+      },
+      "fact_differences": [],
+      "unread_tables": {
+        "missing": [],
+        "extra": [],
+        "n_missing": 0,
+        "n_extra": 0,
+        "equal": true
+      }
+    },
+    "pass": true,
+    "evidence": {},
+    "gated": true,
+    "arm": "0",
+    "nodes": []
+  },
+  {
+    "id": "P0-OWNER",
+    "probe": "owner_uses, query_filters and owner_via evidence",
+    "ran": true,
+    "predicted": "exact (owner_uses, query_filters, owner_via evidence)",
+    "observed": {
+      "owner_uses": {
+        "missing": [],
+        "extra": [],
+        "n_missing": 0,
+        "n_extra": 0,
+        "equal": true
+      },
+      "query_filter [extract, truth]": [
+        [
+          [
+            "Todo",
+            "OwnerId",
+            true,
+            32
+          ]
+        ],
+        [
+          [
+            "Todo",
+            "OwnerId",
+            true,
+            32
+          ]
+        ]
+      ],
+      "ignored_by [truth, extract]": [
+        [
+          [
+            "GET",
+            "/v1/todos/all"
+          ]
+        ],
+        [
+          [
+            "GET",
+            "/v1/todos/all"
+          ]
+        ]
+      ]
+    },
+    "pass": true,
+    "evidence": {},
+    "gated": true,
+    "arm": "0",
+    "nodes": []
+  },
+  {
+    "id": "P0-RAISE",
+    "probe": "raises (status, code, detail, kind, sentinel) per route; unmapped throws unread",
+    "ran": true,
+    "predicted": "exact; the unmapped throw unread",
+    "observed": {
+      "raises": {
+        "missing": [],
+        "extra": [],
+        "n_missing": 0,
+        "n_extra": 0,
+        "equal": true
+      },
+      "unread_raises": {
+        "missing": [],
+        "extra": [],
+        "n_missing": 0,
+        "n_extra": 0,
+        "equal": true
+      }
+    },
+    "pass": true,
+    "evidence": {},
+    "gated": true,
+    "arm": "0",
+    "nodes": []
+  },
+  {
+    "id": "P0-DI",
+    "probe": "DI registrations, resolved calls, the two-registration call unread",
+    "ran": true,
+    "predicted": "exact; the two-registration call unread",
+    "observed": {
+      "registrations": {
+        "missing": [],
+        "extra": [],
+        "n_missing": 0,
+        "n_extra": 0,
+        "equal": true
+      },
+      "resolved_calls": {
+        "missing": [],
+        "extra": [],
+        "n_missing": 0,
+        "n_extra": 0,
+        "equal": true
+      },
+      "unread_di": {
+        "missing": [],
+        "extra": [],
+        "n_missing": 0,
+        "n_extra": 0,
+        "equal": true
+      },
+      "single/multiple equal": [
+        true,
+        true
+      ]
+    },
+    "pass": true,
+    "evidence": {},
+    "gated": true,
+    "arm": "0",
+    "nodes": []
+  },
+  {
+    "id": "P0-JSON",
+    "probe": "dotnet.json_naming and every wire name (policy extract)",
+    "ran": true,
+    "predicted": "SnakeCaseLower; every wire name exact",
+    "observed": {
+      "json_naming [extract, truth]": [
+        "SnakeCaseLower",
+        "SnakeCaseLower"
+      ],
+      "wrong_wire": [],
+      "parse_params": 16,
+      "bind_refusals_present": true
+    },
+    "pass": true,
+    "evidence": {},
+    "gated": true,
+    "arm": "0",
+    "nodes": []
+  },
+  {
+    "id": "PB-LAZY",
+    "probe": "after a FastAPI, a Flask and a Go front-end import: dotnet_aspnet not in sys.modules; Hypothesis's literal pool equal to the base's",
+    "ran": true,
+    "predicted": "dotnet_aspnet not in sys.modules after a FastAPI, a Flask and a Go import; the literal pool unchanged",
+    "observed": {
+      "fastapi": {
+        "dotnet_aspnet_loaded": "False",
+        "pool_now": "dae76c15ea10e4c2",
+        "pool_base": "dae76c15ea10e4c2",
+        "rc": [
+          0,
+          0
+        ]
+      },
+      "flask": {
+        "dotnet_aspnet_loaded": "False",
+        "pool_now": "e34a305074201178",
+        "pool_base": "e34a305074201178",
+        "rc": [
+          0,
+          0
+        ]
+      },
+      "go": {
+        "dotnet_aspnet_loaded": "False",
+        "pool_now": "46ac2b986f6e0d4f",
+        "pool_base": "46ac2b986f6e0d4f",
+        "rc": [
+          0,
+          0
+        ]
+      }
+    },
+    "pass": true,
+    "evidence": {},
+    "gated": true,
+    "arm": "0",
+    "nodes": [
+      "B2"
+    ]
+  },
+  {
+    "id": "A0-DN",
+    "probe": "dncheck on dnparity1 under its truth policy (exact keys) and DN800 on dnparity1bad",
+    "ran": true,
+    "predicted": "DN801 on o3 and the IgnoreQueryFilters route; DN802 on the projection; DN803 on the unenforced copy; DN806, DN807, DN808 on the first cases; DN800 on dnparity1bad",
+    "observed": {
+      "missing": [],
+      "extra": [],
+      "keys_present": true,
+      "dn800": {
+        "fixture": "dnparity1bad",
+        "present": true,
+        "codes": [
+          "DN800"
+        ]
+      }
+    },
+    "pass": true,
+    "evidence": {},
+    "gated": true,
+    "arm": "0",
+    "nodes": [
+      "B3"
+    ]
+  },
+  {
+    "id": "DET-PATH",
+    "probe": "extract on D1 copied to two other absolute paths, and under LANG=de_DE.UTF-8",
+    "ran": true,
+    "predicted": "identical (two other absolute paths, and LANG=de_DE.UTF-8)",
+    "observed": {
+      "path0": true,
+      "path1": true,
+      "LANG=de_DE.UTF-8": true,
+      "no absolute path in the output": true
+    },
+    "pass": true,
+    "evidence": {},
+    "gated": true,
+    "arm": "D",
+    "nodes": []
+  },
+  {
+    "id": "D-ROUTES",
+    "probe": "D1 routes vs truth (4.5 matching)",
+    "ran": true,
+    "predicted": "recall 1.00, 0 extra",
+    "observed": {
+      "truth_routes": 26,
+      "extract_routes": 26,
+      "recall": 1.0,
+      "missing": [],
+      "extra": [],
+      "style_wrong": []
+    },
+    "pass": true,
+    "evidence": {},
+    "gated": true,
+    "arm": "D",
+    "nodes": []
+  },
+  {
+    "id": "D-AUTH",
+    "probe": "D1 auth per route",
+    "ran": true,
+    "predicted": "exact on 26/26 (p 0.8); gate >= 0.95",
+    "observed": {
+      "matched": 26,
+      "exact": 26,
+      "share_of_matched": 1.0,
+      "share_of_truth": 1.0,
+      "wrong": {}
+    },
+    "pass": true,
+    "evidence": {},
+    "gated": true,
+    "arm": "D",
+    "nodes": []
+  },
+  {
+    "id": "D-TABLES",
+    "probe": "D1 tables and column facts",
+    "ran": true,
+    "predicted": "tables 9/9; column facts >= 0.95",
+    "observed": {
+      "truth_tables": 9,
+      "found": 9,
+      "table_recall": 1.0,
+      "missing_tables": [],
+      "extra_tables": [],
+      "facts": 414,
+      "facts_ok": 412,
+      "fact_accuracy": 0.9952,
+      "wrong_facts": [
+        "users.hashed_password.private",
+        "refresh_tokens.token_hash.private"
+      ]
+    },
+    "pass": true,
+    "evidence": {},
+    "gated": true,
+    "arm": "D",
+    "nodes": []
+  },
+  {
+    "id": "D-WIRE",
+    "probe": "D1 wire names vs truth",
+    "ran": true,
+    "predicted": "1.00; gate >= 0.98",
+    "observed": {
+      "wire_columns": 42,
+      "ok": 42,
+      "share": 1.0,
+      "wrong": []
+    },
+    "pass": true,
+    "evidence": {},
+    "gated": true,
+    "arm": "D",
+    "nodes": []
+  },
+  {
+    "id": "A-D1",
+    "probe": "(a prerequisite is missing)",
+    "ran": false,
+    "predicted": "0 findings under DnPolicy.from_spec(Streak SPEC) and under dn_spec_policy",
+    "observed": "no Streak copy (--streak: a `git archive` of a0679e9)",
+    "pass": null,
+    "evidence": {},
+    "gated": true,
+    "arm": "D",
+    "nodes": [
+      "B3"
+    ]
+  },
+  {
+    "id": "A-DERIVE",
+    "probe": "derive_dn_policy on dnparity1 and D1: owners and private exactly the truth's, baseline empty on D1",
+    "ran": true,
+    "predicted": "derive_dn_policy: owners and private exactly the truth's on dnparity1 and D1; baseline empty on D1",
+    "observed": {
+      "dnparity1": {
+        "owners": [
+          {
+            "Note": "OwnerId",
+            "Todo": "OwnerId"
+          },
+          {
+            "Note": "OwnerId",
+            "Todo": "OwnerId"
+          }
+        ],
+        "private": [
+          {
+            "User": [
+              "PasswordHash"
+            ],
+            "Note": [
+              "ModerationNote"
+            ]
+          },
+          {
+            "User": [
+              "PasswordHash"
+            ],
+            "Note": [
+              "ModerationNote"
+            ]
+          }
+        ]
+      },
+      "D1": {
+        "owners": [
+          {
+            "Habit": "user_id",
+            "NotificationPrefs": "user_id",
+            "Device": "user_id",
+            "RefreshToken": "user_id"
+          },
+          {
+            "NotificationPrefs": "user_id",
+            "Device": "user_id",
+            "RefreshToken": "user_id",
+            "Habit": "user_id"
+          }
+        ],
+        "private": [
+          {
+            "User": [
+              "change_seq",
+              "created_at",
+              "hashed_password"
+            ],
+            "NotificationPrefs": [
+              "last_pass_date",
+              "user_id"
+            ],
+            "Device": [
+              "created_at",
+              "updated_at",
+              "user_id"
+            ],
+            "RefreshToken": [
+              "created_at",
+              "expires_at",
+              "id",
+              "installation_id",
+              "revoked_at",
+              "rotated_at",
+              "token_hash",
+              "user_id"
+            ],
+            "Habit": [
+              "deleted_at",
+              "user_id"
+            ],
+            "HabitTarget": [
+              "effective_from",
+              "habit_id",
+              "id",
+              "target_count"
+            ],
+            "Completion": [
+              "deleted_at"
+            ],
+            "Nudge": [
+              "created_at",
+              "deleted_at",
+              "updated_at"
+            ],
+            "TestClockRow": [
+              "id",
+              "now"
+            ]
+          },
+          {
+            "User": [
+              "change_seq",
+              "created_at",
+              "hashed_password"
+            ],
+            "RefreshToken": [
+              "created_at",
+              "expires_at",
+              "id",
+              "installation_id",
+              "revoked_at",
+              "rotated_at",
+              "token_hash",
+              "user_id"
+            ],
+            "NotificationPrefs": [
+              "last_pass_date",
+              "user_id"
+            ],
+            "Device": [
+              "created_at",
+              "updated_at",
+              "user_id"
+            ],
+            "Habit": [
+              "deleted_at",
+              "user_id"
+            ],
+            "HabitTarget": [
+              "effective_from",
+              "habit_id",
+              "id",
+              "target_count"
+            ],
+            "Completion": [
+              "deleted_at"
+            ],
+            "Nudge": [
+              "created_at",
+              "deleted_at",
+              "updated_at"
+            ],
+            "TestClockRow": [
+              "id"
+            ]
+          }
+        ],
+        "baseline": []
+      }
+    },
+    "pass": false,
+    "evidence": {},
+    "gated": true,
+    "arm": "D",
+    "nodes": [
+      "B3"
+    ]
+  },
+  {
+    "id": "I-D1-T2",
+    "probe": "T2 items of the private columns",
+    "ran": true,
+    "predicted": "T2 items of the private columns present, keyed by wire name, verified",
+    "observed": {
+      "Completion.deleted_at": {},
+      "Device.created_at": {},
+      "Device.updated_at": {},
+      "Device.user_id": {},
+      "Habit.deleted_at": {},
+      "Habit.user_id": {},
+      "HabitTarget.effective_from": {},
+      "HabitTarget.habit_id": {},
+      "HabitTarget.id": {},
+      "HabitTarget.target_count": {},
+      "NotificationPrefs.last_pass_date": {},
+      "NotificationPrefs.user_id": {},
+      "Nudge.created_at": {},
+      "Nudge.deleted_at": {},
+      "Nudge.updated_at": {},
+      "RefreshToken.created_at": {},
+      "RefreshToken.expires_at": {},
+      "RefreshToken.id": {},
+      "RefreshToken.installation_id": {},
+      "RefreshToken.revoked_at": {},
+      "RefreshToken.rotated_at": {},
+      "RefreshToken.token_hash": {},
+      "RefreshToken.user_id": {},
+      "TestClockRow.id": {},
+      "User.change_seq": {},
+      "User.created_at": {},
+      "User.hashed_password": {}
+    },
+    "pass": false,
+    "evidence": {},
+    "gated": true,
+    "arm": "D",
+    "nodes": [
+      "B2"
+    ]
+  },
+  {
+    "id": "W-D1-1",
+    "probe": "(a prerequisite is missing)",
+    "ran": false,
+    "predicted": ">= 3 of the 4 Streak flows and the Nudge.delivery machine, static then observed on MySQL",
+    "observed": "docker is not permitted in this run (--no-docker)",
+    "pass": null,
+    "evidence": {},
+    "gated": true,
+    "arm": "D",
+    "nodes": [
+      "B4"
+    ]
+  },
+  {
+    "id": "C-INV",
+    "probe": "import inventory on D1",
+    "ran": true,
+    "predicted": "frontend dotnet_aspnet; route and table counts equal the extract; source set .cs/.csproj/... minus bin/obj",
+    "observed": {
+      "frontend": "dotnet_aspnet",
+      "routes": [
+        26,
+        26
+      ],
+      "tables": [
+        9,
+        9
+      ],
+      "source_files": 51,
+      "outside_source_set": []
+    },
+    "pass": true,
+    "evidence": {},
+    "gated": true,
+    "arm": "D",
+    "nodes": [
+      "B4"
+    ]
+  }
+]

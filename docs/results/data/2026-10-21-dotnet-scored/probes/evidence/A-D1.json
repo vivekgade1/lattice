@@ -1,0 +1,22 @@
+{
+  "id": "A-D1",
+  "probe": "layer A on D1 under DnPolicy.from_spec(Streak SPEC) and under dn_spec_policy",
+  "ran": true,
+  "predicted": "0 findings under DnPolicy.from_spec(Streak SPEC) and under dn_spec_policy",
+  "observed": {
+    "from_spec": [],
+    "spec_policy": []
+  },
+  "pass": true,
+  "evidence": {
+    "findings": {
+      "from_spec": [],
+      "spec_policy": []
+    }
+  },
+  "gated": true,
+  "arm": "D",
+  "nodes": [
+    "B3"
+  ]
+}

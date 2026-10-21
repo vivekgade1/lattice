@@ -1,0 +1,212 @@
+[
+  {
+    "id": "P0-OWNER",
+    "probe": "owner_uses, query_filters and owner_via evidence",
+    "ran": true,
+    "predicted": "exact (owner_uses, query_filters, owner_via evidence)",
+    "observed": {
+      "owner_uses": {
+        "missing": [
+          [
+            [
+              "GET",
+              "/api/notes/{}"
+            ],
+            "Note",
+            "OwnerId",
+            "compare",
+            "Controllers/NotesController.cs",
+            42,
+            "UserId",
+            null
+          ],
+          [
+            [
+              "GET",
+              "/api/notes/{}/tags"
+            ],
+            "Tag",
+            "OwnerId",
+            "compare",
+            "Controllers/NotesController.cs",
+            146,
+            "UserId",
+            "{\"fk\": \"NoteId\", \"parent\": \"Note\", \"table\": \"Tag\"}"
+          ],
+          [
+            [
+              "GET",
+              "/api/v2/reports/{}"
+            ],
+            "Note",
+            "OwnerId",
+            "compare",
+            "Services/NoteStore.cs",
+            23,
+            "ownerId",
+            "{\"call\": \"INoteStore.GetOwnedAsync\", \"resolved_to\": \"DnParity1.Services.EfNoteStore.GetOwnedAsync\"}"
+          ],
+          [
+            [
+              "GET",
+              "/api/v2/reports/{}/audit"
+            ],
+            "Note",
+            "OwnerId",
+            "compare",
+            "Services/NoteStore.cs",
+            23,
+            "ownerId",
+            "{\"call\": \"INoteStore.GetOwnedAsync\", \"resolved_to\": \"DnParity1.Services.EfNoteStore.GetOwnedAsync\"}"
+          ],
+          [
+            [
+              "GET",
+              "/v1/notes/{}/summary"
+            ],
+            "Note",
+            "OwnerId",
+            "compare",
+            "Services/NoteStore.cs",
+            23,
+            "ownerId",
+            "{\"call\": \"INoteStore.GetOwnedAsync\", \"resolved_to\": \"DnParity1.Services.EfNoteStore.GetOwnedAsync\"}"
+          ],
+          [
+            [
+              "GET",
+              "/v1/todos/{}"
+            ],
+            "Todo",
+            "OwnerId",
+            "compare",
+            "Endpoints/TodoEndpoints.cs",
+            20,
+            "user.GetUserId()",
+            null
+          ],
+          [
+            [
+              "PATCH",
+              "/v1/notes/{}"
+            ],
+            "Note",
+            "OwnerId",
+            "compare",
+            "Program.cs",
+            71,
+            "uid",
+            null
+          ],
+          [
+            [
+              "POST",
+              "/api/notes/{}/publish"
+            ],
+            "Note",
+            "OwnerId",
+            "compare",
+            "Controllers/NotesController.cs",
+            99,
+            "UserId",
+            null
+          ],
+          [
+            [
+              "POST",
+              "/api/notes/{}/restore"
+            ],
+            "Note",
+            "OwnerId",
+            "compare",
+            "Controllers/NotesController.cs",
+            117,
+            "UserId",
+            null
+          ],
+          [
+            [
+              "POST",
+              "/v1/notes/{}/split"
+            ],
+            "Note",
+            "OwnerId",
+            "compare",
+            "Program.cs",
+            100,
+            "uid",
+            null
+          ],
+          [
+            [
+              "POST",
+              "/v1/notes/{}/split-safe"
+            ],
+            "Note",
+            "OwnerId",
+            "compare",
+            "Program.cs",
+            119,
+            "uid",
+            null
+          ]
+        ],
+        "extra": [
+          [
+            [
+              "GET",
+              "/v1/todos/{}"
+            ],
+            "Todo",
+            "OwnerId",
+            "filter",
+            "Data/AppDb.cs",
+            32,
+            "_current.UserId",
+            null
+          ]
+        ],
+        "n_missing": 11,
+        "n_extra": 1,
+        "equal": false
+      },
+      "query_filter [extract, truth]": [
+        [
+          [
+            "Todo",
+            "OwnerId",
+            true,
+            32
+          ]
+        ],
+        [
+          [
+            "Todo",
+            "OwnerId",
+            true,
+            32
+          ]
+        ]
+      ],
+      "ignored_by [truth, extract]": [
+        [
+          [
+            "GET",
+            "/v1/todos/all"
+          ]
+        ],
+        [
+          [
+            "GET",
+            "/v1/todos/all"
+          ]
+        ]
+      ]
+    },
+    "pass": false,
+    "evidence": {},
+    "gated": true,
+    "arm": "0",
+    "nodes": []
+  }
+]

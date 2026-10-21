@@ -1,0 +1,32 @@
+{
+  "id": "N-R2",
+  "probe": "layer R on the DNAPP_BUG copies (JM1 and JM2 analogues)",
+  "ran": true,
+  "predicted": "R on the DNAPP_BUG copies: each refutes >= 1 item on GET /runs/{rid}",
+  "observed": {
+    "noauth": {
+      "refuted": [
+        "R1 GET /runs/{rid}"
+      ],
+      "on_route": [
+        "R1 GET /runs/{rid}"
+      ]
+    },
+    "forbidden": {
+      "refuted": [
+        "R3 GET /runs/{rid} 404 Not found"
+      ],
+      "on_route": [
+        "R3 GET /runs/{rid} 404 Not found"
+      ]
+    }
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "N",
+  "nodes": [
+    "B2",
+    "B4"
+  ]
+}

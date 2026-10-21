@@ -1,0 +1,178 @@
+{
+  "policy": {
+    "tables": {
+      "User": {
+        "sql": "users"
+      },
+      "ExpenseReport": {
+        "sql": "expense_reports"
+      },
+      "ExpenseLine": {
+        "sql": "expense_lines"
+      },
+      "PayoutMethod": {
+        "sql": "payout_methods"
+      }
+    },
+    "users_table": "User",
+    "owners": {
+      "PayoutMethod": "user_id",
+      "ExpenseReport": "user_id"
+    },
+    "owner_via": {
+      "ExpenseLine": [
+        "report_id",
+        "ExpenseReport"
+      ]
+    },
+    "private": {
+      "User": [
+        "created_at",
+        "password"
+      ],
+      "ExpenseReport": [
+        "created_at",
+        "decided_at",
+        "id",
+        "purpose",
+        "review_comment",
+        "reviewer_id",
+        "submitted_at",
+        "title",
+        "updated_at"
+      ],
+      "PayoutMethod": [
+        "account_number",
+        "user_id"
+      ]
+    },
+    "machines": {},
+    "admin_routes": [
+      [
+        "GET",
+        "/review/reports"
+      ],
+      [
+        "POST",
+        "/review/reports/{reportId}/approve"
+      ],
+      [
+        "POST",
+        "/review/reports/{reportId}/reject"
+      ]
+    ],
+    "open_routes": [],
+    "admin_role": "Admin",
+    "helper_depth": 3,
+    "rules": []
+  },
+  "pristine_findings": [
+    "DN801|DELETE /reports/{reportId:int}|ExpenseReport"
+  ],
+  "mutants": {
+    "HM1": {
+      "applied": true,
+      "new_findings": {
+        "DN801|GET /reports/{reportId:int}|ExpenseLine": "DN801 Features/Reports/ReportService.cs:23"
+      },
+      "detector": "DN801",
+      "flagged_by_detector": true
+    },
+    "HM2": {
+      "applied": true,
+      "new_findings": {},
+      "detector": "DN801",
+      "flagged_by_detector": false
+    },
+    "HM3": {
+      "applied": true,
+      "new_findings": {},
+      "detector": "DN801",
+      "flagged_by_detector": false
+    },
+    "HM4": {
+      "applied": true,
+      "new_findings": {
+        "DN801|POST /reports/{reportId:int}/submit|ExpenseLine": "DN801 Features/Reports/ReportService.cs:71"
+      },
+      "detector": "DN801",
+      "flagged_by_detector": true
+    },
+    "HM5": {
+      "applied": true,
+      "new_findings": {},
+      "detector": "DN802",
+      "flagged_by_detector": false
+    },
+    "HM6": {
+      "applied": true,
+      "new_findings": {},
+      "detector": "DN802",
+      "flagged_by_detector": false
+    },
+    "HM7": {
+      "applied": true,
+      "new_findings": {},
+      "detector": null,
+      "flagged_by_detector": false
+    },
+    "HM8": {
+      "applied": true,
+      "new_findings": {},
+      "detector": null,
+      "flagged_by_detector": false
+    },
+    "HM9": {
+      "applied": true,
+      "new_findings": {},
+      "detector": null,
+      "flagged_by_detector": false
+    },
+    "HM10": {
+      "applied": true,
+      "new_findings": {},
+      "detector": null,
+      "flagged_by_detector": false
+    },
+    "HM11": {
+      "applied": true,
+      "new_findings": {
+        "DN801|GET /reports/{reportId:int}/lines|ExpenseLine": "DN801 Features/Reports/ReportService.cs:95"
+      },
+      "detector": "DN801",
+      "flagged_by_detector": true
+    },
+    "HM12": {
+      "applied": true,
+      "new_findings": {},
+      "detector": null,
+      "flagged_by_detector": false
+    },
+    "HM13": {
+      "applied": true,
+      "new_findings": {},
+      "detector": null,
+      "flagged_by_detector": false
+    },
+    "HM14": {
+      "applied": true,
+      "new_findings": {},
+      "detector": null,
+      "flagged_by_detector": false
+    },
+    "HM15": {
+      "applied": true,
+      "new_findings": {
+        "DN803|POST /reports|CreateReportRequest.UserId": "DN803 Features/Reports/ReportService.cs:32"
+      },
+      "detector": "DN801",
+      "flagged_by_detector": false
+    },
+    "HM16": {
+      "applied": true,
+      "new_findings": {},
+      "detector": "DN801",
+      "flagged_by_detector": false
+    }
+  }
+}

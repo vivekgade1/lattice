@@ -1,0 +1,136 @@
+[
+  {
+    "id": "P0-DI",
+    "probe": "DI registrations, resolved calls, the two-registration call unread",
+    "ran": true,
+    "predicted": "exact; the two-registration call unread",
+    "observed": {
+      "registrations": {
+        "missing": [],
+        "extra": [],
+        "n_missing": 0,
+        "n_extra": 0,
+        "equal": true
+      },
+      "resolved_calls": {
+        "missing": [
+          [
+            [
+              "GET",
+              "/api/v2/reports/{}"
+            ],
+            "INoteStore.GetOwnedAsync",
+            "DnParity1.Services.EfNoteStore.GetOwnedAsync",
+            "Controllers/ReportsController.cs",
+            18
+          ],
+          [
+            [
+              "GET",
+              "/api/v2/reports/{}/audit"
+            ],
+            "INoteStore.GetOwnedAsync",
+            "DnParity1.Services.EfNoteStore.GetOwnedAsync",
+            "Controllers/ReportsController.cs",
+            29
+          ],
+          [
+            [
+              "GET",
+              "/v1/notes/{}/summary"
+            ],
+            "INoteStore.GetOwnedAsync",
+            "DnParity1.Services.EfNoteStore.GetOwnedAsync",
+            "Endpoints/NoteHandlers.cs",
+            11
+          ],
+          [
+            [
+              "POST",
+              "/api/notes"
+            ],
+            "IClock.Now",
+            "DnParity1.Services.SystemClock.Now",
+            "Controllers/NotesController.cs",
+            61
+          ]
+        ],
+        "extra": [],
+        "n_missing": 4,
+        "n_extra": 0,
+        "equal": false
+      },
+      "unread_di": {
+        "missing": [],
+        "extra": [
+          [
+            [
+              "GET",
+              "/api/v2/reports/{}"
+            ],
+            "Controllers/ReportsController.cs",
+            18,
+            "INoteStore.GetOwnedAsync",
+            "1 registrations (EfNoteStore): never the first match"
+          ],
+          [
+            [
+              "GET",
+              "/api/v2/reports/{}/audit"
+            ],
+            "Controllers/ReportsController.cs",
+            29,
+            "INoteStore.GetOwnedAsync",
+            "1 registrations (EfNoteStore): never the first match"
+          ],
+          [
+            [
+              "GET",
+              "/v1/notes/{}/summary"
+            ],
+            "Endpoints/NoteHandlers.cs",
+            11,
+            "INoteStore.GetOwnedAsync",
+            "1 registrations (EfNoteStore): never the first match"
+          ],
+          [
+            [
+              "POST",
+              "/api/notes"
+            ],
+            "Controllers/NotesController.cs",
+            61,
+            "IClock.Now",
+            "1 registrations (SystemClock): never the first match"
+          ]
+        ],
+        "n_missing": 0,
+        "n_extra": 4,
+        "equal": false
+      },
+      "single/multiple equal": [
+        true,
+        true
+      ]
+    },
+    "pass": false,
+    "evidence": {},
+    "gated": true,
+    "arm": "0",
+    "nodes": []
+  },
+  {
+    "id": "A-D1",
+    "probe": "(a prerequisite is missing)",
+    "ran": false,
+    "predicted": "0 findings under DnPolicy.from_spec(Streak SPEC) and under dn_spec_policy",
+    "observed": "no Streak copy (--streak: a `git archive` of a0679e9)",
+    "pass": null,
+    "evidence": {},
+    "gated": true,
+    "arm": "D",
+    "nodes": [
+      "B3"
+    ]
+  }
+]

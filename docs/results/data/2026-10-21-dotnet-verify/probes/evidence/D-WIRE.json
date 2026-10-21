@@ -1,0 +1,17 @@
+{
+  "id": "D-WIRE",
+  "probe": "D1 wire names vs truth",
+  "ran": true,
+  "predicted": "1.00; gate >= 0.98",
+  "observed": {
+    "wire_columns": 42,
+    "ok": 42,
+    "share": 1.0,
+    "wrong": []
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "D",
+  "nodes": []
+}

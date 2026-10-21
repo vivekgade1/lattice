@@ -1,0 +1,23 @@
+{
+  "id": "C-MAP",
+  "probe": "app map on D1",
+  "ran": true,
+  "predicted": "app map: state not inventory_missing; rules, workflows, machine and access cells present",
+  "observed": {
+    "rc": 0,
+    "state": "ok",
+    "sections": {
+      "rules": true,
+      "workflows": true,
+      "machines": true,
+      "access": true
+    }
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "D",
+  "nodes": [
+    "B4"
+  ]
+}

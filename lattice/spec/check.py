@@ -390,6 +390,35 @@ def _layer_a_go(
         )
 
 
+def _layer_a_dotnet(
+    spec: Spec, report: Report, src: Path | str | None, policy: Policy | GoPolicy | None
+) -> None:
+    """Layer A on an ASP.NET Core + EF Core app: dncheck on its project directory."""
+    from lattice.dncheck import DnCheckError, DotnetToolchainMissing
+    from lattice.dncheck.policy import DN_CODES, DnPolicy, gated_note, run_dncheck
+
+    if src is None:
+        report.notes.append("layer A skipped: no .NET source (app_dir, or --app-dir)")
+        return
+    pol = policy if isinstance(policy, DnPolicy) else DnPolicy.from_spec(spec)
+    try:
+        found = run_dncheck(Path(src), pol, strict=True)
+    except DotnetToolchainMissing as err:
+        report.notes.append(f"layer A skipped: {err}")
+        return
+    except DnCheckError as err:
+        raise CheckError(f"layer A: dncheck failed: {err}") from err
+    report.notes.append(gated_note())
+    for f in found:
+        report.findings.append(
+            CheckFinding(
+                layer="A", verdict="silent", rule=DN_CODES.get(f.code, f.code),
+                endpoint=_endpoint_of(f.key, f.message), code=f.code, file=f.file, line=f.line,
+                details={"message": f.message, "hint": f.hint, "key": f.key},
+            )
+        )
+
+
 def _layer_a(
     spec: Spec,
     report: Report,
@@ -401,6 +430,9 @@ def _layer_a(
 ) -> None:
     if go_src is not None or (runtime is not None and runtime.framework == "go"):
         _layer_a_go(spec, report, go_src if go_src is not None else app_dir, policy)
+        return
+    if runtime is not None and runtime.framework == "dotnet":
+        _layer_a_dotnet(spec, report, app_dir, policy)
         return
     if runtime is not None and runtime.framework not in PYTHON_FRAMEWORKS:
         report.notes.append(
