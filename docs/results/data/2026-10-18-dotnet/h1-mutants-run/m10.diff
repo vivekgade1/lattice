@@ -1,0 +1,14 @@
+diff -ru a/Features/Review/ReviewService.cs b/Features/Review/ReviewService.cs
+--- a/Features/Review/ReviewService.cs	2026-10-21 12:35:28
++++ b/Features/Review/ReviewService.cs	2026-10-21 12:41:29
+@@ -27,7 +27,9 @@
+         var report = await db.ExpenseReports.AsNoTracking()
+             .Where(r => r.Id == reportId)
+             .Select(r => new { r.UserId, r.Status })
+-            .SingleOrDefaultAsync(ct) ?? throw ReportService.ReportNotFound(reportId);
++            .SingleOrDefaultAsync(ct) ?? throw (to == ReportStatus.Rejected
++                ? new ForbiddenException($"expense report {reportId} not found")
++                : ReportService.ReportNotFound(reportId));
+         if (report.UserId == reviewerId)
+             throw new ForbiddenException("a reviewer cannot decide their own expense report");
+         if (!ReportStatusRules.CanTransition(report.Status, to))

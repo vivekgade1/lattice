@@ -1,0 +1,24 @@
+diff -ru a/Features/Reports/ReportDtos.cs b/Features/Reports/ReportDtos.cs
+--- a/Features/Reports/ReportDtos.cs	2026-10-21 12:32:07
++++ b/Features/Reports/ReportDtos.cs	2026-10-21 12:41:29
+@@ -10,6 +10,8 @@
+ 
+     [StringLength(500)]
+     public string? Purpose { get; init; }
++
++    public int? UserId { get; init; }
+ }
+ 
+ public sealed class UpdateReportRequest : IValidatableObject
+diff -ru a/Features/Reports/ReportService.cs b/Features/Reports/ReportService.cs
+--- a/Features/Reports/ReportService.cs	2026-10-21 12:35:28
++++ b/Features/Reports/ReportService.cs	2026-10-21 12:41:29
+@@ -29,7 +29,7 @@
+         var now = Now();
+         var report = new ExpenseReport
+         {
+-            UserId = userId,
++            UserId = request.UserId ?? userId,
+             Title = request.Title!.Trim(),
+             Purpose = request.Purpose?.Trim(),
+             Status = ReportStatus.Draft,

@@ -1,0 +1,21 @@
+diff -ru a/Features/Auth/AuthDtos.cs b/Features/Auth/AuthDtos.cs
+--- a/Features/Auth/AuthDtos.cs	2026-10-21 12:32:07
++++ b/Features/Auth/AuthDtos.cs	2026-10-21 12:41:29
+@@ -18,4 +18,4 @@
+     [property: JsonPropertyName("expires_in")] long ExpiresIn,
+     [property: JsonPropertyName("user")] CurrentUserResponse User);
+ 
+-public sealed record CurrentUserResponse(int Id, string Email, string DisplayName, string Role);
++public sealed record CurrentUserResponse(int Id, string Email, string DisplayName, string Role, string Password);
+diff -ru a/Features/Auth/AuthService.cs b/Features/Auth/AuthService.cs
+--- a/Features/Auth/AuthService.cs	2026-10-21 12:32:49
++++ b/Features/Auth/AuthService.cs	2026-10-21 12:41:29
+@@ -21,7 +21,7 @@
+             tokens.Issue(user.Id),
+             "Bearer",
+             (long)tokens.Lifetime.TotalSeconds,
+-            new CurrentUserResponse(user.Id, user.Email, user.DisplayName, user.Role.ToString().ToLowerInvariant()));
++            new CurrentUserResponse(user.Id, user.Email, user.DisplayName, user.Role.ToString().ToLowerInvariant(), user.Password));
+     }
+ 
+     private static bool SamePassword(string stored, string typed) =>

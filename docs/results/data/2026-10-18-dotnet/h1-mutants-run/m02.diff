@@ -1,0 +1,12 @@
+diff -ru a/Features/Reports/ReportService.cs b/Features/Reports/ReportService.cs
+--- a/Features/Reports/ReportService.cs	2026-10-21 12:35:28
++++ b/Features/Reports/ReportService.cs	2026-10-21 12:41:29
+@@ -43,7 +43,7 @@
+ 
+     public async Task<ReportResponse> Update(int userId, int reportId, UpdateReportRequest request, CancellationToken ct)
+     {
+-        var report = await FindOwned(userId, reportId, ct);
++        var report = await db.ExpenseReports.SingleOrDefaultAsync(r => r.Id == reportId, ct) ?? throw ReportNotFound(reportId);
+         EnsureEditable(report);
+         if (request.Title is not null)
+             report.Title = request.Title.Trim();
