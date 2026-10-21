@@ -1,0 +1,17 @@
+{
+  "id": "H-PI7",
+  "probe": "the import 10x",
+  "ran": true,
+  "predicted": "the import 10x identical",
+  "observed": {
+    "identical": 1,
+    "of": 10
+  },
+  "pass": false,
+  "evidence": {},
+  "gated": true,
+  "arm": "H",
+  "nodes": [
+    "B2"
+  ]
+}

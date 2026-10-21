@@ -1,0 +1,17 @@
+{
+  "id": "I-D1-7",
+  "probe": "the D1 import 10x into separate scratch directories",
+  "ran": true,
+  "predicted": "the import 10x identical after the timing normaliser",
+  "observed": {
+    "identical": 10,
+    "of": 10
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "D",
+  "nodes": [
+    "B2"
+  ]
+}

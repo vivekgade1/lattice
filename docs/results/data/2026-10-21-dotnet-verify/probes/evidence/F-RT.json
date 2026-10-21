@@ -1,0 +1,33 @@
+{
+  "id": "F-RT",
+  "probe": "runtime() with the harness and without it",
+  "ran": true,
+  "predicted": "runtime() with the harness and without it (process_runtime(framework='dotnet'))",
+  "observed": {
+    "view": {
+      "with_harness": {
+        "framework": "dotnet",
+        "is_harness_runtime": true,
+        "one_server": true
+      },
+      "without_harness": {
+        "framework": "dotnet",
+        "one_server": true,
+        "auth": "AuthDriver(scheme='bearer', header='Authorization', login=<function json_login.<locals>.login at 0x10784b270>, mint=None, cookie=None)"
+      }
+    },
+    "checks": {
+      "harness runtime is the harness's": true,
+      "framework dotnet (harness)": true,
+      "framework dotnet (bare)": true,
+      "one server": true
+    }
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "D",
+  "nodes": [
+    "B2"
+  ]
+}

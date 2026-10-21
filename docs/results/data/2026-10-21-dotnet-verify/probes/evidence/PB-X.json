@@ -1,0 +1,78 @@
+{
+  "id": "PB-X",
+  "probe": "default gocheck extract identical to the base",
+  "ran": true,
+  "predicted": "default gocheck extract identical to the base on the round-1 dirs, goapp, goginapp, gotickets, fixtures/runs",
+  "observed": {
+    "identical_to_base": 10,
+    "of": 10
+  },
+  "pass": true,
+  "evidence": {
+    "rows": [
+      {
+        "dir": "tests/gocheck/fixtures/goextract",
+        "base": "f74727094a25cc1d",
+        "now": "f74727094a25cc1d",
+        "same_as_base": true
+      },
+      {
+        "dir": "tests/gocheck/fixtures/app",
+        "base": "6c38c5d5f04ff8ab",
+        "now": "6c38c5d5f04ff8ab",
+        "same_as_base": true
+      },
+      {
+        "dir": "tests/gocheck/fixtures/partial",
+        "base": "4b67b2e431c23403",
+        "now": "4b67b2e431c23403",
+        "same_as_base": true
+      },
+      {
+        "dir": "tests/gocheck/fixtures/goextract_workflow",
+        "base": "ee3b906bd4e4e799",
+        "now": "ee3b906bd4e4e799",
+        "same_as_base": true
+      },
+      {
+        "dir": "tests/spec/fixtures/implementation/app",
+        "base": "e10d5447c6cce57d",
+        "now": "e10d5447c6cce57d",
+        "same_as_base": true
+      },
+      {
+        "dir": "lattice/studio/mock/appmap/app",
+        "base": "e10d5447c6cce57d",
+        "now": "e10d5447c6cce57d",
+        "same_as_base": true
+      },
+      {
+        "dir": "tests/spec/goapp",
+        "base": "3c7670fc6e211212",
+        "now": "3c7670fc6e211212",
+        "same_as_base": true
+      },
+      {
+        "dir": "tests/spec/goginapp",
+        "base": "3589204a797e0e0e",
+        "now": "3589204a797e0e0e",
+        "same_as_base": true
+      },
+      {
+        "dir": "tests/spec/gotickets",
+        "base": "45ed2e77f191b433",
+        "now": "45ed2e77f191b433",
+        "same_as_base": true
+      },
+      {
+        "dir": "tests/gocheck/fixtures/runs",
+        "base": "ce107e4cf1f00533",
+        "now": "ce107e4cf1f00533",
+        "same_as_base": true
+      }
+    ]
+  },
+  "gated": true,
+  "arm": "X",
+  "nodes": []
+}

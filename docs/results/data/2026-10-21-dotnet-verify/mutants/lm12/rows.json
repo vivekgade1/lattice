@@ -1,0 +1,212 @@
+[
+  {
+    "id": "P0-TABLES",
+    "probe": "tables, SQL names, column facts, enum_storage, wire names, unread tables",
+    "ran": true,
+    "predicted": "exact; TPH and owned type unread",
+    "observed": {
+      "tables": {
+        "missing": [],
+        "extra": [],
+        "n_missing": 0,
+        "n_extra": 0,
+        "equal": true
+      },
+      "fact_differences": [
+        "Users.PasswordHash.wire: None vs 'password_hash'",
+        "Users.PasswordHash.private: True vs False",
+        "notes.ModerationNote.wire: None vs 'moderation_note'",
+        "notes.ModerationNote.private: True vs False"
+      ],
+      "unread_tables": {
+        "missing": [],
+        "extra": [],
+        "n_missing": 0,
+        "n_extra": 0,
+        "equal": true
+      }
+    },
+    "pass": false,
+    "evidence": {},
+    "gated": true,
+    "arm": "0",
+    "nodes": []
+  },
+  {
+    "id": "A0-DN",
+    "probe": "dncheck on dnparity1 under its truth policy (exact keys) and DN800 on dnparity1bad",
+    "ran": true,
+    "predicted": "DN801 on o3 and the IgnoreQueryFilters route; DN802 on the projection; DN803 on the unenforced copy; DN806, DN807, DN808 on the first cases; DN800 on dnparity1bad",
+    "observed": {
+      "missing": [],
+      "extra": [],
+      "keys_present": true,
+      "dn800": {
+        "fixture": "dnparity1bad",
+        "present": true,
+        "codes": [
+          "DN800"
+        ]
+      }
+    },
+    "pass": true,
+    "evidence": {},
+    "gated": true,
+    "arm": "0",
+    "nodes": [
+      "B3"
+    ]
+  },
+  {
+    "id": "A-DERIVE",
+    "probe": "derive_dn_policy on dnparity1 and D1: owners and private exactly the truth's, baseline empty on D1",
+    "ran": true,
+    "predicted": "derive_dn_policy: owners and private exactly the truth's on dnparity1 and D1; baseline empty on D1",
+    "observed": {
+      "dnparity1": {
+        "owners": [
+          {
+            "Note": "OwnerId",
+            "Todo": "OwnerId"
+          },
+          {
+            "Note": "OwnerId",
+            "Todo": "OwnerId"
+          }
+        ],
+        "private": [
+          {},
+          {
+            "User": [
+              "PasswordHash"
+            ],
+            "Note": [
+              "ModerationNote"
+            ]
+          }
+        ]
+      },
+      "D1": {
+        "owners": [
+          {
+            "Habit": "user_id",
+            "NotificationPrefs": "user_id",
+            "Device": "user_id",
+            "RefreshToken": "user_id"
+          },
+          {
+            "NotificationPrefs": "user_id",
+            "Device": "user_id",
+            "RefreshToken": "user_id",
+            "Habit": "user_id"
+          }
+        ],
+        "private": [
+          {
+            "User": [
+              "change_seq",
+              "created_at",
+              "hashed_password"
+            ],
+            "NotificationPrefs": [
+              "last_pass_date",
+              "user_id"
+            ],
+            "Device": [
+              "created_at",
+              "updated_at",
+              "user_id"
+            ],
+            "RefreshToken": [
+              "created_at",
+              "expires_at",
+              "id",
+              "installation_id",
+              "revoked_at",
+              "rotated_at",
+              "token_hash",
+              "user_id"
+            ],
+            "Habit": [
+              "deleted_at",
+              "user_id"
+            ],
+            "HabitTarget": [
+              "effective_from",
+              "habit_id",
+              "id",
+              "target_count"
+            ],
+            "Completion": [
+              "deleted_at"
+            ],
+            "Nudge": [
+              "created_at",
+              "deleted_at",
+              "updated_at"
+            ],
+            "TestClockRow": [
+              "id",
+              "now"
+            ]
+          },
+          {
+            "User": [
+              "change_seq",
+              "created_at",
+              "hashed_password"
+            ],
+            "RefreshToken": [
+              "created_at",
+              "expires_at",
+              "id",
+              "installation_id",
+              "revoked_at",
+              "rotated_at",
+              "token_hash",
+              "user_id"
+            ],
+            "NotificationPrefs": [
+              "last_pass_date",
+              "user_id"
+            ],
+            "Device": [
+              "created_at",
+              "updated_at",
+              "user_id"
+            ],
+            "Habit": [
+              "deleted_at",
+              "user_id"
+            ],
+            "HabitTarget": [
+              "effective_from",
+              "habit_id",
+              "id",
+              "target_count"
+            ],
+            "Completion": [
+              "deleted_at"
+            ],
+            "Nudge": [
+              "created_at",
+              "deleted_at",
+              "updated_at"
+            ],
+            "TestClockRow": [
+              "id"
+            ]
+          }
+        ],
+        "baseline": []
+      }
+    },
+    "pass": false,
+    "evidence": {},
+    "gated": true,
+    "arm": "D",
+    "nodes": [
+      "B3"
+    ]
+  }
+]

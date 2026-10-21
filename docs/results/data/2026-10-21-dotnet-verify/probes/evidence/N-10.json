@@ -1,0 +1,18 @@
+{
+  "id": "N-10",
+  "probe": "layer R and layer B on dnapp 10x",
+  "ran": true,
+  "predicted": "R and B 10x identical",
+  "observed": {
+    "identical": 20,
+    "of": 20
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "N",
+  "nodes": [
+    "B2",
+    "B4"
+  ]
+}

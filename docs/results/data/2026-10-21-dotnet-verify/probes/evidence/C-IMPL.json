@@ -1,0 +1,30 @@
+{
+  "id": "C-IMPL",
+  "probe": "implementation report on D1 with Streak's spec.py",
+  "ran": true,
+  "predicted": "26 required rules' routes implemented; 0 required-not-implemented; health implemented-not-required",
+  "observed": {
+    "requirements": 222,
+    "statuses": {
+      "implemented_verified": 193,
+      "implemented_unverified": 28,
+      "no_element": 1
+    },
+    "required_not_implemented": [],
+    "implemented_not_required": [
+      "impl:machine:nudges.delivery"
+    ],
+    "excluded": [
+      "PUT /test/clock"
+    ]
+  },
+  "pass": false,
+  "evidence": {
+    "reading": "/health is implemented-not-required or, under the library's PLUMBING_PATHS rule, excluded as plumbing; 'the 26 required rules' routes' = every rule row implemented"
+  },
+  "gated": true,
+  "arm": "D",
+  "nodes": [
+    "B4"
+  ]
+}

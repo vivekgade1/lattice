@@ -1,0 +1,16 @@
+{
+  "id": "H-X",
+  "probe": "wall time of the import (helper prebuilt)",
+  "ran": true,
+  "predicted": "import wall <= 240 s",
+  "observed": {
+    "wall_s": 46.2
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "H",
+  "nodes": [
+    "B2"
+  ]
+}

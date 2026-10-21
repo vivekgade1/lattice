@@ -1,0 +1,26 @@
+{
+  "id": "I-D1-5",
+  "probe": "proposals include the machine Nudge.delivery",
+  "ran": true,
+  "predicted": "proposals include the machine Nudge.delivery (p 0.6; reported)",
+  "observed": {
+    "count": 6,
+    "machines": {
+      "Nudge.delivery": {
+        "first_edge": [
+          "pending",
+          "sent"
+        ],
+        "proposed_edges": [],
+        "first_edge_proposed": false
+      }
+    }
+  },
+  "pass": false,
+  "evidence": {},
+  "gated": false,
+  "arm": "D",
+  "nodes": [
+    "B2"
+  ]
+}

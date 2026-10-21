@@ -1,0 +1,65 @@
+{
+  "id": "HM15",
+  "patch": "m15.diff",
+  "patch_sha256": "f39c8838b638316547d9b2f703872528be4601278025e7f36c20055c5377eeb8",
+  "mutants_md_line": "HM15 | owner_body | POST /reports | Features/Reports/ReportService.cs:32 | none (first create route); request gains an optional userId that sets the owner, falling back to the caller (also Features/Reports/ReportDtos.cs:12)",
+  "operator": {
+    "key": "owner_body",
+    "from_list": "owner_body",
+    "from_id": "owner_body",
+    "cell": "owner_body",
+    "shifted": false,
+    "source": "list"
+  },
+  "route": "POST /reports",
+  "file_line": [
+    "Features/Reports/ReportService.cs",
+    32
+  ],
+  "substitutions": "none (first create route); request gains an optional userId that sets the owner, falling back to the caller (also Features/Reports/ReportDtos.cs:12)",
+  "operator_key": "owner_body",
+  "gated": false,
+  "detectors": [
+    {
+      "detector": "DN801 on POST /reports",
+      "layer": "A",
+      "armed": true,
+      "flipped": false,
+      "hits": [],
+      "control_findings": []
+    },
+    {
+      "detector": "R2 POST /reports",
+      "layer": "R",
+      "armed": false,
+      "flipped": false,
+      "hits": [],
+      "items [control, mutant]": {},
+      "why_not": "the spec has no such item"
+    }
+  ],
+  "killed": false,
+  "killed_by": "survived: DN801 on POST /reports: no new finding; R2 POST /reports: the spec has no such item",
+  "expose_column": null,
+  "status": "judged",
+  "apply": {
+    "ok": true,
+    "returncode": 0,
+    "output": "patching file 'Features/Reports/ReportDtos.cs'\npatching file 'Features/Reports/ReportService.cs'\n",
+    "leftovers": [],
+    "files_changed": [
+      "Features/Reports/ReportDtos.cs",
+      "Features/Reports/ReportService.cs"
+    ]
+  },
+  "layer_a": {
+    "new_findings": [
+      "DN803 DN803|POST /reports|CreateReportRequest.UserId"
+    ]
+  },
+  "layer_r": {
+    "ran": true,
+    "flipped_items [control, mutant]": {}
+  },
+  "wall_s": 24.5
+}

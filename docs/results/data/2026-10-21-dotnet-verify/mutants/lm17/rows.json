@@ -1,0 +1,62 @@
+[
+  {
+    "id": "P0-DI",
+    "probe": "DI registrations, resolved calls, the two-registration call unread",
+    "ran": true,
+    "predicted": "exact; the two-registration call unread",
+    "observed": {
+      "registrations": {
+        "missing": [],
+        "extra": [],
+        "n_missing": 0,
+        "n_extra": 0,
+        "equal": true
+      },
+      "resolved_calls": {
+        "missing": [],
+        "extra": [
+          [
+            [
+              "POST",
+              "/api/notes/{}/publish"
+            ],
+            "INoteNotifier.NotifyAsync",
+            "DnParity1.Services.EmailNotifier.NotifyAsync",
+            "Controllers/NotesController.cs",
+            110
+          ]
+        ],
+        "n_missing": 0,
+        "n_extra": 1,
+        "equal": false
+      },
+      "unread_di": {
+        "missing": [
+          [
+            [
+              "POST",
+              "/api/notes/{}/publish"
+            ],
+            "Controllers/NotesController.cs",
+            110,
+            "INoteNotifier.NotifyAsync",
+            "2 registrations (EmailNotifier, SmsNotifier): never the first match; the route's reach is incomplete (an opaque call receives an entity)"
+          ]
+        ],
+        "extra": [],
+        "n_missing": 1,
+        "n_extra": 0,
+        "equal": false
+      },
+      "single/multiple equal": [
+        true,
+        true
+      ]
+    },
+    "pass": false,
+    "evidence": {},
+    "gated": true,
+    "arm": "0",
+    "nodes": []
+  }
+]

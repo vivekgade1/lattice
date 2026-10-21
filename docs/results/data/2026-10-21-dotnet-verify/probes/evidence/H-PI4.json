@@ -1,0 +1,19 @@
+{
+  "id": "H-PI4",
+  "probe": "the corrected spec re-probed on variant2",
+  "ran": true,
+  "predicted": ">= 0.95 retained on variant2",
+  "observed": {
+    "seed_verified": 3,
+    "still_verified": 3,
+    "fraction": 1.0,
+    "lost": {}
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "H",
+  "nodes": [
+    "B2"
+  ]
+}

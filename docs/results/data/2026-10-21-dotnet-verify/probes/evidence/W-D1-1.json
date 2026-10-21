@@ -1,0 +1,41 @@
+{
+  "id": "W-D1-1",
+  "probe": "workflows on D1: static, then observed on MySQL through the harness",
+  "ran": true,
+  "predicted": ">= 3 of the 4 Streak flows and the Nudge.delivery machine, static then observed on MySQL",
+  "observed": {
+    "static": {
+      "flows": {
+        "account: register, login": true,
+        "habit: create, check in, progress": true,
+        "batch completion": true,
+        "device registration": true
+      },
+      "flows_recovered": 4,
+      "machine": true,
+      "n_flows": 75,
+      "verified": 0
+    },
+    "observed": {
+      "flows": {
+        "account: register, login": true,
+        "habit: create, check in, progress": true,
+        "batch completion": true,
+        "device registration": true
+      },
+      "flows_recovered": 4,
+      "machine": true,
+      "n_flows": 75,
+      "verified": 66
+    }
+  },
+  "pass": true,
+  "evidence": {
+    "reading": "4 flows = account, habit, batch, device (route sets of the prereg's list); the machine is Nudge.delivery; gate: the machine and >= 3 of the 4 flows in the observed run"
+  },
+  "gated": true,
+  "arm": "D",
+  "nodes": [
+    "B4"
+  ]
+}

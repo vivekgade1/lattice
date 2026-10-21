@@ -1,0 +1,40 @@
+{
+  "id": "C-IMP",
+  "probe": "lattice spec impact T3 on the first 5 changes: >= 1 resolvable code:*.cs:<line> each",
+  "ran": true,
+  "predicted": "impact T3 on the first 5 changes: every change lists >= 1 code:*.cs:<line>, all resolvable (5/5)",
+  "observed": {
+    "c01": {
+      "rc": 0,
+      "locations": 38,
+      "bad": []
+    },
+    "c02": {
+      "rc": 2,
+      "locations": 0,
+      "bad": []
+    },
+    "c03": {
+      "rc": 2,
+      "locations": 0,
+      "bad": []
+    },
+    "c04": {
+      "rc": 2,
+      "locations": 0,
+      "bad": []
+    },
+    "c05": {
+      "rc": 2,
+      "locations": 0,
+      "bad": []
+    }
+  },
+  "pass": false,
+  "evidence": {},
+  "gated": true,
+  "arm": "D",
+  "nodes": [
+    "B4"
+  ]
+}

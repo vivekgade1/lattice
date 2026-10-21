@@ -1,0 +1,19 @@
+{
+  "id": "H-ROUTES",
+  "probe": "routes vs truth (4.5 matching)",
+  "ran": true,
+  "predicted": "recall >= 0.90 and 0 extra routes",
+  "observed": {
+    "truth_routes": 16,
+    "extract_routes": 16,
+    "recall": 1.0,
+    "missing": [],
+    "extra": [],
+    "style_wrong": []
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "H",
+  "nodes": []
+}

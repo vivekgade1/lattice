@@ -1,0 +1,36 @@
+{
+  "id": "F-DETECT",
+  "probe": "select(None, root, package) on D1, dnparity1, a Sdk.Web project without EF Core, a two-csproj directory; Python and Go fixtures unchanged",
+  "ran": true,
+  "predicted": "aspnetcore, aspnetcore, LookupError, LookupError with the note, unchanged answers for the others",
+  "observed": {
+    "dotnet": {
+      "D1": "aspnetcore",
+      "dnparity1": "aspnetcore",
+      "web-without-efcore": "LookupError: no front end recognises '.' under /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/verify/scr/detect/webonly (web.csproj is an ASP.NET Core project without EF Core: data access through Dapper or plain ADO.NET is not supported)",
+      "two-csproj": "LookupError: no front end recognises '.' under /private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/verify/scr/detect/twoproj (/private/tmp/claude-501/-Users-vivekgade-Documents-lattice/ee5b7f26-0758-4aaf-845d-fa75c50a8e80/scratchpad/verify/scr/detect/twoproj holds 2 project files (a.csproj, b.csproj): name the web project's directory as the package)"
+    },
+    "others_now": {
+      "go:goginapp": "gin",
+      "go:goapp": "LookupError: no front end recognises 'goapp' under tests/spec",
+      "py:django": "django",
+      "py:flask": "flask",
+      "py:fastapi": "fastapi"
+    },
+    "others_base": {
+      "go:goginapp": "gin",
+      "go:goapp": "LookupError: no front end recognises 'goapp' under tests/spec",
+      "py:django": "django",
+      "py:flask": "flask",
+      "py:fastapi": "fastapi"
+    },
+    "others_unchanged": true
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "0",
+  "nodes": [
+    "B2"
+  ]
+}

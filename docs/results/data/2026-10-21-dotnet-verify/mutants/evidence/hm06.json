@@ -1,0 +1,66 @@
+{
+  "id": "HM6",
+  "patch": "m06.diff",
+  "patch_sha256": "7844b531b5c749c3aace856f9b2aafeaaf1857a9efd71c4e7d181118d22d31d3",
+  "mutants_md_line": "HM6 | expose_column | POST /payout-methods | Features/Payouts/PayoutService.cs:48 | last route answering a PayoutMethod row; exposes PayoutMethod.account_number as accountNumber on the create answer only (also Features/Payouts/PayoutDtos.cs:22)",
+  "operator": {
+    "key": "expose_column",
+    "from_list": "expose_column",
+    "from_id": "expose_column",
+    "cell": "expose_column",
+    "shifted": false,
+    "source": "list"
+  },
+  "route": "POST /payout-methods",
+  "file_line": [
+    "Features/Payouts/PayoutService.cs",
+    48
+  ],
+  "substitutions": "last route answering a PayoutMethod row; exposes PayoutMethod.account_number as accountNumber on the create answer only (also Features/Payouts/PayoutDtos.cs:22)",
+  "operator_key": "expose_column",
+  "gated": true,
+  "detectors": [
+    {
+      "detector": "DN802 on POST /payout-methods",
+      "layer": "A",
+      "armed": true,
+      "flipped": false,
+      "hits": [],
+      "control_findings": []
+    }
+  ],
+  "killed": false,
+  "killed_by": "survived: DN802 on POST /payout-methods: no new finding",
+  "expose_column": {
+    "columns": [
+      "PayoutMethod.account_number",
+      "PayoutMethod.user_id",
+      "User.created_at",
+      "User.password",
+      "payout_methods.account_number",
+      "payout_methods.user_id",
+      "users.created_at",
+      "users.password"
+    ],
+    "named_by_mutants_md": false
+  },
+  "status": "judged",
+  "apply": {
+    "ok": true,
+    "returncode": 0,
+    "output": "patching file 'Features/Payouts/PayoutDtos.cs'\npatching file 'Features/Payouts/PayoutService.cs'\n",
+    "leftovers": [],
+    "files_changed": [
+      "Features/Payouts/PayoutDtos.cs",
+      "Features/Payouts/PayoutService.cs"
+    ]
+  },
+  "layer_a": {
+    "new_findings": []
+  },
+  "layer_r": {
+    "ran": true,
+    "flipped_items [control, mutant]": {}
+  },
+  "wall_s": 24.7
+}

@@ -1,0 +1,18 @@
+{
+  "id": "H-DET",
+  "probe": "extract and layer A 10x",
+  "ran": true,
+  "predicted": "extract and layer A 10x identical",
+  "observed": {
+    "extract_identical": 10,
+    "layer_a_identical": 10,
+    "of": 10
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "H",
+  "nodes": [
+    "B3"
+  ]
+}

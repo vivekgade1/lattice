@@ -1,0 +1,28 @@
+{
+  "id": "C-PERF",
+  "probe": "lattice perf measure on D1 over MySQL (server counting)",
+  "ran": true,
+  "predicted": "lattice perf on D1 over MySQL runs; statement counts reported",
+  "observed": {
+    "rc": 0,
+    "reports": [
+      {
+        "budget_id": "home",
+        "verdict": "pass",
+        "fit": {
+          "constant": 10,
+          "per_item": 0,
+          "exact": true
+        }
+      }
+    ],
+    "stderr": ""
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "D",
+  "nodes": [
+    "B4"
+  ]
+}

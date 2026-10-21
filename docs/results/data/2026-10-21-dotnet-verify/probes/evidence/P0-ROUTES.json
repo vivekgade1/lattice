@@ -1,0 +1,24 @@
+{
+  "id": "P0-ROUTES",
+  "probe": "routes of dnparity1 vs truth (method, full template, style, condition, path_template, success)",
+  "ran": true,
+  "predicted": "exact",
+  "observed": {
+    "routes_truth": 39,
+    "routes_extract": 39,
+    "set": {
+      "missing": [],
+      "extra": [],
+      "n_missing": 0,
+      "n_extra": 0,
+      "equal": true
+    },
+    "field_differences": {},
+    "status_differences": {}
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "0",
+  "nodes": []
+}

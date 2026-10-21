@@ -1,0 +1,65 @@
+{
+  "id": "HM14",
+  "patch": "m14.diff",
+  "patch_sha256": "0155a32b1cf68dfb3e8e0b306417c1bd53865e500a7436bac93e8ecf2583767d",
+  "mutants_md_line": "HM14 | loosen_bound | POST /auth/login | Features/Auth/AuthDtos.cs:8 | none (first route in truth.json order with an upper bound, email max_length 254); StringLength max becomes int.MaxValue, min length 3 stays",
+  "operator": {
+    "key": "loosen_bound",
+    "from_list": "loosen_bound",
+    "from_id": "loosen_bound",
+    "cell": "loosen_bound",
+    "shifted": false,
+    "source": "list"
+  },
+  "route": "POST /auth/login",
+  "file_line": [
+    "Features/Auth/AuthDtos.cs",
+    8
+  ],
+  "substitutions": "none (first route in truth.json order with an upper bound, email max_length 254); StringLength max becomes int.MaxValue, min length 3 stays",
+  "operator_key": "loosen_bound",
+  "gated": false,
+  "detectors": [
+    {
+      "detector": "R3 POST /auth/login status [400]",
+      "layer": "R",
+      "armed": true,
+      "flipped": false,
+      "hits": [],
+      "items [control, mutant]": {
+        "R3 POST /auth/login 400": [
+          "verified",
+          "verified"
+        ]
+      },
+      "why_not": "no such item is refuted on the mutant"
+    }
+  ],
+  "killed": false,
+  "killed_by": "survived: R3 POST /auth/login status [400]: no such item is refuted on the mutant",
+  "expose_column": null,
+  "status_of_invalid": {
+    "statuses": [
+      400
+    ],
+    "from_truth": true
+  },
+  "status": "judged",
+  "apply": {
+    "ok": true,
+    "returncode": 0,
+    "output": "patching file 'Features/Auth/AuthDtos.cs'\n",
+    "leftovers": [],
+    "files_changed": [
+      "Features/Auth/AuthDtos.cs"
+    ]
+  },
+  "layer_a": {
+    "new_findings": []
+  },
+  "layer_r": {
+    "ran": true,
+    "flipped_items [control, mutant]": {}
+  },
+  "wall_s": 24.7
+}

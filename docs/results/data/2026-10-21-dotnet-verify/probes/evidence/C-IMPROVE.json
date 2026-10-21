@@ -1,0 +1,19 @@
+{
+  "id": "C-IMPROVE",
+  "probe": "lattice improve report over a D1 check's event log, twice",
+  "ran": true,
+  "predicted": "lattice improve report over a D1 check's event log: runs, byte-identical 2x",
+  "observed": {
+    "rc": 0,
+    "identical": true,
+    "event_log": "empty (no Studio run on D1)",
+    "stderr": ""
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "D",
+  "nodes": [
+    "B4"
+  ]
+}

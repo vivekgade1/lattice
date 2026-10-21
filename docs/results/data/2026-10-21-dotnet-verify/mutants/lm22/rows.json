@@ -1,0 +1,19 @@
+[
+  {
+    "id": "DET-PATH",
+    "probe": "extract on D1 copied to two other absolute paths, and under LANG=de_DE.UTF-8",
+    "ran": true,
+    "predicted": "identical (two other absolute paths, and LANG=de_DE.UTF-8)",
+    "observed": {
+      "path0": true,
+      "path1": true,
+      "LANG=de_DE.UTF-8": true,
+      "no absolute path in the output": false
+    },
+    "pass": false,
+    "evidence": {},
+    "gated": true,
+    "arm": "D",
+    "nodes": []
+  }
+]

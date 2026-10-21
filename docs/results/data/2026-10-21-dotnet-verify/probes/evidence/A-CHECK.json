@@ -1,0 +1,20 @@
+{
+  "id": "A-CHECK",
+  "probe": "lattice.spec check --layers A on D1 through _layer_a_dotnet; without the SDK a note",
+  "ran": true,
+  "predicted": "layer A runs through _layer_a_dotnet: 0 findings; without the SDK on PATH a note",
+  "observed": {
+    "rc": 0,
+    "layer_A_findings": 0,
+    "stderr": "",
+    "no_sdk_rc": 0,
+    "no_sdk_note": true
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "D",
+  "nodes": [
+    "B3"
+  ]
+}

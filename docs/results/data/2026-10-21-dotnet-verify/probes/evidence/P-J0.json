@@ -1,0 +1,12 @@
+{
+  "id": "P-J0",
+  "probe": "(a prerequisite is missing)",
+  "ran": false,
+  "predicted": "100% of the J0-dn cells cite an existing file:line and a test or results row",
+  "observed": "the J0-dn matrix is written in Stage 6b (--j0 FILE)",
+  "pass": null,
+  "evidence": {},
+  "gated": true,
+  "arm": "X",
+  "nodes": []
+}

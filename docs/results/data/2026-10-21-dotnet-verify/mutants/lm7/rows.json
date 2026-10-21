@@ -1,0 +1,224 @@
+[
+  {
+    "id": "P0-BIND",
+    "probe": "params, sources, bounds, enforced_by, bind status, 'declared, not enforced' unread",
+    "ran": true,
+    "predicted": "exact; the minimal-API copy has no bounds and one 'declared, not enforced' unread per annotation",
+    "observed": {
+      "param_differences": {},
+      "bound_differences": {
+        "POST /v1/notes/quick": {
+          "want": [],
+          "got": [
+            [
+              "body",
+              null,
+              null,
+              null,
+              null,
+              2000,
+              "addvalidation"
+            ],
+            [
+              "priority",
+              null,
+              1,
+              5,
+              null,
+              null,
+              "addvalidation"
+            ],
+            [
+              "title",
+              true,
+              null,
+              null,
+              1,
+              120,
+              "addvalidation"
+            ]
+          ]
+        },
+        "POST /v1/notes/validated": {
+          "want": [
+            [
+              "priority",
+              null,
+              1,
+              5,
+              null,
+              null,
+              "fluentvalidation"
+            ],
+            [
+              "title",
+              true,
+              null,
+              null,
+              1,
+              120,
+              "fluentvalidation"
+            ]
+          ],
+          "got": [
+            [
+              "body",
+              null,
+              null,
+              null,
+              null,
+              2000,
+              "addvalidation"
+            ],
+            [
+              "priority",
+              null,
+              1,
+              5,
+              null,
+              null,
+              "addvalidation"
+            ],
+            [
+              "title",
+              true,
+              null,
+              null,
+              1,
+              120,
+              "addvalidation"
+            ]
+          ]
+        }
+      },
+      "unread_bind": {
+        "missing": [
+          [
+            [
+              "POST",
+              "/v1/notes/quick"
+            ],
+            "Dtos/NoteInput.cs",
+            11,
+            "[MaxLength(2000)] on NoteInput.Body",
+            "declared, not enforced"
+          ],
+          [
+            [
+              "POST",
+              "/v1/notes/quick"
+            ],
+            "Dtos/NoteInput.cs",
+            14,
+            "[Range(1, 5)] on NoteInput.Priority",
+            "declared, not enforced"
+          ],
+          [
+            [
+              "POST",
+              "/v1/notes/quick"
+            ],
+            "Dtos/NoteInput.cs",
+            7,
+            "[Required] on NoteInput.Title",
+            "declared, not enforced"
+          ],
+          [
+            [
+              "POST",
+              "/v1/notes/quick"
+            ],
+            "Dtos/NoteInput.cs",
+            8,
+            "[StringLength(120, MinimumLength = 1)] on NoteInput.Title",
+            "declared, not enforced"
+          ],
+          [
+            [
+              "POST",
+              "/v1/notes/validated"
+            ],
+            "Dtos/NoteInput.cs",
+            11,
+            "[MaxLength(2000)] on NoteInput.Body",
+            "declared, not enforced"
+          ],
+          [
+            [
+              "POST",
+              "/v1/notes/validated"
+            ],
+            "Dtos/NoteInput.cs",
+            14,
+            "[Range(1, 5)] on NoteInput.Priority",
+            "declared, not enforced"
+          ],
+          [
+            [
+              "POST",
+              "/v1/notes/validated"
+            ],
+            "Dtos/NoteInput.cs",
+            7,
+            "[Required] on NoteInput.Title",
+            "declared, not enforced"
+          ],
+          [
+            [
+              "POST",
+              "/v1/notes/validated"
+            ],
+            "Dtos/NoteInput.cs",
+            8,
+            "[StringLength(120, MinimumLength = 1)] on NoteInput.Title",
+            "declared, not enforced"
+          ]
+        ],
+        "extra": [],
+        "n_missing": 8,
+        "n_extra": 0,
+        "equal": false
+      },
+      "bind_status [truth, extract]": [
+        400,
+        400
+      ]
+    },
+    "pass": false,
+    "evidence": {},
+    "gated": true,
+    "arm": "0",
+    "nodes": []
+  },
+  {
+    "id": "A0-DN",
+    "probe": "dncheck on dnparity1 under its truth policy (exact keys) and DN800 on dnparity1bad",
+    "ran": true,
+    "predicted": "DN801 on o3 and the IgnoreQueryFilters route; DN802 on the projection; DN803 on the unenforced copy; DN806, DN807, DN808 on the first cases; DN800 on dnparity1bad",
+    "observed": {
+      "missing": [
+        [
+          "DN803",
+          "Program.cs",
+          78
+        ]
+      ],
+      "extra": [],
+      "keys_present": false,
+      "dn800": {
+        "fixture": "dnparity1bad",
+        "present": true,
+        "codes": [
+          "DN800"
+        ]
+      }
+    },
+    "pass": false,
+    "evidence": {},
+    "gated": true,
+    "arm": "0",
+    "nodes": [
+      "B3"
+    ]
+  }
+]

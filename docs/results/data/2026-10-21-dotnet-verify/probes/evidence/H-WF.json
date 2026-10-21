@@ -1,0 +1,19 @@
+{
+  "id": "H-WF",
+  "probe": "workflows on H1 (static + observed on SQLite)",
+  "ran": true,
+  "predicted": ">= 1 multi-step flow verified; 0 verified flows fail on replay",
+  "observed": {
+    "verified": 7,
+    "multi_step_verified": 7,
+    "verified_then_not_on_replay": []
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "arm": "H",
+  "nodes": [
+    "B2",
+    "B4"
+  ]
+}

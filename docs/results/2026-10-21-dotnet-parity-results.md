@@ -22,7 +22,7 @@ Date: 2026-10-21. Pre-registration: `docs/results/2026-10-18-dotnet-prereg.md` (
 | H-PI5 (reported) | machine `expense_reports.status` found, its edges not proposed | reported | as on D1 |
 | D1 rows A-DM, A-DERIVE, I-D1-2/3/T2, I-D1-PR3 | DM4 not killed; D1 `private` not derived; verified share 0.255 | as stated in Amendment 3 | dev data, stated before H1 existed |
 | C-IMPL, C-IMPLM | prediction errors (Amendment 3, item 7) | -- | not library defects |
-| C-IMP | c01 resolves 38 locations; c02-c05 exit 2 | 5 of 5 | **unexplained**: it passed 5 of 5 in the shakedown on the same inputs; diagnosed in section 6 if the verifier's re-run reproduces it |
+| C-IMP | c01 resolves 38 locations; c02-c05 exit 2 (`bad_inputs: c02/spec.py cannot be read`) | 5 of 5 | **an input fault, not a library defect**: in the change set supplied to the run, `c02` to `c21` are empty directories (only `c01` holds its three files), so four of the five candidates could not be read; the verifier reproduced the command by hand. It passed 5 of 5 in the shakedown, when the directories were populated; why they are empty now is not known. The scored value stands |
 | PB-F | `lattice/importer/review.py` differs from the base | 0 changed | declared (Amendment 3, item 4): `candidate_item_ids` |
 | PB-T | one Go test pins `check.py`'s hash | 0 failures | declared (Q10) |
 
@@ -57,7 +57,7 @@ Library mutants LM1-24 **24 of 24 killed**; runner mutants RM1-2 caught; dev mut
 | 12 | Implementation report | **P** | C-INV/CITE/MCP pass; C-IMPL/C-IMPLM prediction errors; H-IMPL empty spec |
 | 13 | Chat grounded in spec and code | **P** | C-ASK measured with a scripted model only |
 | 14 | App map | **S** | C-MAP |
-| 15 | Change impact | **P** | C-IMP 1 of 5 in the scored run (unexplained) |
+| 15 | Change impact | **P** | C-IMP 1 of 5 in the scored run (four candidate dirs empty: an input fault); 5 of 5 in the shakedown |
 | 16 | Perf engines | **P** | C-PERF on D1 over MySQL (as Go) |
 | 17 | Contracts | **S** | C-LIVE |
 | 18 | Improve loop | **P** | C-IMPROVE ran `improve report` twice on an empty log only |
@@ -66,4 +66,11 @@ Library mutants LM1-24 **24 of 24 killed**; runner mutants RM1-2 caught; dev mut
 Counts: **S 9, P 9, A 2** (Python 15 / 3 / 2, Go 15 / 4 / 1). The honest gap to "equal support": rows 3, 4, 10 (the imported spec on an unfamiliar app), 12, 13, 15, 16, 18, 19 are partial; rows 2 and 20 are absent by decision.
 
 ## 6. NOT RUN
-P-J0 (prerequisite: this matrix, written after the scores); a real-agent toy build (claude CLI, USD 5 cap); real-agent model answers for C-ASK; the independent verifier's result is appended in section 7.
+P-J0 (prerequisite: this matrix, written after the scores, so it cannot be scored once-only); a real-agent toy build (claude CLI, USD 5 cap); real-agent model answers for C-ASK; DM6 (no HTTP route, reported); independent grading of the matrix cells.
+
+## 7. Independent verification (node V, opus; `--kind verify`, data in `docs/results/data/2026-10-21-dotnet-verify/`)
+Both runners were re-run from the archived inputs, probes under `freeze-h1-hm.sha256` (the first attempt under `freeze-h1-final.sha256` was refused because that file lists the prereg as it stood before Amendment 6; its 12 ledger lines are archived unchanged as `ledger-refused-verify-1.jsonl`; the two freeze files differ only in the prereg hash and in 17 added mutant-patch entries).
+- **Probes:** 97 of 97 rows, **0 verdicts differ** (76 passed, 16 failed, 1 not run, the same ids); 2 h 30 m. Observed values differ only in scratch paths, a random Docker owner suffix, a commit sha of the rebuild row, a function address, and timings.
+- **Mutants:** LM 24/24, DM 4/6, RM 2/2, HM 0/16, **0 verdicts differ**; 23 m. RM2's check strings differ only in a random temporary freeze-file name.
+- **Ledger:** 40 lines; each of the ten arms has exactly one scored and one verify entry, all completed; the two refused-launch archives hold only `started` and `crash_before_metric`.
+- **C-IMP** reproduces (section 2): the cause is empty candidate directories in the supplied change set.
