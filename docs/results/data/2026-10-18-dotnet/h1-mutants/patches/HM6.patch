@@ -1,0 +1,30 @@
+diff -ru a/Features/Payouts/PayoutDtos.cs b/Features/Payouts/PayoutDtos.cs
+--- a/Features/Payouts/PayoutDtos.cs	2026-10-21 12:32:07
++++ b/Features/Payouts/PayoutDtos.cs	2026-10-21 12:41:29
+@@ -1,4 +1,5 @@
+ using System.ComponentModel.DataAnnotations;
++using System.Text.Json.Serialization;
+ using Outlay.Domain;
+ 
+ namespace Outlay.Features.Payouts;
+@@ -27,6 +28,9 @@
+     bool IsDefault,
+     DateTime CreatedAt)
+ {
++    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
++    public string? AccountNumber { get; init; }
++
+     public static PayoutMethodResponse From(PayoutMethod p) =>
+         new(p.Id, p.Label, p.AccountHolder, p.AccountLast4, p.IsDefault, p.CreatedAt);
+ }
+diff -ru a/Features/Payouts/PayoutService.cs b/Features/Payouts/PayoutService.cs
+--- a/Features/Payouts/PayoutService.cs	2026-10-21 12:32:49
++++ b/Features/Payouts/PayoutService.cs	2026-10-21 12:41:29
+@@ -45,6 +45,6 @@
+         };
+         db.PayoutMethods.Add(method);
+         await db.SaveChangesAsync(ct);
+-        return PayoutMethodResponse.From(method);
++        return PayoutMethodResponse.From(method) with { AccountNumber = method.AccountNumber };
+     }
+ }

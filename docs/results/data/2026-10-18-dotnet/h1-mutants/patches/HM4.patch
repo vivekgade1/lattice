@@ -1,0 +1,12 @@
+diff -ru a/Features/Reports/ReportService.cs b/Features/Reports/ReportService.cs
+--- a/Features/Reports/ReportService.cs	2026-10-21 12:35:28
++++ b/Features/Reports/ReportService.cs	2026-10-21 12:41:29
+@@ -65,7 +65,7 @@
+ 
+     public async Task<ReportResponse> Submit(int userId, int reportId, CancellationToken ct)
+     {
+-        var report = await FindOwned(userId, reportId, ct);
++        var report = await db.ExpenseReports.SingleOrDefaultAsync(r => r.Id == reportId, ct) ?? throw ReportNotFound(reportId);
+         if (!ReportStatusRules.CanTransition(report.Status, ReportStatus.Submitted))
+             throw new ConflictException($"expense report {reportId} is {Wire(report.Status)} and cannot be submitted");
+         if (!await db.ExpenseLines.AnyAsync(l => l.ReportId == reportId, ct))

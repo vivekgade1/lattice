@@ -1,0 +1,1258 @@
+{
+  "service": "outlay",
+  "domain": "expense reports: members file reports of receipt lines and payout methods; admins approve or reject",
+  "routes": [
+    {
+      "method": "GET",
+      "template": "/health",
+      "auth": "Public",
+      "style": "minimal",
+      "file": "Program.cs",
+      "line": 15
+    },
+    {
+      "method": "POST",
+      "template": "/auth/login",
+      "auth": "Public",
+      "style": "controller",
+      "file": "Features/Auth/AuthController.cs",
+      "line": 12
+    },
+    {
+      "method": "GET",
+      "template": "/reports",
+      "auth": "Member",
+      "style": "controller",
+      "file": "Features/Reports/ReportsController.cs",
+      "line": 11
+    },
+    {
+      "method": "POST",
+      "template": "/reports",
+      "auth": "Member",
+      "style": "controller",
+      "file": "Features/Reports/ReportsController.cs",
+      "line": 15
+    },
+    {
+      "method": "GET",
+      "template": "/reports/{reportId:int}",
+      "auth": "Member",
+      "style": "controller",
+      "file": "Features/Reports/ReportsController.cs",
+      "line": 22
+    },
+    {
+      "method": "PATCH",
+      "template": "/reports/{reportId:int}",
+      "auth": "Member",
+      "style": "controller",
+      "file": "Features/Reports/ReportsController.cs",
+      "line": 26
+    },
+    {
+      "method": "DELETE",
+      "template": "/reports/{reportId:int}",
+      "auth": "Member",
+      "style": "controller",
+      "file": "Features/Reports/ReportsController.cs",
+      "line": 30
+    },
+    {
+      "method": "POST",
+      "template": "/reports/{reportId:int}/submit",
+      "auth": "Member",
+      "style": "controller",
+      "file": "Features/Reports/ReportsController.cs",
+      "line": 37
+    },
+    {
+      "method": "GET",
+      "template": "/reports/{reportId:int}/lines",
+      "auth": "Member",
+      "style": "controller",
+      "file": "Features/Reports/ReportLinesController.cs",
+      "line": 11
+    },
+    {
+      "method": "POST",
+      "template": "/reports/{reportId:int}/lines",
+      "auth": "Member",
+      "style": "controller",
+      "file": "Features/Reports/ReportLinesController.cs",
+      "line": 15
+    },
+    {
+      "method": "DELETE",
+      "template": "/reports/{reportId:int}/lines/{lineId:int}",
+      "auth": "Member",
+      "style": "controller",
+      "file": "Features/Reports/ReportLinesController.cs",
+      "line": 22
+    },
+    {
+      "method": "GET",
+      "template": "/review/reports",
+      "auth": "Admin",
+      "style": "controller",
+      "file": "Features/Review/ReviewController.cs",
+      "line": 17
+    },
+    {
+      "method": "POST",
+      "template": "/review/reports/{reportId:int}/approve",
+      "auth": "Admin",
+      "style": "controller",
+      "file": "Features/Review/ReviewController.cs",
+      "line": 22
+    },
+    {
+      "method": "POST",
+      "template": "/review/reports/{reportId:int}/reject",
+      "auth": "Admin",
+      "style": "controller",
+      "file": "Features/Review/ReviewController.cs",
+      "line": 29
+    },
+    {
+      "method": "GET",
+      "template": "/payout-methods",
+      "auth": "Member",
+      "style": "controller",
+      "file": "Features/Payouts/PayoutMethodsController.cs",
+      "line": 11
+    },
+    {
+      "method": "POST",
+      "template": "/payout-methods",
+      "auth": "Member",
+      "style": "controller",
+      "file": "Features/Payouts/PayoutMethodsController.cs",
+      "line": 15
+    }
+  ],
+  "tables": [
+    {
+      "entity": "User",
+      "table": "users",
+      "file": "Data/Configurations/UserConfiguration.cs",
+      "line": 11,
+      "columns": [
+        {
+          "name": "id",
+          "wire": "id",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": true,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/Configurations/UserConfiguration.cs",
+          "line": 13
+        },
+        {
+          "name": "email",
+          "wire": "email",
+          "private": false,
+          "nullable": false,
+          "unique": true,
+          "pk": false,
+          "max_length": 254,
+          "fk": null,
+          "file": "Data/Configurations/UserConfiguration.cs",
+          "line": 14
+        },
+        {
+          "name": "display_name",
+          "wire": "displayName",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 100,
+          "fk": null,
+          "file": "Data/Configurations/UserConfiguration.cs",
+          "line": 16
+        },
+        {
+          "name": "password",
+          "wire": null,
+          "private": true,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 200,
+          "fk": null,
+          "file": "Data/Configurations/UserConfiguration.cs",
+          "line": 17
+        },
+        {
+          "name": "role",
+          "wire": "role",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 16,
+          "fk": null,
+          "file": "Data/Configurations/UserConfiguration.cs",
+          "line": 18
+        },
+        {
+          "name": "created_at",
+          "wire": null,
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/Configurations/UserConfiguration.cs",
+          "line": 20
+        }
+      ]
+    },
+    {
+      "entity": "ExpenseReport",
+      "table": "expense_reports",
+      "file": "Data/Configurations/ExpenseReportConfiguration.cs",
+      "line": 11,
+      "columns": [
+        {
+          "name": "id",
+          "wire": "id",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": true,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/Configurations/ExpenseReportConfiguration.cs",
+          "line": 13
+        },
+        {
+          "name": "user_id",
+          "wire": "userId",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": "users.id",
+          "file": "Data/Configurations/ExpenseReportConfiguration.cs",
+          "line": 14
+        },
+        {
+          "name": "title",
+          "wire": "title",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 120,
+          "fk": null,
+          "file": "Data/Configurations/ExpenseReportConfiguration.cs",
+          "line": 18
+        },
+        {
+          "name": "purpose",
+          "wire": "purpose",
+          "private": false,
+          "nullable": true,
+          "unique": false,
+          "pk": false,
+          "max_length": 500,
+          "fk": null,
+          "file": "Data/Configurations/ExpenseReportConfiguration.cs",
+          "line": 19
+        },
+        {
+          "name": "status",
+          "wire": "status",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 16,
+          "fk": null,
+          "file": "Data/Configurations/ExpenseReportConfiguration.cs",
+          "line": 20
+        },
+        {
+          "name": "submitted_at",
+          "wire": "submittedAt",
+          "private": false,
+          "nullable": true,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/Configurations/ExpenseReportConfiguration.cs",
+          "line": 24
+        },
+        {
+          "name": "reviewer_id",
+          "wire": "reviewerId",
+          "private": false,
+          "nullable": true,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": "users.id",
+          "file": "Data/Configurations/ExpenseReportConfiguration.cs",
+          "line": 25
+        },
+        {
+          "name": "review_comment",
+          "wire": "reviewComment",
+          "private": false,
+          "nullable": true,
+          "unique": false,
+          "pk": false,
+          "max_length": 500,
+          "fk": null,
+          "file": "Data/Configurations/ExpenseReportConfiguration.cs",
+          "line": 28
+        },
+        {
+          "name": "decided_at",
+          "wire": "decidedAt",
+          "private": false,
+          "nullable": true,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/Configurations/ExpenseReportConfiguration.cs",
+          "line": 29
+        },
+        {
+          "name": "created_at",
+          "wire": "createdAt",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/Configurations/ExpenseReportConfiguration.cs",
+          "line": 30
+        },
+        {
+          "name": "updated_at",
+          "wire": "updatedAt",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/Configurations/ExpenseReportConfiguration.cs",
+          "line": 31
+        }
+      ]
+    },
+    {
+      "entity": "ExpenseLine",
+      "table": "expense_lines",
+      "file": "Data/Configurations/ExpenseLineConfiguration.cs",
+      "line": 11,
+      "columns": [
+        {
+          "name": "id",
+          "wire": "id",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": true,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/Configurations/ExpenseLineConfiguration.cs",
+          "line": 13
+        },
+        {
+          "name": "report_id",
+          "wire": "reportId",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": "expense_reports.id",
+          "file": "Data/Configurations/ExpenseLineConfiguration.cs",
+          "line": 14
+        },
+        {
+          "name": "description",
+          "wire": "description",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 200,
+          "fk": null,
+          "file": "Data/Configurations/ExpenseLineConfiguration.cs",
+          "line": 16
+        },
+        {
+          "name": "category",
+          "wire": "category",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 16,
+          "fk": null,
+          "file": "Data/Configurations/ExpenseLineConfiguration.cs",
+          "line": 17
+        },
+        {
+          "name": "amount_cents",
+          "wire": "amountCents",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/Configurations/ExpenseLineConfiguration.cs",
+          "line": 19
+        },
+        {
+          "name": "incurred_on",
+          "wire": "incurredOn",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/Configurations/ExpenseLineConfiguration.cs",
+          "line": 20
+        },
+        {
+          "name": "created_at",
+          "wire": "createdAt",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/Configurations/ExpenseLineConfiguration.cs",
+          "line": 21
+        }
+      ]
+    },
+    {
+      "entity": "PayoutMethod",
+      "table": "payout_methods",
+      "file": "Data/Configurations/PayoutMethodConfiguration.cs",
+      "line": 11,
+      "columns": [
+        {
+          "name": "id",
+          "wire": "id",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": true,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/Configurations/PayoutMethodConfiguration.cs",
+          "line": 13
+        },
+        {
+          "name": "user_id",
+          "wire": null,
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": "users.id",
+          "file": "Data/Configurations/PayoutMethodConfiguration.cs",
+          "line": 14
+        },
+        {
+          "name": "label",
+          "wire": "label",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 60,
+          "fk": null,
+          "file": "Data/Configurations/PayoutMethodConfiguration.cs",
+          "line": 17
+        },
+        {
+          "name": "account_holder",
+          "wire": "accountHolder",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 100,
+          "fk": null,
+          "file": "Data/Configurations/PayoutMethodConfiguration.cs",
+          "line": 18
+        },
+        {
+          "name": "account_number",
+          "wire": null,
+          "private": true,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 34,
+          "fk": null,
+          "file": "Data/Configurations/PayoutMethodConfiguration.cs",
+          "line": 19
+        },
+        {
+          "name": "account_last4",
+          "wire": "accountLast4",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 4,
+          "fk": null,
+          "file": "Data/Configurations/PayoutMethodConfiguration.cs",
+          "line": 20
+        },
+        {
+          "name": "is_default",
+          "wire": "isDefault",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/Configurations/PayoutMethodConfiguration.cs",
+          "line": 21
+        },
+        {
+          "name": "created_at",
+          "wire": "createdAt",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Data/Configurations/PayoutMethodConfiguration.cs",
+          "line": 22
+        }
+      ]
+    }
+  ],
+  "owners": {
+    "ExpenseReport": "user_id",
+    "PayoutMethod": "user_id"
+  },
+  "owner_via": {
+    "ExpenseLine": [
+      "ExpenseReport",
+      "report_id"
+    ]
+  },
+  "machines": {
+    "ExpenseReport.status": {
+      "initial": "draft",
+      "edges": [
+        [
+          "draft",
+          "submitted"
+        ],
+        [
+          "rejected",
+          "submitted"
+        ],
+        [
+          "submitted",
+          "approved"
+        ],
+        [
+          "submitted",
+          "rejected"
+        ]
+      ],
+      "storage": "string",
+      "file": "Domain/ReportStatus.cs",
+      "line": 21
+    }
+  },
+  "refusals": [
+    {
+      "route": "GET /reports",
+      "status": 401,
+      "detail": "a valid bearer token is required",
+      "cause": "auth",
+      "file": "Auth/BearerTokenHandler.cs",
+      "line": 52
+    },
+    {
+      "route": "POST /reports",
+      "status": 401,
+      "detail": "a valid bearer token is required",
+      "cause": "auth",
+      "file": "Auth/BearerTokenHandler.cs",
+      "line": 52
+    },
+    {
+      "route": "GET /reports/{reportId:int}",
+      "status": 401,
+      "detail": "a valid bearer token is required",
+      "cause": "auth",
+      "file": "Auth/BearerTokenHandler.cs",
+      "line": 52
+    },
+    {
+      "route": "PATCH /reports/{reportId:int}",
+      "status": 401,
+      "detail": "a valid bearer token is required",
+      "cause": "auth",
+      "file": "Auth/BearerTokenHandler.cs",
+      "line": 52
+    },
+    {
+      "route": "DELETE /reports/{reportId:int}",
+      "status": 401,
+      "detail": "a valid bearer token is required",
+      "cause": "auth",
+      "file": "Auth/BearerTokenHandler.cs",
+      "line": 52
+    },
+    {
+      "route": "POST /reports/{reportId:int}/submit",
+      "status": 401,
+      "detail": "a valid bearer token is required",
+      "cause": "auth",
+      "file": "Auth/BearerTokenHandler.cs",
+      "line": 52
+    },
+    {
+      "route": "GET /reports/{reportId:int}/lines",
+      "status": 401,
+      "detail": "a valid bearer token is required",
+      "cause": "auth",
+      "file": "Auth/BearerTokenHandler.cs",
+      "line": 52
+    },
+    {
+      "route": "POST /reports/{reportId:int}/lines",
+      "status": 401,
+      "detail": "a valid bearer token is required",
+      "cause": "auth",
+      "file": "Auth/BearerTokenHandler.cs",
+      "line": 52
+    },
+    {
+      "route": "DELETE /reports/{reportId:int}/lines/{lineId:int}",
+      "status": 401,
+      "detail": "a valid bearer token is required",
+      "cause": "auth",
+      "file": "Auth/BearerTokenHandler.cs",
+      "line": 52
+    },
+    {
+      "route": "GET /review/reports",
+      "status": 401,
+      "detail": "a valid bearer token is required",
+      "cause": "auth",
+      "file": "Auth/BearerTokenHandler.cs",
+      "line": 52
+    },
+    {
+      "route": "GET /review/reports",
+      "status": 403,
+      "detail": "this action requires the admin role",
+      "cause": "auth",
+      "file": "Auth/BearerTokenHandler.cs",
+      "line": 55
+    },
+    {
+      "route": "POST /review/reports/{reportId:int}/approve",
+      "status": 401,
+      "detail": "a valid bearer token is required",
+      "cause": "auth",
+      "file": "Auth/BearerTokenHandler.cs",
+      "line": 52
+    },
+    {
+      "route": "POST /review/reports/{reportId:int}/approve",
+      "status": 403,
+      "detail": "this action requires the admin role",
+      "cause": "auth",
+      "file": "Auth/BearerTokenHandler.cs",
+      "line": 55
+    },
+    {
+      "route": "POST /review/reports/{reportId:int}/reject",
+      "status": 401,
+      "detail": "a valid bearer token is required",
+      "cause": "auth",
+      "file": "Auth/BearerTokenHandler.cs",
+      "line": 52
+    },
+    {
+      "route": "POST /review/reports/{reportId:int}/reject",
+      "status": 403,
+      "detail": "this action requires the admin role",
+      "cause": "auth",
+      "file": "Auth/BearerTokenHandler.cs",
+      "line": 55
+    },
+    {
+      "route": "GET /payout-methods",
+      "status": 401,
+      "detail": "a valid bearer token is required",
+      "cause": "auth",
+      "file": "Auth/BearerTokenHandler.cs",
+      "line": 52
+    },
+    {
+      "route": "POST /payout-methods",
+      "status": 401,
+      "detail": "a valid bearer token is required",
+      "cause": "auth",
+      "file": "Auth/BearerTokenHandler.cs",
+      "line": 52
+    },
+    {
+      "route": "POST /auth/login",
+      "status": 400,
+      "detail": "One or more validation errors occurred.",
+      "cause": "invalid",
+      "file": "Features/Auth/AuthController.cs",
+      "line": 6
+    },
+    {
+      "route": "POST /auth/login",
+      "status": 401,
+      "detail": "email or password is incorrect",
+      "cause": "auth",
+      "file": "Features/Auth/AuthService.cs",
+      "line": 18
+    },
+    {
+      "route": "POST /reports",
+      "status": 400,
+      "detail": "One or more validation errors occurred.",
+      "cause": "invalid",
+      "file": "Features/Reports/ReportsController.cs",
+      "line": 7
+    },
+    {
+      "route": "GET /reports/{reportId:int}",
+      "status": 404,
+      "detail": "expense report {reportId} not found",
+      "cause": "not_found",
+      "file": "Features/Reports/ReportService.cs",
+      "line": 22,
+      "covers": [
+        "not_found",
+        "not_owned"
+      ],
+      "note": "a report of another user answers the same 404"
+    },
+    {
+      "route": "PATCH /reports/{reportId:int}",
+      "status": 400,
+      "detail": "One or more validation errors occurred.",
+      "cause": "invalid",
+      "file": "Features/Reports/ReportsController.cs",
+      "line": 7
+    },
+    {
+      "route": "PATCH /reports/{reportId:int}",
+      "status": 404,
+      "detail": "expense report {reportId} not found",
+      "cause": "not_found",
+      "file": "Features/Reports/ReportService.cs",
+      "line": 155,
+      "covers": [
+        "not_found",
+        "not_owned"
+      ],
+      "note": "a report of another user answers the same 404"
+    },
+    {
+      "route": "PATCH /reports/{reportId:int}",
+      "status": 409,
+      "detail": "expense report {reportId} is {status}; only a draft or rejected report can be changed",
+      "cause": "conflict",
+      "file": "Features/Reports/ReportService.cs",
+      "line": 161
+    },
+    {
+      "route": "DELETE /reports/{reportId:int}",
+      "status": 404,
+      "detail": "expense report {reportId} not found",
+      "cause": "not_found",
+      "file": "Features/Reports/ReportService.cs",
+      "line": 155,
+      "covers": [
+        "not_found",
+        "not_owned"
+      ],
+      "note": "a report of another user answers the same 404"
+    },
+    {
+      "route": "DELETE /reports/{reportId:int}",
+      "status": 409,
+      "detail": "expense report {reportId} is {status}; only a draft can be deleted",
+      "cause": "conflict",
+      "file": "Features/Reports/ReportService.cs",
+      "line": 61
+    },
+    {
+      "route": "POST /reports/{reportId:int}/submit",
+      "status": 404,
+      "detail": "expense report {reportId} not found",
+      "cause": "not_found",
+      "file": "Features/Reports/ReportService.cs",
+      "line": 155,
+      "covers": [
+        "not_found",
+        "not_owned"
+      ],
+      "note": "a report of another user answers the same 404"
+    },
+    {
+      "route": "POST /reports/{reportId:int}/submit",
+      "status": 409,
+      "detail": "expense report {reportId} is {status} and cannot be submitted",
+      "cause": "conflict",
+      "file": "Features/Reports/ReportService.cs",
+      "line": 70
+    },
+    {
+      "route": "POST /reports/{reportId:int}/submit",
+      "status": 409,
+      "detail": "expense report {reportId} has no lines; add at least one before submitting",
+      "cause": "conflict",
+      "file": "Features/Reports/ReportService.cs",
+      "line": 72
+    },
+    {
+      "route": "POST /reports/{reportId:int}/submit",
+      "status": 409,
+      "detail": "expense report {reportId} changed while it was being submitted",
+      "cause": "conflict",
+      "file": "Features/Reports/ReportService.cs",
+      "line": 87
+    },
+    {
+      "route": "GET /reports/{reportId:int}/lines",
+      "status": 404,
+      "detail": "expense report {reportId} not found",
+      "cause": "not_found",
+      "file": "Features/Reports/ReportService.cs",
+      "line": 94,
+      "covers": [
+        "not_found",
+        "not_owned"
+      ],
+      "note": "a report of another user answers the same 404"
+    },
+    {
+      "route": "POST /reports/{reportId:int}/lines",
+      "status": 400,
+      "detail": "One or more validation errors occurred.",
+      "cause": "invalid",
+      "file": "Features/Reports/ReportLinesController.cs",
+      "line": 7
+    },
+    {
+      "route": "POST /reports/{reportId:int}/lines",
+      "status": 404,
+      "detail": "expense report {reportId} not found",
+      "cause": "not_found",
+      "file": "Features/Reports/ReportService.cs",
+      "line": 155,
+      "covers": [
+        "not_found",
+        "not_owned"
+      ],
+      "note": "a report of another user answers the same 404"
+    },
+    {
+      "route": "POST /reports/{reportId:int}/lines",
+      "status": 409,
+      "detail": "expense report {reportId} is {status}; only a draft or rejected report can be changed",
+      "cause": "conflict",
+      "file": "Features/Reports/ReportService.cs",
+      "line": 161
+    },
+    {
+      "route": "POST /reports/{reportId:int}/lines",
+      "status": 409,
+      "detail": "expense report {reportId} already has 50 lines",
+      "cause": "conflict",
+      "file": "Features/Reports/ReportService.cs",
+      "line": 107
+    },
+    {
+      "route": "DELETE /reports/{reportId:int}/lines/{lineId:int}",
+      "status": 404,
+      "detail": "expense report {reportId} not found",
+      "cause": "not_found",
+      "file": "Features/Reports/ReportService.cs",
+      "line": 155,
+      "covers": [
+        "not_found",
+        "not_owned"
+      ],
+      "note": "a report of another user answers the same 404"
+    },
+    {
+      "route": "DELETE /reports/{reportId:int}/lines/{lineId:int}",
+      "status": 404,
+      "detail": "line {lineId} not found on expense report {reportId}",
+      "cause": "not_found",
+      "file": "Features/Reports/ReportService.cs",
+      "line": 128
+    },
+    {
+      "route": "DELETE /reports/{reportId:int}/lines/{lineId:int}",
+      "status": 409,
+      "detail": "expense report {reportId} is {status}; only a draft or rejected report can be changed",
+      "cause": "conflict",
+      "file": "Features/Reports/ReportService.cs",
+      "line": 161
+    },
+    {
+      "route": "GET /review/reports",
+      "status": 400,
+      "detail": "status must be one of draft, submitted, approved, rejected",
+      "cause": "invalid",
+      "file": "Features/Review/ReviewController.cs",
+      "line": 38
+    },
+    {
+      "route": "POST /review/reports/{reportId:int}/approve",
+      "status": 404,
+      "detail": "expense report {reportId} not found",
+      "cause": "not_found",
+      "file": "Features/Review/ReviewService.cs",
+      "line": 30
+    },
+    {
+      "route": "POST /review/reports/{reportId:int}/approve",
+      "status": 403,
+      "detail": "a reviewer cannot decide their own expense report",
+      "cause": "auth",
+      "file": "Features/Review/ReviewService.cs",
+      "line": 32
+    },
+    {
+      "route": "POST /review/reports/{reportId:int}/approve",
+      "status": 409,
+      "detail": "expense report {reportId} is {status}; only a submitted report can be approved",
+      "cause": "conflict",
+      "file": "Features/Review/ReviewService.cs",
+      "line": 35
+    },
+    {
+      "route": "POST /review/reports/{reportId:int}/approve",
+      "status": 409,
+      "detail": "expense report {reportId} was decided by someone else",
+      "cause": "conflict",
+      "file": "Features/Review/ReviewService.cs",
+      "line": 48
+    },
+    {
+      "route": "POST /review/reports/{reportId:int}/reject",
+      "status": 400,
+      "detail": "One or more validation errors occurred.",
+      "cause": "invalid",
+      "file": "Features/Review/ReviewController.cs",
+      "line": 12
+    },
+    {
+      "route": "POST /review/reports/{reportId:int}/reject",
+      "status": 404,
+      "detail": "expense report {reportId} not found",
+      "cause": "not_found",
+      "file": "Features/Review/ReviewService.cs",
+      "line": 30
+    },
+    {
+      "route": "POST /review/reports/{reportId:int}/reject",
+      "status": 403,
+      "detail": "a reviewer cannot decide their own expense report",
+      "cause": "auth",
+      "file": "Features/Review/ReviewService.cs",
+      "line": 32
+    },
+    {
+      "route": "POST /review/reports/{reportId:int}/reject",
+      "status": 409,
+      "detail": "expense report {reportId} is {status}; only a submitted report can be rejectd",
+      "cause": "conflict",
+      "file": "Features/Review/ReviewService.cs",
+      "line": 35
+    },
+    {
+      "route": "POST /review/reports/{reportId:int}/reject",
+      "status": 409,
+      "detail": "expense report {reportId} was decided by someone else",
+      "cause": "conflict",
+      "file": "Features/Review/ReviewService.cs",
+      "line": 48
+    },
+    {
+      "route": "POST /payout-methods",
+      "status": 400,
+      "detail": "One or more validation errors occurred.",
+      "cause": "invalid",
+      "file": "Features/Payouts/PayoutMethodsController.cs",
+      "line": 7
+    },
+    {
+      "route": "POST /payout-methods",
+      "status": 409,
+      "detail": "a user can keep at most 5 payout methods",
+      "cause": "conflict",
+      "file": "Features/Payouts/PayoutService.cs",
+      "line": 25
+    },
+    {
+      "route": "POST /payout-methods",
+      "status": 409,
+      "detail": "this account is already one of your payout methods",
+      "cause": "conflict",
+      "file": "Features/Payouts/PayoutService.cs",
+      "line": 29
+    }
+  ],
+  "bounds": [
+    {
+      "route": "POST /auth/login",
+      "field": "email",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": 3,
+      "max_length": 254,
+      "enforced_by": "DataAnnotations on the request type, checked by [ApiController] model validation (400 ValidationProblemDetails)",
+      "file": "Features/Auth/AuthDtos.cs",
+      "line": 8
+    },
+    {
+      "route": "POST /auth/login",
+      "field": "password",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": 1,
+      "max_length": 200,
+      "enforced_by": "DataAnnotations on the request type, checked by [ApiController] model validation (400 ValidationProblemDetails)",
+      "file": "Features/Auth/AuthDtos.cs",
+      "line": 11
+    },
+    {
+      "route": "POST /reports",
+      "field": "title",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": 1,
+      "max_length": 120,
+      "enforced_by": "DataAnnotations on the request type, checked by [ApiController] model validation (400 ValidationProblemDetails)",
+      "file": "Features/Reports/ReportDtos.cs",
+      "line": 8
+    },
+    {
+      "route": "POST /reports",
+      "field": "purpose",
+      "required": false,
+      "ge": null,
+      "le": null,
+      "min_length": null,
+      "max_length": 500,
+      "enforced_by": "DataAnnotations on the request type, checked by [ApiController] model validation (400 ValidationProblemDetails)",
+      "file": "Features/Reports/ReportDtos.cs",
+      "line": 11
+    },
+    {
+      "route": "PATCH /reports/{reportId:int}",
+      "field": "title",
+      "required": false,
+      "ge": null,
+      "le": null,
+      "min_length": 1,
+      "max_length": 120,
+      "enforced_by": "DataAnnotations on the request type, checked by [ApiController] model validation (400 ValidationProblemDetails)",
+      "file": "Features/Reports/ReportDtos.cs",
+      "line": 17
+    },
+    {
+      "route": "PATCH /reports/{reportId:int}",
+      "field": "purpose",
+      "required": false,
+      "ge": null,
+      "le": null,
+      "min_length": null,
+      "max_length": 500,
+      "enforced_by": "DataAnnotations on the request type, checked by [ApiController] model validation (400 ValidationProblemDetails)",
+      "file": "Features/Reports/ReportDtos.cs",
+      "line": 20
+    },
+    {
+      "route": "POST /reports/{reportId:int}/lines",
+      "field": "description",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": 1,
+      "max_length": 200,
+      "enforced_by": "DataAnnotations on the request type, checked by [ApiController] model validation (400 ValidationProblemDetails)",
+      "file": "Features/Reports/ReportDtos.cs",
+      "line": 32
+    },
+    {
+      "route": "POST /reports/{reportId:int}/lines",
+      "field": "category",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": null,
+      "max_length": null,
+      "enforced_by": "DataAnnotations on the request type, checked by [ApiController] model validation (400 ValidationProblemDetails); values travel, lodging, meals, supplies, other (JsonStringEnumConverter, integers refused)",
+      "file": "Features/Reports/ReportDtos.cs",
+      "line": 35
+    },
+    {
+      "route": "POST /reports/{reportId:int}/lines",
+      "field": "amountCents",
+      "required": true,
+      "ge": 1,
+      "le": 5000000,
+      "min_length": null,
+      "max_length": null,
+      "enforced_by": "DataAnnotations on the request type, checked by [ApiController] model validation (400 ValidationProblemDetails)",
+      "file": "Features/Reports/ReportDtos.cs",
+      "line": 39
+    },
+    {
+      "route": "POST /reports/{reportId:int}/lines",
+      "field": "incurredOn",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": null,
+      "max_length": null,
+      "enforced_by": "DataAnnotations on the request type, checked by [ApiController] model validation (400 ValidationProblemDetails); IValidatableObject refuses a date after today (UTC)",
+      "file": "Features/Reports/ReportDtos.cs",
+      "line": 42
+    },
+    {
+      "route": "POST /review/reports/{reportId:int}/approve",
+      "field": "comment",
+      "required": false,
+      "ge": null,
+      "le": null,
+      "min_length": null,
+      "max_length": 500,
+      "enforced_by": "DataAnnotations on the request type, checked by [ApiController] model validation (400 ValidationProblemDetails)",
+      "file": "Features/Review/ReviewDtos.cs",
+      "line": 7
+    },
+    {
+      "route": "POST /review/reports/{reportId:int}/reject",
+      "field": "comment",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": 1,
+      "max_length": 500,
+      "enforced_by": "DataAnnotations on the request type, checked by [ApiController] model validation (400 ValidationProblemDetails)",
+      "file": "Features/Review/ReviewDtos.cs",
+      "line": 14
+    },
+    {
+      "route": "POST /payout-methods",
+      "field": "label",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": 1,
+      "max_length": 60,
+      "enforced_by": "DataAnnotations on the request type, checked by [ApiController] model validation (400 ValidationProblemDetails)",
+      "file": "Features/Payouts/PayoutDtos.cs",
+      "line": 8
+    },
+    {
+      "route": "POST /payout-methods",
+      "field": "accountHolder",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": 1,
+      "max_length": 100,
+      "enforced_by": "DataAnnotations on the request type, checked by [ApiController] model validation (400 ValidationProblemDetails)",
+      "file": "Features/Payouts/PayoutDtos.cs",
+      "line": 11
+    },
+    {
+      "route": "POST /payout-methods",
+      "field": "accountNumber",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": 6,
+      "max_length": 34,
+      "enforced_by": "DataAnnotations on the request type, checked by [ApiController] model validation (400 ValidationProblemDetails)",
+      "file": "Features/Payouts/PayoutDtos.cs",
+      "line": 14
+    }
+  ],
+  "bind_status": 400,
+  "json_naming": "camelCase",
+  "json_naming_exceptions": {
+    "POST /auth/login": "answer keys access_token, token_type, expires_in, user (JsonPropertyName)"
+  },
+  "login": {
+    "path": "/auth/login",
+    "fields": [
+      "email",
+      "password"
+    ],
+    "token_field": "access_token",
+    "file": "Features/Auth/AuthController.cs",
+    "line": 12
+  },
+  "seed_users": [
+    {
+      "name": "maya@outlay.test",
+      "role": "Member"
+    },
+    {
+      "name": "omar@outlay.test",
+      "role": "Admin"
+    }
+  ],
+  "not_returned": [
+    {
+      "entity": "User",
+      "column": "password"
+    },
+    {
+      "entity": "User",
+      "column": "created_at"
+    },
+    {
+      "entity": "PayoutMethod",
+      "column": "user_id"
+    },
+    {
+      "entity": "PayoutMethod",
+      "column": "account_number"
+    }
+  ]
+}
