@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 """POST HOC (after the scored HM run, not a gate): the 16 held-out mutants judged by layer A under the policy DERIVED FROM THE
 CODE (derive_dn_policy on the pristine H1) instead of the policy of the imported candidate spec the scored run used.
 Usage: python dogfood/dotnet_hm_posthoc.py H1_TGZ PATCH_DIR OUT_JSON SCRATCH"""
