@@ -1029,7 +1029,7 @@ def self_test(args: argparse.Namespace, this: Path) -> int:
         raise SystemExit("--self-test writes to a scratch directory, not to the results data")
     scratch = Path(args.scratch).resolve() if args.scratch else out / "scratch"
     ns = argparse.Namespace(**{**vars(args), "kind": "shakedown"})
-    ctx = G.standin_ctx(argparse.Namespace(arm="D", kind="shakedown", base="", d1="", h1="", h1_truth="", streak="", dnapp="", changes="", j0="", freeze="", out=str(out), scratch=str(scratch), runs=1, only="", container_owner="dn-r", driver_python="", no_docker=True, self_test=True, write_freeze="", extra=[]), scratch, out)  # fmt: skip
+    ctx = G.standin_ctx(argparse.Namespace(arm="D", kind="shakedown", base="", d1="", h1="", h1_truth="", streak=getattr(args, "streak", "") or "", dnapp="", changes="", j0="", freeze="", out=str(out), scratch=str(scratch), runs=1, only="", container_owner="dn-r", driver_python="", no_docker=True, self_test=True, write_freeze="", extra=[]), scratch, out)  # fmt: skip
     del ns
     problems: list[str] = []
     G.setup(ctx, ["D-ROUTES", "H-ROUTES"], None, None)
