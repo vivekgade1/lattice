@@ -3838,7 +3838,9 @@ def flow_routes(f: Mapping[str, Any]) -> set[tuple[str, str]]:
 
 def machine_ids(doc: Mapping[str, Any]) -> list[str]:
     return [
-        str(m.get("id") or m.get("key") or f"{m.get('table')}.{m.get('column')}")
+        f"{m.get('table')}.{m.get('column')}"
+        if m.get("table") and m.get("column")
+        else str(m.get("id") or m.get("key"))
         for m in doc.get("machines", ())
     ]
 
