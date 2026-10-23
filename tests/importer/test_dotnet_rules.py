@@ -334,7 +334,8 @@ def test_the_rules_first_import_of_h1_exercises_most_items(h1, tmp_path):
     rules = json.loads((out / "report.json").read_text())["rules"]
     items = rules["items"]
     verified = [i for i, v in items.items() if v["verdict"] in ("verified", "verified (corrected)")]
-    assert len(items) == 77 and len(verified) / len(items) >= 0.50
+    # 77 items before node F2 (refusals through typed exceptions add R3 items): the share is the claim
+    assert len(items) >= 77 and len(verified) / len(items) >= 0.50
     assert rules["summary"]["items"]["refuted"] == 0
     assert items["R1 POST /review/reports/{reportId}/approve"]["verdict"] == "verified"
 
