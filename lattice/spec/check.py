@@ -1982,6 +1982,8 @@ def _layer_r(
 
     on_probe = None
     options = dict(options or {})
+    if runtime is not None and runtime.framework == "dotnet":
+        options.setdefault("relogin", True)  # ASP.NET Core signs tokens with a key made at start-up
     if sessions is None and runtime is not None:
         from contextlib import contextmanager
 
