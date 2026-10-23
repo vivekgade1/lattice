@@ -1,0 +1,15 @@
+{
+  "id": "H2-PR3",
+  "probe": "(the row raised)",
+  "ran": true,
+  "predicted": "layer R re-run equals the import's verdict map (p 0.7)",
+  "observed": "RuntimeError: the import of h2 failed (exit 1): =self._schema)  # fmt: skip\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/vivekgade/Documents/lattice-h2-run/lattice/importer/suite.py\", line 484, in sql_seed\n    conn.executemany(\n    ~~~~~~~~~~~~~~~~^\n        f'INSERT INTO \"{t.name}\" ({quoted}) VALUES ({marks})',\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<10 lines>...\n        ],\n        ^^\n    )\n    ^\nsqlite3.OperationalError: table sessions has no column named UserId\n",
+  "pass": false,
+  "evidence": {
+    "traceback": "Traceback (most recent call last):\n  File \"/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_h2_probes.py\", line 304, in one_row\n    r = spec.fn(ctx)\n  File \"/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_probes.py\", line 4441, in h_pr3\n    theirs, mine = mapped_verdicts(load_report(import_dir(ctx, t))), seed_map(ctx, t)\n                                               ~~~~~~~~~~^^^^^^^^\n  File \"/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_probes.py\", line 3519, in import_dir\n    raise RuntimeError(\n        f\"the import of {tgt['label']} failed (exit {t['rc']}): {t['stderr'][-500:]}\"\n    )\nRuntimeError: the import of h2 failed (exit 1): =self._schema)  # fmt: skip\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/vivekgade/Documents/lattice-h2-run/lattice/importer/suite.py\", line 484, in sql_seed\n    conn.executemany(\n    ~~~~~~~~~~~~~~~~^\n        f'INSERT INTO \"{t.name}\" ({quoted}) VALUES ({marks})',\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<10 lines>...\n        ],\n        ^^\n    )\n    ^\nsqlite3.OperationalError: table sessions has no column named UserId\n\n"
+  },
+  "gated": false,
+  "h1_row": "H-PR3 (5.7)",
+  "arm": "H2:H",
+  "note": "reported, not gated: `pass` is the H1 gate's verdict"
+}

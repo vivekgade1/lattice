@@ -1,0 +1,27 @@
+Traceback (most recent call last):
+  File "/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_h2_mutants.py", line 361, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_h2_mutants.py", line 272, in main
+    hm = run_hmut2(ctx, ctx.h_target, patches, truth, rows, none, files, out)  # type: ignore[arg-type]
+  File "/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_h2_mutants.py", line 132, in run_hmut2
+    cand_dir = G.import_dir(ctx, tgt)
+  File "/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_probes.py", line 3519, in import_dir
+    raise RuntimeError(
+        f"the import of {tgt['label']} failed (exit {t['rc']}): {t['stderr'][-500:]}"
+    )
+RuntimeError: the import of h2 failed (exit 1): =self._schema)  # fmt: skip
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/vivekgade/Documents/lattice-h2-run/lattice/importer/suite.py", line 484, in sql_seed
+    conn.executemany(
+    ~~~~~~~~~~~~~~~~^
+        f'INSERT INTO "{t.name}" ({quoted}) VALUES ({marks})',
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<10 lines>...
+        ],
+        ^^
+    )
+    ^
+sqlite3.OperationalError: table sessions has no column named UserId
+
+exit 1

@@ -1,0 +1,63 @@
+{
+  "id": "H2-AUTH",
+  "probe": "auth exact on the matched routes",
+  "ran": true,
+  "predicted": "0.88-1.00; gate >= 0.85",
+  "observed": {
+    "matched": 13,
+    "exact": 2,
+    "share_of_matched": 0.1538,
+    "share_of_truth": 0.1538,
+    "wrong": {
+      "GET /hives": [
+        "Member",
+        "Public"
+      ],
+      "POST /hives": [
+        "Member",
+        "Public"
+      ],
+      "GET /hives/{}": [
+        "Member",
+        "Public"
+      ],
+      "DELETE /hives/{}": [
+        "Member",
+        "Public"
+      ],
+      "GET /hives/{}/inspections": [
+        "Member",
+        "Public"
+      ],
+      "POST /hives/{}/inspections": [
+        "Member",
+        "Public"
+      ],
+      "GET /lots": [
+        "Member",
+        "Public"
+      ],
+      "POST /lots": [
+        "Member",
+        "Public"
+      ],
+      "GET /lots/{}": [
+        "Member",
+        "Public"
+      ],
+      "POST /lots/{}/advance": [
+        "Member",
+        "Public"
+      ],
+      "GET /admin/overview": [
+        "Admin",
+        "Public"
+      ]
+    }
+  },
+  "pass": false,
+  "evidence": {},
+  "gated": true,
+  "h1_row": "H-AUTH (5.7)",
+  "arm": "H2:H"
+}

@@ -1,0 +1,28 @@
+gated rows (13): ['H2-ROUTES', 'H2-AUTH', 'H2-TABLES', 'H2-WIRE', 'H2-UNREAD', 'H2-BOUNDS', 'H2-RAISE', 'H2-PI3', 'H2-PI7', 'H2-PA1', 'H2-IMPL', 'H2-WF', 'H2-JUDGE']
+reported rows: ['H2-OWN', 'H2-PI4', 'H2-PI5', 'H2-PR3', 'H2-PA0', 'H2-DET', 'H2-X']
+H2-ROUTES: pass=True
+H2-AUTH: pass=False
+H2-TABLES: pass=False
+H2-WIRE: pass=False
+H2-UNREAD: pass=True
+H2-BOUNDS: pass=True
+H2-RAISE: pass=False
+H2-PI3: pass=False
+H2-PI7: pass=True
+H2-PA1: pass=False
+H2-IMPL: pass=False
+H2-WF: pass=False
+H2-JUDGE: pass=True
+H2-OWN: pass=False (reported)
+H2-PI4: pass=False (reported)
+H2-PI5: pass=False (reported)
+H2-PR3: pass=False (reported)
+H2-PA0: pass=False (reported)
+H2-DET: pass=True (reported)
+H2-X: pass=False (reported)
+gated passed 5/13: ['H2-ROUTES', 'H2-UNREAD', 'H2-BOUNDS', 'H2-PI7', 'H2-JUDGE']
+gated failed: ['H2-AUTH', 'H2-TABLES', 'H2-WIRE', 'H2-RAISE', 'H2-PI3', 'H2-PA1', 'H2-IMPL', 'H2-WF']
+not run: []
+reported: {'H2-OWN': False, 'H2-PI4': False, 'H2-PI5': False, 'H2-PR3': False, 'H2-PA0': False, 'H2-DET': True, 'H2-X': False}
+ledger sha256: 3ddbdedcc2ef43852e12597e7d7f0b37cb02696c3ff4e89fa089bd5120e9dc57
+exit 0

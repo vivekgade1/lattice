@@ -1,0 +1,43 @@
+{
+  "id": "H2-PA1",
+  "probe": "derive_dn_policy: private within the truth's, owners within the truth's",
+  "ran": true,
+  "predicted": "0 wrong (p 0.6)",
+  "observed": {
+    "private": {
+      "User": [
+        "Id",
+        "Name",
+        "Password"
+      ],
+      "Session": [
+        "Id",
+        "UserId"
+      ],
+      "Lot": [
+        "OwnerId"
+      ]
+    },
+    "owners": {},
+    "private_not_in_truth": {
+      "User": [
+        "Id",
+        "Name",
+        "Password"
+      ],
+      "Session": [
+        "Id",
+        "UserId"
+      ],
+      "Lot": [
+        "OwnerId"
+      ]
+    },
+    "owners_not_in_truth": {}
+  },
+  "pass": false,
+  "evidence": {},
+  "gated": true,
+  "h1_row": "H-PA1 (5.7)",
+  "arm": "H2:H"
+}

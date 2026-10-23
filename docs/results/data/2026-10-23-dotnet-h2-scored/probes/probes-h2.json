@@ -1,0 +1,733 @@
+{
+  "runner": "dotnet_h2_probes",
+  "runner_sha256": "8be0b38a996d5c69e400fb2cefda1bd3952935bbffa9e69baf66782f205ca795",
+  "kind": "scored",
+  "run_id": "2f1badee6114",
+  "arm": "H2:H",
+  "lattice_file": "/Users/vivekgade/Documents/lattice-h2-run/lattice/__init__.py",
+  "freeze": {
+    "file": "/Users/vivekgade/Documents/lattice-h2-run/docs/results/data/2026-10-23-dotnet-h2/freeze.sha256",
+    "list_sha256": "ae6cde4135e6b26ab8264343701aacc1c5a5cef2ad798955557e1743e834b289",
+    "entries": 428,
+    "mismatches": 0,
+    "must_listed": 428,
+    "running_script_listed": true,
+    "import_subprocess_lattice_file": "/Users/vivekgade/Documents/lattice-h2-run/lattice/__init__.py"
+  },
+  "inputs": {
+    "file": "/Users/vivekgade/Documents/lattice-h2-run/docs/results/data/2026-10-23-dotnet-h2/h2-inputs.sha256",
+    "list_sha256": "c9486df64a7f8ccc67f22a66c18a4d74cf930590b672952ebc100752bbb85010",
+    "entries": 19,
+    "mismatches": 0,
+    "must_listed": 0,
+    "running_script_listed": false
+  },
+  "h2": "/Users/vivekgade/Documents/lattice-h2-run/docs/results/data/2026-10-23-dotnet-h2/h2.tgz",
+  "h2_truth": "/Users/vivekgade/Documents/lattice-h2-run/docs/results/data/2026-10-23-dotnet-h2/h2-truth.json",
+  "timings": {
+    "build_h2_s": 1.0,
+    "import_h2_main_s": 3.818549625109881
+  },
+  "shim_calls": [
+    "H2-ROUTES dotnet build",
+    "H2-ROUTES dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-WIRE dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI3 dotnet --version",
+    "H2-PI3 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI3 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI3 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI3 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI3 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-PI7 dotnet --version",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-PI7 dotnet --version",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-PI7 dotnet --version",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-PI7 dotnet --version",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-PI7 dotnet --version",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-PI7 dotnet --version",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-PI7 dotnet --version",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-PI7 dotnet --version",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-PI7 dotnet --version",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-PI7 dotnet --version",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI7 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-PA1 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PA1 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-IMPL dotnet --version",
+    "H2-IMPL dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-IMPL dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-IMPL dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-IMPL dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-IMPL dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-WF dotnet --version",
+    "H2-WF dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-WF dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-WF dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-WF dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-WF dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-WF dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-WF dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-WF dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-WF dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-WF dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-WF dotnet --version",
+    "H2-WF dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-WF dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-WF dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-WF dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-WF dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-WF dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-WF dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-WF dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-WF dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-WF dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-JUDGE dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-OWN dotnet --version",
+    "H2-OWN dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-OWN dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-OWN dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-OWN dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-OWN dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-PI4 dotnet --version",
+    "H2-PI4 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI4 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI4 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI4 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI4 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-PI5 dotnet --version",
+    "H2-PI5 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI5 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI5 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI5 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PI5 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-PR3 dotnet --version",
+    "H2-PR3 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PR3 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PR3 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PR3 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PR3 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-PA0 dotnet --version",
+    "H2-PA0 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PA0 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PA0 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PA0 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-PA0 dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll",
+    "H2-DET dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-DET dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-DET dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-DET dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-DET dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-DET dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-DET dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-DET dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-DET dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-DET dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-X dotnet --version",
+    "H2-X dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-X dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-X dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-X dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/dncheck-cache/3410b1cd9c7287b654c4578f/dncheck.dll",
+    "H2-X dotnet /Users/vivekgade/Documents/h2-scored-scratch/probes/build/h2/out/apiary.dll"
+  ],
+  "target_unchanged": {
+    "checked": true,
+    "changed": [],
+    "unchanged": true
+  },
+  "r_kwargs": null,
+  "gated": [
+    "H2-ROUTES",
+    "H2-AUTH",
+    "H2-TABLES",
+    "H2-WIRE",
+    "H2-UNREAD",
+    "H2-BOUNDS",
+    "H2-RAISE",
+    "H2-PI3",
+    "H2-PI7",
+    "H2-PA1",
+    "H2-IMPL",
+    "H2-WF",
+    "H2-JUDGE"
+  ],
+  "results": [
+    {
+      "id": "H2-ROUTES",
+      "probe": "routes vs truth (4.5 matching)",
+      "ran": true,
+      "predicted": "recall 0.90-1.00, 0 extra; gate recall >= 0.90 and 0 extra",
+      "observed": {
+        "truth_routes": 13,
+        "extract_routes": 13,
+        "recall": 1.0,
+        "missing": [],
+        "extra": [],
+        "style_wrong": []
+      },
+      "pass": true,
+      "evidence": {},
+      "gated": true,
+      "h1_row": "H-ROUTES (5.7)",
+      "arm": "H2:H"
+    },
+    {
+      "id": "H2-AUTH",
+      "probe": "auth exact on the matched routes",
+      "ran": true,
+      "predicted": "0.88-1.00; gate >= 0.85",
+      "observed": {
+        "matched": 13,
+        "exact": 2,
+        "share_of_matched": 0.1538,
+        "share_of_truth": 0.1538,
+        "wrong": {
+          "GET /hives": [
+            "Member",
+            "Public"
+          ],
+          "POST /hives": [
+            "Member",
+            "Public"
+          ],
+          "GET /hives/{}": [
+            "Member",
+            "Public"
+          ],
+          "DELETE /hives/{}": [
+            "Member",
+            "Public"
+          ],
+          "GET /hives/{}/inspections": [
+            "Member",
+            "Public"
+          ],
+          "POST /hives/{}/inspections": [
+            "Member",
+            "Public"
+          ],
+          "GET /lots": [
+            "Member",
+            "Public"
+          ],
+          "POST /lots": [
+            "Member",
+            "Public"
+          ],
+          "GET /lots/{}": [
+            "Member",
+            "Public"
+          ],
+          "POST /lots/{}/advance": [
+            "Member",
+            "Public"
+          ],
+          "GET /admin/overview": [
+            "Admin",
+            "Public"
+          ]
+        }
+      },
+      "pass": false,
+      "evidence": {},
+      "gated": true,
+      "h1_row": "H-AUTH (5.7)",
+      "arm": "H2:H"
+    },
+    {
+      "id": "H2-TABLES",
+      "probe": "table recall and column-fact accuracy",
+      "ran": true,
+      "predicted": "tables 1.00, facts 0.90-1.00; gate both >= 0.90",
+      "observed": {
+        "truth_tables": 5,
+        "found": 5,
+        "table_recall": 1.0,
+        "missing_tables": [],
+        "extra_tables": [],
+        "facts": 168,
+        "facts_ok": 0,
+        "fact_accuracy": 0.0,
+        "wrong_facts": [
+          "users.id.nullable",
+          "users.id.unique",
+          "users.id.pk",
+          "users.id.max_length",
+          "users.id.fk",
+          "users.id.private",
+          "users.name.nullable",
+          "users.name.unique",
+          "users.name.pk",
+          "users.name.max_length",
+          "users.name.fk",
+          "users.name.private",
+          "users.password.nullable",
+          "users.password.unique",
+          "users.password.pk",
+          "users.password.max_length",
+          "users.password.fk",
+          "users.password.private",
+          "users.role.nullable",
+          "users.role.unique",
+          "users.role.pk",
+          "users.role.max_length",
+          "users.role.fk",
+          "users.role.private",
+          "sessions.id.nullable",
+          "sessions.id.unique",
+          "sessions.id.pk",
+          "sessions.id.max_length",
+          "sessions.id.fk",
+          "sessions.id.private"
+        ]
+      },
+      "pass": false,
+      "evidence": {},
+      "gated": true,
+      "h1_row": "H-TABLES (5.7)",
+      "arm": "H2:H"
+    },
+    {
+      "id": "H2-WIRE",
+      "probe": "wire names vs truth",
+      "ran": true,
+      "predicted": "0.93-1.00; gate >= 0.95",
+      "observed": {
+        "wire_columns": 20,
+        "ok": 0,
+        "share": 0.0,
+        "wrong": [
+          "users.role: 'role' vs None",
+          "sessions.token: 'access_token' vs None",
+          "sessions.expires_at: 'expires_at' vs None",
+          "hives.id: 'id' vs None",
+          "hives.name: 'name' vs None",
+          "hives.queen_year: 'queen_year' vs None",
+          "hives.boxes: 'boxes' vs None",
+          "inspections.id: 'id' vs None",
+          "inspections.hive_id: 'hive_id' vs None",
+          "inspections.inspected_at: 'inspected_at' vs None",
+          "inspections.brood_frames: 'brood_frames' vs None",
+          "inspections.temperament: 'temperament' vs None",
+          "inspections.remarks: 'remarks' vs None",
+          "lots.id: 'id' vs None",
+          "lots.label: 'label' vs None",
+          "lots.weight_kg: 'weight_kg' vs None",
+          "lots.moisture_pct: 'moisture_pct' vs None",
+          "lots.state: 'state' vs None",
+          "lots.created_at: 'created_at' vs None",
+          "lots.updated_at: 'updated_at' vs None"
+        ]
+      },
+      "pass": false,
+      "evidence": {},
+      "gated": true,
+      "h1_row": "H-WIRE (5.7)",
+      "arm": "H2:H"
+    },
+    {
+      "id": "H2-UNREAD",
+      "probe": "0 silent drops",
+      "ran": true,
+      "predicted": "0 silent drops; gate 0",
+      "observed": {
+        "silent_drops": [],
+        "n": 0
+      },
+      "pass": true,
+      "evidence": {},
+      "gated": true,
+      "h1_row": "H-UNREAD (5.7)",
+      "arm": "H2:H"
+    },
+    {
+      "id": "H2-BOUNDS",
+      "probe": "bounds vs truth: no bound claimed that truth does not state as enforced",
+      "ran": true,
+      "predicted": "precision 0.85-1.00, recall 0.5-1.0; gate precision 1.00",
+      "observed": {
+        "claimed": 0,
+        "truth_bounds": 34,
+        "precision": 1.0,
+        "recall": 0.0,
+        "claimed_not_in_truth": [],
+        "missed": [
+          "POST /hives boxes ge=1",
+          "POST /hives boxes le=6",
+          "POST /hives boxes required=True",
+          "POST /hives name max_length=60",
+          "POST /hives name min_length=1",
+          "POST /hives name required=True",
+          "POST /hives queen_year ge=2000",
+          "POST /hives queen_year le=current UTC year",
+          "POST /hives queen_year required=True",
+          "POST /hives yard_location max_length=200",
+          "POST /hives/{}/inspections brood_frames ge=0",
+          "POST /hives/{}/inspections brood_frames le=20",
+          "POST /hives/{}/inspections brood_frames required=True",
+          "POST /hives/{}/inspections remarks max_length=500",
+          "POST /hives/{}/inspections temperament ge=1",
+          "POST /hives/{}/inspections temperament le=5",
+          "POST /hives/{}/inspections temperament required=True",
+          "POST /login password min_length=1",
+          "POST /login password required=True",
+          "POST /login username max_length=80",
+          "POST /login username min_length=1",
+          "POST /login username required=True",
+          "POST /lots label max_length=60",
+          "POST /lots label min_length=1",
+          "POST /lots label required=True",
+          "POST /lots moisture_pct ge=10",
+          "POST /lots moisture_pct le=30",
+          "POST /lots moisture_pct required=True",
+          "POST /lots weight_kg ge=0.1",
+          "POST /lots weight_kg le=500",
+          "POST /lots weight_kg required=True",
+          "POST /lots/{}/advance moisture_pct ge=10",
+          "POST /lots/{}/advance moisture_pct le=30",
+          "POST /lots/{}/advance to required=True"
+        ]
+      },
+      "pass": true,
+      "evidence": {},
+      "gated": true,
+      "h1_row": "H-BOUNDS (5.7)",
+      "arm": "H2:H"
+    },
+    {
+      "id": "H2-RAISE",
+      "probe": "refusals (route, status)",
+      "ran": true,
+      "predicted": "recall 0.45-0.90, precision 0.95-1.00; gate recall >= 0.60 and precision 1.00",
+      "observed": {
+        "truth_pairs": 17,
+        "extract_pairs": 22,
+        "precision": 0.6818,
+        "recall": 0.8824,
+        "false_positives": [
+          "DELETE /hives/{} 400",
+          "GET /admin/overview 400",
+          "GET /health 400",
+          "GET /hives 400",
+          "GET /hives/{} 400",
+          "GET /hives/{}/inspections 400",
+          "GET /lots/{} 400"
+        ],
+        "missed": [
+          "GET /admin/overview 403",
+          "GET /hives 401"
+        ]
+      },
+      "pass": false,
+      "evidence": {
+        "h1_gate_pass": false
+      },
+      "gated": true,
+      "h1_row": "H-RAISE (5.7; precision 1.00 here)",
+      "arm": "H2:H"
+    },
+    {
+      "id": "H2-PI3",
+      "probe": "(the row raised)",
+      "ran": true,
+      "predicted": "verified share 0.25-0.65, refuted 0-4; gate share >= 0.50, every refuted item corrected or baselined, every unexercised item with a reason",
+      "observed": "RuntimeError: the import of h2 failed (exit 1): =self._schema)  # fmt: skip\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/vivekgade/Documents/lattice-h2-run/lattice/importer/suite.py\", line 484, in sql_seed\n    conn.executemany(\n    ~~~~~~~~~~~~~~~~^\n        f'INSERT INTO \"{t.name}\" ({quoted}) VALUES ({marks})',\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<10 lines>...\n        ],\n        ^^\n    )\n    ^\nsqlite3.OperationalError: table sessions has no column named UserId\n",
+      "pass": false,
+      "evidence": {
+        "traceback": "Traceback (most recent call last):\n  File \"/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_h2_probes.py\", line 304, in one_row\n    r = spec.fn(ctx)\n  File \"/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_probes.py\", line 4394, in h_pi3\n    a = item_audit(load_report(import_dir(ctx, ht(ctx))))\n                               ~~~~~~~~~~^^^^^^^^^^^^^^\n  File \"/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_probes.py\", line 3519, in import_dir\n    raise RuntimeError(\n        f\"the import of {tgt['label']} failed (exit {t['rc']}): {t['stderr'][-500:]}\"\n    )\nRuntimeError: the import of h2 failed (exit 1): =self._schema)  # fmt: skip\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/vivekgade/Documents/lattice-h2-run/lattice/importer/suite.py\", line 484, in sql_seed\n    conn.executemany(\n    ~~~~~~~~~~~~~~~~^\n        f'INSERT INTO \"{t.name}\" ({quoted}) VALUES ({marks})',\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<10 lines>...\n        ],\n        ^^\n    )\n    ^\nsqlite3.OperationalError: table sessions has no column named UserId\n\n"
+      },
+      "gated": true,
+      "h1_row": "H-PI3 (5.7)",
+      "arm": "H2:H"
+    },
+    {
+      "id": "H2-PI7",
+      "probe": "the import 10x, timing fields masked only",
+      "ran": true,
+      "predicted": "10/10 identical, timing fields masked only (p 0.6)",
+      "observed": {
+        "identical": 10,
+        "of": 10,
+        "files_differing": []
+      },
+      "pass": true,
+      "evidence": {},
+      "gated": true,
+      "h1_row": "H-PI7 (5.7; timing-only mask here)",
+      "arm": "H2:H"
+    },
+    {
+      "id": "H2-PA1",
+      "probe": "derive_dn_policy: private within the truth's, owners within the truth's",
+      "ran": true,
+      "predicted": "0 wrong (p 0.6)",
+      "observed": {
+        "private": {
+          "User": [
+            "Id",
+            "Name",
+            "Password"
+          ],
+          "Session": [
+            "Id",
+            "UserId"
+          ],
+          "Lot": [
+            "OwnerId"
+          ]
+        },
+        "owners": {},
+        "private_not_in_truth": {
+          "User": [
+            "Id",
+            "Name",
+            "Password"
+          ],
+          "Session": [
+            "Id",
+            "UserId"
+          ],
+          "Lot": [
+            "OwnerId"
+          ]
+        },
+        "owners_not_in_truth": {}
+      },
+      "pass": false,
+      "evidence": {},
+      "gated": true,
+      "h1_row": "H-PA1 (5.7)",
+      "arm": "H2:H"
+    },
+    {
+      "id": "H2-IMPL",
+      "probe": "(the row raised)",
+      "ran": true,
+      "predicted": "0 missing/extra route rows (p 0.5)",
+      "observed": "RuntimeError: the import of h2 failed (exit 1): =self._schema)  # fmt: skip\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/vivekgade/Documents/lattice-h2-run/lattice/importer/suite.py\", line 484, in sql_seed\n    conn.executemany(\n    ~~~~~~~~~~~~~~~~^\n        f'INSERT INTO \"{t.name}\" ({quoted}) VALUES ({marks})',\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<10 lines>...\n        ],\n        ^^\n    )\n    ^\nsqlite3.OperationalError: table sessions has no column named UserId\n",
+      "pass": false,
+      "evidence": {
+        "traceback": "Traceback (most recent call last):\n  File \"/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_h2_probes.py\", line 304, in one_row\n    r = spec.fn(ctx)\n  File \"/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_probes.py\", line 4530, in h_impl\n    d = import_dir(ctx, t)\n  File \"/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_probes.py\", line 3519, in import_dir\n    raise RuntimeError(\n        f\"the import of {tgt['label']} failed (exit {t['rc']}): {t['stderr'][-500:]}\"\n    )\nRuntimeError: the import of h2 failed (exit 1): =self._schema)  # fmt: skip\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/vivekgade/Documents/lattice-h2-run/lattice/importer/suite.py\", line 484, in sql_seed\n    conn.executemany(\n    ~~~~~~~~~~~~~~~~^\n        f'INSERT INTO \"{t.name}\" ({quoted}) VALUES ({marks})',\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<10 lines>...\n        ],\n        ^^\n    )\n    ^\nsqlite3.OperationalError: table sessions has no column named UserId\n\n"
+      },
+      "gated": true,
+      "h1_row": "H-IMPL (5.7)",
+      "arm": "H2:H"
+    },
+    {
+      "id": "H2-WF",
+      "probe": "workflows on H1 (static + observed on SQLite)",
+      "ran": true,
+      "predicted": ">= 1 multi-step flow verified, 0 failing on replay (p 0.7)",
+      "observed": {
+        "verified": 0,
+        "multi_step_verified": 0,
+        "verified_then_not_on_replay": []
+      },
+      "pass": false,
+      "evidence": {},
+      "gated": true,
+      "h1_row": "H-WF (5.7)",
+      "arm": "H2:H"
+    },
+    {
+      "id": "H2-JUDGE",
+      "probe": "share of the truth's owner-scoped routes judged by DN801 (complete reach)",
+      "ran": true,
+      "predicted": "0.55-0.95; gate >= 0.75",
+      "observed": {
+        "method": "proxy: the extract (no judged list from B3's check output)",
+        "owner_scoped": 6,
+        "judged": 6,
+        "share": 1.0,
+        "not_judged": []
+      },
+      "pass": true,
+      "evidence": {},
+      "gated": true,
+      "h1_row": "H-JUDGE (5.7)",
+      "arm": "H2:H"
+    },
+    {
+      "id": "H2-OWN",
+      "probe": "(the row raised)",
+      "ran": true,
+      "predicted": "0 confident-wrong owners (p 0.8)",
+      "observed": "RuntimeError: the import of h2 failed (exit 1): =self._schema)  # fmt: skip\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/vivekgade/Documents/lattice-h2-run/lattice/importer/suite.py\", line 484, in sql_seed\n    conn.executemany(\n    ~~~~~~~~~~~~~~~~^\n        f'INSERT INTO \"{t.name}\" ({quoted}) VALUES ({marks})',\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<10 lines>...\n        ],\n        ^^\n    )\n    ^\nsqlite3.OperationalError: table sessions has no column named UserId\n",
+      "pass": false,
+      "evidence": {
+        "traceback": "Traceback (most recent call last):\n  File \"/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_h2_probes.py\", line 304, in one_row\n    r = spec.fn(ctx)\n  File \"/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_probes.py\", line 4371, in h_own\n    rep = load_report(import_dir(ctx, t))\n                      ~~~~~~~~~~^^^^^^^^\n  File \"/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_probes.py\", line 3519, in import_dir\n    raise RuntimeError(\n        f\"the import of {tgt['label']} failed (exit {t['rc']}): {t['stderr'][-500:]}\"\n    )\nRuntimeError: the import of h2 failed (exit 1): =self._schema)  # fmt: skip\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/vivekgade/Documents/lattice-h2-run/lattice/importer/suite.py\", line 484, in sql_seed\n    conn.executemany(\n    ~~~~~~~~~~~~~~~~^\n        f'INSERT INTO \"{t.name}\" ({quoted}) VALUES ({marks})',\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<10 lines>...\n        ],\n        ^^\n    )\n    ^\nsqlite3.OperationalError: table sessions has no column named UserId\n\n"
+      },
+      "gated": false,
+      "h1_row": "H-OWN (5.7)",
+      "arm": "H2:H",
+      "note": "reported, not gated: `pass` is the H1 gate's verdict"
+    },
+    {
+      "id": "H2-PI4",
+      "probe": "(the row raised)",
+      "ran": true,
+      "predicted": ">= 0.95 retained on variant2 (p 0.7)",
+      "observed": "RuntimeError: the import of h2 failed (exit 1): =self._schema)  # fmt: skip\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/vivekgade/Documents/lattice-h2-run/lattice/importer/suite.py\", line 484, in sql_seed\n    conn.executemany(\n    ~~~~~~~~~~~~~~~~^\n        f'INSERT INTO \"{t.name}\" ({quoted}) VALUES ({marks})',\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<10 lines>...\n        ],\n        ^^\n    )\n    ^\nsqlite3.OperationalError: table sessions has no column named UserId\n",
+      "pass": false,
+      "evidence": {
+        "traceback": "Traceback (most recent call last):\n  File \"/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_h2_probes.py\", line 304, in one_row\n    r = spec.fn(ctx)\n  File \"/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_probes.py\", line 4405, in h_pi4\n    sc = score_pi4(seed_map(ctx, t), ctx.lib.r_verdicts(ctx, t, import_dir(ctx, t), \"variant2\"))\n                   ~~~~~~~~^^^^^^^^\n  File \"/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_probes.py\", line 3589, in seed_map\n    ctx.cache[key] = ctx.lib.r_verdicts(ctx, tgt, import_dir(ctx, tgt), variant)\n                                                  ~~~~~~~~~~^^^^^^^^^^\n  File \"/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_probes.py\", line 3519, in import_dir\n    raise RuntimeError(\n        f\"the import of {tgt['label']} failed (exit {t['rc']}): {t['stderr'][-500:]}\"\n    )\nRuntimeError: the import of h2 failed (exit 1): =self._schema)  # fmt: skip\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/vivekgade/Documents/lattice-h2-run/lattice/importer/suite.py\", line 484, in sql_seed\n    conn.executemany(\n    ~~~~~~~~~~~~~~~~^\n        f'INSERT INTO \"{t.name}\" ({quoted}) VALUES ({marks})',\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<10 lines>...\n        ],\n        ^^\n    )\n    ^\nsqlite3.OperationalError: table sessions has no column named UserId\n\n"
+      },
+      "gated": false,
+      "h1_row": "H-PI4 (5.7)",
+      "arm": "H2:H",
+      "note": "reported, not gated: `pass` is the H1 gate's verdict"
+    },
+    {
+      "id": "H2-PI5",
+      "probe": "(the row raised)",
+      "ran": true,
+      "predicted": "the truth machine's first edge proposed (p 0.5)",
+      "observed": "RuntimeError: the import of h2 failed (exit 1): =self._schema)  # fmt: skip\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/vivekgade/Documents/lattice-h2-run/lattice/importer/suite.py\", line 484, in sql_seed\n    conn.executemany(\n    ~~~~~~~~~~~~~~~~^\n        f'INSERT INTO \"{t.name}\" ({quoted}) VALUES ({marks})',\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<10 lines>...\n        ],\n        ^^\n    )\n    ^\nsqlite3.OperationalError: table sessions has no column named UserId\n",
+      "pass": false,
+      "evidence": {
+        "traceback": "Traceback (most recent call last):\n  File \"/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_h2_probes.py\", line 304, in one_row\n    r = spec.fn(ctx)\n  File \"/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_probes.py\", line 4416, in h_pi5\n    props = json.loads((import_dir(ctx, t) / \"proposals.json\").read_text())\n                        ~~~~~~~~~~^^^^^^^^\n  File \"/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_probes.py\", line 3519, in import_dir\n    raise RuntimeError(\n        f\"the import of {tgt['label']} failed (exit {t['rc']}): {t['stderr'][-500:]}\"\n    )\nRuntimeError: the import of h2 failed (exit 1): =self._schema)  # fmt: skip\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/vivekgade/Documents/lattice-h2-run/lattice/importer/suite.py\", line 484, in sql_seed\n    conn.executemany(\n    ~~~~~~~~~~~~~~~~^\n        f'INSERT INTO \"{t.name}\" ({quoted}) VALUES ({marks})',\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<10 lines>...\n        ],\n        ^^\n    )\n    ^\nsqlite3.OperationalError: table sessions has no column named UserId\n\n"
+      },
+      "gated": false,
+      "h1_row": "H-PI5 (5.7)",
+      "arm": "H2:H",
+      "note": "reported, not gated: `pass` is the H1 gate's verdict"
+    },
+    {
+      "id": "H2-PR3",
+      "probe": "(the row raised)",
+      "ran": true,
+      "predicted": "layer R re-run equals the import's verdict map (p 0.7)",
+      "observed": "RuntimeError: the import of h2 failed (exit 1): =self._schema)  # fmt: skip\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/vivekgade/Documents/lattice-h2-run/lattice/importer/suite.py\", line 484, in sql_seed\n    conn.executemany(\n    ~~~~~~~~~~~~~~~~^\n        f'INSERT INTO \"{t.name}\" ({quoted}) VALUES ({marks})',\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<10 lines>...\n        ],\n        ^^\n    )\n    ^\nsqlite3.OperationalError: table sessions has no column named UserId\n",
+      "pass": false,
+      "evidence": {
+        "traceback": "Traceback (most recent call last):\n  File \"/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_h2_probes.py\", line 304, in one_row\n    r = spec.fn(ctx)\n  File \"/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_probes.py\", line 4441, in h_pr3\n    theirs, mine = mapped_verdicts(load_report(import_dir(ctx, t))), seed_map(ctx, t)\n                                               ~~~~~~~~~~^^^^^^^^\n  File \"/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_probes.py\", line 3519, in import_dir\n    raise RuntimeError(\n        f\"the import of {tgt['label']} failed (exit {t['rc']}): {t['stderr'][-500:]}\"\n    )\nRuntimeError: the import of h2 failed (exit 1): =self._schema)  # fmt: skip\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/vivekgade/Documents/lattice-h2-run/lattice/importer/suite.py\", line 484, in sql_seed\n    conn.executemany(\n    ~~~~~~~~~~~~~~~~^\n        f'INSERT INTO \"{t.name}\" ({quoted}) VALUES ({marks})',\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<10 lines>...\n        ],\n        ^^\n    )\n    ^\nsqlite3.OperationalError: table sessions has no column named UserId\n\n"
+      },
+      "gated": false,
+      "h1_row": "H-PR3 (5.7)",
+      "arm": "H2:H",
+      "note": "reported, not gated: `pass` is the H1 gate's verdict"
+    },
+    {
+      "id": "H2-PA0",
+      "probe": "(the row raised)",
+      "ran": true,
+      "predicted": "0 layer A findings outside the baseline under dn_spec_policy (p 0.7)",
+      "observed": "RuntimeError: the import of h2 failed (exit 1): =self._schema)  # fmt: skip\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/vivekgade/Documents/lattice-h2-run/lattice/importer/suite.py\", line 484, in sql_seed\n    conn.executemany(\n    ~~~~~~~~~~~~~~~~^\n        f'INSERT INTO \"{t.name}\" ({quoted}) VALUES ({marks})',\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<10 lines>...\n        ],\n        ^^\n    )\n    ^\nsqlite3.OperationalError: table sessions has no column named UserId\n",
+      "pass": false,
+      "evidence": {
+        "traceback": "Traceback (most recent call last):\n  File \"/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_h2_probes.py\", line 304, in one_row\n    r = spec.fn(ctx)\n  File \"/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_probes.py\", line 4480, in h_pa0\n    cand = load_candidate(import_dir(ctx, t))\n                          ~~~~~~~~~~^^^^^^^^\n  File \"/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_probes.py\", line 3519, in import_dir\n    raise RuntimeError(\n        f\"the import of {tgt['label']} failed (exit {t['rc']}): {t['stderr'][-500:]}\"\n    )\nRuntimeError: the import of h2 failed (exit 1): =self._schema)  # fmt: skip\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/vivekgade/Documents/lattice-h2-run/lattice/importer/suite.py\", line 484, in sql_seed\n    conn.executemany(\n    ~~~~~~~~~~~~~~~~^\n        f'INSERT INTO \"{t.name}\" ({quoted}) VALUES ({marks})',\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<10 lines>...\n        ],\n        ^^\n    )\n    ^\nsqlite3.OperationalError: table sessions has no column named UserId\n\n"
+      },
+      "gated": false,
+      "h1_row": "H-PA0 (5.7)",
+      "arm": "H2:H",
+      "note": "reported, not gated: `pass` is the H1 gate's verdict"
+    },
+    {
+      "id": "H2-DET",
+      "probe": "extract and layer A 10x",
+      "ran": true,
+      "predicted": "extract and layer A 10x identical (p 0.9)",
+      "observed": {
+        "extract_identical": 10,
+        "layer_a_identical": 10,
+        "of": 10
+      },
+      "pass": true,
+      "evidence": {},
+      "gated": false,
+      "h1_row": "H-DET (5.7)",
+      "arm": "H2:H",
+      "note": "reported, not gated: `pass` is the H1 gate's verdict"
+    },
+    {
+      "id": "H2-X",
+      "probe": "(the row raised)",
+      "ran": true,
+      "predicted": "import wall <= 240 s (p 0.9)",
+      "observed": "RuntimeError: the import of h2 failed (exit 1): =self._schema)  # fmt: skip\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/vivekgade/Documents/lattice-h2-run/lattice/importer/suite.py\", line 484, in sql_seed\n    conn.executemany(\n    ~~~~~~~~~~~~~~~~^\n        f'INSERT INTO \"{t.name}\" ({quoted}) VALUES ({marks})',\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<10 lines>...\n        ],\n        ^^\n    )\n    ^\nsqlite3.OperationalError: table sessions has no column named UserId\n",
+      "pass": false,
+      "evidence": {
+        "traceback": "Traceback (most recent call last):\n  File \"/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_h2_probes.py\", line 304, in one_row\n    r = spec.fn(ctx)\n  File \"/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_probes.py\", line 4584, in h_x\n    import_dir(ctx, t)\n    ~~~~~~~~~~^^^^^^^^\n  File \"/Users/vivekgade/Documents/lattice-h2-run/dogfood/dotnet_probes.py\", line 3519, in import_dir\n    raise RuntimeError(\n        f\"the import of {tgt['label']} failed (exit {t['rc']}): {t['stderr'][-500:]}\"\n    )\nRuntimeError: the import of h2 failed (exit 1): =self._schema)  # fmt: skip\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/vivekgade/Documents/lattice-h2-run/lattice/importer/suite.py\", line 484, in sql_seed\n    conn.executemany(\n    ~~~~~~~~~~~~~~~~^\n        f'INSERT INTO \"{t.name}\" ({quoted}) VALUES ({marks})',\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<10 lines>...\n        ],\n        ^^\n    )\n    ^\nsqlite3.OperationalError: table sessions has no column named UserId\n\n"
+      },
+      "gated": false,
+      "h1_row": "H-X (5.7)",
+      "arm": "H2:H",
+      "note": "reported, not gated: `pass` is the H1 gate's verdict"
+    }
+  ],
+  "summary": {
+    "gated_passed": [
+      "H2-ROUTES",
+      "H2-UNREAD",
+      "H2-BOUNDS",
+      "H2-PI7",
+      "H2-JUDGE"
+    ],
+    "gated_failed": [
+      "H2-AUTH",
+      "H2-TABLES",
+      "H2-WIRE",
+      "H2-RAISE",
+      "H2-PI3",
+      "H2-PA1",
+      "H2-IMPL",
+      "H2-WF"
+    ],
+    "not_run": [],
+    "reported": {
+      "H2-OWN": false,
+      "H2-PI4": false,
+      "H2-PI5": false,
+      "H2-PR3": false,
+      "H2-PA0": false,
+      "H2-DET": true,
+      "H2-X": false
+    }
+  }
+}
