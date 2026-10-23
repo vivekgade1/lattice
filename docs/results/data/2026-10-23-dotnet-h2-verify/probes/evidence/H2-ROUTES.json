@@ -1,0 +1,19 @@
+{
+  "id": "H2-ROUTES",
+  "probe": "routes vs truth (4.5 matching)",
+  "ran": true,
+  "predicted": "recall 0.90-1.00, 0 extra; gate recall >= 0.90 and 0 extra",
+  "observed": {
+    "truth_routes": 13,
+    "extract_routes": 13,
+    "recall": 1.0,
+    "missing": [],
+    "extra": [],
+    "style_wrong": []
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "h1_row": "H-ROUTES (5.7)",
+  "arm": "H2:H"
+}

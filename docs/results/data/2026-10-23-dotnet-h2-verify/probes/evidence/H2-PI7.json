@@ -1,0 +1,16 @@
+{
+  "id": "H2-PI7",
+  "probe": "the import 10x, timing fields masked only",
+  "ran": true,
+  "predicted": "10/10 identical, timing fields masked only (p 0.6)",
+  "observed": {
+    "identical": 10,
+    "of": 10,
+    "files_differing": []
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "h1_row": "H-PI7 (5.7; timing-only mask here)",
+  "arm": "H2:H"
+}

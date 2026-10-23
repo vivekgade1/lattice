@@ -1,0 +1,38 @@
+{
+  "id": "H2-WIRE",
+  "probe": "wire names vs truth",
+  "ran": true,
+  "predicted": "0.93-1.00; gate >= 0.95",
+  "observed": {
+    "wire_columns": 20,
+    "ok": 0,
+    "share": 0.0,
+    "wrong": [
+      "users.role: 'role' vs None",
+      "sessions.token: 'access_token' vs None",
+      "sessions.expires_at: 'expires_at' vs None",
+      "hives.id: 'id' vs None",
+      "hives.name: 'name' vs None",
+      "hives.queen_year: 'queen_year' vs None",
+      "hives.boxes: 'boxes' vs None",
+      "inspections.id: 'id' vs None",
+      "inspections.hive_id: 'hive_id' vs None",
+      "inspections.inspected_at: 'inspected_at' vs None",
+      "inspections.brood_frames: 'brood_frames' vs None",
+      "inspections.temperament: 'temperament' vs None",
+      "inspections.remarks: 'remarks' vs None",
+      "lots.id: 'id' vs None",
+      "lots.label: 'label' vs None",
+      "lots.weight_kg: 'weight_kg' vs None",
+      "lots.moisture_pct: 'moisture_pct' vs None",
+      "lots.state: 'state' vs None",
+      "lots.created_at: 'created_at' vs None",
+      "lots.updated_at: 'updated_at' vs None"
+    ]
+  },
+  "pass": false,
+  "evidence": {},
+  "gated": true,
+  "h1_row": "H-WIRE (5.7)",
+  "arm": "H2:H"
+}

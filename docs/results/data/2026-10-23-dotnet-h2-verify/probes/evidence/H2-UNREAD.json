@@ -1,0 +1,15 @@
+{
+  "id": "H2-UNREAD",
+  "probe": "0 silent drops",
+  "ran": true,
+  "predicted": "0 silent drops; gate 0",
+  "observed": {
+    "silent_drops": [],
+    "n": 0
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "h1_row": "H-UNREAD (5.7)",
+  "arm": "H2:H"
+}

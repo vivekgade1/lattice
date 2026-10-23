@@ -1,0 +1,18 @@
+{
+  "id": "H2-JUDGE",
+  "probe": "share of the truth's owner-scoped routes judged by DN801 (complete reach)",
+  "ran": true,
+  "predicted": "0.55-0.95; gate >= 0.75",
+  "observed": {
+    "method": "proxy: the extract (no judged list from B3's check output)",
+    "owner_scoped": 6,
+    "judged": 6,
+    "share": 1.0,
+    "not_judged": []
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": true,
+  "h1_row": "H-JUDGE (5.7)",
+  "arm": "H2:H"
+}

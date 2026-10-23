@@ -1,0 +1,17 @@
+{
+  "id": "H2-DET",
+  "probe": "extract and layer A 10x",
+  "ran": true,
+  "predicted": "extract and layer A 10x identical (p 0.9)",
+  "observed": {
+    "extract_identical": 10,
+    "layer_a_identical": 10,
+    "of": 10
+  },
+  "pass": true,
+  "evidence": {},
+  "gated": false,
+  "h1_row": "H-DET (5.7)",
+  "arm": "H2:H",
+  "note": "reported, not gated: `pass` is the H1 gate's verdict"
+}

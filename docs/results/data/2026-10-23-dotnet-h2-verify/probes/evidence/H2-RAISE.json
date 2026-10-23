@@ -1,0 +1,32 @@
+{
+  "id": "H2-RAISE",
+  "probe": "refusals (route, status)",
+  "ran": true,
+  "predicted": "recall 0.45-0.90, precision 0.95-1.00; gate recall >= 0.60 and precision 1.00",
+  "observed": {
+    "truth_pairs": 17,
+    "extract_pairs": 22,
+    "precision": 0.6818,
+    "recall": 0.8824,
+    "false_positives": [
+      "DELETE /hives/{} 400",
+      "GET /admin/overview 400",
+      "GET /health 400",
+      "GET /hives 400",
+      "GET /hives/{} 400",
+      "GET /hives/{}/inspections 400",
+      "GET /lots/{} 400"
+    ],
+    "missed": [
+      "GET /admin/overview 403",
+      "GET /hives 401"
+    ]
+  },
+  "pass": false,
+  "evidence": {
+    "h1_gate_pass": false
+  },
+  "gated": true,
+  "h1_row": "H-RAISE (5.7; precision 1.00 here)",
+  "arm": "H2:H"
+}
