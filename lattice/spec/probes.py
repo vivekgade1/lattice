@@ -757,6 +757,8 @@ class ProbeContext:
     # and the cookies the login set: a caller's own credentials to present
     answers: dict[str, dict[str, str]] = field(default_factory=dict)
     cookies: dict[str, dict[str, str]] = field(default_factory=dict)
+    # a 5xx to the anonymous caller was not a refusal (see ``run_probes``)
+    crash_admits: bool = False
 
     @property
     def api(self) -> ApiProfile:
@@ -2489,6 +2491,7 @@ def _refused(
     refusals: Sequence[tuple[int, str | None]] = (),
     no_credential: bool = False,
     addressed: bool = True,
+    crash_admits: bool = False,
 ) -> bool | None:
     """Whether an answer refuses the caller (None: cannot tell -- the answer has more
     than one explanation). ``owns_target``: the request addresses no row, or the
@@ -2498,6 +2501,9 @@ def _refused(
       a malformed token, the inactive user's) is a refusal, whatever the route states:
       such a request cannot get past authentication to any data-dependent answer.
     * A 2xx admits -- unless its body is an error envelope (:func:`_envelope`).
+    * A 5xx to a request carrying no credential at all is no refusal under ``crash_admits``
+      (a runtime whose authorization runs before the endpoint: only the endpoint answers
+      5xx to a request with no credentials, so it was not stopped); it admits.
     * Never decides: a 5xx (a crash, before or past the check), a 405 (the router's),
       and a 404 to a request addressing a row (the router's -- a path value it does not
       match -- or a row hidden from the caller, by its role or its owner) or one that is
@@ -2524,6 +2530,8 @@ def _refused(
         return True
     if _ok(status):
         return None if _envelope(answer, api, c, refusals) is not None else False
+    if crash_admits and no_credential and status >= 500:
+        return False
     if status >= 500 or status == 405:
         return None
     if status == 404 and (addressed or not _readable(answer.body)):
@@ -2887,7 +2895,8 @@ def _judge(
     if p.expect == "auth":
         refused = _refused(answer, contract, api, a.get("owns_target", True),
                            refusals=ctx.refusals, addressed=a.get("addressed", True),
-                           no_credential=a.get("caller") in NON_ROLE_CALLERS)  # fmt: skip
+                           no_credential=a.get("caller") in NON_ROLE_CALLERS,
+                           crash_admits=ctx.crash_admits and a.get("caller") == "anonymous")  # fmt: skip
         why = ""
         authorization = (status == 403 and api.forbidden_detail is not None
                          and _detail(body, api) == api.forbidden_detail
@@ -3572,6 +3581,7 @@ def run_probes(
     auth_present: Callable[[Any, str], Mapping[str, str]] | None = None,
     json_login: tuple[str, str, str, str] | None = None,
     relogin: bool = False,
+    crash_admits: bool = False,
 ) -> RuleResult:
     """Every rule item of ``spec`` (those whose id starts with one of ``only``, when
     given), probed on the app ``sessions`` opens; ``make_db(variant, path)`` writes the
@@ -3595,7 +3605,9 @@ def run_probes(
     that minted them (a signing key made at start-up): when a token minted in one session
     is refused in the next (:func:`_tokens_survive`), each probe's caller logs in again
     inside the probe's own session, and the probe's database baseline is taken after that
-    login."""
+    login. ``crash_admits``: the app's authorization runs before the endpoint (ASP.NET Core's
+    middleware), so a 5xx to the anonymous caller came from the endpoint: the request was not
+    refused (:func:`_refused`)."""
     all_items = rule_items(spec)
     items = {i.id: i for i in all_items if _selected(i.id, only)}
     result = RuleResult()
@@ -3625,7 +3637,7 @@ def run_probes(
         seed = {t: seed_all[t] for t in tables}
         ctx = ProbeContext(spec, seed, callers, tokens, inactive, inactive_token,
                            tuple(refusals), login_route, json_login, answers,
-                           cookies)  # fmt: skip
+                           cookies, crash_admits)  # fmt: skip
         fresh = (relogin and login is not None and bool(tokens)
                  and not _tokens_survive(spec, sessions, seed_db, ctx, login, auth_headers,
                                          scheme, auth_present, contracts))  # fmt: skip

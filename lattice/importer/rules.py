@@ -590,6 +590,8 @@ class Callers:
     # the app's tokens may belong to the process that minted them (.NET: a signing key made at
     # start-up): run_probes then logs in again in each probe's session (see its ``relogin``)
     relogin: bool = False
+    # ... and authorizes before the endpoint runs: a 5xx to the anonymous caller is no refusal
+    crash_admits: bool = False
 
 
 def callers(result: Any, seeder: Seeder, variant: str = "seed") -> Callers:
@@ -674,6 +676,7 @@ def callers(result: Any, seeder: Seeder, variant: str = "seed") -> Callers:
         present=driver.present if driver.cookie is not None else None,
         json_login=json_route,
         relogin=model.framework == "aspnetcore",
+        crash_admits=model.framework == "aspnetcore",
     )
 
 
@@ -1014,7 +1017,8 @@ def import_rules(
                         auth_headers=who.headers, inactive_login=who.inactive_login,
                         unreachable=unreachable, variant=variant,
                         auth_present=who.present, json_login=who.json_login,
-                        **({"relogin": True} if who.relogin else {}))  # fmt: skip
+                        **({"relogin": True} if who.relogin else {}),
+                        **({"crash_admits": True} if who.crash_admits else {}))  # fmt: skip
 
         t1 = clock()
         recorder = _Recording() if mine_proposals else None

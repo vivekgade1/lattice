@@ -1338,12 +1338,12 @@ def p2_805d(ctx: Ctx) -> dict[str, Any]:
 CHECK_PY_AFTER_Q10 = "7b81dc9c70be82e46c8cecc2ee1b4290f8649521ce4a65389c5b8c9b6d3e5a77"  # re-pinned 2026-10-23 for the declared Q10 edit to check.py (dotnet prereg Q10: layer A on a .NET runtime)
 
 
-CHECK_PY_AFTER_F5 = "5ccd45ef4ad1cef97399c38c49638a5bee6eae868e795a13b092fa5fd2f8c202"  # re-pinned 2026-10-23 for the declared F5 edit to check.py (layer R passes `relogin` for a .NET runtime only; Python and Go call paths unchanged)
+CHECK_PY_AFTER_F5 = "cb1c387e00bf34f7fa99fdd852bb482ca2361e64e8e53cf50e1576de76effc0d"  # re-pinned 2026-10-23 for the declared F5 edit to check.py (layer R passes `relogin` and `crash_admits` for a .NET runtime only; Python and Go call paths unchanged)
 
 
 def p2_def(ctx: Ctx) -> dict[str, Any]:
     """K9 was not built (Amendment 1 Q6): lattice/spec/check.py is the frozen file, so the default is the unchanged `from_spec`.
-    The only accepted changes are the declared Q10 edit (`CHECK_PY_AFTER_Q10`) and the declared F5 edit (`CHECK_PY_AFTER_F5`, 2 lines for a .NET runtime); the base (978b468 in a scored run, a copy of this tree in the probe's test) must hold one of those or the prereg hash."""
+    The only accepted changes are the declared Q10 edit (`CHECK_PY_AFTER_Q10`) and the declared F5 edit (`CHECK_PY_AFTER_F5`, 3 lines for a .NET runtime); the base (978b468 in a scored run, a copy of this tree in the probe's test) must hold one of those or the prereg hash."""
     frozen = dict(frozen_table())["lattice/spec/check.py"]
     want = CHECK_PY_AFTER_F5
     mine, theirs = (

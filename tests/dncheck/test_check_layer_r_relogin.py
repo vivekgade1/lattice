@@ -1,6 +1,7 @@
 """``lattice check`` layer R on a .NET app logs in again in each probe's session (node F5): an ASP.NET Core
 app signs its tokens with a key made at start-up, so a token minted in one probe's process is refused in the
-next. The Python and Go call paths are unchanged (no ``relogin`` option unless the caller passes one)."""
+next; and a 5xx to the anonymous caller came from the endpoint (authorization runs before it): ``crash_admits``.
+The Python and Go call paths are unchanged (neither option unless the caller passes one)."""
 
 from __future__ import annotations
 
@@ -34,14 +35,17 @@ def _run(monkeypatch: pytest.MonkeyPatch, runtime: Any, options: dict[str, Any] 
 
 
 def test_a_dotnet_runtime_relogs_each_probe(monkeypatch):
-    assert _run(monkeypatch, AppRuntime(framework="dotnet"))["relogin"] is True
+    seen = _run(monkeypatch, AppRuntime(framework="dotnet"))
+    assert seen["relogin"] is True and seen["crash_admits"] is True
 
 
 def test_the_caller_may_still_choose(monkeypatch):
-    assert _run(monkeypatch, AppRuntime(framework="dotnet"), {"relogin": False})["relogin"] is False
+    seen = _run(monkeypatch, AppRuntime(framework="dotnet"), {"relogin": False, "crash_admits": False})
+    assert seen["relogin"] is False and seen["crash_admits"] is False
 
 
 @pytest.mark.parametrize("framework", ["go", "fastapi", "flask", "django"])
 def test_other_runtimes_are_called_as_before(monkeypatch, framework):
-    assert "relogin" not in _run(monkeypatch, AppRuntime(framework=framework))
-    assert "relogin" not in _run(monkeypatch, None)
+    for runtime in (AppRuntime(framework=framework), None):
+        seen = _run(monkeypatch, runtime)
+        assert "relogin" not in seen and "crash_admits" not in seen

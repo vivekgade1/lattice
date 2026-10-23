@@ -30,7 +30,7 @@ DATA = G.REPO / "docs/results/data/2026-10-18-dotnet"
 class DevLib(G.RealLib):
     """``RealLib`` with the two things ``lattice check`` does that the frozen runner does not: layer A under the policy the SPEC states
     (``DnPolicy.from_spec``; ``policy="spec_policy"`` keeps the runner's derived-under-the-spec policy), and layer R logging in again
-    in each probe's session for an ASP.NET Core app (``relogin``, as ``check.py`` passes it)."""
+    in each probe's session for an ASP.NET Core app, a 5xx to the anonymous caller no refusal (``relogin``, ``crash_admits``, as ``check.py`` passes them)."""
 
     policy = "from_spec"
 
@@ -46,7 +46,7 @@ class DevLib(G.RealLib):
         cand = spec if spec is not None else G.load_candidate(cand_dir)
         seeder, res, rules = m["seeder"], m["result"], m["rules"]
         who = rules.callers(res, seeder, variant)
-        kw = dict(login=who.login, mint_token=who.mint, scheme=who.scheme, refusals=who.refusals, login_route=who.login_route, auth_headers=who.headers, inactive_login=who.inactive_login, unreachable=m["unreachable"], variant=variant, auth_present=who.present, json_login=getattr(who, "json_login", None), relogin=who.relogin)  # fmt: skip
+        kw = dict(login=who.login, mint_token=who.mint, scheme=who.scheme, refusals=who.refusals, login_route=who.login_route, auth_headers=who.headers, inactive_login=who.inactive_login, unreachable=m["unreachable"], variant=variant, auth_present=who.present, json_login=getattr(who, "json_login", None), relogin=who.relogin, crash_admits=who.crash_admits)  # fmt: skip
         rr = run_probes(replace(cand.SPEC, users=seeder.credentials(variant)), m["sessions"], seeder.make_db, **kw)
         rules.mark_unclear(cand.SPEC, rr, m["unclear"])
         rules.mark_outside(cand.SPEC, rr, m["outside"])
