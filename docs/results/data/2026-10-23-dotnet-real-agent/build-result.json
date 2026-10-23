@@ -1,0 +1,89 @@
+{
+ "self_test": false,
+ "head": "6e809a0dd991d0a7fc019e9d5d61f391c1391899",
+ "model": "sonnet",
+ "loop_status": "passed",
+ "rounds": 1,
+ "round_summaries": [
+  {
+   "n": 1,
+   "outcome": null,
+   "summary": ""
+  }
+ ],
+ "wall_s": 52.0,
+ "build_usd": 0.0,
+ "total_usd": 0.0,
+ "base": "df2d19ee7cc0af145b5e75812d420a9347a3bc4d",
+ "tip": "36d5ddd235e748494863597e0796533b069ba387",
+ "files_changed": [
+  "Program.cs",
+  "docs/results/data/2026-10-23-dotnet-real-agent/build-raw/call-001.err",
+  "docs/results/data/2026-10-23-dotnet-real-agent/build-raw/call-001.out",
+  "docs/results/data/2026-10-23-dotnet-real-agent/ledger.jsonl"
+ ],
+ "record_error": null,
+ "usage_limit_or_cap_hit": false,
+ "gate_build": {
+  "rc": 0,
+  "tail": "\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:00.69\n"
+ },
+ "gate_check_runs": [
+  {
+   "rc": 0,
+   "tail": "0198,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0,\n    \"process_spawn_s\": 0.0025,\n    \"health_wait_s\": 0.1584,\n    \"process_stop_s\": 0.0198,\n    \"requests\": 4,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"remove_then_again\",\n    \"seconds\": 0.5269,\n    \"db_clone_s\": 0.001,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.179,\n    \"steps_s\": 0.3256,\n    \"app_stop_s\": 0.0207,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"inva\n",
+   "seconds": 4.1,
+   "verdict": "pass",
+   "counts": {
+    "D": 0
+   },
+   "findings": 0
+  },
+  {
+   "rc": 0,
+   "tail": "106,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0,\n    \"process_spawn_s\": 0.0029,\n    \"health_wait_s\": 0.1676,\n    \"process_stop_s\": 0.0106,\n    \"requests\": 4,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"remove_then_again\",\n    \"seconds\": 0.5034,\n    \"db_clone_s\": 0.0009,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.1677,\n    \"steps_s\": 0.3237,\n    \"app_stop_s\": 0.0106,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"inv\n",
+   "seconds": 4.2,
+   "verdict": "pass",
+   "counts": {
+    "D": 0
+   },
+   "findings": 0
+  },
+  {
+   "rc": 0,
+   "tail": "6,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0,\n    \"process_spawn_s\": 0.0024,\n    \"health_wait_s\": 0.1445,\n    \"process_stop_s\": 0.0106,\n    \"requests\": 4,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"remove_then_again\",\n    \"seconds\": 0.4902,\n    \"db_clone_s\": 0.0009,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.1729,\n    \"steps_s\": 0.3058,\n    \"app_stop_s\": 0.0102,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invar\n",
+   "seconds": 3.9,
+   "verdict": "pass",
+   "counts": {
+    "D": 0
+   },
+   "findings": 0
+  }
+ ],
+ "uses_ef_core": {
+  "DbContext": true,
+  "UseSqlite": true,
+  "using Microsoft.EntityFrameworkCore": true
+ },
+ "cs_files": [
+  "Program.cs"
+ ],
+ "protected_unchanged": {
+  "CONTEXT.md": true,
+  "REQUIREMENTS.md": true,
+  "check.sh": true,
+  "dnbuild.csproj": true,
+  "harness.py": true,
+  "spec.py": true,
+  "spec.trace.json": true,
+  "studio.toml": true
+ },
+ "verdicts": {
+  "B-BUILD (dotnet build exit 0 on a clean archive of the tip)": true,
+  "B-CHECK (the Lattice check, layer D: verdict pass, 0 findings, 3 of 3 runs)": true,
+  "B-LOOP (loop status passed in <= 3 rounds)": true,
+  "B-PROTECT (spec, requirements, harness, check script, csproj unchanged)": true,
+  "B-EF (the source uses EF Core: DbContext and UseSqlite)": true,
+  "B-COST (total ledger <= USD 5.00)": true
+ }
+}

@@ -1,0 +1,29 @@
+{
+  "source": "REQUIREMENTS.md",
+  "rules": [
+    {"id": "R1", "text": "Adding an item (`POST /items`, body `{\"name\", \"qty\"}`) stores it and answers 201 with `{\"id\", \"name\", \"qty\"}`: a new id, the requested name and quantity.", "section": "Shelf > Items", "line": 7},
+    {"id": "R2", "text": "Adding an item with an empty name is refused with 422 and stores nothing.", "section": "Shelf > Items", "line": 8},
+    {"id": "R3", "text": "Adding an item with a negative quantity is refused with 422 and stores nothing.", "section": "Shelf > Items", "line": 9},
+    {"id": "R4", "text": "Item names are unique: adding an item whose name is already used is refused with 409 and stores nothing.", "section": "Shelf > Items", "line": 10},
+    {"id": "R5", "text": "Getting an item (`GET /items/{id}`) that does not exist answers 404.", "section": "Shelf > Items", "line": 11},
+    {"id": "R6", "text": "Listing (`GET /items`) answers 200 `{\"items\": [...]}` with every stored item, oldest first (by id).", "section": "Shelf > Items", "line": 12},
+    {"id": "R7", "text": "Removing an item (`DELETE /items/{id}`) deletes it and answers 200; removing an item that does not exist answers 404.", "section": "Shelf > Items", "line": 13},
+    {"id": "R8", "text": "A stored quantity is never negative.", "section": "Shelf > Items", "line": 14}
+  ],
+  "links": {
+    "R1": ["scenario:add_and_get"],
+    "R2": ["scenario:add_empty_name"],
+    "R3": ["scenario:add_negative_qty"],
+    "R4": ["scenario:add_duplicate_name"],
+    "R5": ["scenario:get_missing"],
+    "R6": ["scenario:list_oldest_first"],
+    "R7": ["scenario:remove_then_again"],
+    "R8": ["invariant:qty_non_negative"]
+  },
+  "unchecked": {},
+  "context": ["CONTEXT.md"],
+  "questions": [],
+  "replaces": {},
+  "retired": {},
+  "retired_targets": []
+}

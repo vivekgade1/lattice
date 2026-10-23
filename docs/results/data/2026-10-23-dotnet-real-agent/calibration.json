@@ -1,0 +1,33 @@
+{
+ "scaffold (must fail)": {
+  "rc": 1,
+  "tail": "ed 1 rows, found 0\n\ntimings: total 1.39s (D 1.39s)\nscenarios: 7 in 1.38s, 0.20s each on average (start 0.17, db 0.00, steps 0.00, stop 0.01)\nslowest 5:\n  0.30s add_and_get (start 0.20, db 0.00, steps 0.00, 1 requests)\n  0.18s add_negative_qty (start 0.17, db 0.00, steps 0.00, 1 requests)\n  0.18s add_duplicate_name (start 0.17, db 0.00, steps 0.00, 1 requests)\n  0.18s get_missing (start 0.17, db 0.00, steps 0.00, 1 requests)\n  0.18s list_oldest_first (start 0.17, db 0.00, steps 0.00, 1 requests)\n",
+  "seconds": 2.4
+ },
+ "reference (must pass)": {
+  "rc": 0,
+  "tail": "06,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0,\n    \"process_spawn_s\": 0.0028,\n    \"health_wait_s\": 0.1681,\n    \"process_stop_s\": 0.0106,\n    \"requests\": 4,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"remove_then_again\",\n    \"seconds\": 0.4968,\n    \"db_clone_s\": 0.0008,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.1729,\n    \"steps_s\": 0.312,\n    \"app_stop_s\": 0.0106,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invar\n",
+  "seconds": 4.0,
+  "verdict": "pass",
+  "counts": {
+   "D": 0
+  },
+  "findings": 0
+ },
+ "mutant: list order reversed": {
+  "rc": 1,
+  "tail": " 'a', 'qty': 1}]}\n\ntimings: total 2.98s (D 2.98s)\nscenarios: 7 in 2.98s, 0.43s each on average (start 0.17, db 0.00, steps 0.23, stop 0.01)\nslowest 5:\n  0.65s add_and_get (start 0.17, db 0.00, steps 0.38, 2 requests)\n  0.50s list_oldest_first (start 0.18, db 0.00, steps 0.31, 4 requests)\n  0.49s remove_then_again (start 0.17, db 0.00, steps 0.32, 4 requests)\n  0.47s add_duplicate_name (start 0.17, db 0.00, steps 0.30, 2 requests)\n  0.43s get_missing (start 0.18, db 0.00, steps 0.24, 1 requests)\n",
+  "seconds": 4.0
+ },
+ "mutant: negative quantity allowed": {
+  "rc": 1,
+  "tail": "ows, found 1\n\ntimings: total 3.28s (D 3.28s)\nscenarios: 7 in 3.28s, 0.47s each on average (start 0.18, db 0.00, steps 0.26, stop 0.01)\nslowest 5:\n  0.67s add_and_get (start 0.19, db 0.00, steps 0.38, 2 requests)\n  0.50s remove_then_again (start 0.17, db 0.00, steps 0.31, 4 requests)\n  0.50s list_oldest_first (start 0.17, db 0.00, steps 0.31, 4 requests)\n  0.49s add_negative_qty (start 0.21, db 0.00, steps 0.27, 1 requests)\n  0.48s add_duplicate_name (start 0.18, db 0.00, steps 0.29, 2 requests)\n",
+  "seconds": 4.3
+ },
+ "mutant: duplicate answers 400, not 409": {
+  "rc": 1,
+  "tail": "cted 409, got 400\n\ntimings: total 3.05s (D 3.05s)\nscenarios: 7 in 3.05s, 0.44s each on average (start 0.18, db 0.00, steps 0.23, stop 0.01)\nslowest 5:\n  0.68s add_and_get (start 0.20, db 0.00, steps 0.38, 2 requests)\n  0.51s remove_then_again (start 0.18, db 0.00, steps 0.32, 4 requests)\n  0.50s list_oldest_first (start 0.17, db 0.00, steps 0.31, 4 requests)\n  0.48s add_duplicate_name (start 0.18, db 0.00, steps 0.29, 2 requests)\n  0.43s get_missing (start 0.18, db 0.00, steps 0.23, 1 requests)\n",
+  "seconds": 4.0
+ },
+ "ok": true
+}

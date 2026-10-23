@@ -1,0 +1,4 @@
+rebuild b1: started on rebuild/all-1 at df2d19ee7c (/private/tmp/claude-501/dnra/real-scratch2/build-repo/.lattice/rebuilds/dnbuild-b1-0cc8c6)
+rebuild b1: baseline 6 finding(s), 6 in scope all
+rebuild b1: round 1 pass (0 finding(s), 4 file(s) changed)
+rebuild b1: passed as 36d5ddd235 on rebuild/all-1
