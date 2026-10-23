@@ -16,14 +16,20 @@ one meaning, gated per target).
   with no owner evidence for it anywhere in what it runs: the owner column compared with, or set from, the caller (B1's N8),
   a global query filter in force, or any other comparison, assignment or initializer of the owner property (as GO801: any
   mention counts). A table owned through a parent needs that evidence on the parent. Not judged: admin routes (the policy's, or
-  ``RequireRole(admin)``), the policy's ``open_routes``, creating a row alone, the users table. *Cannot see:* evidence that
+  ``RequireRole(admin)``), the policy's ``open_routes``, creating a row alone, the users table. A query handed to a project
+  method (``Shape(db.Notes.Where(..))``) is judged unless the callee compares the owner itself. A write by key
+  (``Where(x => x.Id == id)``, ``Find(id)``, ``Remove(row)``) is covered by an EARLIER statement of the same request that
+  loaded that entity scoped to the caller from the same key with the miss refused (``?? throw``, ``Single*``/``First*``,
+  ``if (row == null) throw|return``), or created the row with its owner set; the same key, not another id. The owner column
+  set from a value the request carries (``OwnerId = request.OwnerId ?? caller``) is a finding too. *Cannot see:* evidence that
   exists but is not applied to the query that reaches the response; a reach that is incomplete (an opaque call, an interface
   with several registrations, depth) is not judged.
 * **DN802 private columns** (PY802). In a route that is not admin-only, a response (``Ok``, ``Created*``, ``Accepted*``,
   ``Json``, ``TypedResults.Ok``, a handler's ``return value``) that serializes a private column: an entity (a collection, a DTO
   field, a navigation of one) whose private property has no ``[JsonIgnore]``, or an anonymous object or DTO copying
-  ``row.PrivateProperty``. A conditional ``[JsonIgnore]`` is not claimed. *Cannot see:* values copied through containers or
-  helper arguments, hand-written serialization.
+  ``row.PrivateProperty``; ``StatusCode(code, value)`` answers like ``Ok``, and an answer that is what a project method
+  returns is followed into that method's returned expressions. A conditional ``[JsonIgnore]`` is not claimed. *Cannot see:*
+  values copied through containers or helper arguments, hand-written serialization.
 * **DN803 bounds** (PY803). A request value (a body DTO field, a query/form parameter) carried unchanged to a column
   (assignment, initializer, ``SetProperty``) or to ``Take``/``Skip`` with no enforced bound (a string needs a maximum length,
   a number an upper bound; B1 reads annotations under ``[ApiController]``, validators the handler calls and refuses on, handler

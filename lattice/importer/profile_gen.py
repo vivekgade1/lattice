@@ -322,6 +322,9 @@ class _Generator:
         fks = [c.name for c in table.columns if (c.foreign_key or "").split(".")[0] == users_name]
         if not fks:
             return
+        hinted = len(fks) > 1 and table.owner in fks  # the front end's confirmed owner
+        if hinted:
+            fks = [str(table.owner)]
         unchecked = self._unchecked(table, (table.name,))
         compared = any(
             u.table == table.name and u.how == "compare"
@@ -383,7 +386,10 @@ class _Generator:
         self._decide(
             plan,
             OWNED,
-            f"its one users foreign key, which {', '.join(evidence)} filter, check or set "
+            f"its users foreign key {fk}, the only one the code compares with or sets from the "
+            f"caller ({', '.join(evidence)})"
+            if hinted
+            else f"its one users foreign key, which {', '.join(evidence)} filter, check or set "
             "from the caller",
         )
 

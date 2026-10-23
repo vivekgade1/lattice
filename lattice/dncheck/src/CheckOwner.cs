@@ -132,11 +132,13 @@ public sealed partial class Ex
         if (rec.R.Auth == "Public") // nobody to scope to: a lookup by a unique non-key column (a token's hash) is addressed by that credential
             foreach (var u in ent.Props.Where(x => x.Col.Unique && !x.Col.PrimaryKey && !x.Key))
                 if (MentionsIn(scope, ent.T, u.P.Name)) return true;
+        if (RowHandedToMutator(top, ent, v)) return true;
+        if (PkComparands(scope, ent).Any(k => KeyCovered(v, ent, prop, k, at, 3))) return true;
         var local = LocalOf(top);
-        if (local == null) // a value that leaves the method (handed to another method, returned from a helper) is not judged; one answered by the handler or by a result factory is
+        if (local == null) // a value that leaves the method (returned from a helper) is not judged; one handed to a project method that compares no owner itself, or answered by the handler or by a result factory, is
             return top.Parent switch
             {
-                ArgumentSyntax { Parent: ArgumentListSyntax { Parent: InvocationExpressionSyntax i } } => !FrameworkResultCall(i, Resolve(i)),
+                ArgumentSyntax { Parent: ArgumentListSyntax { Parent: InvocationExpressionSyntax i } } => HandedOnScoped(i, ent.T, prop),
                 ReturnStatementSyntax or ArrowExpressionClauseSyntax or LambdaExpressionSyntax => v.Depth > 0,
                 AssignmentExpressionSyntax => true,
                 _ => false,
@@ -211,6 +213,7 @@ public sealed partial class Ex
                     via == "" ? $"scope the query to the caller: `.Where(x => x.{prop} == <the caller's id>)`, or load the row and refuse when `row.{prop} != <the caller's id>`; on create, set `{prop}` from the caller"
                               : $"load the owning {owned} row and refuse unless its `{prop}` is the caller (`.Where(x => x.{prop} == <the caller's id>)`) before reaching {schema} rows"));
             }
+            OwnerFromRequest(rec, pol, reported, found);
         }
     }
 }
