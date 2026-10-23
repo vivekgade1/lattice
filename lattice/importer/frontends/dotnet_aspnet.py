@@ -210,7 +210,24 @@ def role_scheme(data: Mapping[str, Any]) -> RoleScheme | None:
         value = str(m["value"]) if found.get("storage") == "int" else m["name"]
         name = "Admin" if m["name"].lower() == admin.lower() else m["name"]
         roles.append((value, value, name))
-    return RoleScheme(found["column"], tuple(roles), "Admin", None, None)
+    status, detail = _forbidden_answer(data)
+    return RoleScheme(found["column"], tuple(roles), "Admin", status, detail)
+
+
+def _forbidden_answer(data: Mapping[str, Any]) -> tuple[int | None, str | None]:
+    """``(403, detail)`` when the app's authentication handler answers a caller without the role
+    with one literal detail on every protected route (``HandleForbiddenAsync`` writing a
+    problem document), else ``(None, None)``. The profile then names it as the role check's own
+    answer: a 403 with that detail is the role's refusal, told from a service's 403 (an ownership
+    rule, a state rule) by its detail -- not by guessing from the status."""
+    found = {
+        r["detail"]
+        for route in data.get("routes") or ()
+        if route.get("auth") not in (None, "Public")
+        for r in route.get("raises") or ()
+        if r.get("kind") == "middleware" and r.get("status") == 403 and r.get("detail")
+    }
+    return (403, next(iter(found))) if len(found) == 1 else (None, None)
 
 # the constant a probe sends for a login field the credentials do not cover, by parameter type
 _LOGIN_VALUES = {"Uuid": "00000000-0000-4000-8000-000000000001", "Int": 1, "Bool": True}
