@@ -1,7 +1,7 @@
 """Deterministic seed data for the vendored FastAPI template.
 
 ``build_template_db(path, seed=31)`` writes a SQLite database with the template's own
-schema (``SQLModel.metadata.create_all``) holding one superuser, three normal users and
+schema (``create_template_tables``) holding one superuser, three normal users and
 twenty items. Everything is a pure function of ``seed``: ids are ``uuid5`` values under
 a seed-derived namespace, ``created_at`` values are fixed instants, item owners are
 drawn from ``random.Random(seed)``, and password hashes are produced by the template's
@@ -18,9 +18,9 @@ from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
-from sqlmodel import Session, SQLModel
+from sqlmodel import Session
 
-from bench.template_app import sqlite_engine
+from bench.template_app import create_template_tables, sqlite_engine
 from bench.template_app.app.core import security
 from bench.template_app.app.models import Item, User
 
@@ -117,7 +117,7 @@ def build_template_db(path: str | Path, seed: int = DEFAULT_SEED) -> Path:
         path.unlink()
     engine = sqlite_engine(path)
     try:
-        SQLModel.metadata.create_all(engine)
+        create_template_tables(engine)
         with Session(engine) as session:
             for k, u in enumerate(_USERS):
                 session.add(

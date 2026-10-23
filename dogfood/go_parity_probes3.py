@@ -1335,16 +1335,21 @@ def p2_805d(ctx: Ctx) -> dict[str, Any]:
     return result("P2-805D", "gated_note() and GO_GATED against 978b468", P["P2-805D"][2], got, ok)
 
 
+CHECK_PY_AFTER_Q10 = "7b81dc9c70be82e46c8cecc2ee1b4290f8649521ce4a65389c5b8c9b6d3e5a77"  # re-pinned 2026-10-23 for the declared Q10 edit to check.py (dotnet prereg Q10: layer A on a .NET runtime)
+
+
 def p2_def(ctx: Ctx) -> dict[str, Any]:
-    """K9 was not built (Amendment 1 Q6): lattice/spec/check.py is the frozen file, so the default is the unchanged `from_spec`."""
-    want = dict(frozen_table())["lattice/spec/check.py"]
+    """K9 was not built (Amendment 1 Q6): lattice/spec/check.py is the frozen file, so the default is the unchanged `from_spec`.
+    The only accepted change is the declared Q10 edit (`CHECK_PY_AFTER_Q10`); the base (978b468 in a scored run, a copy of this tree in the probe's test) must hold either that or the prereg hash."""
+    frozen = dict(frozen_table())["lattice/spec/check.py"]
+    want = CHECK_PY_AFTER_Q10
     mine, theirs = (
         sha(REPO / "lattice/spec/check.py"),
         sha(ctx.scratch / "base" / "lattice/spec/check.py"),
     )
     return result("P2-DEF", "K9: the default policy of `lattice check` (not built: Q6)", P["P2-DEF"][2],
-                  {"K9": "not built (Amendment 1 Q6)", "check_py_sha256": mine, "base_sha256": theirs, "prereg_sha256": want, "unchanged": mine == theirs == want},
-                  mine == theirs == want, reading="reported, not gated (Q6): with check.py unchanged the default is GoPolicy.from_spec, identical to 978b468 by construction")  # fmt: skip
+                  {"K9": "not built (Amendment 1 Q6)", "check_py_sha256": mine, "base_sha256": theirs, "prereg_sha256": frozen, "declared_q10_sha256": want, "unchanged": mine == want and theirs in (frozen, want)},
+                  mine == want and theirs in (frozen, want), reading="reported, not gated (Q6): with check.py unchanged the default is GoPolicy.from_spec, identical to 978b468 by construction")  # fmt: skip
 
 
 def j0prime_check(doc: str, root: Path) -> dict[str, Any]:

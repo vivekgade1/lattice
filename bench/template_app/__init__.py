@@ -26,10 +26,23 @@ def sqlite_engine(db_path: str | Path) -> Engine:
     )
 
 
+def create_template_tables(engine: Engine) -> None:
+    """Create the template's own tables (``user``, ``item``) on ``engine`` and nothing else.
+
+    ``SQLModel.metadata`` is process-global: any other SQLModel app imported into the same
+    process (the job-scheduler that ``tests/spec/test_authoring.py`` imports at collection
+    time) registers its tables there too, and a bare ``metadata.create_all`` would put them
+    in the template's database, where they read as tables the extractor never saw.
+    """
+    SQLModel.metadata.create_all(
+        engine, tables=[models.User.__table__, models.Item.__table__]  # type: ignore[attr-defined]
+    )
+
+
 def make_app(db_path: str | Path, *, include_api: bool = True) -> FastAPI:
     """Build the template app on the SQLite database at ``db_path``.
 
-    Creates any missing tables (``SQLModel.metadata.create_all``) and routes the
+    Creates any missing template tables (:func:`create_template_tables`) and routes the
     template's ``get_db`` dependency to a session on that database. The engine is
     kept on ``app.state.engine`` so callers can dispose of it. ``include_api=False``
     leaves the API routes out (settings, CORS, docs and dependency overrides only), for
@@ -37,7 +50,7 @@ def make_app(db_path: str | Path, *, include_api: bool = True) -> FastAPI:
     no module state is touched either way, so apps can be built from several threads.
     """
     engine = sqlite_engine(db_path)
-    SQLModel.metadata.create_all(engine)
+    create_template_tables(engine)
 
     def get_db() -> Generator[Session]:
         with Session(engine) as session:
