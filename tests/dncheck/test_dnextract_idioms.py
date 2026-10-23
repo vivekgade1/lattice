@@ -467,3 +467,72 @@ def test_a_column_no_response_record_reads_is_derived_private(tmp_path: Path) ->
     # an entity answered whole (Tag), or handed on unread (Note, `n => n`), is not derived
     assert all(cols[("Tag", f)] != "-" for f in ("Id", "Label"))
     assert all(cols[("Note", f)] != "-" for f in ("Id", "Body"))
+
+
+_REPORT_DATA = """
+using Microsoft.EntityFrameworkCore;
+public class Db : DbContext { public Db(DbContextOptions<Db> o) : base(o) {}
+  public DbSet<Report> Reports { get; set; } = null!; }
+public class Report { public int Id { get; set; } public string Title { get; set; } = ""; public string? Note { get; set; }
+  public DateTime CreatedAt { get; set; } public string Secret { get; set; } = ""; }
+public record ReportBody(int Id, string Title, string? Note, DateTime CreatedAt);
+"""
+
+
+def _derived_json(root: Path) -> dict[tuple[str, str], str | None]:
+    return {
+        (t["struct"], c["field"]): c.get("json")
+        for t in dncheck.extract_json(root, policy=True)["tables"]
+        for c in t["columns"]
+    }
+
+
+def test_a_projection_over_a_queryable_parameter_reads_the_columns_it_copies(
+    tmp_path: Path,
+) -> None:
+    """The H1 shape: `Summaries(IQueryable<Report> reports) => reports.AsNoTracking().Select(r => new ReportBody(r.Id, ...))`.
+    The columns copied into the response record are read, not hidden; only the column nothing copies is private."""
+    root = project(
+        tmp_path,
+        {
+            "Program.cs": """
+            var builder = WebApplication.CreateBuilder(args);
+            var app = builder.Build();
+            app.MapGet("/reports", Svc.List);
+            app.Run();
+            public static class Svc {
+              public static async Task<IReadOnlyList<ReportBody>> List(Db db) => await Summaries(db.Reports.Where(r => r.Id > 0)).ToListAsync();
+              internal static IQueryable<ReportBody> Summaries(IQueryable<Report> reports) =>
+                reports.AsNoTracking().Select(r => new ReportBody(r.Id, r.Title, r.Note, r.CreatedAt));
+            }
+            """,
+            "Data.cs": _REPORT_DATA,
+        },
+    )
+    cols = _derived_json(root)
+    for f in ("Id", "Title", "Note", "CreatedAt"):
+        assert cols[("Report", f)] != "-", f
+    assert cols[("Report", "Secret")] == "-"
+
+
+def test_a_projection_over_a_receiver_that_does_not_resolve_is_not_read_as_hiding_columns(
+    tmp_path: Path,
+) -> None:
+    """A member read whose receiver cannot be resolved (an unknown extension, an unbound lambda parameter) is no evidence a
+    column is hidden: a column read by that name is not derived private on any entity. Under-derive, never over-derive."""
+    root = project(
+        tmp_path,
+        {
+            "Program.cs": """
+            var builder = WebApplication.CreateBuilder(args);
+            var app = builder.Build();
+            app.MapGet("/reports", (Db db) => Results.Ok(Unknown.Rows(db).Select(r => new ReportBody(r.Id, r.Title, r.Note, r.CreatedAt)).ToList()));
+            app.Run();
+            """,
+            "Data.cs": _REPORT_DATA,
+        },
+    )
+    cols = _derived_json(root)
+    for f in ("Id", "Title", "Note", "CreatedAt"):
+        assert cols[("Report", f)] != "-", f
+    assert cols[("Report", "Secret")] == "-"
