@@ -4,6 +4,9 @@
 // named by a handler's return type, or by the argument of Ok/Created/Json/StatusCode/Results.*, and the types it holds), an
 // anonymous object, or the arguments of such a call. An entity handed whole to something that is not read (a non-project call,
 // a field, a collection) is opaque: nothing is derived for it. A project method receiving the entity is read too (depth 2).
+// Absence of a read is evidence only where every read can be seen (H-PA1: over-deriving names ordinary columns and yields false DN802
+// findings): a projection over an `IQueryable<T>` parameter resolves its lambda to T, and a member read off a `Select` parameter the
+// compilation cannot type counts as a read of every entity column of that name.
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -33,8 +36,30 @@ public sealed partial class Ex
         if (e is IdentifierNameSyntax lp && Sm(lp).GetSymbolInfo(lp).Symbol is IParameterSymbol ps
             && ps.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax() is { } pd
             && pd.AncestorsAndSelf().OfType<LambdaExpressionSyntax>().FirstOrDefault() is { Parent: ArgumentSyntax { Parent: ArgumentListSyntax { Parent: InvocationExpressionSyntax { Expression: MemberAccessExpressionSyntax lm } } } }
-            && ChainOf(lm.Expression)?.T is { } lt && Entities.TryGetValue(lt, out var el2)) return el2;
+            && QuerySourceEntity(lm.Expression) is { } el2) return el2;
         return null;
+    }
+
+    /// <summary>A projection lambda's parameter whose type the compilation does not bind (`.Select(r => new Body(r.Id))` over a query EF Core
+    /// is needed to type): what it reads is a column of the rows it projects, whichever entity that is.</summary>
+    bool IsUnboundProjectionParameter(ExpressionSyntax e) =>
+        e is IdentifierNameSyntax id && Sm(id).GetSymbolInfo(id).Symbol is IParameterSymbol { Type.TypeKind: TypeKind.Error } ps
+        && ps.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax().Parent is var lp && (lp is ParameterListSyntax ? lp.Parent : lp) is LambdaExpressionSyntax { Parent: ArgumentSyntax { Parent: ArgumentListSyntax { Parent: InvocationExpressionSyntax inv } } }
+        && InvokedName(inv.Expression) is "Select" or "SelectMany";
+
+    /// <summary>The entity a query yields: the chain of a DbSet, else (a helper taking `IQueryable&lt;T&gt;` / `IEnumerable&lt;T&gt;`, `rows.AsNoTracking()`)
+    /// the entity of the typed source under the element-keeping calls.</summary>
+    EntityInfo? QuerySourceEntity(ExpressionSyntax e)
+    {
+        if (ChainOf(e)?.T is { } t && Entities.TryGetValue(t, out var ei)) return ei;
+        while (true)
+        {
+            if (e is ParenthesizedExpressionSyntax p) e = p.Expression;
+            else if (e is AwaitExpressionSyntax a) e = a.Expression;
+            else if (e is InvocationExpressionSyntax { Expression: MemberAccessExpressionSyntax ma } inv && KeepsElem.Contains(InvokedName(inv.Expression) ?? "")) e = ma.Expression;
+            else break;
+        }
+        return e is IdentifierNameSyntax or MemberAccessExpressionSyntax ? EntityOfType(Sm(e).GetTypeInfo(e).Type) : null;
     }
 
     void DeriveProjectionPrivacy()
@@ -61,6 +86,7 @@ public sealed partial class Ex
         var owner = new HashSet<ISymbol>(SymbolEqualityComparer.Default);
         foreach (var e in Entities.Values) foreach (var pi in e.Props) owner.Add(pi.P.OriginalDefinition);
         var read = new HashSet<ISymbol>(SymbolEqualityComparer.Default);
+        var unresolved = new HashSet<string>(StringComparer.Ordinal); // member reads whose receiver is not known: evidence of a read, not of hiding
         var opaque = new HashSet<EntityInfo>();
         var scanned = new HashSet<SyntaxNode>();
         void Scan(SyntaxNode n, int depth)
@@ -71,6 +97,7 @@ public sealed partial class Ex
                 var sm = Sm(x);
                 if (x is MemberAccessExpressionSyntax ma && sm.GetSymbolInfo(ma.Name).Symbol is { } s && owner.Contains(s.OriginalDefinition)) read.Add(s.OriginalDefinition);
                 else if (x is MemberAccessExpressionSyntax um && sm.GetSymbolInfo(um.Name).Symbol == null && EntityOfExpr(um.Expression) is { } ue && ue.Props.FirstOrDefault(p => p.P.Name == um.Name.Identifier.Text) is { } up) read.Add(up.P.OriginalDefinition);
+                else if (x is MemberAccessExpressionSyntax nm && sm.GetSymbolInfo(nm.Name).Symbol == null && IsUnboundProjectionParameter(nm.Expression) && EntityOfExpr(nm.Expression) == null) unresolved.Add(nm.Name.Identifier.Text);
                 else if (x is MemberBindingExpressionSyntax mb && sm.GetSymbolInfo(mb.Name).Symbol is { } bs && owner.Contains(bs.OriginalDefinition)) read.Add(bs.OriginalDefinition);
                 else if (x is IdentifierNameSyntax id && sm.GetSymbolInfo(id).Symbol is ILocalSymbol or IParameterSymbol && EntityOfExpr(id) is { } ei)
                 {
@@ -92,7 +119,7 @@ public sealed partial class Ex
         {
             if (e.Skip || resp.Contains(e.T) || opaque.Contains(e)) continue;
             foreach (var pi in e.Props)
-                if (!read.Contains(pi.P.OriginalDefinition)) pi.Col.Json = "-";
+                if (!read.Contains(pi.P.OriginalDefinition) && !unresolved.Contains(pi.P.Name)) pi.Col.Json = "-";
         }
     }
 }
