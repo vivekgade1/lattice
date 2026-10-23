@@ -1,0 +1,11 @@
+diff -ruN a/Endpoints/LotEndpoints.cs b/Endpoints/LotEndpoints.cs
+--- a/Endpoints/LotEndpoints.cs
++++ b/Endpoints/LotEndpoints.cs
+@@ -83,6 +83,6 @@
+ 
+             var fresh = await db.Lots.AsNoTracking().FirstAsync(l => l.Id == id, ct);
+             return Results.Json(View(fresh));
+-        }).RequireSignIn();
++        });
+     }
+ }

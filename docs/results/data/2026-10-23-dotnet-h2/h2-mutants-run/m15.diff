@@ -1,0 +1,24 @@
+diff -ruN a/Endpoints/HiveEndpoints.cs b/Endpoints/HiveEndpoints.cs
+--- a/Endpoints/HiveEndpoints.cs
++++ b/Endpoints/HiveEndpoints.cs
+@@ -37,7 +37,7 @@
+             if (await db.Hives.AnyAsync(h => h.OwnerId == me.Id && h.Name == name, ct))
+                 return Failure.Conflict("you already have a hive with that name");
+ 
+-            var hive = new Hive { OwnerId = me.Id, Name = name!, QueenYear = year, Boxes = boxes, YardLocation = yard };
++            var hive = new Hive { OwnerId = body.OwnerId ?? me.Id, Name = name!, QueenYear = year, Boxes = boxes, YardLocation = yard };
+             db.Hives.Add(hive);
+             await db.SaveChangesAsync(ct);
+             return Results.Json(View(hive), statusCode: 201);
+diff -ruN a/Http/Dtos.cs b/Http/Dtos.cs
+--- a/Http/Dtos.cs
++++ b/Http/Dtos.cs
+@@ -2,7 +2,7 @@
+ 
+ // Request bodies. Every value is nullable so that "left out" can be told from zero and turned away by Check.
+ public record LoginBody(string? Username, string? Password);
+-public record HiveBody(string? Name, int? QueenYear, int? Boxes, string? YardLocation);
++public record HiveBody(string? Name, int? QueenYear, int? Boxes, string? YardLocation, int? OwnerId = null);
+ public record InspectionBody(int? BroodFrames, int? Temperament, string? Remarks);
+ public record LotBody(string? Label, double? WeightKg, double? MoisturePct);
+ public record AdvanceBody(string? To, double? MoisturePct);

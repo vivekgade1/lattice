@@ -1,0 +1,12 @@
+diff -ruN a/Endpoints/HiveEndpoints.cs b/Endpoints/HiveEndpoints.cs
+--- a/Endpoints/HiveEndpoints.cs
++++ b/Endpoints/HiveEndpoints.cs
+@@ -47,7 +47,7 @@
+         {
+             var me = Caller.Of(http);
+             var hive = await db.Hives.AsNoTracking().FirstOrDefaultAsync(h => h.Id == id && h.OwnerId == me.Id, ct);
+-            return hive is null ? Failure.NotFound("hive") : Results.Json(View(hive));
++            return hive is null ? Failure.Forbidden("hive not found") : Results.Json(View(hive));
+         }).RequireSignIn();
+ 
+         app.MapDelete("/hives/{id:int}", async (int id, HttpContext http, ApiaryDb db, CancellationToken ct) =>

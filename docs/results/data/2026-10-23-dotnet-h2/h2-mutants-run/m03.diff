@@ -1,0 +1,12 @@
+diff -ruN a/Endpoints/HiveEndpoints.cs b/Endpoints/HiveEndpoints.cs
+--- a/Endpoints/HiveEndpoints.cs
++++ b/Endpoints/HiveEndpoints.cs
+@@ -54,7 +54,7 @@
+         {
+             var me = Caller.Of(http);
+             await using var tx = await db.Database.BeginTransactionAsync(ct);
+-            var owned = db.Hives.Where(h => h.Id == id && h.OwnerId == me.Id);
++            var owned = db.Hives.Where(h => h.Id == id);
+             await db.Inspections.Where(i => owned.Any(h => h.Id == i.HiveId)).ExecuteDeleteAsync(ct);
+             var gone = await owned.ExecuteDeleteAsync(ct);
+             await tx.CommitAsync(ct);

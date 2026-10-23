@@ -1,0 +1,12 @@
+diff -ruN a/Endpoints/LotEndpoints.cs b/Endpoints/LotEndpoints.cs
+--- a/Endpoints/LotEndpoints.cs
++++ b/Endpoints/LotEndpoints.cs
+@@ -65,7 +65,7 @@
+             if (!check.Ok) return Failure.Invalid(check);
+ 
+             var lot = await db.Lots.AsNoTracking().FirstOrDefaultAsync(l => l.Id == id && l.OwnerId == me.Id, ct);
+-            if (lot is null) return Failure.NotFound("lot");
++            if (lot is null) return Failure.Forbidden("lot not found");
+ 
+             var to = body.To!;
+             if (!LotLifecycle.CanMove(lot.State, to))

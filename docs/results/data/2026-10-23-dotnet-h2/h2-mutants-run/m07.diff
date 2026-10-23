@@ -1,0 +1,12 @@
+diff -ruN a/Endpoints/HiveEndpoints.cs b/Endpoints/HiveEndpoints.cs
+--- a/Endpoints/HiveEndpoints.cs
++++ b/Endpoints/HiveEndpoints.cs
+@@ -22,7 +22,7 @@
+             var me = Caller.Of(http);
+             var hives = await db.Hives.AsNoTracking().Where(h => h.OwnerId == me.Id).OrderBy(h => h.Id).ToListAsync(ct);
+             return Results.Json(hives.Select(View));
+-        }).RequireSignIn();
++        });
+ 
+         app.MapPost("/hives", async (HiveBody body, HttpContext http, ApiaryDb db, CancellationToken ct) =>
+         {

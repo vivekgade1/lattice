@@ -1,0 +1,21 @@
+diff -ruN a/Endpoints/LotEndpoints.cs b/Endpoints/LotEndpoints.cs
+--- a/Endpoints/LotEndpoints.cs
++++ b/Endpoints/LotEndpoints.cs
+@@ -64,7 +64,7 @@
+             if (body.MoisturePct is { } m && (double.IsNaN(m) || m < 10 || m > 30)) check.Problems["moisture_pct"] = "must be between 10 and 30";
+             if (!check.Ok) return Failure.Invalid(check);
+ 
+-            var lot = await db.Lots.AsNoTracking().FirstOrDefaultAsync(l => l.Id == id && l.OwnerId == me.Id, ct);
++            var lot = await db.Lots.AsNoTracking().FirstOrDefaultAsync(l => l.Id == id, ct);
+             if (lot is null) return Failure.NotFound("lot");
+ 
+             var to = body.To!;
+@@ -76,7 +76,7 @@
+ 
+             // The state in the WHERE clause makes the move atomic when two requests race on one lot.
+             var from = lot.State;
+-            var changed = await db.Lots.Where(l => l.Id == id && l.OwnerId == me.Id && l.State == from)
++            var changed = await db.Lots.Where(l => l.Id == id && l.State == from)
+                 .ExecuteUpdateAsync(s => s.SetProperty(l => l.State, to)
+                     .SetProperty(l => l.MoisturePct, moisture).SetProperty(l => l.UpdatedAt, DateTime.UtcNow), ct);
+             if (changed == 0) return Failure.Conflict("the lot changed meanwhile; read it again");

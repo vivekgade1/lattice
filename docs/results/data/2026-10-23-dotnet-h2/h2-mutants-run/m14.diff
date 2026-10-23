@@ -1,0 +1,12 @@
+diff -ruN a/Endpoints/HiveEndpoints.cs b/Endpoints/HiveEndpoints.cs
+--- a/Endpoints/HiveEndpoints.cs
++++ b/Endpoints/HiveEndpoints.cs
+@@ -29,7 +29,7 @@
+             var me = Caller.Of(http);
+             var check = new Check();
+             var name = check.Text("name", body.Name, 1, 60);
+-            var year = check.Int("queen_year", body.QueenYear, 2000, DateTime.UtcNow.Year);
++            var year = check.Int("queen_year", body.QueenYear, 2000, int.MaxValue);
+             var boxes = check.Int("boxes", body.Boxes, 1, 6);
+             var yard = check.OptionalText("yard_location", body.YardLocation, 200);
+             if (!check.Ok) return Failure.Invalid(check);

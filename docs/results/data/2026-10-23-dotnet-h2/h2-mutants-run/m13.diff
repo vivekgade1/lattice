@@ -1,0 +1,14 @@
+diff -ruN a/Endpoints/LotEndpoints.cs b/Endpoints/LotEndpoints.cs
+--- a/Endpoints/LotEndpoints.cs
++++ b/Endpoints/LotEndpoints.cs
+@@ -71,9 +71,7 @@
+             if (!LotLifecycle.CanMove(lot.State, to))
+                 return Failure.Conflict($"a lot that is {lot.State} cannot become {to}");
+             var moisture = body.MoisturePct ?? lot.MoisturePct;
+-            if (to == LotLifecycle.Bottled && moisture > LotLifecycle.MaxBottlingMoisture)
+-                return Failure.Conflict($"moisture {moisture} is above {LotLifecycle.MaxBottlingMoisture}; the honey is too wet to bottle");
+-
++            
+             // The state in the WHERE clause makes the move atomic when two requests race on one lot.
+             var from = lot.State;
+             var changed = await db.Lots.Where(l => l.Id == id && l.OwnerId == me.Id && l.State == from)

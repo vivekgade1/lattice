@@ -1,0 +1,12 @@
+diff -ruN a/Endpoints/LotEndpoints.cs b/Endpoints/LotEndpoints.cs
+--- a/Endpoints/LotEndpoints.cs
++++ b/Endpoints/LotEndpoints.cs
+@@ -51,7 +51,7 @@
+         app.MapGet("/lots/{id:int}", async (int id, HttpContext http, ApiaryDb db, CancellationToken ct) =>
+         {
+             var me = Caller.Of(http);
+-            var lot = await db.Lots.AsNoTracking().FirstOrDefaultAsync(l => l.Id == id && l.OwnerId == me.Id, ct);
++            var lot = await db.Lots.AsNoTracking().FirstOrDefaultAsync(l => l.Id == id, ct);
+             return lot is null ? Failure.NotFound("lot") : Results.Json(View(lot));
+         }).RequireSignIn();
+ 

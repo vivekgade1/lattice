@@ -1,0 +1,60 @@
+{
+ "transcript": "/Users/vivekgade/Documents/lattice/docs/results/data/2026-10-23-dotnet-h2/w3/w3-transcript.jsonl",
+ "transcript_sha256": "7fa16d50fda4f4442f1655fde054403e4a79ab25207ff5fb8f4c322543e28450",
+ "root": "/Users/vivekgade/Documents/dn-h2-w",
+ "sessions": [
+  "b843b604-b7d9-4cd3-9e50-d1a5b3a7762b"
+ ],
+ "tool_calls": 8,
+ "by_tool": {
+  "Read": 1,
+  "Bash": 7
+ },
+ "forbidden": [],
+ "outside": [
+  {
+   "i": 6,
+   "tool": "Bash",
+   "token": "../../../mutants/m$n.diff)",
+   "path": "/Users/mutants/m/Users/vivekgade/Documents/dn-h2-w/$1.diff)",
+   "class": "outside"
+  }
+ ],
+ "review": [],
+ "cwds": [
+  "/Users/vivekgade/Documents/dn-h2-w",
+  "/Users/vivekgade/Documents/dn-h2-w/tests/spec/apiary"
+ ],
+ "bash_commands": [
+  {
+   "i": 1,
+   "command": "cd /Users/vivekgade/Documents/dn-h2-w; ls; find . -path ./scratch -prune -o -type f -print | grep -v '/obj/\\|/bin/' | head -50; cat truth.json 2>/dev/null | head -c 6000"
+  },
+  {
+   "i": 2,
+   "command": "cd /Users/vivekgade/Documents/dn-h2-w/tests/spec/apiary; cat truth.json; cat IDIOMS.md FILES.txt; wc -l */*.cs Program.cs"
+  },
+  {
+   "i": 3,
+   "command": "cd /Users/vivekgade/Documents/dn-h2-w/tests/spec/apiary; cat -n Endpoints/HiveEndpoints.cs Endpoints/LotEndpoints.cs Http/Caller.cs Http/Failure.cs Http/Dtos.cs Domain/Entities.cs"
+  },
+  {
+   "i": 4,
+   "command": "cd /Users/vivekgade/Documents/dn-h2-w/tests/spec/apiary; ls -a; cat studio.toml | head -20; cat ../../../scratch 2>&1 | head -1; ls /Users/vivekgade/Documents/dn-h2-w"
+  },
+  {
+   "i": 5,
+   "command": "cd /Users/vivekgade/Documents/dn-h2-w; mkdir -p scratch/home scratch/.tmp scratch/gen mutants\ncat > scratch/gen.sh <<'EOF'\nset -e\nR=/Users/vivekgade/Documents/dn-h2-w; M=$R/tests/spec/apiary; G=$R/scratch/gen\nrm -rf $G; mkdir -p $G\nmk() { # n ; edits applied by function body via python on copy\n  n=$1; d=$G/m$n; mkdir -p $d/a $d/b\n  cp -R $M/Data $M/Domain $M/Endpoints $M/Http $M/Program.cs $M/apiary.csproj $d/a/ 2>/dev/null\n  cp -R $d/a/. $d/b/\n}\ned() { python3 -I - \"$@\" <<'PY'\nimport sys\nf,old,new=sys.argv[1:4]\ns=open(f).read()\nassert s.count(old)==1,(f,old,s.count(old))\nopen(f,'w').write(s.r"
+  },
+  {
+   "i": 6,
+   "command": "cd /Users/vivekgade/Documents/dn-h2-w\nexport PATH=/opt/homebrew/bin:$PATH DOTNET_ROOT=/opt/homebrew/opt/dotnet/libexec DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1\nexport HOME=$PWD/scratch/home DOTNET_CLI_HOME=$PWD/scratch/home NUGET_PACKAGES=$PWD/scratch/home/.nuget/packages TMPDIR=$PWD/scratch/.tmp\nrm -rf scratch/build; mkdir -p scratch/build\nfor n in 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16; do\n d=scratch/build/m$n; mkdir -p $d; cp -R tests/spec/apiary/. $d/\n (cd $d && patch -p1 -s < ../../../mutants/m$n.diff) || echo PATCHFAIL $n\n echo \"m$n: $(dotnet build $d/apiary.csproj -c Relea"
+  },
+  {
+   "i": 7,
+   "command": "cd /Users/vivekgade/Documents/dn-h2-w; cat > mutants/MUTANTS.md <<'EOF'\nHM1 | owner_read | GET /hives/{id} | Endpoints/HiveEndpoints.cs:49 | none (first by-id owner-scoped read; GET /hives and GET /lots lists kept for widen_list)\nHM2 | owner_read | GET /lots/{id} | Endpoints/LotEndpoints.cs:54 | none (last by-id owner-scoped read)\nHM3 | owner_write | DELETE /hives/{id} | Endpoints/HiveEndpoints.cs:57 | none (first owner-scoped write)\nHM4 | owner_write | POST /lots/{id}/advance | Endpoints/LotEndpoints.cs:67 | none (last owner-scoped write; owner dropped from both the lookup at :67 and the atom"
+  }
+ ],
+ "verdict": "void",
+ "method": "heuristic path extraction from tool arguments and shell text; every Bash command is listed for a human to read"
+}

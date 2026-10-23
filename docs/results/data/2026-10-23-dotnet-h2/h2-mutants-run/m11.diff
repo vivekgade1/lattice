@@ -1,0 +1,11 @@
+diff -ruN a/Endpoints/HiveEndpoints.cs b/Endpoints/HiveEndpoints.cs
+--- a/Endpoints/HiveEndpoints.cs
++++ b/Endpoints/HiveEndpoints.cs
+@@ -64,7 +64,6 @@
+         app.MapGet("/hives/{id:int}/inspections", async (int id, HttpContext http, ApiaryDb db, CancellationToken ct) =>
+         {
+             var me = Caller.Of(http);
+-            if (!await db.Hives.AnyAsync(h => h.Id == id && h.OwnerId == me.Id, ct)) return Failure.NotFound("hive");
+             var rows = await db.Inspections.AsNoTracking().Where(i => i.HiveId == id)
+                 .OrderByDescending(i => i.InspectedAt).ThenByDescending(i => i.Id).ToListAsync(ct);
+             return Results.Json(rows.Select(View));

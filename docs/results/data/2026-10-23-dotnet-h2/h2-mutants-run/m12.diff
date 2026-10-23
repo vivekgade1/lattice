@@ -1,0 +1,14 @@
+diff -ruN a/Endpoints/LotEndpoints.cs b/Endpoints/LotEndpoints.cs
+--- a/Endpoints/LotEndpoints.cs
++++ b/Endpoints/LotEndpoints.cs
+@@ -68,9 +68,7 @@
+             if (lot is null) return Failure.NotFound("lot");
+ 
+             var to = body.To!;
+-            if (!LotLifecycle.CanMove(lot.State, to))
+-                return Failure.Conflict($"a lot that is {lot.State} cannot become {to}");
+-            var moisture = body.MoisturePct ?? lot.MoisturePct;
++                        var moisture = body.MoisturePct ?? lot.MoisturePct;
+             if (to == LotLifecycle.Bottled && moisture > LotLifecycle.MaxBottlingMoisture)
+                 return Failure.Conflict($"moisture {moisture} is above {LotLifecycle.MaxBottlingMoisture}; the honey is too wet to bottle");
+ 

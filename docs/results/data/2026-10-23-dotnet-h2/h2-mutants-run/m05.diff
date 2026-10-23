@@ -1,0 +1,12 @@
+diff -ruN a/Endpoints/HiveEndpoints.cs b/Endpoints/HiveEndpoints.cs
+--- a/Endpoints/HiveEndpoints.cs
++++ b/Endpoints/HiveEndpoints.cs
+@@ -40,7 +40,7 @@
+             var hive = new Hive { OwnerId = me.Id, Name = name!, QueenYear = year, Boxes = boxes, YardLocation = yard };
+             db.Hives.Add(hive);
+             await db.SaveChangesAsync(ct);
+-            return Results.Json(View(hive), statusCode: 201);
++            return Results.Json(new { id = hive.Id, name = hive.Name, queen_year = hive.QueenYear, boxes = hive.Boxes, yard_location = hive.YardLocation }, statusCode: 201);
+         }).RequireSignIn();
+ 
+         app.MapGet("/hives/{id:int}", async (int id, HttpContext http, ApiaryDb db, CancellationToken ct) =>
