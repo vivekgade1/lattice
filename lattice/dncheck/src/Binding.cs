@@ -163,6 +163,7 @@ public sealed partial class Ex
                     if (Num(ArgValue(a, 0)) is { } lo && Num(ArgValue(a, 1)) is { } hi) { res.Add(B("ge", lo)); res.Add(B("le", hi)); }
                     else AddUnread(null, a, what, "non-integer or non-constant range", "bind");
                     break;
+                case "RegularExpression": if (ArgValue(a, 0) is string pat) res.Add(B("pattern", null, new List<string> { pat })); break;
                 case "AllowedValues": res.Add(B("choices", null, a.ArgumentList!.Arguments.Select(x => Js.Inv(Sm(a).GetConstantValue(x.Expression).Value)).ToList())); break;
             }
         }
@@ -455,6 +456,7 @@ public sealed partial class Ex
                     case "min_length": x.MinLength = (int?)b.Num; break;
                     case "max_length": x.MaxLength = (int?)b.Num; break;
                     case "choices": x.Choices = b.Choices ?? new(); break;
+                    case "pattern": x.Pattern = b.Choices?.FirstOrDefault(); break;
                 }
                 x.EnforcedBy ??= src;
             }
@@ -504,6 +506,7 @@ public sealed partial class Ex
         Wire = x.Wire,
         BindSource = x.BindSource,
         EnforcedBy = x.EnforcedBy,
+        Pattern = x.Pattern,
     };
 
     void BuildModels()

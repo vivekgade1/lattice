@@ -13,6 +13,7 @@ so its import path (and the Hypothesis constant pool its goldens depend on, see
 from __future__ import annotations
 
 import re
+from typing import Any
 
 SLUG = "slug"
 URL = "url"
@@ -60,8 +61,104 @@ def seed_value(fmt: str, stem: str, i: int, max_len: int | None = None) -> str:
     return value
 
 
-def example(fmt: str | None, max_len: int | None = None) -> str | None:
-    """A request value of the format (None: no format); a slug cut to ``max_len``."""
+REGEX = "regex:"  # a format given by a pattern (.NET ``[RegularExpression]``): "regex:<pattern>"
+
+
+class _Unsupported(Exception):
+    """A pattern construct the generator does not follow (lookaround, back references)."""
+
+
+def _category(name: str) -> tuple[str, str]:
+    """(a character of the category, the escape matching it) by the parser's category name."""
+    return {
+        "CATEGORY_DIGIT": ("0", r"\d"), "CATEGORY_NOT_DIGIT": ("a", r"\D"),
+        "CATEGORY_WORD": ("a", r"\w"), "CATEGORY_NOT_WORD": ("-", r"\W"),
+        "CATEGORY_SPACE": (" ", r"\s"), "CATEGORY_NOT_SPACE": ("a", r"\S"),
+    }.get(name, ("a", r"\w"))  # fmt: skip
+
+
+def _in_set(items: list[tuple[object, object]], ch: str) -> bool:
+    for op, arg in items:
+        if str(op) == "LITERAL" and ord(ch) == arg:
+            return True
+        if str(op) == "RANGE" and arg[0] <= ord(ch) <= arg[1]:  # type: ignore[index]
+            return True
+        if str(op) == "CATEGORY" and re.match(_category(str(arg))[1], ch):
+            return True
+    return False
+
+
+def _generate(tree: Any, extra: int) -> str:
+    """A string the parse ``tree`` accepts: first alternatives, first members of sets, every
+    repeat at its lower bound plus ``extra`` (up to its upper bound)."""
+    out: list[str] = []
+    for op, arg in tree:
+        kind = str(op)
+        if kind == "LITERAL":
+            out.append(chr(arg))
+        elif kind == "NOT_LITERAL":
+            out.append("a" if arg != ord("a") else "b")
+        elif kind == "ANY":
+            out.append("a")
+        elif kind == "IN":
+            items = list(arg)
+            if str(items[0][0]) == "NEGATE":
+                out.append(next((x for x in "aA0_x-." if not _in_set(items[1:], x)), "~"))
+            else:
+                first, member = items[0]
+                kind0 = str(first)
+                if kind0 == "LITERAL":
+                    out.append(chr(member))
+                elif kind0 == "RANGE":
+                    out.append(chr(member[0]))
+                elif kind0 == "CATEGORY":
+                    out.append(_category(str(member))[0])
+                else:
+                    raise _Unsupported(kind0)
+        elif kind == "CATEGORY":
+            out.append(_category(str(arg))[0])
+        elif kind == "BRANCH":
+            out.append(_generate(arg[1][0], extra))
+        elif kind == "SUBPATTERN":
+            out.append(_generate(arg[3], extra))
+        elif kind in ("MAX_REPEAT", "MIN_REPEAT"):
+            low, high, body = arg
+            count = low + extra if high > 65535 else min(low + extra, high)
+            out.append(_generate(body, extra) * count)
+        elif kind != "AT":
+            raise _Unsupported(kind)
+    return "".join(out)
+
+
+def regex_example(pattern: str, min_len: int | None = None, max_len: int | None = None) -> str | None:
+    """A string ``pattern`` accepts (``re.search``) of ``min_len`` to ``max_len`` characters, built
+    from the pattern's first alternatives with the repeats lengthened until the bounds hold;
+    None when the pattern uses lookaround or a back reference, is not a pattern, or no such
+    string is found."""
+    try:
+        from re import _parser  # noqa: PLC2701 -- the stdlib's own parse tree
+
+        tree = _parser.parse(pattern)
+        compiled = re.compile(pattern)
+    except (re.error, ImportError, RecursionError):
+        return None
+    for extra in range(64):
+        try:
+            value = _generate(tree, extra)
+        except _Unsupported:
+            return None
+        if max_len is not None and len(value) > max_len:
+            return None
+        if (min_len is None or len(value) >= min_len) and compiled.search(value):
+            return value
+    return None
+
+
+def example(fmt: str | None, max_len: int | None = None, min_len: int | None = None) -> str | None:
+    """A request value of the format (None: no format); a slug cut to ``max_len``; for a
+    ``regex:`` format, a string of the pattern of ``min_len`` to ``max_len`` characters."""
+    if fmt is not None and fmt.startswith(REGEX):
+        return regex_example(fmt[len(REGEX):], min_len, max_len)
     if fmt not in EXAMPLES:
         return None
     value = EXAMPLES[fmt]

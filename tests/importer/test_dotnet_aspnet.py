@@ -312,3 +312,67 @@ def test_reconcile_needs_the_harness(tmp_path):
 
     with pytest.raises(DotnetFrontEndError, match="names no"):
         dotnet().reconcile(tmp_path, None)
+
+
+# ---- the users table's enum role column (node F1) ---------------------------------------------
+
+
+def _with_role_column(doc, storage="string", values=(0, 1)):
+    import copy
+
+    out = copy.deepcopy(doc)
+    out["dotnet"]["auth"]["role_column"] = {
+        "column": "role",
+        "members": [{"name": "Member", "value": values[0]}, {"name": "Admin", "value": values[1]}],
+        "storage": storage,
+    }
+    return out
+
+
+@needs_dotnet
+@pytest.mark.parametrize(
+    ("storage", "spelled"),
+    [("string", ("Member", "Admin")), (None, ("Member", "Admin")), ("int", ("0", "1"))],
+)
+def test_a_role_column_becomes_the_role_scheme(doc, storage, spelled):
+    from lattice.importer.appmodel import RoleScheme
+    from lattice.importer.frontends.dotnet_aspnet import model_from_extract
+
+    model = model_from_extract(_with_role_column(doc, storage), "dnparity1")
+    assert model.role_scheme == RoleScheme(
+        "role", ((spelled[0], spelled[0], "Member"), (spelled[1], spelled[1], "Admin")),
+        "Admin", None, None,
+    )  # fmt: skip
+    assert model.auth.role_column == "role"
+    # any signed-in caller is `Authenticated` once the roles are the scheme's, not `Customer`
+    assert {r.auth for r in model.routes} <= {"Public", "Authenticated", "Admin"}
+    assert "Authenticated" in {r.auth for r in model.routes}
+
+
+@needs_dotnet
+def test_a_regular_expression_is_the_regex_format_of_the_param_and_the_model_field(doc):
+    import copy
+
+    from lattice.importer.frontends.dotnet_aspnet import model_from_extract
+
+    out = copy.deepcopy(doc)
+    route = next(r for r in out["routes"] if r["params"])
+    route["params"][0]["pattern"] = "^[a-z]+$"
+    field = out["models"][0]["fields"][0]
+    field["pattern"] = "^[0-9]+$"
+    model = model_from_extract(out, "dnparity1")
+    got = next(r for r in model.routes if (r.method, r.path) == (route["method"], route["path_template"]))
+    assert got.params[0].format == "regex:^[a-z]+$"
+    assert model.models[0].fields[0].format == "regex:^[0-9]+$"
+    plain = model_from_extract(doc, "dnparity1")
+    assert all(p.format is None for r in plain.routes for p in r.params)
+    assert all(f.format is None for m in plain.models for f in m.fields)
+
+
+@needs_dotnet
+def test_without_a_role_column_the_model_is_unchanged(doc):
+    from lattice.importer.frontends.dotnet_aspnet import model_from_extract
+
+    model = model_from_extract(doc, "dnparity1")
+    assert model.role_scheme is None and model.auth.role_column is None
+    assert "Customer" in {r.auth for r in model.routes}

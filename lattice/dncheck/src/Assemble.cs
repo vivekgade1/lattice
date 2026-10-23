@@ -123,6 +123,27 @@ public sealed partial class Ex
         D.Dotnet.Auth.CallerFuncs = CallerFuncs.Select(Qual).OrderBy(x => x, StringComparer.Ordinal).ToList();
         D.Dotnet.Auth.FallbackPolicy = fallbackMeta?.Where;
         D.Dotnet.Auth.Pipeline = pipeline.Distinct().ToList();
+        D.Dotnet.Auth.RoleColumn = RoleColumnOf(users);
+    }
+
+    /// <summary>The users entity's enum property with a member named like the admin role: (column, members, storage).</summary>
+    XRoleColumn? RoleColumnOf(INamedTypeSymbol? users)
+    {
+        if (users == null || adminRole == null || !Entities.TryGetValue(users, out var ei)) return null;
+        foreach (var pi in ei.Props)
+        {
+            var st = Strip(pi.P.Type);
+            if (st.TypeKind != TypeKind.Enum) continue;
+            var members = st.GetMembers().OfType<IFieldSymbol>().Where(f => f.HasConstantValue).ToList();
+            if (!members.Any(f => string.Equals(f.Name, adminRole, StringComparison.OrdinalIgnoreCase))) continue;
+            return new XRoleColumn
+            {
+                Column = pi.Col.Name,
+                Members = members.Select(f => new XRoleMember { Name = f.Name, Value = Convert.ToInt64(f.ConstantValue) }).ToList(),
+                Storage = pi.CustomConv ? null : pi.Conv ?? "int",
+            };
+        }
+        return null;
     }
 
     static readonly System.Text.RegularExpressions.Regex PasswordLike = new("password|hash|pwd", System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.CultureInvariant);
@@ -143,7 +164,7 @@ public sealed partial class Ex
                     a.LoginEncoding = rec.R.Params.Any(p => p.Source == "form") ? "form" : "json"; a.TokenField = TokenFieldOf(rec);
                     return;
                 }
-                foreach (var inv in v.Body.DescendantNodesAndSelf().OfType<InvocationExpressionSyntax>().Where(i => VerifyNames.Contains(InvokedName(i.Expression) ?? "")))
+                foreach (var inv in v.Body.DescendantNodesAndSelf().OfType<InvocationExpressionSyntax>().Where(i => VerifyNames.Contains(InvokedName(i.Expression) ?? "") || IsProjectCompare(i)))
                 {
                     var args = inv.ArgumentList.Arguments.Select(x => x.Expression).Concat(inv.Expression is MemberAccessExpressionSyntax ma ? new[] { ma.Expression } : []).ToList();
                     foreach (var arg in args)
@@ -162,6 +183,10 @@ public sealed partial class Ex
             }
         }
     }
+
+    /// <summary>A call of a project method with two or more arguments, one of them the stored password column: a project-written comparison (<c>SamePassword(user.Password, typed)</c>) is the verify call.</summary>
+    bool IsProjectCompare(InvocationExpressionSyntax i) => i.ArgumentList.Arguments.Count >= 2 && Resolve(i).Project
+        && i.ArgumentList.Arguments.Any(a => ColumnRef(a.Expression, null, null) is { Nav: null } cr && PasswordLike.IsMatch(cr.Prop));
 
     string? UsernameFieldOf(RouteRec rec, INamedTypeSymbol users, Visit at)
     {
