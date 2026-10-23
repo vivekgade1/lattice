@@ -11,7 +11,7 @@ namespace DnCheck;
 
 public sealed partial class Ex
 {
-    static readonly HashSet<string> ValueResults = new(StringComparer.Ordinal) { "Ok", "Created", "CreatedAtAction", "CreatedAtRoute", "Accepted", "AcceptedAtAction", "AcceptedAtRoute", "Json" };
+    static readonly HashSet<string> ValueResults = new(StringComparer.Ordinal) { "Ok", "Created", "CreatedAtAction", "CreatedAtRoute", "Accepted", "AcceptedAtAction", "AcceptedAtRoute", "Json", "StatusCode" };
     static readonly HashSet<string> ResultTypes = new(StringComparer.Ordinal) { "OkObjectResult", "CreatedResult", "CreatedAtActionResult", "CreatedAtRouteResult", "AcceptedResult", "ObjectResult", "JsonResult" };
     static readonly HashSet<string> IgnoreAttrs = new(StringComparer.Ordinal) { "JsonIgnore", "IgnoreDataMember", "NonSerialized" };
 
@@ -51,7 +51,7 @@ public sealed partial class Ex
         {
             foreach (var n in v.Body.DescendantNodesAndSelf())
             {
-                if (n is InvocationExpressionSyntax inv && ValueResults.Contains(InvokedName(inv.Expression) ?? "") && FrameworkResultCall(inv, Resolve(inv)) && inv.ArgumentList.Arguments.Count > 0)
+                if (n is InvocationExpressionSyntax inv && ValueResults.Contains(InvokedName(inv.Expression) ?? "") && FrameworkResultCall(inv, Resolve(inv)) && inv.ArgumentList.Arguments.Count > (InvokedName(inv.Expression) == "StatusCode" ? 1 : 0))
                     yield return (InvokedName(inv.Expression) == "Json" ? inv.ArgumentList.Arguments[0].Expression : inv.ArgumentList.Arguments.Last().Expression, inv);
                 else if (n is BaseObjectCreationExpressionSyntax oc && Sm(oc).GetTypeInfo(oc).Type is { } ot && ResultTypes.Contains(ot.Name) && oc.ArgumentList?.Arguments.Count > 0)
                     yield return (oc.ArgumentList.Arguments[0].Expression, oc);
@@ -70,6 +70,14 @@ public sealed partial class Ex
         foreach (var id in e.DescendantNodesAndSelf().OfType<IdentifierNameSyntax>())
             if (Sm(id).GetSymbolInfo(id).Symbol is ILocalSymbol ls && ls.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax() is VariableDeclaratorSyntax { Initializer.Value: { } init })
                 foreach (var s in Sources(init, depth + 1)) yield return s;
+        // the answer is what a project method returns (`Ok(await service.Get(id))`): what that method returns is built from the row
+        if (Bare(e) is InvocationExpressionSyntax call && Resolve(call) is { Project: true, M: { } m, Ambiguous: null } c && !FrameworkResultCall(call, c))
+        {
+            var target = DiTarget(m, out _, out _) ?? m;
+            if (BodyOf(DeclOf(target)) is { } body)
+                foreach (var r in Returned(body))
+                    foreach (var s in Sources(r, depth + 1)) yield return s;
+        }
     }
 
     /// <summary>Whether the member access is copied into what is answered (an initializer, a constructor argument, the answer itself), not just tested.</summary>
@@ -121,9 +129,13 @@ public sealed partial class Ex
                 foreach (var (le, lp) in leaks) Report(at, le, lp, "the entity is serialized with the column");
                 foreach (var src in Sources(e))
                     foreach (var ma in src.DescendantNodesAndSelf().OfType<MemberAccessExpressionSyntax>())
-                        if (Sm(ma).GetSymbolInfo(ma.Name).Symbol is IPropertySymbol ps && Sm(ma).GetTypeInfo(ma.Expression).Type is INamedTypeSymbol et
-                            && priv.TryGetValue(et, out var names) && names.Contains(ps.Name) && Copied(ma))
-                            Report(ma, et, ps.Name, "copied into the answer");
+                    {
+                        // the row's type: Roslyn's, else (EF is not referenced: a query's result is unbound) the entity the variable holds
+                        var et = Sm(ma).GetTypeInfo(ma.Expression).Type as INamedTypeSymbol;
+                        if (et == null || IsErr(et)) et = EntityOfLocal(ma.Expression);
+                        if (et != null && priv.TryGetValue(et, out var names) && names.Contains(ma.Name.Identifier.Text) && Copied(ma))
+                            Report(ma, et, ma.Name.Identifier.Text, "copied into the answer");
+                    }
             }
         }
     }

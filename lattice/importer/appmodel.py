@@ -80,6 +80,10 @@ class TableModel:
     through: str | None = field(default=None, metadata=OMIT_DEFAULT)
     # CHECK constraints, as source text (for invariant mining)
     checks: tuple[str, ...] = field(default=(), metadata=OMIT_DEFAULT)
+    # the owner column a front end confirmed from the code's owner evidence when the table has
+    # several foreign keys to the users table (.NET: EF Core declares one per navigation, the
+    # author and the reviewer): the profile takes it instead of calling the owner unclear
+    owner: str | None = field(default=None, metadata=OMIT_DEFAULT)
 
 
 @dataclass(frozen=True)

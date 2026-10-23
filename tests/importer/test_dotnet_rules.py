@@ -78,6 +78,58 @@ def test_owner_without_a_declared_key_gets_the_inferred_foreign_key():
     assert next(t for t in out.tables if t.name == "Note").columns[1].foreign_key == "users.id"
 
 
+def test_owner_confirmed_among_several_users_keys_is_stated_on_the_model():
+    # EF Core declares a foreign key for every navigation: a report has its author and its reviewer
+    rep = table("Report", "reports", col("id", pk=True), col("user_id", fk="users.id"),
+                col("reviewer_id", fk="users.id"))  # fmt: skip
+    out, found = dr.infer_owners(raw(("Report", "user_id", "compare")), model(USERS, rep))
+    assert found[0]["column"] == "user_id" and found[0]["declared"] is True
+    assert next(t for t in out.tables if t.name == "Report").owner == "user_id"
+    assert next(t for t in out.tables if t.name == "User").owner is None
+
+
+def test_two_evidenced_users_keys_state_no_owner():
+    rep = table("Report", "reports", col("id", pk=True), col("user_id", fk="users.id"),
+                col("reviewer_id", fk="users.id"))  # fmt: skip
+    out, found = dr.infer_owners(
+        raw(("Report", "user_id", "compare"), ("Report", "reviewer_id", "assign")),
+        model(USERS, rep),
+    )  # fmt: skip
+    assert found[0].get("unclear") and next(t for t in out.tables if t.name == "Report").owner is None
+
+
+def _plan(tbl, rts=()):
+    from lattice.importer.profile_gen import _Generator, _TablePlan
+
+    m = model(USERS, tbl, routes=rts)
+    g = _Generator(m)
+    plan = _TablePlan(tbl, [], [], [])
+    g.owner(plan, "users")
+    return g, plan
+
+
+def _scoped_route(table_name, column):
+    r = route(use(table_name, column))
+    return Route(**{**r.__dict__, "tables": (table_name,)})
+
+
+def test_the_profile_takes_the_owner_the_front_end_confirmed_among_several_users_keys():
+    cols = (col("id", pk=True), col("user_id", fk="users.id"), col("reviewer_id", fk="users.id"))
+    unhinted = table("Report", "reports", *cols)
+    g, plan = _plan(unhinted, [_scoped_route("Report", "user_id")])
+    assert plan.owner is None and "2 foreign keys" in plan.ownership_reason  # as before
+    hinted = TableModel("Report", "reports", "m", cols, (), owner="user_id")
+    g, plan = _plan(hinted, [_scoped_route("Report", "user_id")])
+    assert plan.owner == "user_id" and plan.ownership == "owner"
+
+
+def test_a_hint_does_not_override_a_route_comparing_another_users_key():
+    cols = (col("id", pk=True), col("user_id", fk="users.id"), col("reviewer_id", fk="users.id"))
+    hinted = TableModel("Report", "reports", "m", cols, (), owner="user_id")
+    g, plan = _plan(hinted, [_scoped_route("Report", "user_id"), _scoped_route("Report", "reviewer_id")])
+    assert plan.owner is None and plan.ownership == "unclear"
+
+
 def test_a_global_query_filter_is_owner_evidence():
     todo = table("Todo", "Todos", col("id", pk=True), col("OwnerId"))
     _, found = dr.infer_owners(raw(("Todo", "OwnerId", "filter")), model(USERS, todo))
@@ -166,6 +218,22 @@ def test_private_columns_and_json_naming():
     assert naming["naming"] == "CamelCase"
     assert naming["renamed"] == {"User": {"PasswordHash": "passwordHash", "Email": "email"}}
     assert dr.infer_naming({"dotnet": {}, "tables": []}) == []
+
+
+def test_columns_no_response_returns_are_private_next_to_json_ignore():
+    pol = {"tables": [{"struct": "User", "file": "E.cs", "columns": [
+        {"name": "id", "field": "Id", "wire": "id", "json": "id", "private": False,
+         "primary_key": True, "line": 4, "choices": None},
+        {"name": "password", "field": "Password", "wire": None, "json": "-", "private": False,
+         "primary_key": False, "line": 5, "choices": None},
+        {"name": "token", "field": "Token", "wire": None, "json": "-", "private": True,
+         "primary_key": False, "line": 6, "choices": None},
+        {"name": "email", "field": "Email", "wire": "email", "json": "email", "private": False,
+         "primary_key": False, "line": 7, "choices": None}]}]}  # fmt: skip
+    private, found = dr.infer_private(pol)
+    assert private == {"User": ["password", "token"]}
+    assert {f["rule"]: f["columns"] for f in found} == {"json_ignore": ["token"], "json_dash": ["password"]}
+    assert next(f for f in found if f["rule"] == "json_dash")["evidence"] == ["code:E.cs:5"]
 
 
 def test_enum_members_are_recorded_as_choices():
@@ -337,6 +405,16 @@ def test_the_rules_first_import_of_h1_exercises_most_items(h1, tmp_path):
     # 77 items before node F2 (refusals through typed exceptions add R3 items): the share is the claim
     assert len(items) >= 77 and len(verified) / len(items) >= 0.50
     assert rules["summary"]["items"]["refuted"] == 0
+    # node F5: the owner the code confirms among the report's two users keys (author, reviewer),
+    # its lines' owner through it, and the columns no response reads, are in the candidate spec
+    profile = (out / "profile.py").read_text()
+    assert "owner='user_id'" in profile and "private=['created_at', 'password']" in profile
+    assert "private=['account_number', 'user_id']" in profile
+    assert "owner_via=('report_id', 'ExpenseReport')" in profile
+    # node F5: the Member routes' login requirement is verified (HM7-8 are judged by these items)
+    assert items["R1 GET /reports"]["verdict"] == "verified"
+    assert items["R1 POST /payout-methods"]["verdict"] == "verified"
+    # node F6: the admin routes' R1 items must be decided too (a Member's role refusal is not an ownership refusal)
     assert items["R1 POST /review/reports/{reportId}/approve"]["verdict"] == "verified"
 
 

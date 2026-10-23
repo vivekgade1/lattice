@@ -21,7 +21,8 @@ with its ``rule``; the extract itself (the sidecar, ``workflows.json``) is never
   ``AddValidation()``); 400 and 422 are the two a profile can state.
 * ``enum_choices``: a status-like column's ``choices`` (an enum's members from the extract, or the
   constants written / named as ``from`` states, default first, at least two: the K5 rule).
-* ``json_ignore``: the columns a ``[JsonIgnore]`` hides (never the primary key) are the table's
+* ``json_ignore``, ``json_dash``: the columns a ``[JsonIgnore]`` hides, and those no response of
+  the app reads (the extract's ``json == "-"``; never the primary key), are the table's
   ``private`` columns in the generated profile. A private column is named by its SQL name (a
   profile checks its private columns against the schema).
 * ``json_naming``: the ``System.Text.Json`` policy (``dotnet.json_naming``) and the columns whose
@@ -86,6 +87,7 @@ def infer_owners(
     inferences: list[dict[str, Any]] = []
     tables: list[TableModel] = []
     ignored: dict[str, set[str]] = {}  # entity -> columns of another type than the users key
+    confirmed: dict[str, str] = {}  # entity -> its owner among several declared users keys
     for t in model.tables:
         found = [c for c in t.columns
                  if t is not users and c.type == pk.type and (t.name, c.name) in uses]  # fmt: skip
@@ -95,6 +97,10 @@ def infer_owners(
             inferences.append({"table": t.name, "column": c.name, "rule": RULE, "declared": True,
                                "evidence": _evidence(uses[(t.name, c.name)])})  # fmt: skip
             found = []
+            if sum((x.foreign_key or "").split(".")[0] == users.table_name for x in t.columns) > 1:
+                # EF Core declares a foreign key per navigation (author, reviewer): the code's
+                # evidence names the owner among them
+                confirmed[t.name] = c.name
         elif found:
             inferences.append(_entry(t.name, found, uses))
         if found or declared:
@@ -105,7 +111,8 @@ def infer_owners(
         cols = tuple(
             dataclasses.replace(c, foreign_key=fk) if c.name in names else c for c in t.columns
         )
-        tables.append(dataclasses.replace(t, columns=cols) if names else t)
+        t = dataclasses.replace(t, columns=cols) if names else t
+        tables.append(dataclasses.replace(t, owner=confirmed[t.name]) if t.name in confirmed else t)
     routes = tuple(
         dataclasses.replace(
             r,
@@ -217,16 +224,24 @@ def wire_name(name: str, policy: str | None) -> str:
 
 
 def infer_private(pol: Mapping[str, Any]) -> tuple[dict[str, list[str]], list[dict[str, Any]]]:
-    """``({entity: private columns}, inferences)``: the columns a ``[JsonIgnore]`` hides."""
+    """``({entity: private columns}, inferences)``: the columns the serializer never writes -- a
+    ``[JsonIgnore]`` hides them (``json_ignore``), or no response of the app reads them
+    (``json_dash``: the extract's ``json == "-"``, see ``Projection.cs``, the rule layer A's
+    derived policy uses). Never the primary key."""
     private: dict[str, list[str]] = {}
     found: list[dict[str, Any]] = []
     for t in pol["tables"]:
-        hidden = [c for c in t["columns"] if c.get("private") and not c["primary_key"]]
-        if hidden:
-            cols = private[t["struct"]] = sorted(c["name"] for c in hidden)
-            evidence = [f"code:{t['file']}:{c['line']}" for c in hidden]
-            found.append({"rule": "json_ignore", "table": t["struct"], "columns": cols,
-                          "evidence": evidence})  # fmt: skip
+        ignored = [c for c in t["columns"] if c.get("private") and not c["primary_key"]]
+        dashed = [c for c in t["columns"]
+                  if c.get("json") == "-" and not c.get("private") and not c["primary_key"]]  # fmt: skip
+        for rule, hidden in (("json_ignore", ignored), ("json_dash", dashed)):
+            if hidden:
+                evidence = [f"code:{t['file']}:{c['line']}" for c in hidden]
+                found.append({"rule": rule, "table": t["struct"],
+                              "columns": sorted(c["name"] for c in hidden),
+                              "evidence": evidence})  # fmt: skip
+        if ignored or dashed:
+            private[t["struct"]] = sorted(c["name"] for c in (*ignored, *dashed))
     return private, found
 
 
