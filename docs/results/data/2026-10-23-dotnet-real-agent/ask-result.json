@@ -1,0 +1,305 @@
+{
+ "self_test": false,
+ "head": "6a0f9d32e2f182904989092cac2169f60924255b",
+ "model": "sonnet",
+ "streak_rev": "a0679e9",
+ "inventory": "static (no observed workflows: Docker not used)",
+ "appmap_error": null,
+ "sync_route_in_d1_truth": true,
+ "total_usd": 0.456838,
+ "ask_usd": 0.331999,
+ "rows": [
+  {
+   "question": "is there a sync endpoint?",
+   "status": "ANSWERED",
+   "seconds": 12.6,
+   "would_be_routed_model_free_by": null,
+   "kind": "yes",
+   "implementation": "implemented_unverified",
+   "implementation_basis": "static",
+   "family": "implemented",
+   "registered_family": "not_implemented",
+   "truth_family": "implemented",
+   "answer": "Yes. GET /v1/sync exists: it returns the caller's habit, check-in and nudge changes in change_seq order. It requires a signed-in user.",
+   "explanation": "R89 defines GET /v1/sync, and the access matrix has cells for ann, ben and no token. The code registers the route, but no verified flow replays it.",
+   "citations": [
+    {
+     "target": "rule:R89",
+     "step": null,
+     "quote": "`GET /v1/sync?cursor=<opaque>&limit=<n>` answers `{changes, next_cursor, has_more}`"
+    },
+    {
+     "target": "cell:ann|GET /v1/sync",
+     "step": null,
+     "quote": "200/422"
+    },
+    {
+     "target": "cell:no token|GET /v1/sync",
+     "step": null,
+     "quote": "401"
+    },
+    {
+     "target": "scenario:sync_changes_in_order",
+     "step": 3,
+     "quote": "GET /v1/sync as ann -> 200"
+    },
+    {
+     "target": "impl:route:GET /v1/sync",
+     "step": null,
+     "quote": "registered code:Api/Endpoints/FeedEndpoints.cs:16"
+    }
+   ],
+   "rejected_citations": [],
+   "usage": {
+    "seconds": 12.56,
+    "tokens": 79467,
+    "input_tokens": 78480,
+    "output_tokens": 987,
+    "cache_read_tokens": 31713,
+    "cache_creation_tokens": 46763,
+    "rounds": 2,
+    "model": "sonnet",
+    "digest_elements": 434,
+    "calls": [
+     {
+      "input_tokens": 38898,
+      "cache_read_tokens": 0,
+      "prompt_tokens_est": 30196
+     },
+     {
+      "input_tokens": 39582,
+      "cache_read_tokens": 31713,
+      "prompt_tokens_est": 30664
+     }
+    ],
+    "cost_usd": 0.200101
+   },
+   "check_counts": null,
+   "answer_after_claim_check": {
+    "kind": "yes",
+    "answer": "Yes. GET /v1/sync exists: it returns the caller's habit, check-in and nudge changes in change_seq order. It requires a signed-in user.",
+    "explanation": "R89 defines GET /v1/sync, and the access matrix has cells for ann, ben and no token. The code registers the route, but no verified flow replays it."
+   },
+   "code_citations_resolve": {
+    "checked": 0,
+    "bad": []
+   },
+   "claim_audit": {
+    "references": [
+     {
+      "ref": "R89",
+      "cited": true
+     },
+     {
+      "ref": "GET /v1/sync",
+      "cited": false
+     }
+    ],
+    "uncited": 1,
+    "negative_or_unknown_route_mentions": []
+   },
+   "has_grounded_citation": true,
+   "names_the_auth": null
+  },
+  {
+   "question": "can I check in a habit?",
+   "status": "ANSWERED",
+   "seconds": 16.6,
+   "would_be_routed_model_free_by": null,
+   "kind": "yes",
+   "implementation": "implemented_unverified",
+   "implementation_basis": "static",
+   "family": "implemented",
+   "registered_family": "implemented",
+   "truth_family": "implemented",
+   "answer": "Yes. A signed-in user can check in a habit of their own with POST /v1/habits/{habit_id}/completions, sending {id, date, note?}. It answers 201 with the new check-in. The habit must not be archived, the date must be valid, and the habit must not already have a check-in on that date.",
+   "explanation": "The access matrix lists ann for this route with 200/201/404/409/422, and scenario check_in_dates step 6 shows a successful 201 check-in. The same route refuses archived habits (409 habit_archived) and a second check-in on the same date (409 already_checked_in). Another user's habit answers 404, and an anonymous caller gets 401.",
+   "citations": [
+    {
+     "target": "cell:ann|POST /v1/habits/{}/completions",
+     "step": null,
+     "quote": "200/201/404/409/422"
+    },
+    {
+     "target": "scenario:check_in_dates",
+     "step": 6,
+     "quote": "POST /v1/habits/00000000-0000-4000-8000-000000000100/completions as ann -> 201"
+    },
+    {
+     "target": "rule:R72",
+     "step": null,
+     "quote": "answers 201 `{id, habit_id, date, note, created_at, updated_at}`"
+    },
+    {
+     "target": "scenario:check_ins_on_an_archived_habit_are_refused",
+     "step": 1,
+     "quote": "POST /v1/habits/00000000-0000-4000-8000-000000000100/completions as ann -> 409"
+    },
+    {
+     "target": "scenario:second_check_in_on_a_date_is_refused",
+     "step": 2,
+     "quote": "POST /v1/habits/00000000-0000-4000-8000-000000000100/completions as ann -> 409"
+    },
+    {
+     "target": "cell:no token|POST /v1/habits/{}/completions",
+     "step": null,
+     "quote": "401"
+    },
+    {
+     "target": "cell:ben|POST /v1/habits/{}/completions",
+     "step": null,
+     "quote": "404"
+    },
+    {
+     "target": "impl:route:POST /v1/habits/{}/completions",
+     "step": null,
+     "quote": "implemented_unverified"
+    }
+   ],
+   "rejected_citations": [],
+   "usage": {
+    "seconds": 16.58,
+    "tokens": 81397,
+    "input_tokens": 79500,
+    "output_tokens": 1897,
+    "cache_read_tokens": 63426,
+    "cache_creation_tokens": 16070,
+    "rounds": 2,
+    "model": "sonnet",
+    "digest_elements": 435,
+    "calls": [
+     {
+      "input_tokens": 39314,
+      "cache_read_tokens": 31713,
+      "prompt_tokens_est": 30816
+     },
+     {
+      "input_tokens": 40186,
+      "cache_read_tokens": 31713,
+      "prompt_tokens_est": 31495
+     }
+    ],
+    "cost_usd": 0.089601
+   },
+   "check_counts": null,
+   "answer_after_claim_check": {
+    "kind": "yes",
+    "answer": "Yes. A signed-in user can check in a habit of their own with POST /v1/habits/{habit_id}/completions, sending {id, date, note?}. It answers 201 with the new check-in. The habit must not be archived, the date must be valid, and the habit must not already have a check-in on that date.",
+    "explanation": "The access matrix lists ann for this route with 200/201/404/409/422, and scenario check_in_dates step 6 shows a successful 201 check-in. The same route refuses archived habits (409 habit_archived) and a second check-in on the same date (409 already_checked_in). Another user's habit answers 404, and an anonymous caller gets 401."
+   },
+   "code_citations_resolve": {
+    "checked": 0,
+    "bad": []
+   },
+   "claim_audit": {
+    "references": [
+     {
+      "ref": "POST /v1/habits/{habit_id}/completions",
+      "cited": false
+     }
+    ],
+    "uncited": 1,
+    "negative_or_unknown_route_mentions": []
+   },
+   "has_grounded_citation": true,
+   "names_the_auth": null
+  },
+  {
+   "question": "who can dismiss a nudge?",
+   "status": "ANSWERED",
+   "seconds": 8.3,
+   "would_be_routed_model_free_by": null,
+   "kind": "value",
+   "implementation": "implemented_unverified",
+   "implementation_basis": "static",
+   "family": "implemented",
+   "registered_family": "implemented",
+   "truth_family": "implemented",
+   "answer": "Only a signed-in user, and only for their own nudges. Anonymous callers get 401, and a user dismissing another user's nudge gets 404.",
+   "explanation": "The dismiss route needs a Bearer token; without one it answers 401. Another user's nudge answers 404 `not_found`, exactly like a missing one. The owner (ann) gets 200 (or 409 if the nudge is already dismissed). The code registers the route with Member auth, but no verified flow replays it.",
+   "citations": [
+    {
+     "target": "cell:no token|POST /v1/nudges/{}/dismiss",
+     "step": null,
+     "quote": "401"
+    },
+    {
+     "target": "cell:ben|POST /v1/nudges/{}/dismiss",
+     "step": null,
+     "quote": "404"
+    },
+    {
+     "target": "cell:ann|POST /v1/nudges/{}/dismiss",
+     "step": null,
+     "quote": "200/404/409"
+    },
+    {
+     "target": "rule:R28",
+     "step": null,
+     "quote": "A habit, check-in, nudge or device of another user answers 404 with code `not_found` on every route"
+    },
+    {
+     "target": "rule:R27",
+     "step": null,
+     "quote": "a user sees and changes only their own habits, check-ins, nudges and devices"
+    },
+    {
+     "target": "impl:route:POST /v1/nudges/{}/dismiss",
+     "step": null,
+     "quote": "implemented_unverified; auth Member"
+    }
+   ],
+   "rejected_citations": [],
+   "usage": {
+    "seconds": 8.32,
+    "tokens": 40225,
+    "input_tokens": 39378,
+    "output_tokens": 847,
+    "cache_read_tokens": 31713,
+    "cache_creation_tokens": 7663,
+    "rounds": 1,
+    "model": "sonnet",
+    "digest_elements": 434,
+    "calls": [
+     {
+      "input_tokens": 39378,
+      "cache_read_tokens": 31713,
+      "prompt_tokens_est": 30850
+     }
+    ],
+    "cost_usd": 0.042297
+   },
+   "check_counts": null,
+   "answer_after_claim_check": {
+    "kind": "value",
+    "answer": "Only a signed-in user, and only for their own nudges. Anonymous callers get 401, and a user dismissing another user's nudge gets 404.",
+    "explanation": "The dismiss route needs a Bearer token; without one it answers 401. Another user's nudge answers 404 `not_found`, exactly like a missing one. The owner (ann) gets 200 (or 409 if the nudge is already dismissed). The code registers the route with Member auth, but no verified flow replays it."
+   },
+   "code_citations_resolve": {
+    "checked": 0,
+    "bad": []
+   },
+   "claim_audit": {
+    "references": [],
+    "uncited": 0,
+    "negative_or_unknown_route_mentions": []
+   },
+   "has_grounded_citation": true,
+   "names_the_auth": true
+  }
+ ],
+ "verdicts": {
+  "A-ANSWERED (3 of 3 questions answered by the model)": true,
+  "A-CITED (every claim cites spec or code: 0 uncited references, 0 rejected citations, every code citation resolves with its quote, every answer has at least one accepted citation)": false,
+  "A-KINDS-REGISTERED (kinds equal the registered not_implemented / implemented / implemented)": false,
+  "A-KINDS-TRUTH (kinds equal D1's truth: sync is implemented, check-in and dismiss are implemented)": true,
+  "A-AUTH (the dismiss answer names the auth)": true,
+  "A-COST (total ledger <= USD 5.00)": true
+ },
+ "counts": {
+  "uncited_references": 2,
+  "rejected_citations": 0,
+  "unresolved_code_citations": 0,
+  "references_checked": 3
+ }
+}
