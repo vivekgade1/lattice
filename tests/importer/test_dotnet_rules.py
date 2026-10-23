@@ -299,3 +299,41 @@ def test_the_rules_first_import_of_d1_on_sqlite(d1, tmp_path):
     kinds = [i["rule"] for i in rules["inferences"]]
     assert kinds.count("owner_uses") == 4 and kinds.count("enum_choices") == 1
     assert rules["summary"]["items"]["refuted"] <= 4
+
+
+H1_TGZ = REPO / "docs" / "results" / "data" / "2026-10-18-dotnet" / "h1.tgz"
+
+
+@pytest.fixture(scope="module")
+def h1(tmp_path_factory) -> Path:
+    """The held-out service (``outlay``) where ``tests.spec.outlay_harness`` resolves."""
+    import tarfile
+
+    if not H1_TGZ.is_file():
+        pytest.skip("h1.tgz is not in this checkout")
+    scratch = tmp_path_factory.mktemp("h1")
+    with tarfile.open(H1_TGZ) as tar:
+        members = [m for m in tar.getmembers() if not Path(m.name).name.startswith("._")]
+        tar.extractall(scratch, members=members, filter="data")
+    (scratch / "tests" / "spec" / "__init__.py").write_text("")
+    return scratch
+
+
+@pytest.mark.slow
+@needs_dotnet
+def test_the_rules_first_import_of_h1_exercises_most_items(h1, tmp_path):
+    """Node F1: H1 verified 3 of 77 items (its login route went unseen, its tokens belong to one
+    process, its auth handler's 401 and 403 were not the unauthenticated and forbidden answers, its
+    admin could not be seeded, its account number has a pattern). Development data: the share is
+    read, not gated at the held-out value."""
+    import json
+
+    out = tmp_path / "out"
+    proc = _import(h1 / "tests" / "spec" / "outlay", out, h1, 1500)
+    assert proc.returncode == 0, proc.stderr[-2000:]
+    rules = json.loads((out / "report.json").read_text())["rules"]
+    items = rules["items"]
+    verified = [i for i, v in items.items() if v["verdict"] in ("verified", "verified (corrected)")]
+    assert len(items) == 77 and len(verified) / len(items) >= 0.50
+    assert rules["summary"]["items"]["refuted"] == 0
+    assert items["R1 POST /review/reports/{reportId}/approve"]["verdict"] == "verified"

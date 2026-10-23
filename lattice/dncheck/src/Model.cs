@@ -74,6 +74,8 @@ public sealed class XParam
     public string? Wire { get; set; }
     public string? BindSource { get; set; }
     public string? EnforcedBy { get; set; }
+    /// <summary>The pattern a [RegularExpression] annotation puts on the value.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? Pattern { get; set; }
 }
 
 public sealed class XOwner
@@ -361,6 +363,22 @@ public sealed class DnAuthInfo
     public string? FallbackPolicy { get; set; }
     public string? UsersTableSql { get; set; }
     public List<string> Pipeline { get; set; } = new();
+    /// <summary>The users table's enum column that has a member named like the admin role: how a user is made an admin.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public XRoleColumn? RoleColumn { get; set; }
+}
+
+public sealed class XRoleMember
+{
+    public string Name { get; set; } = "";
+    public long Value { get; set; }
+}
+
+public sealed class XRoleColumn
+{
+    public string Column { get; set; } = "";
+    public List<XRoleMember> Members { get; set; } = new();
+    /// <summary>"string" (HasConversion&lt;string&gt;), "int", or null (a value converter that is not read).</summary>
+    public string? Storage { get; set; }
 }
 
 public sealed class DotnetInfo
