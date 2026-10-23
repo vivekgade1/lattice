@@ -101,6 +101,7 @@ from pathlib import Path
 from typing import Any
 
 from lattice.importer.appmodel import RepoModel
+from lattice.importer.stable import stabilise
 from lattice.importer.suite import AuthSpec, SeedPlan, TableSpec, seed_plan, sql_seed
 from lattice.importer.transport import AppRuntime, AuthDriver, form_login, json_login
 from lattice.spec import Contract, ContractError, Spec
@@ -1367,6 +1368,21 @@ class _Recording:
 # ---- writing ---------------------------------------------------------------------------------
 
 
+def stable_rules(r: RulesImport) -> dict[str, Any]:
+    """The report's ``rules`` section as it is written: for a .NET import the values the app
+    minted at run time (tokens, trace ids, stamps, hashes) are replaced by placeholders
+    (:mod:`lattice.importer.stable`), so the same app imported twice gives the same file. The
+    Python and Go imports are written as before."""
+    data = r.rules_dict()
+    return stabilise(data) if r.framework == "aspnetcore" else data
+
+
+def stable_proposals(records: list[dict[str, Any]], framework: str) -> list[dict[str, Any]]:
+    """``proposals.json``'s records, the same masking for a .NET import (their evidence holds
+    sample rows of the database the probes wrote)."""
+    return stabilise(records) if framework == "aspnetcore" else records
+
+
 def write_rules(r: RulesImport, out: Path | str, *, package: str) -> Path:
     """Write the import directory: ``report.json`` / ``report.md`` (with ``rules``),
     ``profile.py``, ``candidate_spec.py`` (the corrected spec, with each item's status)
@@ -1377,7 +1393,9 @@ def write_rules(r: RulesImport, out: Path | str, *, package: str) -> Path:
 
     close = no_llm(r.result)
     status = {i: v.verdict for i, v in r.rules.items.items()}
-    proposals = [proposal_record(p) for p in (r.mining.proposals if r.mining else [])]
+    proposals = stable_proposals(
+        [proposal_record(p) for p in (r.mining.proposals if r.mining else [])], r.framework
+    )
     extra = {
         "candidate_spec.py": spec_source(r.spec, status=status, package=package),
         "proposals.json": json.dumps(proposals, indent=2, default=str) + "\n",
@@ -1385,7 +1403,7 @@ def write_rules(r: RulesImport, out: Path | str, *, package: str) -> Path:
     if r.go_policy is not None:
         extra["go_policy.json"] = json.dumps(r.go_policy, indent=2) + "\n"
     written = write_import(close, out, repo_root=r.result.context.root, package=package,
-                           app_factory=r.app_factory, rules=r.rules_dict(),
+                           app_factory=r.app_factory, rules=stable_rules(r),
                            extra_files=extra)  # fmt: skip
     if r.not_run:  # K4: the report's first line says why there is no rule layer
         md = Path(written) / "report.md"

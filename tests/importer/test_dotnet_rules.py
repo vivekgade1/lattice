@@ -337,3 +337,54 @@ def test_the_rules_first_import_of_h1_exercises_most_items(h1, tmp_path):
     assert len(items) == 77 and len(verified) / len(items) >= 0.50
     assert rules["summary"]["items"]["refuted"] == 0
     assert items["R1 POST /review/reports/{reportId}/approve"]["verdict"] == "verified"
+
+
+def _stable_files(out: Path) -> dict[str, str]:
+    """The import's files as bytes, but for the two measurements: the wall time of each phase
+    (``rules.timing``) and the run's cost wall time (``cost.wall_s``)."""
+    import json
+
+    files = {}
+    for name in ("report.json", "proposals.json", "candidate_spec.py", "profile.py"):
+        text = (out / name).read_text()
+        if name == "report.json":
+            report = json.loads(text)
+            report["rules"]["timing"] = "<timing>"
+            report["cost"]["wall_s"] = "<wall_s>"
+            text = json.dumps(report, indent=2, sort_keys=True)
+        files[name] = text
+    return files
+
+
+def _same_twice(root: Path, overlay: Path, tmp_path: Path, timeout: int) -> None:
+    import re
+
+    runs = []
+    for n in (1, 2):
+        out = tmp_path / f"run{n}"
+        proc = _import(root, out, overlay, timeout)
+        assert proc.returncode == 0, proc.stderr[-2000:]
+        runs.append(_stable_files(out))
+    for name in runs[0]:
+        assert runs[0][name] == runs[1][name], f"{name} differs between two imports"
+    # the evidence holds placeholders where the app minted a value, never the value
+    text = runs[0]["report.json"] + runs[0]["proposals.json"]
+    assert not re.search(r"\d{4}-\d\d-\d\d[T ]\d\d:\d\d:\d\d", text)
+    assert not re.search(r"eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.", text)
+    assert not re.search(r"\$2[abxy]\$\d\d\$", text)
+    assert not re.search(r"00-[0-9a-f]{32}-[0-9a-f]{16}-0", text)
+
+
+@pytest.mark.slow
+@needs_dotnet
+def test_the_import_of_h1_is_the_same_twice_without_a_normaliser(h1, tmp_path):
+    """Node F3: H1 was identical 1 of 10 times; its answers carry a trace id, stamps and a
+    bearer token the app made up on each run."""
+    _same_twice(h1 / "tests" / "spec" / "outlay", h1, tmp_path, 1500)
+
+
+@pytest.mark.slow
+@needs_dotnet
+def test_the_import_of_d1_is_the_same_twice_without_a_normaliser(d1, tmp_path):
+    """D1's answers carry JWTs, refresh tokens, token hashes and bcrypt salts."""
+    _same_twice(d1 / "tests" / "spec" / "dnstreak", d1, tmp_path, 1500)
