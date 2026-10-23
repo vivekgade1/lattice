@@ -1,0 +1,85 @@
+{
+ "registered": {
+  "uncited_references": 2,
+  "rejected_citations": 0,
+  "unresolved_code_citations": 0,
+  "references_checked": 3
+ },
+ "rows": [
+  {
+   "question": "is there a sync endpoint?",
+   "references": [
+    {
+     "ref": "R89",
+     "registered_cited": true,
+     "posthoc_cited": true
+    },
+    {
+     "ref": "GET /v1/sync",
+     "registered_cited": false,
+     "posthoc_cited": true
+    }
+   ],
+   "code_tokens_in_citations": [
+    [
+     "Api/Endpoints/FeedEndpoints.cs",
+     16
+    ]
+   ],
+   "code_tokens_resolve": {
+    "checked": 1,
+    "bad": []
+   },
+   "citation_targets": [
+    "rule:R89",
+    "cell:ann|GET /v1/sync",
+    "cell:no token|GET /v1/sync",
+    "scenario:sync_changes_in_order",
+    "impl:route:GET /v1/sync"
+   ]
+  },
+  {
+   "question": "can I check in a habit?",
+   "references": [
+    {
+     "ref": "POST /v1/habits/{habit_id}/completions",
+     "registered_cited": false,
+     "posthoc_cited": true
+    }
+   ],
+   "code_tokens_in_citations": [],
+   "code_tokens_resolve": {
+    "checked": 0,
+    "bad": []
+   },
+   "citation_targets": [
+    "cell:ann|POST /v1/habits/{}/completions",
+    "scenario:check_in_dates",
+    "rule:R72",
+    "scenario:check_ins_on_an_archived_habit_are_refused",
+    "scenario:second_check_in_on_a_date_is_refused",
+    "cell:no token|POST /v1/habits/{}/completions",
+    "cell:ben|POST /v1/habits/{}/completions",
+    "impl:route:POST /v1/habits/{}/completions"
+   ]
+  },
+  {
+   "question": "who can dismiss a nudge?",
+   "references": [],
+   "code_tokens_in_citations": [],
+   "code_tokens_resolve": {
+    "checked": 0,
+    "bad": []
+   },
+   "citation_targets": [
+    "cell:no token|POST /v1/nudges/{}/dismiss",
+    "cell:ben|POST /v1/nudges/{}/dismiss",
+    "cell:ann|POST /v1/nudges/{}/dismiss",
+    "rule:R28",
+    "rule:R27",
+    "impl:route:POST /v1/nudges/{}/dismiss"
+   ]
+  }
+ ],
+ "posthoc_uncited_references": 0
+}

@@ -78,6 +78,58 @@ def test_owner_without_a_declared_key_gets_the_inferred_foreign_key():
     assert next(t for t in out.tables if t.name == "Note").columns[1].foreign_key == "users.id"
 
 
+def test_owner_confirmed_among_several_users_keys_is_stated_on_the_model():
+    # EF Core declares a foreign key for every navigation: a report has its author and its reviewer
+    rep = table("Report", "reports", col("id", pk=True), col("user_id", fk="users.id"),
+                col("reviewer_id", fk="users.id"))  # fmt: skip
+    out, found = dr.infer_owners(raw(("Report", "user_id", "compare")), model(USERS, rep))
+    assert found[0]["column"] == "user_id" and found[0]["declared"] is True
+    assert next(t for t in out.tables if t.name == "Report").owner == "user_id"
+    assert next(t for t in out.tables if t.name == "User").owner is None
+
+
+def test_two_evidenced_users_keys_state_no_owner():
+    rep = table("Report", "reports", col("id", pk=True), col("user_id", fk="users.id"),
+                col("reviewer_id", fk="users.id"))  # fmt: skip
+    out, found = dr.infer_owners(
+        raw(("Report", "user_id", "compare"), ("Report", "reviewer_id", "assign")),
+        model(USERS, rep),
+    )  # fmt: skip
+    assert found[0].get("unclear") and next(t for t in out.tables if t.name == "Report").owner is None
+
+
+def _plan(tbl, rts=()):
+    from lattice.importer.profile_gen import _Generator, _TablePlan
+
+    m = model(USERS, tbl, routes=rts)
+    g = _Generator(m)
+    plan = _TablePlan(tbl, [], [], [])
+    g.owner(plan, "users")
+    return g, plan
+
+
+def _scoped_route(table_name, column):
+    r = route(use(table_name, column))
+    return Route(**{**r.__dict__, "tables": (table_name,)})
+
+
+def test_the_profile_takes_the_owner_the_front_end_confirmed_among_several_users_keys():
+    cols = (col("id", pk=True), col("user_id", fk="users.id"), col("reviewer_id", fk="users.id"))
+    unhinted = table("Report", "reports", *cols)
+    g, plan = _plan(unhinted, [_scoped_route("Report", "user_id")])
+    assert plan.owner is None and "2 foreign keys" in plan.ownership_reason  # as before
+    hinted = TableModel("Report", "reports", "m", cols, (), owner="user_id")
+    g, plan = _plan(hinted, [_scoped_route("Report", "user_id")])
+    assert plan.owner == "user_id" and plan.ownership == "owner"
+
+
+def test_a_hint_does_not_override_a_route_comparing_another_users_key():
+    cols = (col("id", pk=True), col("user_id", fk="users.id"), col("reviewer_id", fk="users.id"))
+    hinted = TableModel("Report", "reports", "m", cols, (), owner="user_id")
+    g, plan = _plan(hinted, [_scoped_route("Report", "user_id"), _scoped_route("Report", "reviewer_id")])
+    assert plan.owner is None and plan.ownership == "unclear"
+
+
 def test_a_global_query_filter_is_owner_evidence():
     todo = table("Todo", "Todos", col("id", pk=True), col("OwnerId"))
     _, found = dr.infer_owners(raw(("Todo", "OwnerId", "filter")), model(USERS, todo))
@@ -166,6 +218,22 @@ def test_private_columns_and_json_naming():
     assert naming["naming"] == "CamelCase"
     assert naming["renamed"] == {"User": {"PasswordHash": "passwordHash", "Email": "email"}}
     assert dr.infer_naming({"dotnet": {}, "tables": []}) == []
+
+
+def test_columns_no_response_returns_are_private_next_to_json_ignore():
+    pol = {"tables": [{"struct": "User", "file": "E.cs", "columns": [
+        {"name": "id", "field": "Id", "wire": "id", "json": "id", "private": False,
+         "primary_key": True, "line": 4, "choices": None},
+        {"name": "password", "field": "Password", "wire": None, "json": "-", "private": False,
+         "primary_key": False, "line": 5, "choices": None},
+        {"name": "token", "field": "Token", "wire": None, "json": "-", "private": True,
+         "primary_key": False, "line": 6, "choices": None},
+        {"name": "email", "field": "Email", "wire": "email", "json": "email", "private": False,
+         "primary_key": False, "line": 7, "choices": None}]}]}  # fmt: skip
+    private, found = dr.infer_private(pol)
+    assert private == {"User": ["password", "token"]}
+    assert {f["rule"]: f["columns"] for f in found} == {"json_ignore": ["token"], "json_dash": ["password"]}
+    assert next(f for f in found if f["rule"] == "json_dash")["evidence"] == ["code:E.cs:5"]
 
 
 def test_enum_members_are_recorded_as_choices():
@@ -299,3 +367,103 @@ def test_the_rules_first_import_of_d1_on_sqlite(d1, tmp_path):
     kinds = [i["rule"] for i in rules["inferences"]]
     assert kinds.count("owner_uses") == 4 and kinds.count("enum_choices") == 1
     assert rules["summary"]["items"]["refuted"] <= 4
+
+
+H1_TGZ = REPO / "docs" / "results" / "data" / "2026-10-18-dotnet" / "h1.tgz"
+
+
+@pytest.fixture(scope="module")
+def h1(tmp_path_factory) -> Path:
+    """The held-out service (``outlay``) where ``tests.spec.outlay_harness`` resolves."""
+    import tarfile
+
+    if not H1_TGZ.is_file():
+        pytest.skip("h1.tgz is not in this checkout")
+    scratch = tmp_path_factory.mktemp("h1")
+    with tarfile.open(H1_TGZ) as tar:
+        members = [m for m in tar.getmembers() if not Path(m.name).name.startswith("._")]
+        tar.extractall(scratch, members=members, filter="data")
+    (scratch / "tests" / "spec" / "__init__.py").write_text("")
+    return scratch
+
+
+@pytest.mark.slow
+@needs_dotnet
+def test_the_rules_first_import_of_h1_exercises_most_items(h1, tmp_path):
+    """Node F1: H1 verified 3 of 77 items (its login route went unseen, its tokens belong to one
+    process, its auth handler's 401 and 403 were not the unauthenticated and forbidden answers, its
+    admin could not be seeded, its account number has a pattern). Development data: the share is
+    read, not gated at the held-out value."""
+    import json
+
+    out = tmp_path / "out"
+    proc = _import(h1 / "tests" / "spec" / "outlay", out, h1, 1500)
+    assert proc.returncode == 0, proc.stderr[-2000:]
+    rules = json.loads((out / "report.json").read_text())["rules"]
+    items = rules["items"]
+    verified = [i for i, v in items.items() if v["verdict"] in ("verified", "verified (corrected)")]
+    # 77 items before node F2 (refusals through typed exceptions add R3 items): the share is the claim
+    assert len(items) >= 77 and len(verified) / len(items) >= 0.50
+    assert rules["summary"]["items"]["refuted"] == 0
+    # node F5: the owner the code confirms among the report's two users keys (author, reviewer),
+    # its lines' owner through it, and the columns no response reads, are in the candidate spec
+    profile = (out / "profile.py").read_text()
+    assert "owner='user_id'" in profile and "private=['created_at', 'password']" in profile
+    assert "private=['account_number', 'user_id']" in profile
+    assert "owner_via=('report_id', 'ExpenseReport')" in profile
+    # node F5: the Member routes' login requirement is verified (HM7-8 are judged by these items)
+    assert items["R1 GET /reports"]["verdict"] == "verified"
+    assert items["R1 POST /payout-methods"]["verdict"] == "verified"
+    # node F6: the admin routes' R1 items must be decided too (a Member's role refusal is not an ownership refusal)
+    assert items["R1 POST /review/reports/{reportId}/approve"]["verdict"] == "verified"
+
+
+def _stable_files(out: Path) -> dict[str, str]:
+    """The import's files as bytes, but for the two measurements: the wall time of each phase
+    (``rules.timing``) and the run's cost wall time (``cost.wall_s``)."""
+    import json
+
+    files = {}
+    for name in ("report.json", "proposals.json", "candidate_spec.py", "profile.py"):
+        text = (out / name).read_text()
+        if name == "report.json":
+            report = json.loads(text)
+            report["rules"]["timing"] = "<timing>"
+            report["cost"]["wall_s"] = "<wall_s>"
+            text = json.dumps(report, indent=2, sort_keys=True)
+        files[name] = text
+    return files
+
+
+def _same_twice(root: Path, overlay: Path, tmp_path: Path, timeout: int) -> None:
+    import re
+
+    runs = []
+    for n in (1, 2):
+        out = tmp_path / f"run{n}"
+        proc = _import(root, out, overlay, timeout)
+        assert proc.returncode == 0, proc.stderr[-2000:]
+        runs.append(_stable_files(out))
+    for name in runs[0]:
+        assert runs[0][name] == runs[1][name], f"{name} differs between two imports"
+    # the evidence holds placeholders where the app minted a value, never the value
+    text = runs[0]["report.json"] + runs[0]["proposals.json"]
+    assert not re.search(r"\d{4}-\d\d-\d\d[T ]\d\d:\d\d:\d\d", text)
+    assert not re.search(r"eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.", text)
+    assert not re.search(r"\$2[abxy]\$\d\d\$", text)
+    assert not re.search(r"00-[0-9a-f]{32}-[0-9a-f]{16}-0", text)
+
+
+@pytest.mark.slow
+@needs_dotnet
+def test_the_import_of_h1_is_the_same_twice_without_a_normaliser(h1, tmp_path):
+    """Node F3: H1 was identical 1 of 10 times; its answers carry a trace id, stamps and a
+    bearer token the app made up on each run."""
+    _same_twice(h1 / "tests" / "spec" / "outlay", h1, tmp_path, 1500)
+
+
+@pytest.mark.slow
+@needs_dotnet
+def test_the_import_of_d1_is_the_same_twice_without_a_normaliser(d1, tmp_path):
+    """D1's answers carry JWTs, refresh tokens, token hashes and bcrypt salts."""
+    _same_twice(d1 / "tests" / "spec" / "dnstreak", d1, tmp_path, 1500)

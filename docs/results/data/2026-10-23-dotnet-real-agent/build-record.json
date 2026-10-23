@@ -1,0 +1,254 @@
+{
+ "id": "b1",
+ "project": "dnbuild",
+ "changes": [],
+ "status": "passed",
+ "model": "sonnet",
+ "agent": "claude",
+ "max_rounds": 3,
+ "started": "2026-10-23T16:25:37Z",
+ "finished": "2026-10-23T16:26:29Z",
+ "rounds": [
+  {
+   "n": 1,
+   "started": "2026-10-23T16:25:40Z",
+   "finished": "2026-10-23T16:26:29Z",
+   "agent_summary": "I built the `/items` routes in `Program.cs` with EF Core over the existing `items` table. `./check.sh` exits 0 and reports verdict \"pass\". - **Routes:** `POST /items`, `GET /items`, `GET /items/{id}` and `DELETE /items/{id}`. - **Validation:** it returns 422 for a bad body or a non-integer id, 409 for a duplicate name, and 404 for a missing item. - **Tests:** I added none, because the project has no test files; the spec scenarios in `./check.sh` are the only checks.",
+   "files_changed": [
+    "Program.cs",
+    "docs/results/data/2026-10-23-dotnet-real-agent/build-raw/call-001.err",
+    "docs/results/data/2026-10-23-dotnet-real-agent/build-raw/call-001.out",
+    "docs/results/data/2026-10-23-dotnet-real-agent/ledger.jsonl"
+   ],
+   "check": {
+    "verdict": "pass",
+    "counts": {
+     "D": 0
+    },
+    "findings": []
+   },
+   "agent": {
+    "cost_usd": 0.1248387,
+    "cost_usd_list_estimate": 0.1248387,
+    "duration_ms": 43976,
+    "input_tokens": 14,
+    "output_tokens": 4329,
+    "cache_read_input_tokens": 89087,
+    "cache_creation_input_tokens": 18153,
+    "num_turns": 9,
+    "session_id": "6414a59f-6f62-4842-a802-2ea84b859a9f"
+   },
+   "gates": [
+    {
+     "command": "./check.sh",
+     "exit_code": 0,
+     "seconds": 3.9,
+     "output_tail": "\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:00.53\n{\n \"verdict\": \"pass\",\n \"layers\": \"D\",\n \"counts\": {\n  \"D\": 0\n },\n \"notes\": [],\n \"unchecked\": [],\n \"accepted\": [],\n \"stale_baseline\": [],\n \"timings\": {\n  \"total_s\": 3.0166,\n  \"layers\": {\n   \"D\": 3.0164\n  },\n  \"setup\": {},\n  \"scenarios\": [\n   {\n    \"name\": \"add_and_get\",\n    \"seconds\": 0.6056,\n    \"db_clone_s\": 0.0008,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.1792,\n    \"steps_s\": 0.318,\n    \"app_stop_s\": 0.0107,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0,\n    \"process_spawn_s\": 0.0025,\n    \"health_wait_s\": 0.1695,\n    \"process_stop_s\": 0.0107,\n    \"requests\": 2,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"add_empty_name\",\n    \"seconds\": 0.218,\n    \"db_clone_s\": 0.0012,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.1729,\n    \"steps_s\": 0.0326,\n    \"app_stop_s\": 0.0107,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0,\n    \"process_spawn_s\": 0.0025,\n    \"health_wait_s\": 0.1627,\n    \"process_stop_s\": 0.0106,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"add_negative_qty\",\n    \"seconds\": 0.2291,\n    \"db_clone_s\": 0.0011,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.1865,\n    \"steps_s\": 0.0325,\n    \"app_stop_s\": 0.0086,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0,\n    \"process_spawn_s\": 0.0025,\n    \"health_wait_s\": 0.1769,\n    \"process_stop_s\": 0.0086,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"add_duplicate_name\",\n    \"seconds\": 0.4891,\n    \"db_clone_s\": 0.001,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.1751,\n    \"steps_s\": 0.302,\n    \"app_stop_s\": 0.0106,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0,\n    \"process_spawn_s\": 0.0024,\n    \"health_wait_s\": 0.1651,\n    \"process_stop_s\": 0.0106,\n    \"requests\": 2,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"get_missing\",\n    \"seconds\": 0.4406,\n    \"db_clone_s\": 0.0009,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.172,\n    \"steps_s\": 0.2452,\n    \"app_stop_s\": 0.0218,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0,\n    \"process_spawn_s\": 0.0025,\n    \"health_wait_s\": 0.1626,\n    \"process_stop_s\": 0.0217,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"list_oldest_first\",\n    \"seconds\": 0.5226,\n    \"db_clone_s\": 0.001,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.1906,\n    \"steps_s\": 0.3199,\n    \"app_stop_s\": 0.0106,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0,\n    \"process_spawn_s\": 0.0025,\n    \"health_wait_s\": 0.1811,\n    \"process_stop_s\": 0.0106,\n    \"requests\": 4,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"remove_then_again\",\n    \"seconds\": 0.5113,\n    \"db_clone_s\": 0.0009,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.1708,\n    \"steps_s\": 0.3285,\n    \"app_stop_s\": 0.0107,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invar\n",
+     "layer_seconds": {
+      "D": 3.0164
+     }
+    }
+   ],
+   "spec_edited": [],
+   "error": null,
+   "wall_s": 48.95,
+   "scope_passing": 6,
+   "scope_total": 6,
+   "regressions": [],
+   "newly_fixed": [
+    "scenario:add_and_get",
+    "scenario:add_empty_name",
+    "scenario:add_negative_qty",
+    "scenario:add_duplicate_name",
+    "scenario:list_oldest_first",
+    "scenario:remove_then_again"
+   ]
+  }
+ ],
+ "targets": [
+  {
+   "id": "scenario:add_and_get",
+   "label": "D silent add_and_get / step 1: status: expected 201, got 404; body: expected {'id': 1, 'name': 'widget', 'qty': 3} within None; db Item: expected 1 rows, found 0",
+   "done": true
+  },
+  {
+   "id": "scenario:add_empty_name",
+   "label": "D silent add_empty_name / step 1: status: expected 422, got 404",
+   "done": true
+  },
+  {
+   "id": "scenario:add_negative_qty",
+   "label": "D silent add_negative_qty / step 1: status: expected 422, got 404",
+   "done": true
+  },
+  {
+   "id": "scenario:add_duplicate_name",
+   "label": "D silent add_duplicate_name / step 1: status: expected 201, got 404; db Item: expected 1 rows, found 0",
+   "done": true
+  },
+  {
+   "id": "scenario:list_oldest_first",
+   "label": "D silent list_oldest_first / step 1: status: expected 201, got 404",
+   "done": true
+  },
+  {
+   "id": "scenario:remove_then_again",
+   "label": "D silent remove_then_again / step 1: status: expected 201, got 404; db Item: expected 1 rows, found 0",
+   "done": true
+  }
+ ],
+ "gates": [
+  "./check.sh"
+ ],
+ "base": "df2d19ee7cc0af145b5e75812d420a9347a3bc4d",
+ "branch": "rebuild/all-1",
+ "worktree": "/private/tmp/claude-501/dnra/real-scratch2/build-repo/.lattice/rebuilds/dnbuild-b1-0cc8c6",
+ "merge_hint": "The build is on build/dnbuild (now at 36d5ddd235) and rebuild/all-1; Studio never merges into your branch: to take it, run `git merge build/dnbuild` in /private/tmp/claude-501/dnra/real-scratch2/build-repo.",
+ "usage": {
+  "cost_usd": 0.124839,
+  "cost_usd_list_estimate": 0.124839,
+  "duration_ms": 43976,
+  "input_tokens": 14,
+  "output_tokens": 4329,
+  "cache_read_input_tokens": 89087,
+  "cache_creation_input_tokens": 18153,
+  "wall_s": 51.83
+ },
+ "warnings": [],
+ "error": null,
+ "pids": [],
+ "attempts": 1,
+ "timeline": [
+  {
+   "at": "2026-10-23T16:25:37Z",
+   "event": "started"
+  },
+  {
+   "at": "2026-10-23T16:26:29Z",
+   "event": "passed"
+  }
+ ],
+ "interrupted": false,
+ "interrupted_at": null,
+ "interrupted_reason": null,
+ "session_id": "6414a59f-6f62-4842-a802-2ea84b859a9f",
+ "scope": {
+  "kind": "all",
+  "id": "all",
+  "title": "All",
+  "rules": [
+   "R1",
+   "R2",
+   "R3",
+   "R4",
+   "R5",
+   "R6",
+   "R7",
+   "R8"
+  ]
+ },
+ "baseline": {
+  "at": "2026-10-23T16:25:40Z",
+  "seconds": 2.71,
+  "verdict": "fail",
+  "counts": {
+   "D": 6
+  },
+  "findings": [
+   {
+    "id": "f1",
+    "title": "D silent add_and_get / step 1: status: expected 201, got 404; body: expected {'id': 1, 'name': 'widget', 'qty': 3} within None; db Item: expected 1 rows, found 0",
+    "target": "scenario:add_and_get",
+    "rules": [
+     "R1"
+    ],
+    "in_scope": true
+   },
+   {
+    "id": "f2",
+    "title": "D silent add_empty_name / step 1: status: expected 422, got 404",
+    "target": "scenario:add_empty_name",
+    "rules": [
+     "R2"
+    ],
+    "in_scope": true
+   },
+   {
+    "id": "f3",
+    "title": "D silent add_negative_qty / step 1: status: expected 422, got 404",
+    "target": "scenario:add_negative_qty",
+    "rules": [
+     "R3"
+    ],
+    "in_scope": true
+   },
+   {
+    "id": "f4",
+    "title": "D silent add_duplicate_name / step 1: status: expected 201, got 404; db Item: expected 1 rows, found 0",
+    "target": "scenario:add_duplicate_name",
+    "rules": [
+     "R4"
+    ],
+    "in_scope": true
+   },
+   {
+    "id": "f5",
+    "title": "D silent list_oldest_first / step 1: status: expected 201, got 404",
+    "target": "scenario:list_oldest_first",
+    "rules": [
+     "R6"
+    ],
+    "in_scope": true
+   },
+   {
+    "id": "f6",
+    "title": "D silent remove_then_again / step 1: status: expected 201, got 404; db Item: expected 1 rows, found 0",
+    "target": "scenario:remove_then_again",
+    "rules": [
+     "R7"
+    ],
+    "in_scope": true
+   }
+  ],
+  "unmapped": [],
+  "gates": [
+   {
+    "command": "./check.sh",
+    "exit_code": 1,
+    "seconds": 2.71,
+    "output_tail": "\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:00.80\n{\n \"verdict\": \"fail\",\n \"layers\": \"D\",\n \"counts\": {\n  \"D\": 6\n },\n \"notes\": [],\n \"unchecked\": [],\n \"accepted\": [],\n \"stale_baseline\": [],\n \"timings\": {\n  \"total_s\": 1.4401,\n  \"layers\": {\n   \"D\": 1.44\n  },\n  \"setup\": {},\n  \"scenarios\": [\n   {\n    \"name\": \"add_and_get\",\n    \"seconds\": 0.2949,\n    \"db_clone_s\": 0.0009,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.1749,\n    \"steps_s\": 0.0023,\n    \"app_stop_s\": 0.0107,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0,\n    \"process_spawn_s\": 0.0027,\n    \"health_wait_s\": 0.1651,\n    \"process_stop_s\": 0.0107,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"add_empty_name\",\n    \"seconds\": 0.1955,\n    \"db_clone_s\": 0.0012,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.1805,\n    \"steps_s\": 0.0025,\n    \"app_stop_s\": 0.0107,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0,\n    \"process_spawn_s\": 0.0031,\n    \"health_wait_s\": 0.1701,\n    \"process_stop_s\": 0.0107,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"add_negative_qty\",\n    \"seconds\": 0.1932,\n    \"db_clone_s\": 0.0013,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.1786,\n    \"steps_s\": 0.0023,\n    \"app_stop_s\": 0.0104,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0,\n    \"process_spawn_s\": 0.0023,\n    \"health_wait_s\": 0.1682,\n    \"process_stop_s\": 0.0104,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"add_duplicate_name\",\n    \"seconds\": 0.1791,\n    \"db_clone_s\": 0.001,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.1641,\n    \"steps_s\": 0.0028,\n    \"app_stop_s\": 0.0106,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0,\n    \"process_spawn_s\": 0.0025,\n    \"health_wait_s\": 0.1535,\n    \"process_stop_s\": 0.0106,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"get_missing\",\n    \"seconds\": 0.196,\n    \"db_clone_s\": 0.001,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.1827,\n    \"steps_s\": 0.0017,\n    \"app_stop_s\": 0.0101,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0,\n    \"process_spawn_s\": 0.0025,\n    \"health_wait_s\": 0.1728,\n    \"process_stop_s\": 0.0101,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"list_oldest_first\",\n    \"seconds\": 0.183,\n    \"db_clone_s\": 0.0011,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.1684,\n    \"steps_s\": 0.0022,\n    \"app_stop_s\": 0.0107,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0,\n    \"process_spawn_s\": 0.0024,\n    \"health_wait_s\": 0.1588,\n    \"process_stop_s\": 0.0107,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"remove_then_again\",\n    \"seconds\": 0.1982,\n    \"db_clone_s\": 0.0023,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.1833,\n    \"steps_s\": 0.0023,\n    \"app_stop_s\": 0.0097,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invar\n",
+    "layer_seconds": {
+     "D": 1.44
+    }
+   }
+  ]
+ },
+ "target_branch": "build/dnbuild",
+ "created_branch": true,
+ "base_ref": "HEAD",
+ "commit_range": {
+  "from": "df2d19ee7cc0af145b5e75812d420a9347a3bc4d",
+  "to": "36d5ddd235e748494863597e0796533b069ba387"
+ },
+ "integration_branch": "build/dnbuild",
+ "integration_base": "df2d19ee7cc0af145b5e75812d420a9347a3bc4d",
+ "owner_head": "df2d19ee7cc0af145b5e75812d420a9347a3bc4d",
+ "merged_head": null,
+ "metrics": null,
+ "commit": {
+  "sha": "36d5ddd235e748494863597e0796533b069ba387",
+  "message": "build: All\n\nBuilt by Lattice Studio from the spec, scope all (8 rule(s)): 6/6 in-scope checks pass in round 1 of 3, no regressions.\n\nLattice-Rebuild: b1 (dnbuild)\nLattice-Rebuild: dn-real-agent\n",
+  "files_changed": [
+   "Program.cs",
+   "docs/results/data/2026-10-23-dotnet-real-agent/build-raw/call-001.err",
+   "docs/results/data/2026-10-23-dotnet-real-agent/build-raw/call-001.out",
+   "docs/results/data/2026-10-23-dotnet-real-agent/ledger.jsonl"
+  ],
+  "name_status": [
+   "M Program.cs",
+   "A docs/results/data/2026-10-23-dotnet-real-agent/build-raw/call-001.err",
+   "A docs/results/data/2026-10-23-dotnet-real-agent/build-raw/call-001.out",
+   "A docs/results/data/2026-10-23-dotnet-real-agent/ledger.jsonl"
+  ]
+ }
+}

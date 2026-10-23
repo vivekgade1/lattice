@@ -757,6 +757,8 @@ class ProbeContext:
     # and the cookies the login set: a caller's own credentials to present
     answers: dict[str, dict[str, str]] = field(default_factory=dict)
     cookies: dict[str, dict[str, str]] = field(default_factory=dict)
+    # a 5xx to the anonymous caller was not a refusal (see ``run_probes``)
+    crash_admits: bool = False
 
     @property
     def api(self) -> ApiProfile:
@@ -2489,6 +2491,7 @@ def _refused(
     refusals: Sequence[tuple[int, str | None]] = (),
     no_credential: bool = False,
     addressed: bool = True,
+    crash_admits: bool = False,
 ) -> bool | None:
     """Whether an answer refuses the caller (None: cannot tell -- the answer has more
     than one explanation). ``owns_target``: the request addresses no row, or the
@@ -2498,6 +2501,9 @@ def _refused(
       a malformed token, the inactive user's) is a refusal, whatever the route states:
       such a request cannot get past authentication to any data-dependent answer.
     * A 2xx admits -- unless its body is an error envelope (:func:`_envelope`).
+    * A 5xx to a request carrying no credential at all is no refusal under ``crash_admits``
+      (a runtime whose authorization runs before the endpoint: only the endpoint answers
+      5xx to a request with no credentials, so it was not stopped); it admits.
     * Never decides: a 5xx (a crash, before or past the check), a 405 (the router's),
       and a 404 to a request addressing a row (the router's -- a path value it does not
       match -- or a row hidden from the caller, by its role or its owner) or one that is
@@ -2524,6 +2530,8 @@ def _refused(
         return True
     if _ok(status):
         return None if _envelope(answer, api, c, refusals) is not None else False
+    if crash_admits and no_credential and status >= 500:
+        return False
     if status >= 500 or status == 405:
         return None
     if status == 404 and (addressed or not _readable(answer.body)):
@@ -2887,7 +2895,8 @@ def _judge(
     if p.expect == "auth":
         refused = _refused(answer, contract, api, a.get("owns_target", True),
                            refusals=ctx.refusals, addressed=a.get("addressed", True),
-                           no_credential=a.get("caller") in NON_ROLE_CALLERS)  # fmt: skip
+                           no_credential=a.get("caller") in NON_ROLE_CALLERS,
+                           crash_admits=ctx.crash_admits and a.get("caller") == "anonymous")  # fmt: skip
         why = ""
         authorization = (status == 403 and api.forbidden_detail is not None
                          and _detail(body, api) == api.forbidden_detail
@@ -3502,6 +3511,52 @@ def _tokens(
     return tokens
 
 
+def _tokens_survive(
+    spec: Spec,
+    sessions: SessionFactory,
+    seed_db: Path,
+    ctx: ProbeContext,
+    login: Login,
+    auth_headers: Callable[[str], Mapping[str, str]] | None,
+    scheme: str,
+    auth_present: Callable[[Any, str], Mapping[str, str]] | None,
+    contracts: Mapping[str, Contract],
+) -> bool:
+    """Whether a token minted in one session is accepted in the next. False only when a
+    route that needs a caller (a GET with no path parameter) refuses it with a 401 in a
+    new session and answers something else to the same caller logged in again there:
+    the app's tokens belong to the process that minted them. True otherwise (also when
+    no such route exists: nothing says they do not survive)."""
+    for c in contracts.values():
+        roles = allowed_roles(c.auth, spec.profile.api)
+        if c.method != "GET" or roles is None or any(p.source == "path" for p in c.params):
+            continue
+        who = next((x for x in ctx.with_token() if x.role in roles), None)
+        if who is None:
+            continue
+        with tempfile.TemporaryDirectory(prefix="lattice-check-r-") as name:
+            db = Path(name) / "survive.db"
+            shutil.copyfile(seed_db, db)
+            with sessions(db) as session:
+                def ask(token: str) -> int:
+                    if auth_present is not None:
+                        headers = dict(auth_present(session, token))
+                    elif auth_headers is not None:
+                        headers = dict(auth_headers(token))
+                    else:
+                        headers = {"Authorization": f"{scheme} {token}"}
+                    return session.request(c.method, c.path, headers=headers).status
+
+                if ask(ctx.tokens[who.handle]) != 401:
+                    return True
+                try:
+                    fresh = login(getattr(session, "client", session), who.handle)
+                except Exception:  # noqa: BLE001 -- cannot log in again: nothing to compare
+                    return True
+                return ask(fresh) == 401
+    return True
+
+
 def _selected(item_id: str, only: Sequence[str] | None) -> bool:
     return only is None or any(item_id.startswith(prefix) for prefix in only)
 
@@ -3525,6 +3580,8 @@ def run_probes(
     unreachable: Mapping[str, str] | None = None,
     auth_present: Callable[[Any, str], Mapping[str, str]] | None = None,
     json_login: tuple[str, str, str, str] | None = None,
+    relogin: bool = False,
+    crash_admits: bool = False,
 ) -> RuleResult:
     """Every rule item of ``spec`` (those whose id starts with one of ``only``, when
     given), probed on the app ``sessions`` opens; ``make_db(variant, path)`` writes the
@@ -3544,7 +3601,13 @@ def run_probes(
     /path``) no probe may call, with the reason (a route that needs the network): their
     items are unexercised, ``unreachable-by-probe`` with that reason. ``json_login``:
     (method, path, username field, password field) of a login route taking JSON
-    credentials (see :func:`_r1`)."""
+    credentials (see :func:`_r1`). ``relogin``: the app's tokens may belong to the process
+    that minted them (a signing key made at start-up): when a token minted in one session
+    is refused in the next (:func:`_tokens_survive`), each probe's caller logs in again
+    inside the probe's own session, and the probe's database baseline is taken after that
+    login. ``crash_admits``: the app's authorization runs before the endpoint (ASP.NET Core's
+    middleware), so a 5xx to the anonymous caller came from the endpoint: the request was not
+    refused (:func:`_refused`)."""
     all_items = rule_items(spec)
     items = {i.id: i for i in all_items if _selected(i.id, only)}
     result = RuleResult()
@@ -3574,7 +3637,11 @@ def run_probes(
         seed = {t: seed_all[t] for t in tables}
         ctx = ProbeContext(spec, seed, callers, tokens, inactive, inactive_token,
                            tuple(refusals), login_route, json_login, answers,
-                           cookies)  # fmt: skip
+                           cookies, crash_admits)  # fmt: skip
+        fresh = (relogin and login is not None and bool(tokens)
+                 and not _tokens_survive(spec, sessions, seed_db, ctx, login, auth_headers,
+                                         scheme, auth_present, contracts))  # fmt: skip
+        bases: dict[str, dict[str, list]] = {}
         skipped = dict(unreachable or {})
         probes, reasons = build_probes(spec, ctx, items, skip=tuple(skipped))
         for item_id, item in items.items():
@@ -3605,18 +3672,24 @@ def run_probes(
             token = probe.token
             if token is None and probe.user is not None:
                 token = tokens.get(probe.user)
-            if probe.headers is not None:
-                headers = dict(probe.headers)
-            elif token is not None and auth_present is not None:
-                pass  # presented on the session below (a session cookie)
-            elif token is not None and auth_headers is not None:
-                headers = dict(auth_headers(token))
-            elif token is not None:
-                headers["Authorization"] = f"{scheme} {token}"
-            if probe.cookies:
-                headers = {**headers, "Cookie": "; ".join(f"{k}={v}" for k, v in
-                                                          probe.cookies.items())}  # fmt: skip
+            relog = (fresh and probe.token is None and probe.headers is None
+                     and probe.user in tokens)  # fmt: skip
+            base = seed
             with sessions(db) as session:
+                if relog:  # a token of this process: logged in here, before the request
+                    token = login(getattr(session, "client", session), probe.user)  # type: ignore[misc, arg-type]
+                    base = {t: rows for t, rows in _read_tables(db).items() if t in tables}
+                if probe.headers is not None:
+                    headers = dict(probe.headers)
+                elif token is not None and auth_present is not None:
+                    pass  # presented on the session below (a session cookie)
+                elif token is not None and auth_headers is not None:
+                    headers = dict(auth_headers(token))
+                elif token is not None:
+                    headers["Authorization"] = f"{scheme} {token}"
+                if probe.cookies:
+                    headers = {**headers, "Cookie": "; ".join(f"{k}={v}" for k, v in
+                                                              probe.cookies.items())}  # fmt: skip
                 if probe.headers is None and token is not None and auth_present is not None:
                     headers = dict(auth_present(session, token))
                 answer = session.request(
@@ -3632,7 +3705,8 @@ def run_probes(
                 observe(probe, seed_db, db, answer)
             db.unlink(missing_ok=True)
             answers[probe.name] = (answer, after)
-            diff = db_diff(seed, after, _keys(spec))
+            bases[probe.name] = base
+            diff = db_diff(base, after, _keys(spec))
             result.probes[probe.name] = {
                 "route": probe.route,
                 "items": list(probe.items),
@@ -3654,7 +3728,7 @@ def run_probes(
         ev = _Evidence(ctx, contracts, {p.name: (p, *answers[p.name]) for p in probes})
         for probe in probes:
             answer, after = answers[probe.name]
-            judged = _judge(probe, answer, seed, after, ctx, contracts[probe.route], ev)
+            judged = _judge(probe, answer, bases[probe.name], after, ctx, contracts[probe.route], ev)
             for item_id, outcome in judged.items():
                 if item_id in outcomes:
                     outcomes[item_id].append((probe, outcome))

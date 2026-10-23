@@ -29,7 +29,7 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
-from lattice.importer.appmodel import RepoModel
+from lattice.importer.appmodel import RepoModel, RoleScheme
 from lattice.importer.frontends import DECLINED, front_ends, register
 from lattice.importer.frontends.go_gin import (
     SCHEMA as GO_SCHEMA,
@@ -43,6 +43,7 @@ from lattice.importer.graph import GraphHints
 from lattice.importer.transport import AppRuntime, AuthDriver
 
 SCHEMA = "lattice.dnextract/1"
+REGEX_PREFIX = "regex:"  # lattice.importer.formats.REGEX, without loading that module here
 CONTAINER_PREFIX = "lattice-dnx-"
 EF_PACKAGES = (
     r"(?:Microsoft\.EntityFrameworkCore|Pomelo\.EntityFrameworkCore\.MySql"
@@ -136,23 +137,97 @@ def model_from_extract(
         )
         for t in model.tables
     )
+    model = _with_patterns(data, model)
+    scheme = role_scheme(data)
+    # the extract says Public | Member | Admin; with a role column every signed-in caller is
+    # `Authenticated` (the roles are the scheme's), else the importer's single role
+    member = "Authenticated" if scheme is not None else ROLES["Member"]
     routes = tuple(
         dataclasses.replace(
             r,
-            auth=ROLES.get(r.auth, r.auth),  # the extract says Public | Member | Admin
+            auth=member if r.auth == "Member" else r.auth,
             tables=tuple(dict.fromkeys(entity.get(x, x) for x in r.tables)),
         )
         for r in model.routes
     )
+    auth = model.auth
+    if scheme is not None and auth is not None:
+        auth = dataclasses.replace(auth, role_column=scheme.column)
     providers = (data.get("dotnet") or {}).get("providers") or []
     dialect = model.dialect or database or ("sqlite" if "sqlite" in providers else None)
     return dataclasses.replace(
-        model, tables=tables, routes=routes, dialect=dialect, framework="aspnetcore", orm="efcore"
-    )
+        model, tables=tables, routes=routes, dialect=dialect, framework="aspnetcore",
+        orm="efcore", role_scheme=scheme, auth=auth,
+    )  # fmt: skip
 
 
 # the importer's role vocabulary for the extract's route auth
 ROLES = {"Member": "Customer"}
+
+
+def _with_patterns(data: Mapping[str, Any], model: RepoModel) -> RepoModel:
+    """A parameter or body field with a ``[RegularExpression]`` takes the ``regex:`` format: the
+    probes' values are strings the pattern accepts (:func:`lattice.importer.formats.regex_example`)."""
+    by_route = {
+        (r["method"], r["path_template"]): {p["name"]: p["pattern"] for p in r["params"] if p.get("pattern")}
+        for r in data["routes"]
+    }
+    by_model = {
+        m["name"]: {f["name"]: f["pattern"] for f in m["fields"] if f.get("pattern")}
+        for m in data["models"]
+    }
+    if not any(by_route.values()) and not any(by_model.values()):
+        return model
+
+    def regex(table: Mapping[str, str], items: Any) -> tuple[Any, ...]:
+        return tuple(
+            dataclasses.replace(i, format=REGEX_PREFIX + table[i.name]) if i.name in table else i
+            for i in items
+        )
+
+    routes = tuple(
+        dataclasses.replace(r, params=regex(by_route.get((r.method, r.path), {}), r.params))
+        for r in model.routes
+    )
+    models = tuple(
+        dataclasses.replace(m, fields=regex(by_model.get(m.name, {}), m.fields)) for m in model.models
+    )
+    return dataclasses.replace(model, routes=routes, models=models)
+
+
+def role_scheme(data: Mapping[str, Any]) -> RoleScheme | None:
+    """The users table's enum role column (``dotnet.auth.role_column``: an enum with a member
+    named like the admin role) as the importer's :class:`RoleScheme`: each member's value as the
+    seed writes it (its number when EF Core stores the enum as an int, else its name), the admin
+    member ``Admin``, the others named as their member (an identifier already)."""
+    auth = (data.get("dotnet") or {}).get("auth") or {}
+    found = auth.get("role_column")
+    admin = auth.get("admin_role")
+    if not found or not admin:
+        return None
+    roles = []
+    for m in found["members"]:
+        value = str(m["value"]) if found.get("storage") == "int" else m["name"]
+        name = "Admin" if m["name"].lower() == admin.lower() else m["name"]
+        roles.append((value, value, name))
+    status, detail = _forbidden_answer(data)
+    return RoleScheme(found["column"], tuple(roles), "Admin", status, detail)
+
+
+def _forbidden_answer(data: Mapping[str, Any]) -> tuple[int | None, str | None]:
+    """``(403, detail)`` when the app's authentication handler answers a caller without the role
+    with one literal detail on every protected route (``HandleForbiddenAsync`` writing a
+    problem document), else ``(None, None)``. The profile then names it as the role check's own
+    answer: a 403 with that detail is the role's refusal, told from a service's 403 (an ownership
+    rule, a state rule) by its detail -- not by guessing from the status."""
+    found = {
+        r["detail"]
+        for route in data.get("routes") or ()
+        if route.get("auth") not in (None, "Public")
+        for r in route.get("raises") or ()
+        if r.get("kind") == "middleware" and r.get("status") == 403 and r.get("detail")
+    }
+    return (403, next(iter(found))) if len(found) == 1 else (None, None)
 
 # the constant a probe sends for a login field the credentials do not cover, by parameter type
 _LOGIN_VALUES = {"Uuid": "00000000-0000-4000-8000-000000000001", "Int": 1, "Bool": True}

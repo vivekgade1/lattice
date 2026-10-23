@@ -26,6 +26,8 @@ ROOT = Path(__file__).resolve().parents[2]
 FIXTURE = ROOT / "tests" / "dncheck" / "fixtures" / "dnparity1"
 D1_TGZ = ROOT / "docs" / "results" / "data" / "2026-10-18-dotnet" / "d1.tgz"
 D1_TRUTH = ROOT / "tests" / "dncheck" / "d1" / "truth.json"
+H1_TGZ = ROOT / "docs" / "results" / "data" / "2026-10-18-dotnet" / "h1.tgz"
+H1_TRUTH = ROOT / "docs" / "results" / "data" / "2026-10-18-dotnet" / "h1-truth.json"
 
 pytestmark = pytest.mark.skipif(shutil.which("dotnet") is None, reason="needs the .NET SDK")
 
@@ -52,6 +54,16 @@ def d1_dir(tmp_path_factory: pytest.TempPathFactory) -> Path:
     for junk in out.rglob("._*"):
         junk.unlink()
     return next(out.rglob("dnstreak.csproj")).parent
+
+
+@pytest.fixture(scope="session")
+def h1_dir(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    out = tmp_path_factory.mktemp("h1")
+    with tarfile.open(H1_TGZ) as tf:
+        tf.extractall(out, filter="data")
+    for junk in out.rglob("._*"):
+        junk.unlink()
+    return next(out.rglob("outlay.csproj")).parent
 
 
 def test_derive_on_the_fixture_is_the_truths_policy() -> None:
@@ -92,6 +104,18 @@ def test_derive_on_d1_is_the_truths_owners_and_private_and_the_baseline_is_empty
     }  # echoed back from a local, not the row
     assert p.baseline == frozenset() and p.users_table == "User"
     assert not p.machines
+
+
+def test_derived_private_on_h1_names_no_ordinary_report_column(h1_dir: Path) -> None:
+    """H-PA1: a column is private only when the code supports it. H1 answers every `expense_reports` column through
+    `Summaries(IQueryable<ExpenseReport>)`, so none is private; the truth's four (a password, a join-less timestamp, a
+    payout method's owner and account number) are still derived, and nothing else is."""
+    truth = json.loads(H1_TRUTH.read_text())
+    p = derive_dn_policy(h1_dir)
+    hidden = {(e, c) for e, cols in p.private.items() for c in cols}
+    want = {(n["entity"], n["column"]) for n in truth["not_returned"]}
+    assert "ExpenseReport" not in p.private and "ExpenseLine" not in p.private
+    assert hidden == want
 
 
 def test_an_ownership_given_replaces_the_rule() -> None:

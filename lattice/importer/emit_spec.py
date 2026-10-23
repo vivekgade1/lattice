@@ -571,18 +571,18 @@ def _body_params(
                 one_of=one_of,
                 column=column,
                 ref=_ref_by_name(model, api, f.name),
-                example=_format_example(fmt, f.max_length) if fmt else None,
+                example=_format_example(fmt, f.max_length, f.min_length) if fmt else None,
                 **bounds,
             )
         )
     return out
 
 
-def _format_example(fmt: str | None, max_len: int | None) -> Any:
+def _format_example(fmt: str | None, max_len: int | None, min_len: int | None = None) -> Any:
     """A request value of the field's text format (a slug, a URL...), else None."""
     from lattice.importer.formats import example
 
-    return example(fmt, max_len)
+    return example(fmt, max_len, min_len)
 
 
 def _params(
@@ -618,7 +618,7 @@ def _params(
                     ref=ref,
                     # a row looked up by another column than its key (DRF's lookup_field)
                     column=f"{ref}.{p.lookup}" if p.lookup and ref else None,
-                    example=_format_example(p.format, p.max_length) if p.format else None,
+                    example=_format_example(p.format, p.max_length, p.min_length) if p.format else None,
                 )
             )
         elif p.source == "body" and p.type:
@@ -684,6 +684,10 @@ def _errors(
         example = None
         if login and i == 0:
             when, example = "other", _login_example(model, params)
+        elif model.framework == "aspnetcore" and r.kind == "middleware" and (
+            route.auth not in (None, "Public") and r.status in (401, 403)
+        ):  # the authentication handler's answers to a request with no token / the wrong role
+            when = "unauthenticated" if r.status == 401 else "forbidden"
         elif r.status == 404 and path and not any(e.when == "not_found" for e in out):
             when = "not_found"
         elif r.status in (403, 404) and path and checked:
