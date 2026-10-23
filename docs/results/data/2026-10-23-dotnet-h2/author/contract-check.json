@@ -1,0 +1,37 @@
+{
+  "pass": true,
+  "checks": [
+    {
+      "name": "build",
+      "pass": true,
+      "detail": "exit 0; 0 Error(s), 0 Warning(s); packages.lock.json unchanged"
+    },
+    {
+      "name": "smoke",
+      "pass": true,
+      "detail": "smoke.py sha256 1f94898ac1c5434f228486fe4d49c0d78b41567330b70845077580521d07e309; the author's own copy is identical; exit 0; 56 PASS lines, 0 FAIL, 0 WARN/SKIP; last line 'ALL CHECKS PASSED'"
+    },
+    {
+      "name": "route-sweep",
+      "pass": true,
+      "detail": "13 of 13 routes called, none 404/405\n200 GET /health as Public\n200 GET /hives as Member\n200 GET /hives/{id} as Member\n200 GET /hives/{id}/inspections as Member\n200 GET /lots as Member\n200 GET /lots/{id} as Member\n200 GET /admin/overview as Admin\n200 POST /login as Public\n201 POST /hives as Member\n201 POST /hives/{id}/inspections as Member\n201 POST /lots as Member\n400 POST /lots/{id}/advance as Member\n204 DELETE /hives/{id} as Member"
+    },
+    {
+      "name": "truth-schema",
+      "pass": true,
+      "detail": "76 file:line citations checked against the module files; all exist, schema 3.3 holds"
+    },
+    {
+      "name": "no-bin-obj",
+      "pass": true,
+      "detail": "no bin/ or obj/ directory in the delivered tree (author's scratch/ excluded)"
+    },
+    {
+      "name": "counts",
+      "pass": true,
+      "detail": "routes 10-16: 13 -> ok\nowners >= 2 entries: ['Hive', 'Lot'] -> ok\nowner_via >= 1 entry: ['Inspection'] -> ok\nnever-returned column (not_returned or private): not_returned [('User', 'password'), ('Hive', 'yard_location')], private [('User', 'password'), ('Hive', 'yard_location')] -> ok\na machine with >= 2 edges: Lot.state has 5 edges -> ok\n>= 1 enforced bound: 14 of 14 bounds name an enforcer -> ok\nseed users of >= 2 roles: ['Admin', 'Member'] over 3 users -> ok\ndomain not in the forbidden list: forbidden hits []; entities ['Hive', 'Inspection', 'Lot', 'Session', 'User']; words checked: 42 -> ok"
+    }
+  ],
+  "h2.tgz sha256": "085a49efdd91f8199c20a917a923467c29e6cec608bb5dff0f83937d4f75316e",
+  "h2-truth.json sha256": "a455615c8d3cd56d56f3ac08f0adc22403d384b5624d7a6d9a3e20dd18ebd88a"
+}

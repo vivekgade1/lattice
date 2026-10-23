@@ -1,0 +1,892 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "template": "/health",
+      "auth": "Public",
+      "style": "minimal",
+      "file": "Endpoints/AccountEndpoints.cs",
+      "line": 12
+    },
+    {
+      "method": "POST",
+      "template": "/login",
+      "auth": "Public",
+      "style": "minimal",
+      "file": "Endpoints/AccountEndpoints.cs",
+      "line": 14
+    },
+    {
+      "method": "GET",
+      "template": "/hives",
+      "auth": "Member",
+      "style": "minimal",
+      "file": "Endpoints/HiveEndpoints.cs",
+      "line": 20
+    },
+    {
+      "method": "POST",
+      "template": "/hives",
+      "auth": "Member",
+      "style": "minimal",
+      "file": "Endpoints/HiveEndpoints.cs",
+      "line": 27
+    },
+    {
+      "method": "GET",
+      "template": "/hives/{id}",
+      "auth": "Member",
+      "style": "minimal",
+      "file": "Endpoints/HiveEndpoints.cs",
+      "line": 46
+    },
+    {
+      "method": "DELETE",
+      "template": "/hives/{id}",
+      "auth": "Member",
+      "style": "minimal",
+      "file": "Endpoints/HiveEndpoints.cs",
+      "line": 53
+    },
+    {
+      "method": "GET",
+      "template": "/hives/{id}/inspections",
+      "auth": "Member",
+      "style": "minimal",
+      "file": "Endpoints/HiveEndpoints.cs",
+      "line": 64
+    },
+    {
+      "method": "POST",
+      "template": "/hives/{id}/inspections",
+      "auth": "Member",
+      "style": "minimal",
+      "file": "Endpoints/HiveEndpoints.cs",
+      "line": 73
+    },
+    {
+      "method": "GET",
+      "template": "/lots",
+      "auth": "Member",
+      "style": "minimal",
+      "file": "Endpoints/LotEndpoints.cs",
+      "line": 18
+    },
+    {
+      "method": "POST",
+      "template": "/lots",
+      "auth": "Member",
+      "style": "minimal",
+      "file": "Endpoints/LotEndpoints.cs",
+      "line": 32
+    },
+    {
+      "method": "GET",
+      "template": "/lots/{id}",
+      "auth": "Member",
+      "style": "minimal",
+      "file": "Endpoints/LotEndpoints.cs",
+      "line": 51
+    },
+    {
+      "method": "POST",
+      "template": "/lots/{id}/advance",
+      "auth": "Member",
+      "style": "minimal",
+      "file": "Endpoints/LotEndpoints.cs",
+      "line": 58
+    },
+    {
+      "method": "GET",
+      "template": "/admin/overview",
+      "auth": "Admin",
+      "style": "minimal",
+      "file": "Endpoints/AdminEndpoints.cs",
+      "line": 12
+    }
+  ],
+  "tables": [
+    {
+      "entity": "User",
+      "table": "users",
+      "columns": [
+        {
+          "name": "id",
+          "wire": null,
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": true,
+          "max_length": null,
+          "fk": null,
+          "file": "Domain/Entities.cs",
+          "line": 11
+        },
+        {
+          "name": "name",
+          "wire": null,
+          "private": false,
+          "nullable": false,
+          "unique": true,
+          "pk": false,
+          "max_length": 80,
+          "fk": null,
+          "file": "Domain/Entities.cs",
+          "line": 12
+        },
+        {
+          "name": "password",
+          "wire": null,
+          "private": true,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 200,
+          "fk": null,
+          "file": "Domain/Entities.cs",
+          "line": 13
+        },
+        {
+          "name": "role",
+          "wire": "role",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 20,
+          "fk": null,
+          "file": "Domain/Entities.cs",
+          "line": 14
+        }
+      ],
+      "file": "Domain/Entities.cs",
+      "line": 9
+    },
+    {
+      "entity": "Session",
+      "table": "sessions",
+      "columns": [
+        {
+          "name": "id",
+          "wire": null,
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": true,
+          "max_length": null,
+          "fk": null,
+          "file": "Domain/Entities.cs",
+          "line": 19
+        },
+        {
+          "name": "token",
+          "wire": "access_token",
+          "private": false,
+          "nullable": false,
+          "unique": true,
+          "pk": false,
+          "max_length": 64,
+          "fk": null,
+          "file": "Domain/Entities.cs",
+          "line": 20
+        },
+        {
+          "name": "user_id",
+          "wire": null,
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": "users.id",
+          "file": "Domain/Entities.cs",
+          "line": 21
+        },
+        {
+          "name": "expires_at",
+          "wire": "expires_at",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Domain/Entities.cs",
+          "line": 22
+        }
+      ],
+      "file": "Domain/Entities.cs",
+      "line": 17
+    },
+    {
+      "entity": "Hive",
+      "table": "hives",
+      "columns": [
+        {
+          "name": "id",
+          "wire": "id",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": true,
+          "max_length": null,
+          "fk": null,
+          "file": "Domain/Entities.cs",
+          "line": 27
+        },
+        {
+          "name": "owner_id",
+          "wire": null,
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": "users.id",
+          "file": "Domain/Entities.cs",
+          "line": 28
+        },
+        {
+          "name": "name",
+          "wire": "name",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 60,
+          "fk": null,
+          "file": "Domain/Entities.cs",
+          "line": 29
+        },
+        {
+          "name": "queen_year",
+          "wire": "queen_year",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Domain/Entities.cs",
+          "line": 30
+        },
+        {
+          "name": "boxes",
+          "wire": "boxes",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Domain/Entities.cs",
+          "line": 31
+        },
+        {
+          "name": "yard_location",
+          "wire": null,
+          "private": true,
+          "nullable": true,
+          "unique": false,
+          "pk": false,
+          "max_length": 200,
+          "fk": null,
+          "file": "Domain/Entities.cs",
+          "line": 33
+        }
+      ],
+      "file": "Domain/Entities.cs",
+      "line": 25
+    },
+    {
+      "entity": "Inspection",
+      "table": "inspections",
+      "columns": [
+        {
+          "name": "id",
+          "wire": "id",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": true,
+          "max_length": null,
+          "fk": null,
+          "file": "Domain/Entities.cs",
+          "line": 38
+        },
+        {
+          "name": "hive_id",
+          "wire": "hive_id",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": "hives.id",
+          "file": "Domain/Entities.cs",
+          "line": 39
+        },
+        {
+          "name": "inspected_at",
+          "wire": "inspected_at",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Domain/Entities.cs",
+          "line": 40
+        },
+        {
+          "name": "brood_frames",
+          "wire": "brood_frames",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Domain/Entities.cs",
+          "line": 41
+        },
+        {
+          "name": "temperament",
+          "wire": "temperament",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Domain/Entities.cs",
+          "line": 42
+        },
+        {
+          "name": "remarks",
+          "wire": "remarks",
+          "private": false,
+          "nullable": true,
+          "unique": false,
+          "pk": false,
+          "max_length": 500,
+          "fk": null,
+          "file": "Domain/Entities.cs",
+          "line": 43
+        }
+      ],
+      "file": "Domain/Entities.cs",
+      "line": 36
+    },
+    {
+      "entity": "Lot",
+      "table": "lots",
+      "columns": [
+        {
+          "name": "id",
+          "wire": "id",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": true,
+          "max_length": null,
+          "fk": null,
+          "file": "Domain/Entities.cs",
+          "line": 48
+        },
+        {
+          "name": "owner_id",
+          "wire": null,
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": "users.id",
+          "file": "Domain/Entities.cs",
+          "line": 49
+        },
+        {
+          "name": "label",
+          "wire": "label",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 60,
+          "fk": null,
+          "file": "Domain/Entities.cs",
+          "line": 50
+        },
+        {
+          "name": "weight_kg",
+          "wire": "weight_kg",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Domain/Entities.cs",
+          "line": 51
+        },
+        {
+          "name": "moisture_pct",
+          "wire": "moisture_pct",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Domain/Entities.cs",
+          "line": 52
+        },
+        {
+          "name": "state",
+          "wire": "state",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": 20,
+          "fk": null,
+          "file": "Domain/Entities.cs",
+          "line": 53
+        },
+        {
+          "name": "created_at",
+          "wire": "created_at",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Domain/Entities.cs",
+          "line": 54
+        },
+        {
+          "name": "updated_at",
+          "wire": "updated_at",
+          "private": false,
+          "nullable": false,
+          "unique": false,
+          "pk": false,
+          "max_length": null,
+          "fk": null,
+          "file": "Domain/Entities.cs",
+          "line": 55
+        }
+      ],
+      "file": "Domain/Entities.cs",
+      "line": 46
+    }
+  ],
+  "owners": {
+    "Hive": "owner_id",
+    "Lot": "owner_id"
+  },
+  "owner_via": {
+    "Inspection": [
+      "Hive",
+      "hive_id"
+    ]
+  },
+  "machines": {
+    "Lot.state": {
+      "initial": "Extracted",
+      "edges": [
+        [
+          "Extracted",
+          "Curing"
+        ],
+        [
+          "Extracted",
+          "Discarded"
+        ],
+        [
+          "Curing",
+          "Bottled"
+        ],
+        [
+          "Curing",
+          "Discarded"
+        ],
+        [
+          "Bottled",
+          "Recalled"
+        ]
+      ],
+      "storage": "string",
+      "file": "Domain/LotLifecycle.cs",
+      "line": 15
+    }
+  },
+  "refusals": [
+    {
+      "route": "POST /login",
+      "status": 401,
+      "detail": "wrong name or password",
+      "cause": "auth",
+      "file": "Endpoints/AccountEndpoints.cs",
+      "line": 23
+    },
+    {
+      "route": "POST /login",
+      "status": 400,
+      "detail": "missing username or password",
+      "cause": "invalid",
+      "file": "Endpoints/AccountEndpoints.cs",
+      "line": 19
+    },
+    {
+      "route": "GET /hives",
+      "status": 401,
+      "detail": "sign in first",
+      "cause": "auth",
+      "file": "Http/Caller.cs",
+      "line": 31
+    },
+    {
+      "route": "GET /hives",
+      "status": 401,
+      "detail": "the token is not valid",
+      "cause": "auth",
+      "file": "Http/Caller.cs",
+      "line": 40
+    },
+    {
+      "route": "GET /admin/overview",
+      "status": 403,
+      "detail": "only the Inspector role may do this",
+      "cause": "auth",
+      "file": "Http/Caller.cs",
+      "line": 41
+    },
+    {
+      "route": "POST /hives",
+      "status": 400,
+      "detail": "missing or out-of-range values",
+      "cause": "invalid",
+      "file": "Endpoints/HiveEndpoints.cs",
+      "line": 35
+    },
+    {
+      "route": "POST /hives",
+      "status": 409,
+      "detail": "you already have a hive with that name",
+      "cause": "conflict",
+      "file": "Endpoints/HiveEndpoints.cs",
+      "line": 38
+    },
+    {
+      "route": "GET /hives/{id}",
+      "status": 404,
+      "detail": "hive not found",
+      "cause": "not_owned",
+      "file": "Endpoints/HiveEndpoints.cs",
+      "line": 50
+    },
+    {
+      "route": "DELETE /hives/{id}",
+      "status": 404,
+      "detail": "hive not found",
+      "cause": "not_owned",
+      "file": "Endpoints/HiveEndpoints.cs",
+      "line": 61
+    },
+    {
+      "route": "GET /hives/{id}/inspections",
+      "status": 404,
+      "detail": "hive not found",
+      "cause": "not_owned",
+      "file": "Endpoints/HiveEndpoints.cs",
+      "line": 61
+    },
+    {
+      "route": "POST /hives/{id}/inspections",
+      "status": 400,
+      "detail": "missing or out-of-range values",
+      "cause": "invalid",
+      "file": "Endpoints/HiveEndpoints.cs",
+      "line": 80
+    },
+    {
+      "route": "POST /hives/{id}/inspections",
+      "status": 404,
+      "detail": "hive not found",
+      "cause": "not_owned",
+      "file": "Endpoints/HiveEndpoints.cs",
+      "line": 67
+    },
+    {
+      "route": "GET /lots",
+      "status": 400,
+      "detail": "state is not a lot state",
+      "cause": "invalid",
+      "file": "Endpoints/LotEndpoints.cs",
+      "line": 24
+    },
+    {
+      "route": "POST /lots",
+      "status": 400,
+      "detail": "missing or out-of-range values",
+      "cause": "invalid",
+      "file": "Endpoints/LotEndpoints.cs",
+      "line": 38
+    },
+    {
+      "route": "GET /lots/{id}",
+      "status": 404,
+      "detail": "lot not found",
+      "cause": "not_owned",
+      "file": "Endpoints/LotEndpoints.cs",
+      "line": 55
+    },
+    {
+      "route": "POST /lots/{id}/advance",
+      "status": 400,
+      "detail": "missing or invalid to / moisture_pct",
+      "cause": "invalid",
+      "file": "Endpoints/LotEndpoints.cs",
+      "line": 65
+    },
+    {
+      "route": "POST /lots/{id}/advance",
+      "status": 404,
+      "detail": "lot not found",
+      "cause": "not_owned",
+      "file": "Endpoints/LotEndpoints.cs",
+      "line": 68
+    },
+    {
+      "route": "POST /lots/{id}/advance",
+      "status": 409,
+      "detail": "transition not allowed from this state",
+      "cause": "conflict",
+      "file": "Endpoints/LotEndpoints.cs",
+      "line": 72
+    },
+    {
+      "route": "POST /lots/{id}/advance",
+      "status": 409,
+      "detail": "too wet to bottle",
+      "cause": "conflict",
+      "file": "Endpoints/LotEndpoints.cs",
+      "line": 75
+    },
+    {
+      "route": "POST /lots/{id}/advance",
+      "status": 409,
+      "detail": "the lot changed meanwhile",
+      "cause": "conflict",
+      "file": "Endpoints/LotEndpoints.cs",
+      "line": 82
+    }
+  ],
+  "bounds": [
+    {
+      "route": "POST /login",
+      "field": "username",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": 1,
+      "max_length": 80,
+      "enforced_by": "Check helper in Http/Failure.cs",
+      "file": "Endpoints/AccountEndpoints.cs",
+      "line": 17
+    },
+    {
+      "route": "POST /login",
+      "field": "password",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": 1,
+      "max_length": null,
+      "enforced_by": "Check helper in Http/Failure.cs",
+      "file": "Endpoints/AccountEndpoints.cs",
+      "line": 18
+    },
+    {
+      "route": "POST /hives",
+      "field": "name",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": 1,
+      "max_length": 60,
+      "enforced_by": "Check helper in Http/Failure.cs",
+      "file": "Endpoints/HiveEndpoints.cs",
+      "line": 31
+    },
+    {
+      "route": "POST /hives",
+      "field": "queen_year",
+      "required": true,
+      "ge": 2000,
+      "le": "current UTC year",
+      "min_length": null,
+      "max_length": null,
+      "enforced_by": "Check helper in Http/Failure.cs",
+      "file": "Endpoints/HiveEndpoints.cs",
+      "line": 32
+    },
+    {
+      "route": "POST /hives",
+      "field": "boxes",
+      "required": true,
+      "ge": 1,
+      "le": 6,
+      "min_length": null,
+      "max_length": null,
+      "enforced_by": "Check helper in Http/Failure.cs",
+      "file": "Endpoints/HiveEndpoints.cs",
+      "line": 33
+    },
+    {
+      "route": "POST /hives",
+      "field": "yard_location",
+      "required": false,
+      "ge": null,
+      "le": null,
+      "min_length": null,
+      "max_length": 200,
+      "enforced_by": "Check helper in Http/Failure.cs",
+      "file": "Endpoints/HiveEndpoints.cs",
+      "line": 34
+    },
+    {
+      "route": "POST /hives/{id}/inspections",
+      "field": "brood_frames",
+      "required": true,
+      "ge": 0,
+      "le": 20,
+      "min_length": null,
+      "max_length": null,
+      "enforced_by": "Check helper in Http/Failure.cs",
+      "file": "Endpoints/HiveEndpoints.cs",
+      "line": 77
+    },
+    {
+      "route": "POST /hives/{id}/inspections",
+      "field": "temperament",
+      "required": true,
+      "ge": 1,
+      "le": 5,
+      "min_length": null,
+      "max_length": null,
+      "enforced_by": "Check helper in Http/Failure.cs",
+      "file": "Endpoints/HiveEndpoints.cs",
+      "line": 78
+    },
+    {
+      "route": "POST /hives/{id}/inspections",
+      "field": "remarks",
+      "required": false,
+      "ge": null,
+      "le": null,
+      "min_length": null,
+      "max_length": 500,
+      "enforced_by": "Check helper in Http/Failure.cs",
+      "file": "Endpoints/HiveEndpoints.cs",
+      "line": 79
+    },
+    {
+      "route": "POST /lots",
+      "field": "label",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": 1,
+      "max_length": 60,
+      "enforced_by": "Check helper in Http/Failure.cs",
+      "file": "Endpoints/LotEndpoints.cs",
+      "line": 35
+    },
+    {
+      "route": "POST /lots",
+      "field": "weight_kg",
+      "required": true,
+      "ge": 0.1,
+      "le": 500,
+      "min_length": null,
+      "max_length": null,
+      "enforced_by": "Check helper in Http/Failure.cs",
+      "file": "Endpoints/LotEndpoints.cs",
+      "line": 36
+    },
+    {
+      "route": "POST /lots",
+      "field": "moisture_pct",
+      "required": true,
+      "ge": 10,
+      "le": 30,
+      "min_length": null,
+      "max_length": null,
+      "enforced_by": "Check helper in Http/Failure.cs",
+      "file": "Endpoints/LotEndpoints.cs",
+      "line": 37
+    },
+    {
+      "route": "POST /lots/{id}/advance",
+      "field": "to",
+      "required": true,
+      "ge": null,
+      "le": null,
+      "min_length": null,
+      "max_length": null,
+      "enforced_by": "LotLifecycle.IsState",
+      "file": "Endpoints/LotEndpoints.cs",
+      "line": 62
+    },
+    {
+      "route": "POST /lots/{id}/advance",
+      "field": "moisture_pct",
+      "required": false,
+      "ge": 10,
+      "le": 30,
+      "min_length": null,
+      "max_length": null,
+      "enforced_by": "inline check in the route",
+      "file": "Endpoints/LotEndpoints.cs",
+      "line": 64
+    }
+  ],
+  "bind_status": 400,
+  "json_naming": "snake_case",
+  "login": {
+    "path": "/login",
+    "fields": [
+      "username",
+      "password"
+    ],
+    "token_field": "access_token"
+  },
+  "seed_users": [
+    {
+      "name": "mara",
+      "role": "Member"
+    },
+    {
+      "name": "tobias",
+      "role": "Member"
+    },
+    {
+      "name": "ines",
+      "role": "Admin"
+    }
+  ],
+  "not_returned": [
+    {
+      "entity": "User",
+      "column": "password"
+    },
+    {
+      "entity": "Hive",
+      "column": "yard_location"
+    }
+  ]
+}

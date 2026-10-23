@@ -1,0 +1,1 @@
+{"cap_usd": 3.0, "cost_usd": 0.5955248, "is_error": false, "model": "sonnet", "num_turns": 15, "phase": "dispatch", "rc": 0, "result_file": "/Users/vivekgade/Documents/lattice/docs/results/data/2026-10-23-dotnet-h2/author/a3-result.json", "session_id": "cf933f02-c534-4e21-89f6-627d262b55f5", "subtype": "success", "ts": "2026-10-23T18:31:32-0500", "who": "A3"}
