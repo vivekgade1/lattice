@@ -309,3 +309,27 @@ scratch directory; 0 verdicts may differ, and any difference is reported (H1 pre
 5. **Layer A policy.** The gated mutant path keeps H1's registered `spec_policy`; `lattice check` builds `DnPolicy.from_spec`. The
    reported view shows the difference; it cannot move the gate.
 6. **Cannot show:** MySQL behaviour (H2 is SQLite), gRPC, Razor/Blazor, behaviour lifting, a real-agent build.
+
+## Amendment 1 (node H2a, 2026-10-23, before the freeze file; predictions only, no gate changes)
+Both runners' self-tests ran on the stand-in H2, which is H1 (dev data), and both passed: `SELF-TEST OK`; RM1 and RM2 caught; the NONE
+reader is correct; layer R passed `relogin=True, crash_admits=True`. These are the dev values the H2 code path measures on H1. They are
+**(m) dev measurements on H1**. The probes self-test ran with `runs = 2` while the mutants self-test ran in parallel.
+- Gated rows on H1: 12 of 13 pass. ROUTES 16/16, AUTH 1.00, TABLES 4/4 with facts 0.990, WIRE 28/28, UNREAD 0, BOUNDS precision 1.00
+  and recall 1.00, RAISE precision 1.00 and recall 0.857, PI3 **0.752** (85 of 113 verified, 0 refuted), PI7 2/2 identical with the
+  timing-only mask, PA1 0 wrong, WF 16 verified with 0 failing replay, JUDGE 9/9. JUDGE uses the H1 runner's own fallback, "proxy: the
+  extract", because the library hands no judged list. **H2-IMPL fails:** the implementation report reads **0 requirements** in the
+  imported candidate spec, so every route is `implemented_not_required`. This is the same structural cause as on H1 before F1-F6, and
+  F1-F6 did not change it.
+- Reported rows on H1: OWN, PI4, PA0 and DET pass. PI5 fails (no machine edge proposed). PR3 differs on one item
+  (`R3 PATCH /reports/{reportId} 400 #2`: absent from the import's map, verified on the re-run). X is 250 s against the shown 240 s,
+  measured under the parallel load.
+- Mutants on H1 through the H2 path: **13 of 16 killed**, and all four class gates pass. HM12 and HM13 survive because their 409 item
+  is not verified on the control. HM14 survives because its 400 item is not refuted. The pipeline view also reports 13 of 16. This
+  repeats F5's dev result, again with zero slack.
+
+**Updated predictions (p), written before H2 exists. The gates of sections 4 and 4.1 are unchanged:**
+- H2-IMPL P(pass) 0.50 -> **0.05**. The cause is structural and was seen on the app the fixes were written against.
+- Gated rows expected to pass on H2: **8-10 of 13** (was 8-11).
+- Reported rows: PI5 0.5 -> 0.2, PR3 0.7 -> 0.3, X 0.9 -> 0.6.
+- Mutants unchanged at 9-13 killed with P(gate) 0.25. Even H1 has zero slack, and the drop_guard and loosen_bound classes do not fire.
+- H2-PI3 unchanged at 0.25-0.65 with P 0.35. H1 dev through the H2 path is 0.752, and that is the app the fixes were fitted to.
