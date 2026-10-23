@@ -1,0 +1,25 @@
+# The toy shelf service (.NET real-agent build): ASP.NET Core minimal APIs and EF Core over SQLite.
+[project]
+name = "dnbuild"
+
+[app]
+app = "harness:make_app"
+db = "harness:build_db"
+runtime = "harness:RUNTIME"
+
+[check]
+layers = "D"
+
+[rebuild]
+repo = "."
+gates = ["./check.sh"]
+findings_json = "metrics/last-check.json"
+max_rounds = 3
+model = "sonnet"
+
+[mcp]
+protected = ["harness.py", "CONTEXT.md", "check.sh", "dnbuild.csproj"]
+
+[llm]
+model = "sonnet"
+context = "CONTEXT.md"
