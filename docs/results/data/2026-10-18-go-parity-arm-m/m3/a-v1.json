@@ -1,0 +1,37 @@
+{
+  "verdict": "pass",
+  "layers": "A",
+  "counts": {
+    "A": 0
+  },
+  "findings": [],
+  "cases": {},
+  "notes": [
+    "layer A (gocheck): not available for Go: GO804 -- route order (PY804) is moot on Gin: its radix-tree router matches a static segment before a parameter whatever the registration order, and panics at start-up on a conflicting pattern; GO805 -- error conventions (PY805) are derived from a Python original; a Gin app's caller and admin concept are app-defined and no Go derivation exists yet (layer R probes the spec's error answers); GO806 -- naive/aware datetimes (PY806) cannot be mixed in Go: every time.Time carries a location and Before/After/Sub compare instants"
+  ],
+  "unchecked": [
+    "R6: X-Client-Version and the 426 upgrade_required answer -- a step cannot send request headers",
+    "R12 (part): the bcrypt hashing itself -- a scenario cannot verify the hash (non-disclosure is stated through the private columns)",
+    "R15: the JWT's HS256 algorithm, HABIT_SECRET_KEY and sub/sid claims -- a step cannot decode a token (the 15-minute expiry is checked)",
+    "R16 (part): 32 bytes of entropy and the SHA-256 digest of a new token -- the token's value is never seen by a later step",
+    "R22 (part): malformed or wrongly signed tokens -- a step cannot send an arbitrary Authorization header",
+    "R29 (part): the Retry-After header -- a step cannot read response headers",
+    "R43 (part): instants ending in Z -- expect_body cannot match a pattern",
+    "R44 (part): the real clock in production -- the harness only runs test mode",
+    "R93 (part): what next_cursor encodes -- cursors are opaque and cannot be reused by a later step",
+    "R126 (part): the every-minute schedule -- only the start-up check is observable",
+    "R136: pushes go only through PushSender -- the stub records nothing; only the delivery outcome is observable",
+    "R140: the silent clear push to the user's other devices -- the PushSender stub records nothing, so which devices receive it is not observable",
+    "R142: a 409 nudge_dismissed sends no push -- the PushSender stub records nothing, so the absence of a push is not observable (the 409 and the unchanged nudge are checked under R138)"
+  ],
+  "accepted": [],
+  "stale_baseline": [],
+  "timings": {
+    "total_s": 0.036,
+    "layers": {
+      "A": 0.0295
+    },
+    "setup": {},
+    "scenarios": []
+  }
+}

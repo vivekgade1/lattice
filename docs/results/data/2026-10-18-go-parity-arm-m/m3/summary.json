@@ -1,0 +1,124 @@
+{
+ "runs": {
+  "acd-v0-r1": {
+   "raw_sha256": "19a819016bdd854b",
+   "normalised_sha256": "351c3104c613c54a",
+   "verdict": "pass",
+   "counts": {
+    "A": 0,
+    "C": 0,
+    "D": 0
+   },
+   "findings": [],
+   "cases": 480,
+   "rc": "rc=0 wall=28s"
+  },
+  "acd-v0-r2": {
+   "raw_sha256": "05d588c6aa2ff6c1",
+   "normalised_sha256": "351c3104c613c54a",
+   "verdict": "pass",
+   "counts": {
+    "A": 0,
+    "C": 0,
+    "D": 0
+   },
+   "findings": [],
+   "cases": 480,
+   "rc": "rc=0 wall=29s"
+  },
+  "acd-v1-r1": {
+   "raw_sha256": "b31b9a5ae5fe0a58",
+   "normalised_sha256": "351c3104c613c54a",
+   "verdict": "pass",
+   "counts": {
+    "A": 0,
+    "C": 0,
+    "D": 0
+   },
+   "findings": [],
+   "cases": 480,
+   "rc": "rc=0 wall=30s"
+  },
+  "acd-v2-r1": {
+   "raw_sha256": "1c5afe2cb5ac2e2e",
+   "normalised_sha256": "351c3104c613c54a",
+   "verdict": "pass",
+   "counts": {
+    "A": 0,
+    "C": 0,
+    "D": 0
+   },
+   "findings": [],
+   "cases": 480,
+   "rc": "rc=0 wall=28s"
+  },
+  "acd-v3-r1": {
+   "raw_sha256": "c703d246badde593",
+   "normalised_sha256": "351c3104c613c54a",
+   "verdict": "pass",
+   "counts": {
+    "A": 0,
+    "C": 0,
+    "D": 0
+   },
+   "findings": [],
+   "cases": 480,
+   "rc": "rc=0 wall=30s"
+  },
+  "acd-v3-r2": {
+   "raw_sha256": "904e186773a5669c",
+   "normalised_sha256": "351c3104c613c54a",
+   "verdict": "pass",
+   "counts": {
+    "A": 0,
+    "C": 0,
+    "D": 0
+   },
+   "findings": [],
+   "cases": 480,
+   "rc": "rc=0 wall=29s"
+  }
+ },
+ "raw_diffs_vs_acd-v0-r1": {
+  "acd-v0-r1": 0,
+  "acd-v0-r2": 1631,
+  "acd-v1-r1": 1615,
+  "acd-v2-r1": 1616,
+  "acd-v3-r1": 1669,
+  "acd-v3-r2": 1634
+ },
+ "normalised_diffs_vs_acd-v0-r1": {
+  "acd-v0-r1": 0,
+  "acd-v0-r2": 0,
+  "acd-v1-r1": 0,
+  "acd-v2-r1": 0,
+  "acd-v3-r1": 0,
+  "acd-v3-r2": 0
+ },
+ "layer_A_only": {
+  "v0": {
+   "sha256": "624dc3cb48ab114e",
+   "counts": {
+    "A": 0
+   }
+  },
+  "v1": {
+   "sha256": "624dc3cb48ab114e",
+   "counts": {
+    "A": 0
+   }
+  },
+  "v2": {
+   "sha256": "624dc3cb48ab114e",
+   "counts": {
+    "A": 0
+   }
+  },
+  "v3": {
+   "sha256": "624dc3cb48ab114e",
+   "counts": {
+    "A": 0
+   }
+  }
+ }
+}
