@@ -20,6 +20,8 @@ public sealed partial class Ex
     /// <summary>Exception type -> (status, how, where) as an IExceptionHandler, a catch block or UseExceptionHandler maps it.</summary>
     public readonly Dictionary<INamedTypeSymbol, (int Status, string Via, string File, int Line)> ExceptionMap = new(SymbolEqualityComparer.Default);
     readonly HashSet<INamedTypeSymbol> handledTypes = new(SymbolEqualityComparer.Default);
+    /// <summary>Exception types a handler (IExceptionHandler, UseExceptionHandler lambda, middleware catch) answers with the status the exception itself carries (<c>api.Status</c>).</summary>
+    readonly HashSet<INamedTypeSymbol> carriedTypes = new(SymbolEqualityComparer.Default);
 
     static readonly Dictionary<string, int> FactoryStatus = new(StringComparer.Ordinal)
     {
@@ -102,6 +104,8 @@ public sealed partial class Ex
         }
         foreach (var inv in AllInvocations().Where(i => InvokedName(i.Expression) == "UseExceptionHandler"))
             foreach (var a in inv.ArgumentList.Arguments.Where(a => a.Expression is LambdaExpressionSyntax)) ReadMappings(a.Expression, "UseExceptionHandler");
+        foreach (var inv in AllInvocations().Where(i => InvokedName(i.Expression) == "Use"))
+            foreach (var a in inv.ArgumentList.Arguments.Where(a => a.Expression is LambdaExpressionSyntax && a.Expression.DescendantNodes().OfType<TryStatementSyntax>().Any())) DetectCarried(a.Expression);
     }
 
     void ReadMappings(SyntaxNode scope, string via)
@@ -130,6 +134,79 @@ public sealed partial class Ex
             handledTypes.Add(et);
             if (StatusIn(cc.Block) is { } st) AddMap(et, st, via, cc);
         }
+        DetectCarried(scope);
+    }
+
+    static bool IsStatusMember(ISymbol? s) => s switch
+    {
+        IPropertySymbol p => IsStatusParam(p.Name) && IsStatusValueType(p.Type),
+        IFieldSymbol f => IsStatusParam(f.Name) && IsStatusValueType(f.Type),
+        _ => false,
+    };
+
+    static bool IsStatusValueType(ITypeSymbol t) => t.SpecialType == SpecialType.System_Int32 || t.TypeKind == TypeKind.Enum || t is INamedTypeSymbol { OriginalDefinition.SpecialType: SpecialType.System_Nullable_T } n && IsStatusValueType(n.TypeArguments[0]);
+
+    /// <summary>Whether the scope puts a status on the response: <c>X.StatusCode = ..</c>, <c>Status = ..</c> in a ProblemDetails initializer, a <c>statusCode:</c> argument or a Problem/StatusCode result.</summary>
+    static bool WritesStatus(SyntaxNode scope)
+    {
+        foreach (var asg in scope.DescendantNodes().OfType<AssignmentExpressionSyntax>())
+            if ((asg.Left as MemberAccessExpressionSyntax)?.Name.Identifier.Text is { } mn && IsStatusParam(mn) || asg.Left is IdentifierNameSyntax idn && IsStatusParam(idn.Identifier.Text)) return true;
+        foreach (var inv in scope.DescendantNodes().OfType<InvocationExpressionSyntax>())
+        {
+            if (inv.ArgumentList.Arguments.Any(a => a.NameColon != null && IsStatusParam(a.NameColon.Name.Identifier.Text))) return true;
+            if (InvokedName(inv.Expression) is "Problem" or "StatusCode") return true;
+        }
+        return false;
+    }
+
+    /// <summary>A handler that reads the status member of the exception it caught (<c>error is ApiException api</c> ... <c>api.Status</c>): that type's constructor chain decides the status of a throw.</summary>
+    void DetectCarried(SyntaxNode scope)
+    {
+        if (!WritesStatus(scope)) return;
+        var vars = new List<(ILocalSymbol Local, INamedTypeSymbol Type)>();
+        foreach (var dp in scope.DescendantNodes().OfType<DeclarationPatternSyntax>())
+            if (dp.Designation is SingleVariableDesignationSyntax sv && Sm(dp).GetDeclaredSymbol(sv) is ILocalSymbol { Type: INamedTypeSymbol t } ls && IsExceptionType(t) && IsProject(t)) vars.Add((ls, t));
+        foreach (var cc in scope.DescendantNodes().OfType<CatchClauseSyntax>())
+            if (cc.Declaration is { Identifier.Text.Length: > 0 } d && Sm(cc).GetDeclaredSymbol(d) is ILocalSymbol { Type: INamedTypeSymbol t } ls && IsExceptionType(t) && IsProject(t)) vars.Add((ls, t));
+        foreach (var (local, type) in vars)
+            foreach (var ma in scope.DescendantNodes().OfType<MemberAccessExpressionSyntax>())
+                if (ma.Expression is IdentifierNameSyntax id && id.Identifier.Text == local.Name && SymbolEqualityComparer.Default.Equals(Sm(id).GetSymbolInfo(id).Symbol, local) && IsStatusMember(Sm(ma).GetSymbolInfo(ma).Symbol))
+                {
+                    carriedTypes.Add(type);
+                    handledTypes.Add(type);
+                }
+    }
+
+    bool Carried(INamedTypeSymbol t) { for (var b = t; b != null; b = b.BaseType) if (carriedTypes.Contains(b)) return true; return false; }
+
+    /// <summary>The constant status a constructor hands to the base constructor chain (<c>: base(404, ..)</c>, or the primary-constructor base call <c>class E(string d) : Api(404, "x", d)</c>); <paramref name="bound"/> holds the constants the caller passed for this constructor's parameters.</summary>
+    int? ChainStatus(IMethodSymbol ctor, Dictionary<IParameterSymbol, object?> bound, int depth = 0)
+    {
+        if (depth > 4 || !IsProject(ctor)) return null;
+        ArgumentListSyntax? args = null;
+        SyntaxNode? callNode = null;
+        switch (DeclOf(ctor))
+        {
+            case ConstructorDeclarationSyntax { Initializer: { } init } when init.ThisOrBaseKeyword.IsKind(SyntaxKind.BaseKeyword) || init.ThisOrBaseKeyword.IsKind(SyntaxKind.ThisKeyword): args = init.ArgumentList; callNode = init; break;
+            case TypeDeclarationSyntax { BaseList: { } bl } when bl.Types.OfType<PrimaryConstructorBaseTypeSyntax>().FirstOrDefault() is { } pb: args = pb.ArgumentList; callNode = pb; break;
+        }
+        if (args == null || callNode == null || Sm(callNode).GetSymbolInfo(callNode).Symbol is not IMethodSymbol next) return null;
+        var nb = new Dictionary<IParameterSymbol, object?>(SymbolEqualityComparer.Default);
+        int i = 0;
+        foreach (var a in args.Arguments)
+        {
+            var p = a.NameColon != null ? next.Parameters.FirstOrDefault(x => x.Name == a.NameColon.Name.Identifier.Text) : (i < next.Parameters.Length ? next.Parameters[i] : null);
+            i++;
+            if (p == null) continue;
+            object? cv = null;
+            var k = Sm(a.Expression).GetConstantValue(a.Expression);
+            if (k.HasValue) cv = k.Value;
+            else if (a.Expression is IdentifierNameSyntax idn && Sm(idn).GetSymbolInfo(idn).Symbol is IParameterSymbol ps && bound.TryGetValue(ps, out var b)) cv = b;
+            if (cv == null) continue;
+            nb[p.OriginalDefinition] = cv;
+            if (IsStatusParam(p.Name) && IsStatusValueType(p.Type) && cv is int st) return st;
+        }
+        return ChainStatus(next.OriginalDefinition, nb, depth + 1);
     }
 
     int? StatusIn(SyntaxNode n)
@@ -168,6 +245,7 @@ public sealed partial class Ex
                     var info = new ErrInfo { Type = t };
                     var c = ResolveNew(e);
                     var args = e switch { ObjectCreationExpressionSyntax o => o.ArgumentList?.Arguments, ImplicitObjectCreationExpressionSyntax i => i.ArgumentList.Arguments, _ => null };
+                    var passed = new Dictionary<IParameterSymbol, object?>(SymbolEqualityComparer.Default);
                     if (c.M != null && args != null)
                     {
                         int i = 0;
@@ -177,6 +255,7 @@ public sealed partial class Ex
                             i++;
                             if (p == null) continue;
                             var cv = ConstOf(a.Expression, v);
+                            if (cv != null) passed[p.OriginalDefinition] = cv;
                             if (IsStatusParam(p.Name) && cv is int s) info.Status = s;
                             else if (IsCodeParam(p.Name) && cv is string cs) info.Code = cs;
                             else if (IsMessageParam(p.Name) && cv is string ms) info.Detail = ms;
@@ -184,6 +263,8 @@ public sealed partial class Ex
                     }
                     if (info.Status == null && ExceptionMap.TryGetValue(t, out var m)) info.Status = m.Status;
                     else if (info.Status == null) for (var b = t.BaseType; b != null && IsProject(b); b = b.BaseType) if (ExceptionMap.TryGetValue(b, out var bm)) { info.Status = bm.Status; break; }
+                    // the status the exception itself carries, when a handler answers with it
+                    if (info.Status == null && c.M != null && Carried(t)) info.Status = ChainStatus(c.M, passed);
                     return info;
                 }
             case InvocationExpressionSyntax inv:
