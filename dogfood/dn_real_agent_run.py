@@ -474,6 +474,9 @@ def main() -> int:
         import tempfile
 
         a.scratch = tempfile.mkdtemp(prefix="dn-real-agent-")
+    # absolute: the shim runs with the agent's cwd, so a relative ledger path would land inside the agent's worktree
+    # (launch 2 of the build did exactly that; see the results document, section on irregularities)
+    a.out, a.scratch = str(Path(a.out).resolve()), str(Path(a.scratch).resolve())
     return {"calibrate": cmd_calibrate, "build": cmd_build, "ask": cmd_ask}[a.cmd](a)
 
 

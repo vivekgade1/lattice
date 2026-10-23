@@ -1,0 +1,23 @@
+{
+ "head": "6e809a0dd991d0a7fc019e9d5d61f391c1391899",
+ "files": {
+  "docs/results/2026-10-23-dotnet-real-agent-prereg.md": "f7fd5f7836bd366bf96010c814fa7d2e904a5c7642f32a6da5398ed2a4cbe4e0",
+  "dogfood/dn_real_agent_run.py": "d3f11ee1dd4eab9d9748848d88a6879677d051ba63a893c1fc2ea2673de5bc8d",
+  "dogfood/dn_real_agent_shim.py": "1e6c77bbdd1e276073b277f8f4c885ccb444072869a620f1b9e4fd2e526c4617",
+  "dogfood/dn_real_agent/reference/Program.cs": "0c70f2aa01f93f87fcc8a1a805923280f342a468862680b18c528bb43521fa3c",
+  "dogfood/dn_real_agent/fixture/.gitignore": "44b783edbdbf98243c369e4306e47102bb7fadfdcc68ab25182440d32071df18",
+  "dogfood/dn_real_agent/fixture/CONTEXT.md": "6a9a162fb841a5067e59eca931c3f0c92ae55b02e65bfc52c8dd283d2dea53a7",
+  "dogfood/dn_real_agent/fixture/Program.cs": "5c4625a068c090891f1497e5cda72b9a737bf0cc8e45e0a744398f259782ea27",
+  "dogfood/dn_real_agent/fixture/REQUIREMENTS.md": "199bd277819722cd37516af70df471f8805319fc498c0c86cfb9de16fcf66bc2",
+  "dogfood/dn_real_agent/fixture/check.sh": "3279b48f20b5557c7dbedb08da0487387824cb055957dcb4c205087352536f01",
+  "dogfood/dn_real_agent/fixture/dnbuild.csproj": "9f7776ca7a6a5e1140f0a8fe0dc3a7f38930abd7c28091aa6ca6d91dac22bf29",
+  "dogfood/dn_real_agent/fixture/harness.py": "c3c478183ed3aba7c661d00295e2b7c045e5677df4dd79eec5287d167841fb6d",
+  "dogfood/dn_real_agent/fixture/pyproject.toml": "c5b74ddaa4f39ff7e6960fc2da7628df057e6c9d9d083e7f6e53746582610b96",
+  "dogfood/dn_real_agent/fixture/spec.py": "7f6f3c35bec0ed1de0c377f227be1cc6e3a7e3b766ff0e9e74d126901a2468b7",
+  "dogfood/dn_real_agent/fixture/spec.trace.json": "539301b124e1a78272ad460913fbd4d6e3d916e321d2ae69df3db9280d45794c",
+  "dogfood/dn_real_agent/fixture/studio.toml": "67b2fc4f0d451270962ee3ef55c46e467e139a8629473be0336e820f2b6ef142",
+  "dogfood/dotnet_probes.py": "da6316ce528205a175a36a1a02c446be944e1320c24ff80354d21fb688a12dcb"
+ },
+ "claude_version": "2.1.309 (Claude Code)",
+ "at": 1792772737.594368
+}

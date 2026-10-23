@@ -1,0 +1,4 @@
+{
+ "status": "NOT RUN",
+ "why": "the rebuild loop is not available: the claude binary (/Users/vivekgade/Documents/lattice/.claude/worktrees/agent-aeb116c3459db6c3f/dogfood/dn_real_agent_shim.py) was not found"
+}

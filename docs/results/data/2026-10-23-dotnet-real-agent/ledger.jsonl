@@ -1,0 +1,1 @@
+{"at": 1792772740.722244, "budget_flag_usd": 1.5, "cost_usd": 0.1248387, "duration_ms": 43976, "is_error": false, "models": ["claude-sonnet-5-5"], "n": 1, "num_turns": 9, "output_format": "stream-json", "phase": "build", "rc": 0, "resume": false, "session_id": "6414a59f-6f62-4842-a802-2ea84b859a9f", "stop_reason": "end_turn", "subtype": "success", "wall_s": 44.6}
