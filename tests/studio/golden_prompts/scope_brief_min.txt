@@ -1,0 +1,15 @@
+# Build brief
+
+The project's spec lives in the repository root (REQUIREMENTS.md, spec.py, spec.trace.json). Build the scope below: **T** (0 rule(s)). Change the code so the scope's failing checks pass and every check that passes now still passes.
+
+## Rules in scope
+
+
+## Failing now in scope (0; these must pass)
+
+
+## Gates (run from the repository root)
+
+- `./g`
+
+Fix the code, never the spec, requirements, trace, gate scripts or test harness; add tests for new code where the project has a test convention. Stop when the scope's checks pass and nothing else broke.

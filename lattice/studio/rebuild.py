@@ -96,10 +96,13 @@ from __future__ import annotations
 
 import contextlib
 import copy
+import hmac
+import itertools
 import json
 import os
 import posixpath
 import re
+import secrets
 import shlex
 import shutil
 import signal
@@ -120,6 +123,7 @@ from lattice.improve import signals as sig
 from lattice.improve.events import EventLog
 from lattice.llm.cli_client import cli_env
 from lattice.studio import areas as areas_mod
+from lattice.studio import fencing
 from lattice.studio.session import (
     _MODEL_TOOLS,
     DEFAULT_MAX_TOKENS,
@@ -840,6 +844,41 @@ def _links(trace_json: str) -> dict[str, list[str]]:
         return {}
 
 
+# ---- prompt fencing (WP1) --------------------------------------------------------------------
+# Untrusted text (rule text, requirements diffs, gate output, finding titles, change requests,
+# file names) reaches the prompts below. With fencing on (the default, see fencing.enabled) each
+# such span is quoted in a nonce fence and the agent's system rules carry fencing.FENCE_RULES;
+# with fencing off every prompt and rules string is byte-identical to the unfenced layout
+# (pinned by tests/studio/golden_prompts/). Studio's own text (headings, gate commands and proto
+# names from studio.toml, the plan note) stays outside the fences: it is instructions.
+
+_FENCE_KEY = secrets.token_bytes(16)  # per process: the nonces cannot be guessed from outside
+
+
+def data_fence(text: str, kind: str) -> str:
+    """``fencing.fence`` with nonces keyed per process (HMAC of kind, try and payload): as
+    unguessable as random ones, but the same input gives the same prompt within a process,
+    so a resumed round, a retry and callers that compare prompts stay deterministic."""
+    draws = (
+        hmac.new(_FENCE_KEY, f"{kind}\0{i}\0{text}".encode(), "sha256").hexdigest()[:16]
+        for i in itertools.count()
+    )
+    return fencing.fence(text, kind, nonce_source=draws.__next__)
+
+
+def _quoted(lines: list[str], kind: str, fenced: bool) -> list[str]:
+    """``lines`` as one fenced block of ``kind`` when ``fenced`` (and there is something to
+    quote), else unchanged; for prompts built as a list of lines joined with newlines."""
+    return [data_fence("\n".join(lines), kind)] if fenced and lines else lines
+
+
+def agent_rules(rules: str) -> str:
+    """The system rules an agent step actually gets: ``rules`` plus the data-not-instructions
+    rule when fencing is on; ``rules`` itself (the same object) when it is off."""
+    extra = fencing.fence_rules()
+    return f"{rules}\n\n{extra}" if extra else rules
+
+
 def grpc_table(project: Path) -> tuple[list[str], str]:
     """``studio.toml`` ``[grpc]`` (L2, L3): the ``protos`` list and the ``generate`` command."""
     try:
@@ -877,6 +916,7 @@ def brief(
     """Round 1's prompt: the accepted changes, their rules and requirements diff, the
     targets (checks labelled not built yet), the gates and the rules."""
     texts, links = _rule_texts(trace_json), _links(trace_json)
+    fenced = fencing.enabled()  # off: the unfenced layout, byte for byte
     where = "the repository root" if project_rel == "." else f"`{project_rel}/`"
     out = [
         "# Rebuild brief",
@@ -886,27 +926,36 @@ def brief(
         "",
     ]
     for c in changes:
-        out += [f"## Change {c['id']}: {' '.join(str(c.get('request') or '').split())}", ""]
+        request = " ".join(str(c.get("request") or "").split())
+        if fenced:  # the request is quoted under a plain heading, not spliced into it
+            out += [f"## Change {c['id']}", ""]
+            out += ["Requested:", data_fence(request, "request"), ""] if request else []
+        else:
+            out += [f"## Change {c['id']}: {request}", ""]
         rules = c.get("rules") or {}
 
         def line(rid: str, label: str) -> str:
             link = f" (checked by {', '.join(links[rid])})" if links.get(rid) else ""
             return f"- {label} {rid}: {texts.get(rid, '(see REQUIREMENTS.md)')}{link}"
 
+        ruled: list[str] = []
         for rid in rules.get("added") or []:
-            out.append(line(str(rid), "added"))
+            ruled.append(line(str(rid), "added"))
         for ch in rules.get("changed") or []:
             rid = str(ch.get("new") if isinstance(ch, Mapping) else ch)
-            out.append(line(rid, "changed"))
+            ruled.append(line(rid, "changed"))
         for rid in rules.get("removed") or []:
-            out.append(f"- retired {rid}")
+            ruled.append(f"- retired {rid}")
+        out += _quoted(ruled, "rule-text", fenced)
         diff = str(c.get("markdown_diff") or "").strip()
-        if diff:
+        if diff and fenced:
+            out += ["", "Requirements diff:", data_fence(diff, "markdown-diff")]
+        elif diff:
             out += ["", "Requirements diff:", "```diff", diff, "```"]
         out.append("")
     if targets:
         out += ["## Checks not built yet (these must turn green)", ""]
-        out += [f"- {t['id']}: {t['label']}" for t in targets]
+        out += _quoted([f"- {t['id']}: {t['label']}" for t in targets], "findings", fenced)
         out.append("")
     out += grpc_lines(*grpc)
     out += ["## Gates (run from the repository root; all must exit 0)", ""]
@@ -917,20 +966,22 @@ def brief(
 
 def findings_prompt(n: int, check: Mapping[str, Any], gates: Sequence[Mapping[str, Any]]) -> str:
     """Round n's prompt (n > 1): the previous round's gate findings."""
+    fenced = fencing.enabled()  # off: the unfenced layout, byte for byte
     out = [f"Round {n - 1} did not pass. Studio ran the gates; these are the findings:", ""]
+    found = []
     for f in check.get("findings") or []:
         tgt = f" [{f['target']}]" if f.get("target") else ""
-        out.append(f"- {f['id']}{tgt}: {f['title']}")
+        found.append(f"- {f['id']}{tgt}: {f['title']}")
+    out += _quoted(found, "findings", fenced)
     for g in gates:
         if g.get("exit_code") != 0:
             tail = str(g.get("output_tail") or "")[-3000:]
             out += [
                 "",
                 f"`{g['command']}` exited {g.get('exit_code')}; the end of its output:",
-                "```",
-                tail.rstrip(),
-                "```",
-            ]
+                *([data_fence(tail.rstrip(), "gate-output")] if fenced
+                  else ["```", tail.rstrip(), "```"]),
+            ]  # fmt: skip
     out += ["", "Fix the code (never the spec files) and run the gates again."]
     return "\n".join(out)
 
@@ -955,6 +1006,7 @@ def scope_brief(
         data = {}
     rules = {str(r.get("id")): r for r in data.get("rules") or [] if isinstance(r, Mapping)}
     links = _links(trace_json)
+    fenced = fencing.enabled()  # off: the unfenced layout, byte for byte
     where = "the repository root" if project_rel == "." else f"`{project_rel}/`"
     out = [
         "# Build brief",
@@ -966,36 +1018,43 @@ def scope_brief(
         "",
     ]
     if context_files:
-        out += ["Read first: " + ", ".join(f"`{c}`" for c in context_files), ""]
+        read = ", ".join(f"`{c}`" for c in context_files)
+        out += (["Read first:", data_fence(read, "code-excerpt"), ""] if fenced
+                else ["Read first: " + read, ""])  # fmt: skip
     for c in changes:
-        out += [f"Also built: accepted change {c['id']}: "
-                f"{' '.join(str(c.get('request') or '').split())}", ""]  # fmt: skip
+        request = " ".join(str(c.get("request") or "").split())
+        if fenced:  # the request is quoted below the line, not spliced into it
+            out += [f"Also built: accepted change {c['id']}:", data_fence(request, "request"), ""]
+        else:
+            out += [f"Also built: accepted change {c['id']}: {request}", ""]
     out += ["## Rules in scope", ""]
     section = None
+    ruled: list[str] = []  # section headings and rule lines: all of it is spec text
     for rid in scope.get("rules") or []:
         r = rules.get(str(rid)) or {}
         sec = str(r.get("section") or "")
         if sec != section:
             section = sec
             if sec:
-                out += [f"### {sec}", ""]
+                ruled += [f"### {sec}", ""]
         link = f" (checked by {', '.join(links[rid])})" if links.get(rid) else " (no check)"
-        out.append(f"- {rid}: {' '.join(str(r.get('text') or '').split())}{link}")
+        ruled.append(f"- {rid}: {' '.join(str(r.get('text') or '').split())}{link}")
+    out += _quoted(ruled, "rule-text", fenced)
     out.append("")
     scen = [t for t in scope.get("targets") or [] if str(t).startswith("scenario:")]
     if scen:
         out += [
             "## Scenarios of the scope",
             "",
-            ", ".join(s.removeprefix("scenario:") for s in scen),
+            *_quoted([", ".join(s.removeprefix("scenario:") for s in scen)], "rule-text", fenced),
             "",
         ]
     out += [
         f"## Failing now in scope ({len(targets)}; these must pass)",
         "",
     ]
-    for t in list(targets)[:SCOPE_BRIEF_FAILURES]:
-        out.append(f"- {t['id']}: {t['label']}")
+    failing = [f"- {t['id']}: {t['label']}" for t in list(targets)[:SCOPE_BRIEF_FAILURES]]
+    out += _quoted(failing, "findings", fenced)
     if len(targets) > SCOPE_BRIEF_FAILURES:
         out.append(f"- ... and {len(targets) - SCOPE_BRIEF_FAILURES} more (run the gates)")
     out.append("")
@@ -1024,6 +1083,7 @@ def scope_findings_prompt(n: int, check: Mapping[str, Any], rnd: Mapping[str, An
     scope = [f for f in fs if f.get("in_scope")]
     reg = [f for f in fs if f.get("regression") and not f.get("in_scope")]
     other = [f for f in fs if f.get("target") in ("spec", "agent")]
+    fenced = fencing.enabled()  # off: the unfenced layout, byte for byte
     out = [
         f"Round {n - 1} did not pass ({rnd.get('scope_passing')}/{rnd.get('scope_total')} "
         "in-scope checks pass). Studio ran the gates; the findings:",
@@ -1036,7 +1096,8 @@ def scope_findings_prompt(n: int, check: Mapping[str, Any], rnd: Mapping[str, An
     ):
         if items:
             out += [f"{title}:"]
-            out += [f"- {f.get('target') or f['id']}: {f['title']}" for f in items[:60]]
+            listed = [f"- {f.get('target') or f['id']}: {f['title']}" for f in items[:60]]
+            out += _quoted(listed, "findings", fenced)
             if len(items) > 60:
                 out.append(f"- ... and {len(items) - 60} more")
             out.append("")
@@ -2813,10 +2874,15 @@ class Rebuilder:
             text = scope_findings_prompt(n, last_check, last_rnd)
             for g in last_gates:
                 if g.get("exit_code") not in (0, 1):
-                    tail = str(g.get("output_tail") or "")[-3000:]
+                    tail = str(g.get("output_tail") or "")[-3000:].rstrip()
+                    quoted = (  # gate output is data: fenced when fencing is on
+                        data_fence(tail, "gate-output")
+                        if fencing.enabled()
+                        else f"```\n{tail}\n```"
+                    )
                     text += (
                         f"\n\n`{g['command']}` exited {g.get('exit_code')}; the end of its "
-                        f"output:\n```\n{tail.rstrip()}\n```"
+                        f"output:\n{quoted}"
                     )
             return text
 
@@ -3171,7 +3237,7 @@ class Rebuilder:
             settings=run.tmp / "settings.json",
             gates=run.gates,
             resume=resume,
-            rules=RULES if run.scope is None else SCOPE_RULES,
+            rules=agent_rules(RULES if run.scope is None else SCOPE_RULES),  # + FENCE_RULES
         )
         with self.lock:
             run.argvs.append(argv)

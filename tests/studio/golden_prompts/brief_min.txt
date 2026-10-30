@@ -1,0 +1,13 @@
+# Rebuild brief
+
+The project's spec lives in the repository root (REQUIREMENTS.md, spec.py, spec.trace.json); it already contains the accepted change(s) below. Change the code so the gates pass.
+
+## Change c1: x
+
+- added R1: (see REQUIREMENTS.md)
+
+## Gates (run from the repository root; all must exit 0)
+
+- `./check.sh`
+
+Fix the code, never the spec, requirements or trace. Stop when the gates pass.
