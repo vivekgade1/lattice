@@ -1,0 +1,15 @@
+{
+ "schema": "lattice.grpc.codes6-truth/1",
+ "written": "2026-10-30",
+ "note": "hand-written by node GA2 by reading the Go, after the scratch implementation of the rest of GA2 and before any GA2 change was in the tree (red on the starting tree's extractor). Facts as in ../codes6/truth.json.",
+ "cases": {
+  "main": {
+   "why": "HO5-2: an interceptor limited to one service by a method prefix translates a module error type without GRPCStatus through `errors.As` and a package map keyed by the type's field: each rpc of that service gets the code of each value its handler builds (constructor or literal), plus the interceptor's INTERNAL; another service's rpc gets nothing from it",
+   "rpcs": {
+    "codes6.v1.Bill/Get": {"state": "implemented", "codes": ["NOT_FOUND", "PERMISSION_DENIED", "INTERNAL"]},
+    "codes6.v1.Bill/Pay": {"state": "implemented", "codes": ["OUT_OF_RANGE", "INTERNAL"]},
+    "codes6.v1.Other/Get": {"state": "implemented", "codes": []}
+   }
+  }
+ }
+}

@@ -162,3 +162,55 @@ Out of scope here, documented only:
 Observed-reply reconciliation (`lattice/spec/grpc.py` `reconcile_with`, 30/30 rpcs answered on HO5)
 records one code per rpc from an empty request. It is considered only for a gap static reading
 cannot close (step 3 of the node), and any code it adds is labelled observed, never extracted.
+
+## After GA2 (same day, development data, reported, no claim)
+
+What changed (in `lattice/gocheck/src/goextract_grpc{,_auth,_codes}.go` and two new files, `goextract_grpc_flow.go` and `goextract_grpc_icodes.go`, which keep the round-5 files under their 1200-line cap; tests `tests/grpc/test_codes6.py` over
+the hand-written fixtures `tests/grpc/fixtures/codes6/{ctormap,passthru,icodes,desctable}` and
+`codes6as/main`, each red on the starting tree, then green):
+
+| gap | change | fixture case |
+|---|---|---|
+| SG-1 | `codeOf` never reads a local with a multi-value assignment as single-valued (`multiAssigned`) | ctormap `Two` |
+| SG-2 | `siteField` follows constructor chains (`siteValue`: a constructor returning a constructor call or a local it built, `e.F = v` assignments, arguments carried to the outermost call) and reads `m[k]` / `v, ok := m[k]` + `if !ok { v = X }` over a string-keyed package map (`ctorCode`, `commaOk`) | ctormap |
+| SG-3, HO5-3 | `error` parameters bound per call to the caller's errors (`ebind`); `return p` under `errors.As(p, ..)` / `status.FromError(p)` passes on only status errors; `t.GRPCStatus().Err()` on the `errors.As` target (`passOn`, `asTarget`) | passthru `Get`, `Put`, `Conv`, `Raw` |
+| HO5-4 | `errors.Is(p, S)` branches entered only for the sentinels the call can pass (`sentinelsOf`, `deadBranches`; an error from outside the module is none of them, `fmt.Errorf` may wrap one) | passthru `Del`, `Find` |
+| SG-3 (E3e) | interceptors that are not literal auth gates: their status codes reach the rpcs whose method passes their literal method tests (equality, prefix/suffix, a literal map); a code under a method test that is not literal, after one that may return, or out of a module function the method decides (other than a log line) reaches no rpc; a translation of the handler's own answer is left to D3, except a typed-error map | icodes |
+| HO5-1 | `RegisterService(v.desc, v.impl)` over a range of a slice literal (direct, a local, or returned by a module function) (`tableRegs`) | desctable |
+| HO5-2 | `status.Error(m[t.F], ..)` with `t` the `errors.As` target of the handler's answer: the code of each value of t's type the rpc's handler builds, by its field constant (`asMapCodes`, `typedErr`) | codes6as |
+
+The auth readers (`classifyInterceptor`, `rpcAuth`) read codes as round 5 did (`readV5`): with SG's
+better-read `UNAUTHENTICATED`, the round-5 helper rule ("the handler calls a helper that answers
+UNAUTHENTICATED" -> Member) turned SG's Public `Login`, `Refresh` and `RunNudger` into confident-wrong
+`Member` in a trial run. GA2 changes codes only; no auth answer moves (SAFE unchanged below).
+
+Byte-compatibility: the raw `gocheck extract` output of all 71 Go modules of G9's list (every gRPC
+fixture included) is byte-identical before and after; only the five new fixture modules differ. G9's
+golden snapshot (`snap.py`, 71 modules) is identical (`diff -r` empty).
+
+CODES with the frozen scorers (`grpc_truth5.load_truth` + `grpc_scorer4.score_codes`, as
+`rpc_rows4`), on copies:
+
+| app | recall before -> after | precision before -> after | `UNKNOWN` on rpcs | rpc states agreeing | SAFE confident-wrong | auth unclear |
+|---|---|---|---|---|---|---|
+| SG | 0.000 -> 1.000 (0 -> 132 of 132) | 0.000 -> 0.868 | 91 -> 21 | 26/26 -> 26/26 | 0 -> 0 | 26 -> 26 |
+| HO5 | 0.675 -> 1.000 (56 -> 83 of 83) | 0.800 -> 0.954 | 0 -> 1 | 22/30 -> 29/30 | 1 -> 1 | 22 -> 28 (Billing now read) |
+
+These are development numbers on apps whose failures were diagnosed by reading them: they say the
+gaps above are closed on these two apps, not how the extractor does on an unseen one.
+
+Observed-reply reconciliation (step 3) was not needed: static reading closes every diagnosed gap.
+
+Unresolved (not GA2's to fix, or left as is):
+
+* SG's 21 remaining `UNKNOWN` are round-5 `plain_error` placeholders (plain errors such as
+  `fmt.Errorf` that the interceptor turns into `INTERNAL`); the D3.3 translation applies only to a
+  module with a sentinel table. 18 of the 20 SG precision extras are these; the other 2 are on
+  `BatchCreateCompletions` (`ALREADY_EXISTS`, `NOT_FOUND`), whose truth does not list them.
+* HO5 extras: `BillingService/GetInvoice:INTERNAL` and `ReservationService/GetReservation:INTERNAL`
+  (a default branch the extractor cannot rule out), `AddCharge:UNKNOWN` (a plain error), and
+  `BerthService/ReserveBlock`, a defined handler that always answers `UNIMPLEMENTED` (truth state
+  `unimplemented`, extract `implemented`: the one SAFE confident-wrong, unchanged since round 5).
+* The interceptor's `INTERNAL` after a recovered panic (HO5 `recoverUnary`, a deferred assignment to a
+  named result) is not read.
+* Auth (both apps) and SG tables: out of scope, as above.
