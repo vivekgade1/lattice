@@ -1,0 +1,4 @@
+Round 1 did not pass. Studio ran the gates; these are the findings:
+
+
+Fix the code (never the spec files) and run the gates again.

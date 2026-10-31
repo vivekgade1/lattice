@@ -1,0 +1,19 @@
+# Plan request
+
+Project: p. Scope: T (0 rule(s)). Studio runs at most 1 node(s) of one level at a time.
+
+`built: true` on an area means every check of it already passes on the target branch: plan no work for it (Studio drops a node with nothing failing in its scope).
+
+## Areas of the scope (JSON)
+
+[]
+
+## Data model (tables and columns)
+
+(no data model in the spec)
+
+## Repository files (git ls-files; 0 shown)
+
+(empty)
+
+Answer with the JSON object only.

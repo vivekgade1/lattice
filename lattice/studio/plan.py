@@ -100,6 +100,7 @@ from typing import Any
 
 from lattice.llm.cli_client import cli_env
 from lattice.studio import areas as areas_mod
+from lattice.studio import fencing
 from lattice.studio.rebuild import (
     MAX_WAIT,
     Rebuilder,
@@ -112,6 +113,8 @@ from lattice.studio.rebuild import (
     _now,
     _short,
     _zero_usage,
+    agent_rules,
+    data_fence,
     reap_orphans,
     result_doc,
     scoped_command,
@@ -781,6 +784,25 @@ def planner_prompt(
          "columns": [c.get("name") for c in t.get("columns") or [] if isinstance(c, Mapping)]}
         for t in tables
     ]  # fmt: skip
+    # WP1: with fencing on, the spec text (areas with their rule text, the data model), the file
+    # names, Studio's validation issues and the previous plan (model output) are quoted as data;
+    # the owner's feedback stays an instruction. Off: the unfenced layout, byte for byte. The
+    # two spec sections are fenced together WITH their headings, so each heading is still
+    # followed directly by its bare JSON (callers and tests parse the areas JSON out of it).
+    fenced = fencing.enabled()
+
+    def q(text: str, kind: str) -> str:
+        return data_fence(text, kind) if fenced else text
+
+    spec = [
+        "## Areas of the scope (JSON)",
+        "",
+        json.dumps(info, indent=1, ensure_ascii=False),
+        "",
+        "## Data model (tables and columns)",
+        "",
+        json.dumps(dm, ensure_ascii=False) if dm else "(no data model in the spec)",
+    ]
     out = [
         "# Plan request",
         "",
@@ -790,27 +812,23 @@ def planner_prompt(
         "`built: true` on an area means every check of it already passes on the target "
         "branch: plan no work for it (Studio drops a node with nothing failing in its scope).",
         "",
-        "## Areas of the scope (JSON)",
-        "",
-        json.dumps(info, indent=1, ensure_ascii=False),
-        "",
-        "## Data model (tables and columns)",
-        "",
-        json.dumps(dm, ensure_ascii=False) if dm else "(no data model in the spec)",
+        q("\n".join(spec), "rule-text"),
         "",
         f"## Repository files (git ls-files; {len(file_tree)} shown)",
         "",
-        "\n".join(file_tree) or "(empty)",
+        q(tree, "code-excerpt") if (tree := "\n".join(file_tree)) else "(empty)",
         "",
     ]
     if issues:
         out += ["## Your previous plan was invalid; fix these and answer again", ""]
-        out += [f"- {i}" for i in issues]
-        out += ["", "Previous plan:", json.dumps(previous, ensure_ascii=False), ""]
+        out += [q("\n".join(f"- {i}" for i in issues), "findings")]
+        plan_json = q(json.dumps(previous, ensure_ascii=False), "code-excerpt")
+        out += ["", "Previous plan:", plan_json, ""]
     if feedback:
         out += ["## The owner's feedback on the current plan", "", feedback.strip(), ""]
         if previous is not None:
-            out += ["Current plan:", json.dumps(previous, ensure_ascii=False), ""]
+            plan_json = q(json.dumps(previous, ensure_ascii=False), "code-excerpt")
+            out += ["Current plan:", plan_json, ""]
     out.append("Answer with the JSON object only.")
     return "\n".join(out)
 
@@ -1846,7 +1864,8 @@ class PlanManager:
             previous=previous, feedback=feedback, built=built,
         )  # fmt: skip
         argv = build_planner_argv(claude_bin=self.rb.claude_bin, text=text,
-                                  model=self.cfg.planner_model, system=epg_prompt())  # fmt: skip
+                                  model=self.cfg.planner_model,
+                                  system=agent_rules(epg_prompt()))  # fmt: skip
         with self.lock:
             plan.argvs.append(argv)
         base = self._env if self._env is not None else (self.rb._env or os.environ)
