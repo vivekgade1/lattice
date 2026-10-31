@@ -131,6 +131,11 @@ class AppView:
         self.users_sql: str | None = self.sql_of.get(self.users_struct or "")
         self.login_path: str | None = auth.get("login_path")
         mws = {m["func"]: m for m in x["middleware"]}
+        # body fields the handler refuses when absent (``param_required``): sent like a
+        # tag-required field
+        code_required = {
+            (q["route"], q["source"], q["param"]) for q in x.get("param_required", [])
+        }
         routes: list[RouteV] = []
         for i, r in enumerate(x["routes"]):
             refusals = {s["status"] for s in r["raises"] if s["status"]}
@@ -142,15 +147,23 @@ class AppView:
                     if s["status"]:
                         refusals.add(s["status"])
             path = r["path_template"]
+            key = f"{r['method']} {path}"
+            params = tuple(
+                {**p, "required": True}
+                if not p["required"] and (key, p["source"], p["name"]) in code_required
+                else p
+                for p in r["params"]
+                if p["source"] != "path"
+            )
             routes.append(
                 RouteV(
-                    key=f"{r['method']} {path}",
+                    key=key,
                     method=r["method"],
                     path=path,
                     skeleton=f"{r['method']} {tpl(path)}",
                     auth=r["auth"],
                     path_params=tuple(_PARAM.findall(path)),
-                    params=tuple(p for p in r["params"] if p["source"] != "path"),
+                    params=params,
                     status_codes=tuple(r["status_codes"]),
                     refusals=frozenset(refusals),
                     owner=bool(r["owner_uses"]),

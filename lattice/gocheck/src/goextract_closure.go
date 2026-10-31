@@ -770,6 +770,12 @@ func (g *gx) scanParams(ci *closureInfo, v *gxVisit, b *Func, e *Env) {
 		// a bound struct
 		sel, ok := call.Fun.(*ast.SelectorExpr)
 		if !ok || !bindMethods[sel.Sel.Name] || len(call.Args) == 0 || !m.isCtx(e, sel.X) {
+			// a JSON decode of the body, or a binder helper (goextract_body.go)
+			for _, ba := range g.boundElsewhere(e, call) {
+				if ti := g.boundStruct(e, ba.x); ti != nil {
+					g.bindStruct(ci, ti, ba.src)
+				}
+			}
 			return
 		}
 		src := "body"

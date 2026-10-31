@@ -1,0 +1,48 @@
+{
+ "schema": "lattice.grpc.codes6-truth/1",
+ "written": "2026-10-30",
+ "note": "hand-written by node GA2 before any GA2 extractor change ran, by reading the Go (the fixture is read, not run). Each case is a module under this directory. An rpc entry is a state string or an object of the facts compared exactly (state, codes, unread = a grpc_code_not_literal item). Codes are every code of the rpc but unimplemented stubs, whatever their kind.",
+ "cases": {
+  "ctormap": {
+   "why": "SG-1/SG-2: the code is looked up in a string-keyed package map by a constructor, `st, ok := m[code]; if !ok { st = codes.Unknown }`, through one, two and three constructor levels; a key the map lacks is the fallback; a key not constant is unread; a local with a multi-value assignment is never single-valued (Two: unread, never the fallback alone)",
+   "rpcs": {
+    "codes6.v1.Map/Get": {"state": "implemented", "codes": ["NOT_FOUND"], "unread": false},
+    "codes6.v1.Map/Put": {"state": "implemented", "codes": ["INVALID_ARGUMENT"], "unread": false},
+    "codes6.v1.Map/Del": {"state": "implemented", "codes": ["ALREADY_EXISTS"], "unread": false},
+    "codes6.v1.Map/Odd": {"state": "implemented", "codes": ["UNKNOWN"], "unread": false},
+    "codes6.v1.Map/Dyn": {"state": "implemented", "codes": [], "unread": true},
+    "codes6.v1.Map/Help": {"state": "implemented", "codes": ["RESOURCE_EXHAUSTED"], "unread": false},
+    "codes6.v1.Map/Two": {"state": "implemented", "codes": [], "unread": true}
+   }
+  },
+  "passthru": {
+   "why": "SG-3/HO5-3/HO5-4: an error parameter takes, at each call, the errors of the argument; `return err` under errors.As / status.FromError passes on only status errors (a plain error cannot satisfy it); `x.GRPCStatus().Err()` on the errors.As target is the parameter's status codes; an errors.Is switch is entered only on the branches of the sentinels passed",
+   "rpcs": {
+    "codes6.v1.Pass/Get": {"state": "implemented", "codes": ["NOT_FOUND", "INTERNAL"]},
+    "codes6.v1.Pass/Put": {"state": "implemented", "codes": ["INTERNAL"]},
+    "codes6.v1.Pass/Del": {"state": "implemented", "codes": ["INVALID_ARGUMENT"]},
+    "codes6.v1.Pass/Find": {"state": "implemented", "codes": ["NOT_FOUND"]},
+    "codes6.v1.Pass/Conv": {"state": "implemented", "codes": ["ABORTED", "INTERNAL"]},
+    "codes6.v1.Pass/Raw": {"state": "implemented", "codes": ["DATA_LOSS"]}
+   }
+  },
+  "icodes": {
+   "why": "SG-3 (interceptor codes of interceptors that are not literal auth gates): each interceptor's codes reach the rpcs whose method passes its literal method tests (prefix, equality, a literal map); a code under a method test that is not literal, or from a module function the method name decides, reaches no rpc; the handler's own answer is not the interceptor's",
+   "rpcs": {
+    "codes6.v1.Open/Hello": {"state": "implemented", "codes": ["FAILED_PRECONDITION", "INTERNAL"]},
+    "codes6.v1.Shop/Buy": {"state": "implemented", "codes": ["NOT_FOUND", "FAILED_PRECONDITION", "INTERNAL", "RESOURCE_EXHAUSTED"]},
+    "codes6.v1.Shop/Look": {"state": "implemented", "codes": ["FAILED_PRECONDITION", "INTERNAL"]},
+    "codes6.v1.Till/Pay": {"state": "implemented", "codes": ["INVALID_ARGUMENT", "FAILED_PRECONDITION", "INTERNAL", "RESOURCE_EXHAUSTED", "UNAVAILABLE"]}
+   }
+  },
+  "desctable": {
+   "why": "HO5-1: `RegisterService(b.desc, b.impl)` over a range of a slice literal, returned by a module function or written in the loop, registers each row's descriptor and implementation",
+   "rpcs": {
+    "codes6.v1.Bill/Charge": {"state": "implemented", "codes": ["NOT_FOUND"]},
+    "codes6.v1.Bill/Refund": "unimplemented",
+    "codes6.v1.Tab/Open": {"state": "implemented", "codes": ["FAILED_PRECONDITION"]},
+    "codes6.v1.Never/Call": "not_registered"
+   }
+  }
+ }
+}

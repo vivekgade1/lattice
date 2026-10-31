@@ -8,6 +8,8 @@
 //	param_literals per route: the string constants a request field is compared to
 //	status_facts   per constant write to a string column: create or update, and the states
 //	               it is written from
+//	param_required per route: a body field whose absence the handler refuses with a 4xx
+//	               (`x == nil`, `x == ""`, a length below 1), required by the code, not a tag
 //	workflow_unread what these analyses did not read
 //
 // The values are followed (taint) through locals, tuple assignments, struct fields and
@@ -56,6 +58,15 @@ type xLiteral struct {
 	Line   int      `json:"line"`
 }
 
+type xRequired struct {
+	Route  string `json:"route"`
+	Param  string `json:"param"`
+	Source string `json:"source"`
+	How    string `json:"how"` // nil | empty | length
+	File   string `json:"file"`
+	Line   int    `json:"line"`
+}
+
 type xStatusFact struct {
 	Table  string   `json:"table"`
 	Model  string   `json:"model"`
@@ -76,6 +87,7 @@ type xWorkflow struct {
 	Creates    []xCreate     `json:"creates"`
 	Literals   []xLiteral    `json:"param_literals"`
 	Facts      []xStatusFact `json:"status_facts"`
+	Required   []xRequired   `json:"param_required"`
 	WfUnread   []xUnread     `json:"workflow_unread"`
 	WfNotes    []string      `json:"workflow_notes"`
 	wfUnreadOK map[string]bool
@@ -109,6 +121,7 @@ func extractWorkflow(root string) (*xWorkflow, error) {
 	out := &xWorkflow{xResult: g.res, wfUnreadOK: map[string]bool{}}
 	out.ParamUses, out.Creates, out.Literals = []xParamUse{}, []xCreate{}, []xLiteral{}
 	out.Facts, out.WfUnread, out.WfNotes = []xStatusFact{}, []xUnread{}, []string{}
+	out.Required = []xRequired{}
 	g.workflowFacts(out)
 	return out, nil
 }
@@ -234,6 +247,8 @@ type wfCtx struct {
 	createSeen map[string]bool
 	litIdx     map[string]*xLiteral
 	lits       []*xLiteral
+	raises     []xRaise // the route closure's raises (where the handler refuses)
+	reqSeen    map[string]bool
 }
 
 func (g *gx) wfUnreadAdd(out *xWorkflow, file string, line int, what, reason string) {
@@ -253,7 +268,11 @@ func (g *gx) workflowFacts(out *xWorkflow) {
 		}
 		w := &wfCtx{g: g, out: out, route: rec.out.Method + " " + rec.out.PathTemplate,
 			memo: map[string][]wfTaint{}, busy: map[string]bool{}, scanned: map[string]bool{},
-			useSeen: map[string]bool{}, createSeen: map[string]bool{}, litIdx: map[string]*xLiteral{}}
+			useSeen: map[string]bool{}, createSeen: map[string]bool{}, litIdx: map[string]*xLiteral{},
+			reqSeen: map[string]bool{}}
+		if rec.closure != nil {
+			w.raises = rec.closure.raises
+		}
 		func() {
 			defer func() {
 				if r := recover(); r != nil {
@@ -289,6 +308,10 @@ func (g *gx) workflowFacts(out *xWorkflow) {
 	})
 	sort.SliceStable(out.Literals, func(i, j int) bool {
 		a, b := out.Literals[i], out.Literals[j]
+		return a.Route+"|"+a.Source+"|"+a.Param < b.Route+"|"+b.Source+"|"+b.Param
+	})
+	sort.SliceStable(out.Required, func(i, j int) bool {
+		a, b := out.Required[i], out.Required[j]
 		return a.Route+"|"+a.Source+"|"+a.Param < b.Route+"|"+b.Source+"|"+b.Param
 	})
 	sort.SliceStable(out.Facts, func(i, j int) bool {
@@ -458,12 +481,19 @@ func (w *wfCtx) flow(v *wfVisit, b *Func) bool {
 }
 
 // bindCall: c.ShouldBindJSON(&x) taints x's fields with the body keys they bind;
-// ShouldBindUri with the path parameters of their `uri` tags.
+// ShouldBindUri with the path parameters of their `uri` tags. A JSON decode of the body and
+// a binder helper (goextract_body.go) bind their destination's body keys the same way.
 func (w *wfCtx) bindCall(v *wfVisit, e *Env, call *ast.CallExpr) bool {
-	g, m := w.g, w.g.m
+	m := w.g.m
 	sel, ok := call.Fun.(*ast.SelectorExpr)
 	if !ok || len(call.Args) == 0 || !m.isCtx(e, sel.X) {
-		return false
+		changed := false
+		for _, ba := range w.g.boundElsewhere(e, call) {
+			if (ba.src == "body" || ba.src == "path") && w.bindValue(v, e, ba.x, ba.src) {
+				changed = true
+			}
+		}
+		return changed
 	}
 	src := ""
 	switch sel.Sel.Name {
@@ -474,13 +504,19 @@ func (w *wfCtx) bindCall(v *wfVisit, e *Env, call *ast.CallExpr) bool {
 	default:
 		return false
 	}
-	id, ok := stripAddr(call.Args[0]).(*ast.Ident)
+	return w.bindValue(v, e, call.Args[0], src)
+}
+
+// bindValue taints the fields of the bound value x with the src keys they bind.
+func (w *wfCtx) bindValue(v *wfVisit, e *Env, x ast.Expr, src string) bool {
+	g, m := w.g, w.g.m
+	id, ok := stripAddr(x).(*ast.Ident)
 	if !ok {
 		return false
 	}
-	ti := m.Infer(e, stripAddr(call.Args[0])).deref().rowTypeAny()
+	ti := m.Infer(e, stripAddr(x)).deref().rowTypeAny()
 	if ti == nil {
-		ti = g.anonStructOf(e, call.Args[0])
+		ti = g.anonStructOf(e, x)
 	}
 	if ti == nil {
 		return false
@@ -783,6 +819,9 @@ func (w *wfCtx) scan(v *wfVisit, b *Func) {
 		return
 	}
 	w.scanned[skey] = true
+	if v.depth == 0 {
+		w.requiredGuards(v, b, e)
+	}
 	assigned := map[*ast.CallExpr]string{}
 	rooted := map[string][]*xTable{}
 	ast.Inspect(b.Body, func(n ast.Node) bool {
@@ -1691,4 +1730,227 @@ func (g *gx) statusFacts(out *xWorkflow) {
 			})
 		}
 	}
+}
+
+// ---- body fields the handler refuses when absent ------------------------------------------
+
+// requiredGuards reads the handler's own top-level refusing branches: an `if` (or a case of
+// a tagless switch) whose top-level disjunct tests a body field for absence -- `x == nil`,
+// `x == ""`, `len(x)` (or utf8.RuneCountInString) below 1 -- and whose branch raises a 4xx,
+// or appends to a local list a later top-level `if len(list) > 0` refuses with a 4xx. A
+// nested branch (required only under a condition) and the guards of the helpers the
+// handler calls are not read.
+func (w *wfCtx) requiredGuards(v *wfVisit, b *Func, e *Env) {
+	if b != v.fn {
+		return
+	}
+	add := func(name, how string, at ast.Node) {
+		key := "body|" + name
+		if w.reqSeen[key] {
+			return
+		}
+		w.reqSeen[key] = true
+		w.out.Required = append(w.out.Required, xRequired{Route: w.route, Param: name, Source: "body",
+			How: how, File: b.File.Rel, Line: w.g.line(at.Pos())})
+	}
+	type pending struct {
+		name, how string
+		at        ast.Node
+	}
+	lists := map[string][]pending{} // local list -> the absence tests appending to it
+	check := func(cond ast.Expr, blk ast.Node, body []ast.Stmt) {
+		if cond == nil {
+			return
+		}
+		var ops []ast.Expr
+		flattenOr(cond, &ops)
+		if w.refuses4xx(b, blk) {
+			for _, op := range ops {
+				if name, how := w.absent(v, e, op); name != "" {
+					add(name, how, op)
+				}
+			}
+			for _, op := range ops {
+				if l := nonEmptyList(op); l != "" {
+					for _, p := range lists[l] {
+						add(p.name, p.how, p.at)
+					}
+				}
+			}
+			return
+		}
+		if l := appendsTo(body); l != "" {
+			for _, op := range ops {
+				if name, how := w.absent(v, e, op); name != "" {
+					lists[l] = append(lists[l], pending{name, how, op})
+				}
+			}
+		}
+	}
+	for _, st := range b.Body.List {
+		switch s := st.(type) {
+		case *ast.IfStmt:
+			check(s.Cond, s.Body, s.Body.List)
+		case *ast.SwitchStmt:
+			if s.Tag == nil {
+				for _, c := range s.Body.List {
+					if cc, ok := c.(*ast.CaseClause); ok {
+						for _, x := range cc.List {
+							check(x, cc, cc.Body)
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+// appendsTo answers the local list a branch appends to (`l = append(l, ...)`).
+func appendsTo(body []ast.Stmt) string {
+	for _, st := range body {
+		as, ok := st.(*ast.AssignStmt)
+		if !ok || len(as.Lhs) != 1 || len(as.Rhs) != 1 {
+			continue
+		}
+		l, ok := as.Lhs[0].(*ast.Ident)
+		c, ok2 := unparen(as.Rhs[0]).(*ast.CallExpr)
+		if !ok || !ok2 || callName(c) != "append" || len(c.Args) < 2 {
+			continue
+		}
+		if a, ok := unparen(c.Args[0]).(*ast.Ident); ok && a.Name == l.Name {
+			return l.Name
+		}
+	}
+	return ""
+}
+
+// nonEmptyList answers the list a condition tests for being non-empty: `len(l) > 0`,
+// `len(l) != 0`, `len(l) >= 1`, `l != nil`.
+func nonEmptyList(op ast.Expr) string {
+	be, ok := unparen(op).(*ast.BinaryExpr)
+	if !ok {
+		return ""
+	}
+	if id, ok := unparen(be.X).(*ast.Ident); ok && be.Op == token.NEQ {
+		if n, ok := unparen(be.Y).(*ast.Ident); ok && n.Name == "nil" {
+			return id.Name
+		}
+	}
+	c, ok := unparen(be.X).(*ast.CallExpr)
+	if !ok || callName(c) != "len" || len(c.Args) != 1 {
+		return ""
+	}
+	l, ok := unparen(c.Args[0]).(*ast.Ident)
+	lit, ok2 := unparen(be.Y).(*ast.BasicLit)
+	if !ok || !ok2 || lit.Kind != token.INT {
+		return ""
+	}
+	switch {
+	case (be.Op == token.GTR || be.Op == token.NEQ) && lit.Value == "0", be.Op == token.GEQ && lit.Value == "1":
+		return l.Name
+	}
+	return ""
+}
+
+// refuses4xx: a raise of the route's closure with a 4xx status sits in blk, or blk calls a
+// module function every raise of which (as the closure read it) is a 4xx. The second reading
+// covers a helper called again with the same arguments, whose raise the closure locates at
+// its first call only.
+func (w *wfCtx) refuses4xx(b *Func, blk ast.Node) bool {
+	is4xx := func(r xRaise) bool { return r.Status != nil && *r.Status >= 400 && *r.Status < 500 }
+	from, to := w.g.line(blk.Pos()), w.g.line(blk.End())
+	for _, r := range w.raises {
+		if r.File == b.File.Rel && r.Line >= from && r.Line <= to && is4xx(r) {
+			return true
+		}
+	}
+	e := w.g.m.EnvOf(b)
+	found := false
+	stmtWalk(blk, func(call *ast.CallExpr, _ []ast.Node) {
+		callee := w.g.m.Callee(e, call)
+		if found || callee == nil || callee.Lit != nil {
+			return
+		}
+		in, n, all := qual(callee), 0, true
+		for _, r := range w.raises {
+			if r.In == in {
+				n++
+				all = all && is4xx(r)
+			}
+		}
+		found = n > 0 && all
+	})
+	return found
+}
+
+// absent answers the body field an absence test reads, and how it tests it.
+func (w *wfCtx) absent(v *wfVisit, e *Env, op ast.Expr) (string, string) {
+	be, ok := unparen(op).(*ast.BinaryExpr)
+	if !ok {
+		return "", ""
+	}
+	field := func(x ast.Expr) string {
+		os := originSet(w.ev(v, e, x), "body", "path", "query")
+		if len(os) != 1 || !strings.HasPrefix(os[0], "body:") {
+			return ""
+		}
+		return strings.TrimPrefix(os[0], "body:")
+	}
+	isNil := func(x ast.Expr) bool { id, ok := unparen(x).(*ast.Ident); return ok && id.Name == "nil" }
+	isEmpty := func(x ast.Expr) bool { s, ok := stringLit(unparen(x)); return ok && s == "" }
+	if be.Op == token.EQL {
+		for _, pair := range [][2]ast.Expr{{be.X, be.Y}, {be.Y, be.X}} {
+			switch {
+			case isNil(pair[1]):
+				if f := field(pair[0]); f != "" {
+					return f, "nil"
+				}
+			case isEmpty(pair[1]):
+				if f := field(pair[0]); f != "" {
+					return f, "empty"
+				}
+			}
+		}
+	}
+	// len(x) <op> n refusing the length 0
+	lenOf := func(x ast.Expr) ast.Expr {
+		c, ok := unparen(x).(*ast.CallExpr)
+		if !ok || len(c.Args) != 1 {
+			return nil
+		}
+		switch callName(c) {
+		case "len", "RuneCountInString", "RuneCount":
+			return c.Args[0]
+		}
+		return nil
+	}
+	op2, x, other := be.Op, lenOf(be.X), be.Y
+	if x == nil {
+		x, other = lenOf(be.Y), be.X
+		switch op2 { // n <op> len(x) as len(x) <op'> n
+		case token.LSS:
+			op2 = token.GTR
+		case token.GTR:
+			op2 = token.LSS
+		case token.LEQ:
+			op2 = token.GEQ
+		case token.GEQ:
+			op2 = token.LEQ
+		}
+	}
+	if x == nil {
+		return "", ""
+	}
+	c, ok := w.g.evalConst(e, other, v.binds)
+	if !ok || !c.isInt {
+		return "", ""
+	}
+	refusesZero := (op2 == token.LSS && c.n >= 1) || (op2 == token.LEQ && c.n >= 0) || (op2 == token.EQL && c.n == 0)
+	if !refusesZero {
+		return "", ""
+	}
+	if f := field(x); f != "" {
+		return f, "length"
+	}
+	return "", ""
 }
