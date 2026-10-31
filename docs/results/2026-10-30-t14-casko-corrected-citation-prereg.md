@@ -178,3 +178,43 @@ it must be a committed amendment to this file *before* the first model call (the
 `docs/results/data/2026-10-30-t14/`: `ask-freeze.json`, `ledger.jsonl`, `ask-raw/call-NNN.{out,err}` (the CLI's raw output of every call), `ask-result.json` (per question:
 both arms' text, citations, rejected citations, audit, score, usage; the verdicts and counts). Dry runs write under `docs/results/data/2026-10-30-t14/dry-run/<variant>/`.
 The results document is written by the node that runs it, and states the post hoc definition and the data status of this file's header.
+
+## Amendment 1 (2026-10-31, before any model call): six questions, cap unchanged
+
+**Why.** Section 9 predicted that 12 questions do not fit the USD 0.60 cap (about 6 of 12 answered, A-ANSWERED p(pass) 0.05). The owner keeps the cap at
+**USD 0.60** (approved for this item). The question set is cut to **six** instead. No model call has been made (no ledger exists under
+`docs/results/data/2026-10-30-t14/`; only the fake-model dry runs under `dry-run/`). This amendment is committed on its own, before the driver, test and
+question-file changes that implement it; the guard (section 7) additionally requires that the last commit touching this file is an ancestor of the last commit
+touching the driver, so a later amendment without a following driver commit is refused.
+
+**The six live questions** (one per distinct kind; run order kept from section 6; ids unchanged):
+
+| id | kind | why this one (over its alternative) |
+|---|---|---|
+| Q01 | route existence | four routes, cited in the gold key by `impl:route:` ids: the citation form the .NET registered audit missed, so it exercises the corrected definition most directly (over Q12, which the access-matrix cells alone settle) |
+| Q03 | rule requirement | a rule with a precedence clause (R75, R76) and a route claim in the same answer (over Q09) |
+| Q04 | not implemented | the only question whose truth is absent from both spec and code (label `not_specified_not_implemented`) |
+| Q06 | who can call | owner / other user / no token in one answer: cells, rules and an `impl:route` together (over Q11, a single yes/no) |
+| Q07 | not specified | the spec states no device limit; the honest answer is `not_specified` (the coordinator's "Q05 style" read as this category: Q05 itself is a "where in the code" question the digest cannot settle) |
+| Q08 | false-premise trap | names a route that does not exist, so it also exercises the unknown-route-mention rule of section 4.2 (over Q02) |
+
+**Dropped, unrun:** Q02, Q05, Q09, Q10, Q11, Q12. They stay in `dogfood/t14_casko_questions.json` with `"status": "dropped"` and are never asked in this
+run. Consequence: no "where in the code" question is live (Q05 and Q10 were the only two).
+
+**Gates and reported items as amended.** A-ANSWERED is **6 of 6**. A-CITED, A-REJECTED, A-CORRECT, A-RAW, A-UNKNOWN and A-COST are unchanged and are computed over
+the six live questions. Spend controls (section 7) are unchanged: cap USD 0.60, shim margin 0.07, per-call ceiling 0.30, a question starts only with USD 0.12 left
+(no start above USD 0.48 spent).
+
+**Recomputed cost (same basis as section 9).** First call about USD 0.16 (the cache write of the core), each later call 0.040-0.046, each question 1 or 2 calls.
+
+| case | calls per question | question start points (USD spent) | total | answered |
+|---|---|---|---|---|
+| cheap | 1 at 0.040 | 0, 0.16, 0.20, 0.24, 0.28, 0.32 | about 0.36 | 6 of 6 |
+| expected (1.5 calls, 0.045) | 1.5 | 0, 0.18, 0.25, 0.32, 0.38, 0.45 | about 0.52 | 6 of 6 |
+| .NET mean (1.67 calls, 0.045) | 1.67 | 0, 0.19, 0.27, 0.34, 0.42, 0.49 | about 0.49 | **5 of 6** (the sixth would start above 0.48) |
+| worst (2 calls at 0.046) | 2 | 0, 0.21, 0.30, 0.39, 0.48+ | about 0.48 | 4 of 6 |
+
+**Predictions as amended.** A-ANSWERED 6 of 6: **p(pass) about 0.6**. The outcome turns on how many repair or "need more" rounds the model needs; this digest's core
+is about 15% smaller than the .NET one, which helps. Otherwise 5 of 6 is predicted at p about 0.3 and 4 of 6 or fewer at p about 0.1. A-CITED pass p 0.7 (risk: Q04 lists four
+auth routes in prose). A-REJECTED 0-1 in the checked arm. A-CORRECT 5 of 6 (range 3-6); the likeliest miss is the Q08 trap. A-COST <= 0.60 at p 0.97. The other predictions
+of section 9 are unchanged. n = 6 makes this weaker than section 1 planned: it is exploratory, development data, as the header says.
