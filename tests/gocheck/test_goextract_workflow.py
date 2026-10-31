@@ -30,6 +30,7 @@ WORKFLOW_KEYS = (
     "status_facts",
     "workflow_unread",
     "workflow_notes",
+    "param_required",
 )
 
 

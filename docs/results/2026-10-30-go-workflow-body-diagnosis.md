@@ -106,3 +106,82 @@ Files: `goextract_closure.go` (the shared param scan; outside the GO lane's file
 because the param scan lives there), `goextract_workflow.go`, `goextract_assemble.go` (route auth,
 D5; also outside the GO lane's file list), `lattice/importer/workflows.py`. Not touched:
 `go_rules.py` (G9) and the gRPC files (GA2).
+
+## Step 2: fixes and results (same day, after the commit above)
+
+Test-first: `tests/gocheck/fixtures/bodybind` (a hand-written Gin + GORM module, one route per
+idiom) with `tests/gocheck/test_goextract_body.py` and `tests/importer/test_workflows_body.py`.
+Red on the starting tree (11 of 15 failing; the 4 passing are the negative and invariance
+cases), green after (16 of 16, after three more fixture cases from the J run: an error list
+refused later, a nested check, a refusal helper called twice). `pytest tests/grpc tests/gocheck
+tests/importer -q`: starting tree 1660 passed, 1 skipped (a `git archive` copy, so
+`test_split5`'s base-commit test skips; GA2 recorded 1661 passed in the worktree); final tree
+1677 passed, 0 failed, 0 skipped (1661 + 16 new).
+
+* **GD-1 closed.** New `lattice/gocheck/src/goextract_body.go`: a body decode is recognised by
+  destination (`json.Unmarshal` of bytes read from the body -- `c.GetRawData()`, `io.ReadAll` over
+  `c.Request.Body`, or a local whose every assignment is one, `raw = bytes.TrimSpace(raw)` kept --
+  and `json.NewDecoder(<over c.Request.Body>).Decode`), and a module function that hands one of
+  its parameters to such a decode or to a Gin bind method is a binder (through other binders
+  too). `scanParams` (`goextract_closure.go`) binds the struct a binder's argument or a decode's
+  destination points to, by the same `bindStruct` as `c.ShouldBindJSON`; a destination with no
+  struct type is skipped with no unread line. The workflow taint (`bindCall`) binds the same way,
+  so the fields carry their `body:` origins into `param_uses`/`param_literals`. With the body
+  params present, the fixture's plain-password login route is recognised and the auth model names
+  its credential fields (on the J apps no login route is recognised, before or after; not
+  investigated here).
+* **GD-2 closed, in the workflow opt-in only.** New workflow key `param_required` (route, param,
+  source, how = nil | empty | length, file, line): a body field tested for absence (`x == nil`,
+  `x == ""`, `len(x)`/`utf8.RuneCountInString(x)` refusing 0) in a top-level disjunct of an `if`
+  or of a tagless `switch` case of the handler whose branch raises a 4xx; or appended to a local
+  list that a later top-level `if len(list) > 0` refuses with a 4xx. A branch refuses when a 4xx
+  raise of the route's closure sits in it, or when it calls a module function all of whose raises
+  are 4xx (a helper called twice with the same arguments has its raise located at the first call
+  only). `workflows.AppView` reads these fields as required, so `required_fields` sends them.
+  The default output's `required` stays tag-only. Not read: a check nested under another condition
+  (`if body.IsCron { if body.CronExpr == nil ...}` is required only under the condition), a
+  conjunction (`in.Color != nil && ...`), checks inside a helper the handler calls
+  (`-min-spec-opus` `a.validateJobConfig(in)`), and validity predicates that also refuse the zero
+  value (`!isValidEmail(body.Email)` on `-min-spec-sonnet`).
+* **GD-3 closed.** `goextract_assemble.go`: a route with no authenticating (or admin) middleware
+  whose handler closure contains a function that reads the `Authorization` header
+  (`c.GetHeader`/`c.Request.Header.Get`) and raises 401 is `Customer` (member), the reason naming
+  that function. The auth model (`buildAuth`) still needs an authenticating middleware; an app that
+  authenticates only per handler gets route auth but no auth model.
+* **GD-4 not changed** (documented above).
+
+Byte-compatibility (the starting tree `8f97724` against the final tree):
+
+* Raw `gocheck extract` (default output) of every `go.mod` module in the repository (78, the 71
+  of the golden list plus `lattice/gocheck/src`, `lattice/grpcbridge` and the five GA2 fixtures):
+  byte-identical, 0 of 78 changed. No module in the repository decodes a body outside a Gin bind
+  method or authenticates per handler, so the allowed difference (added body params) does not
+  occur in it; it occurs only in the new fixture and the J apps.
+* G9's golden snapshot (`snap.py`, 71 modules): `diff -r` empty; the fresh baseline on the
+  starting tree also equals GA2's `ga2_final`.
+* Workflow opt-in output of the same 78 modules: every module differs only by the new
+  `param_required` key (empty in 74; non-empty in the `POST /api/batch` route of the
+  `goextract_workflow` fixture and its two copies -- `len(req.Items) == 0` -> 422 -- and four
+  `shelfie` fields whose `strings.TrimSpace(x) == ""` refusal already had a `required` tag).
+  One run also showed a reordered `status_facts[].from` list on `tests/gocheck/fixtures/machine`:
+  that is pre-existing nondeterminism (the starting tree's binary gives `["queued","succeeded"]` 7
+  times and `["succeeded","queued"]` once in 8 runs), not from this change.
+
+The J apps (dev data, report only, no claim; copies, SQLite, `--user root --user ann`):
+
+| app | planned before -> after | flows before -> after | verified / unverified / failed before -> after | flows dying at step 0 before -> after |
+|---|---|---|---|---|
+| `-go` | 80 -> 80 | 7 -> 41 | 2/0/5 -> 16/0/25 | 5 -> 0 |
+| `-min-spec-opus` | 74 -> 74 | 7 -> 26 | 2/0/5 -> 19/0/7 | 5 -> 0 |
+| `-min-spec-sonnet` | 15 -> 64 | 5 -> 19 | 2/0/3 -> 9/0/10 | 3 -> 3 |
+
+Before, every verified flow was a `guard` flow expecting the refusal; after, the verified flows
+are `pair`, `owner_guard`, `effect` and `lifecycle` flows (`-go` 4/5/5/1, `-min-spec-opus`
+5/6/6/1, `-min-spec-sonnet` 3/0/2/0, plus guards). `-min-spec-sonnet` now plans 64 flows (its
+routes are no longer Public). What still fails: unbound `user_id`/`job_id` path params with no
+producer (round-2 finding 3, unchanged), job-config creation refused on values the extractor does
+not model (`invalid command`, `code_path`, opus's validation helper), and on `-min-spec-sonnet`
+`POST /users` (`!isValidEmail(body.Email)`: a validity predicate, not an absence test, so `email`
+is not sent) and `POST /worker/schedule-tick` (`now` given a probe value). The `JobRun` machine is
+still `static` on all three (no run is created). These are development numbers on apps whose
+failures were diagnosed by reading them.
