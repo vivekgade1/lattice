@@ -104,29 +104,71 @@ def _git(cwd: Path, *a: str) -> None:
     subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@example.invalid", *a], cwd=cwd, check=True, capture_output=True)
 
 
-def test_guard_refuses_until_prereg_and_code_are_committed_and_runs_once(tmp_path: Path) -> None:
-    repo = tmp_path / "repo"
+def _repo(tmp: Path) -> tuple[Path, Path, Path]:
+    repo = tmp / "repo"
     repo.mkdir()
     _git(repo, "init", "-q")
-    prereg, code = repo / "prereg.md", repo / "driver.py"
+    return repo, repo / "prereg.md", repo / "driver.py"
+
+
+def _guard(out: Path, repo: Path, prereg: Path, code: Path) -> dict:
+    return R.guard(out, confirm_spend=True, repo=repo, frozen=[prereg, code], prereg=prereg, driver=code, claude="true")
+
+
+def test_guard_refuses_uncommitted_files(tmp_path: Path) -> None:
+    repo, prereg, code = _repo(tmp_path)
     prereg.write_text("prereg\n")
-    code.write_text("code\n")
-    _git(repo, "add", "driver.py")
-    _git(repo, "commit", "-q", "-m", "code only")
-    out = tmp_path / "out"
-    with pytest.raises(SystemExit, match="not committed"):  # the prereg is untracked
-        R.guard(out, confirm_spend=True, repo=repo, frozen=[prereg, code], prereg=prereg)
     _git(repo, "add", "prereg.md")
     _git(repo, "commit", "-q", "-m", "prereg")
-    code.write_text("edited after the prereg\n")
+    code.write_text("code\n")  # untracked
     with pytest.raises(SystemExit, match="not committed"):
-        R.guard(out, confirm_spend=True, repo=repo, frozen=[prereg, code], prereg=prereg)
-    _git(repo, "commit", "-q", "-am", "code")
-    info = R.guard(out, confirm_spend=True, repo=repo, frozen=[prereg, code], prereg=prereg, claude="true")
+        _guard(tmp_path / "out", repo, prereg, code)
+    _git(repo, "add", "driver.py")
+    _git(repo, "commit", "-q", "-m", "driver")
+    code.write_text("edited, not committed\n")
+    with pytest.raises(SystemExit, match="not committed"):
+        _guard(tmp_path / "out", repo, prereg, code)
+
+
+def test_guard_refuses_a_prereg_committed_after_the_driver(tmp_path: Path) -> None:
+    repo, prereg, code = _repo(tmp_path)
+    code.write_text("code\n")
+    _git(repo, "add", "driver.py")
+    _git(repo, "commit", "-q", "-m", "driver first")
+    prereg.write_text("prereg\n")
+    _git(repo, "add", "prereg.md")
+    _git(repo, "commit", "-q", "-m", "prereg after")
+    with pytest.raises(SystemExit, match="before the driver"):
+        _guard(tmp_path / "out", repo, prereg, code)
+
+
+def test_guard_requires_the_amendment_before_the_last_driver_change_and_runs_once(tmp_path: Path) -> None:
+    repo, prereg, code = _repo(tmp_path)
+    out = tmp_path / "out"
+    prereg.write_text("prereg\n")
+    _git(repo, "add", "prereg.md")
+    _git(repo, "commit", "-q", "-m", "prereg")
+    code.write_text("code\n")
+    _git(repo, "add", "driver.py")
+    _git(repo, "commit", "-q", "-m", "driver")
+    prereg.write_text("prereg\n\n## Amendment 1\n")
+    _git(repo, "commit", "-q", "-am", "amendment after the driver")
+    with pytest.raises(SystemExit, match="last amendment"):
+        _guard(out, repo, prereg, code)
+    code.write_text("code for the amendment\n")
+    _git(repo, "commit", "-q", "-am", "driver change after the amendment")
+    info = _guard(out, repo, prereg, code)
     assert set(info["files"]) == {"prereg.md", "driver.py"} and (out / "freeze.json").is_file()
+    assert info["prereg_last_commit"] != info["driver_last_commit"]
+    S.append(out / "ledger.jsonl", {"n": 1, "cost_usd": 0.0, "refused": "cap reached"})  # a refusal is not a model call
+    _guard(out, repo, prereg, code)
+    S.append(out / "ledger.jsonl", {"n": 2, "cost_usd": 0.31, "rc": 1})
+    with pytest.raises(SystemExit, match="ledger already holds 1 model call"):
+        _guard(out, repo, prereg, code)
+    (out / "ledger.jsonl").unlink()
     (out / "result.json").write_text("{}")
     with pytest.raises(SystemExit, match="happens once"):
-        R.guard(out, confirm_spend=True, repo=repo, frozen=[prereg, code], prereg=prereg, claude="true")
+        _guard(out, repo, prereg, code)
 
 
 def test_main_build_without_confirm_spend_makes_no_call(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -177,11 +219,29 @@ def test_dry_run_mini_protected_edit_fails_the_clean_gate(tmp_path: Path) -> Non
     assert all(s["status"] == "not run" for s in res["stages"] if s["id"] > res["first_failure"])
 
 
-@pytest.mark.skipif(not R.TARGETS["cyclops"].available()[0], reason="the pinned Cyclops source (and its venv) is not on this machine")
-def test_dry_run_cyclops_stops_at_the_import(tmp_path: Path) -> None:
+needs_cyclops = pytest.mark.skipif(not R.TARGETS["cyclops"].available()[0], reason="the pinned Cyclops source (and its venv) is not on this machine")
+
+
+@needs_cyclops
+def test_dry_run_cyclops_noop_agent_passes_import_and_calibration_and_stops_at_the_loop(tmp_path: Path) -> None:
     out = tmp_path / "out"
-    res = R.run("cyclops", out, tmp_path / "scratch", dry_run=True, agent="reference")
-    assert res["first_failure"] == "S1" and res["built"] is False
-    assert "S020" in res["stages"][0]["why"]
-    assert [s["status"] for s in res["stages"][1:]] == ["not run"] * 4
-    assert res["total_usd"] == 0.0 and not (out / "ledger.jsonl").exists()
+    res = R.run("cyclops", out, tmp_path / "scratch", dry_run=True, agent="noop")
+    st = _stages(res)
+    assert (st["S1"], st["S2"], st["S3"]) == ("pass", "pass", "fail") and res["first_failure"] == "S3", res
+    assert (st["S4"], st["S5"]) == ("not run", "not run")
+    s1, s2 = res["stages"][0], res["stages"][1]
+    assert s1["report"]["summary"]["routes"]["total"] == 30  # amendment 1: the {path:path} catch-all is excluded
+    calib = s2["calibration"]
+    assert calib["reference"]["lattice_gate"]["passed"] and not calib["scaffold"]["lattice_gate"]["passed"]  # the gate is not vacuous
+    assert s2["lattice_gate_vacuous"] is False
+    assert calib["reference"]["held_out"]["counts"]["passed"] == 178 and calib["reference"]["held_out"]["counts"]["deselected"] == 4
+    assert not calib["scaffold"]["held_out"]["passed"]
+    assert res["total_usd"] == 0.0 and S.read_ledger(out / "ledger.jsonl")[0]["cost_usd"] == 0.0
+
+
+@needs_cyclops
+def test_dry_run_cyclops_reference_agent_is_built(tmp_path: Path) -> None:
+    res = R.run("cyclops", tmp_path / "out", tmp_path / "scratch", dry_run=True, agent="reference")
+    assert res["built"] is True and res["first_failure"] is None, res
+    assert res["stages"][4]["counts"]["passed"] == 178 and res["stages"][4]["counts"]["failed"] == 0
+    assert res["total_usd"] == 0.0

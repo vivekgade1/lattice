@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """T1-3: a real-agent build from spec of an unfamiliar real Python app, stop at the first failure, USD 0.80 cap.
 
-Pre-registration: docs/results/2026-10-30-t13-unfamiliar-python-build-prereg.md (committed before this file; the driver
-refuses to call the model otherwise). Modelled on dogfood/dn_real_agent_run.py (not edited).
+Pre-registration: docs/results/2026-10-30-t13-unfamiliar-python-build-prereg.md (committed before this file, Amendment 1 before
+its last change; the driver refuses to call the model otherwise). Modelled on dogfood/dn_real_agent_run.py (not edited).
 
     python dogfood/t13_unfamiliar_build_run.py build --confirm-spend --out OUT      # the ONE registered run (target cyclops)
     python dogfood/t13_unfamiliar_build_run.py build --dry-run [--target mini|cyclops] [--agent reference|noop|tamper] --out OUT
@@ -349,26 +349,48 @@ def guard(
     repo: Path = REPO,
     frozen: Sequence[Path] | None = None,
     prereg: Path = PREREG,
+    driver: Path | None = None,
     claude: str | None = None,
 ) -> dict[str, Any]:
-    """Refuse a model call unless --confirm-spend is given, the prereg and the code are committed and unchanged, and the
-    run has not happened yet. Records the freeze (files, HEAD, claude version, importer hashes)."""
+    """Refuse a model call unless: --confirm-spend; every frozen file committed and unchanged; the prereg added in a commit
+    older than (an ancestor of) the driver's first, and its last change (an amendment) older than the driver's last change
+    (the T1-4 precedent); no result and no model call in `out` yet. Strips ANTHROPIC_* and records the freeze (files,
+    commits, HEAD, claude version, importer hashes)."""
     if not confirm_spend:
         raise SystemExit("refusing to call the model: pass --confirm-spend (or use --dry-run: a fake claude, no spend)")
+    driver = driver or Path(__file__).resolve()
     files = list(frozen if frozen is not None else frozen_files())
     rel = {str(p.relative_to(repo)): sha(p.read_bytes()) for p in files}
-    dirty = [f for f in rel if git(repo, "status", "--porcelain", "--", f)]
+    dirty = [f for f in rel if git(repo, "status", "--porcelain", "--", f) or not git(repo, "ls-files", "--", f)]
     if dirty:
         raise SystemExit(f"refusing to call the model: not committed (prereg first): {dirty}")
-    if not git(repo, "log", "-1", "--format=%H", "--", str(prereg.relative_to(repo))):
-        raise SystemExit("refusing to call the model: the prereg is not in a commit")
+
+    def commits(p: Path, *flt: str) -> list[str]:
+        return git(repo, "log", *flt, "--format=%H", "--", str(p.relative_to(repo))).split()
+
+    def older(x: str, y: str) -> bool:
+        return bool(x and y) and x != y and subprocess.run(["git", "merge-base", "--is-ancestor", x, y], cwd=repo).returncode == 0
+
+    pre, drv = (commits(prereg, "--diff-filter=A") or [""])[-1], (commits(driver, "--diff-filter=A") or [""])[-1]
+    if not older(pre, drv):
+        raise SystemExit("refusing to call the model: the prereg must be committed before the driver, in its own commit")
+    pre_last, drv_last = (commits(prereg) or [""])[0], (commits(driver) or [""])[0]
+    if not older(pre_last, drv_last):
+        raise SystemExit("refusing to call the model: the prereg's last amendment must be committed before the driver's last change")
     done = out / "result.json"
     if done.exists():
         raise SystemExit(f"{done} exists: the run happens once (a failure is a result)")
+    calls = [d for d in S.read_ledger(out / "ledger.jsonl") if not d.get("refused")]
+    if calls:
+        raise SystemExit(f"refusing: the ledger already holds {len(calls)} model call(s); a relaunch is allowed only before the first model call")
+    for k in list(os.environ):
+        if k.startswith(("ANTHROPIC_", "CLAUDE_CODE_USE_")) or k == "AWS_BEARER_TOKEN_BEDROCK":
+            del os.environ[k]
     claude = claude or shutil.which("claude") or str(Path.home() / ".local/bin/claude")
     version = subprocess.run([claude, "--version"], capture_output=True, text=True).stdout.strip()
     importer = {str(p.relative_to(REPO)): sha(p.read_bytes()) for p in sorted((REPO / "lattice/importer").rglob("*.py"))} if repo == REPO else {}
-    info = {"head": git(repo, "rev-parse", "HEAD"), "files": rel, "claude": claude, "claude_version": version, "importer": importer, "at": time.time()}
+    info = {"head": git(repo, "rev-parse", "HEAD"), "prereg_commit": pre, "driver_commit": drv, "prereg_last_commit": pre_last,
+            "driver_last_commit": drv_last, "files": rel, "claude": claude, "claude_version": version, "importer": importer, "at": time.time()}  # fmt: skip
     out.mkdir(parents=True, exist_ok=True)
     (out / "freeze.json").write_text(json.dumps(info, indent=1))
     return info
