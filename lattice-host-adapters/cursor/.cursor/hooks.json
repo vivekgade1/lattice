@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeShellExecution": [
+      {
+        "command": "python -m lattice.mcp.host_shim --host cursor",
+        "timeout": 10
+      }
+    ],
+    "preToolUse": [
+      {
+        "matcher": "Write|Delete",
+        "command": "python -m lattice.mcp.host_shim --host cursor",
+        "timeout": 10
+      }
+    ]
+  }
+}
