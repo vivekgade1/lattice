@@ -458,6 +458,13 @@ def _template(c: Cluster) -> dict[str, Any]:
                 ["studio.toml"],
                 "agent steps ran out of turns",
             ),
+            "clean_verify_failed": (
+                "Find what the agent's worktree had that its commit lacked",
+                "experiment",
+                ["lattice/studio/rebuild.py"],
+                "builds passed their gates in the agent's own tree but not on a clean "
+                "checkout of the commit (untracked files, or protected files it changed)",
+            ),
             "regression": (
                 "Find why merged nodes break each other",
                 "experiment",

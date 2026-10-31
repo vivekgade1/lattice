@@ -135,9 +135,11 @@ def build_cause(rec: Mapping[str, Any], *, stopped_by: str | None = None) -> str
     problem" line: nothing could have passed), ``token_budget``, ``budget_cap`` (the CLI's
     ``--max-budget-usd``, too little of ``[rebuild] max_budget_usd`` left to start a step, or
     ``node_max_usd`` passed in-stream), ``max_turns`` (the CLI's ``--max-turns``),
-    ``timeout``, ``no_progress`` (the last two rounds failed on the same set), ``regression``
-    (every in-scope target passes, a check that passed before fails), ``repair_exhausted``
-    (every round used), ``other``."""
+    ``clean_verify_failed`` (the gates passed in the agent's worktree but not on a clean
+    checkout of its commit, opt-in ``[rebuild] clean_verify``), ``timeout``, ``no_progress``
+    (the last two rounds failed on the same set), ``regression`` (every in-scope target
+    passes, a check that passed before fails), ``repair_exhausted`` (every round used),
+    ``other``."""
     status = rec.get("status")
     if status == "passed":
         return None
@@ -165,6 +167,8 @@ def build_cause(rec: Mapping[str, Any], *, stopped_by: str | None = None) -> str
         return "budget_cap"
     if reason == "max_turns":
         return "max_turns"
+    if reason == "clean_verify_failed":
+        return "clean_verify_failed"
     if last.get("status") == "timeout" or lerr.get("kind") == "timeout":
         return "timeout"
     if len(rounds) >= 2 and _failing(rounds[-1]) and _failing(rounds[-1]) == _failing(rounds[-2]):

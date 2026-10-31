@@ -116,7 +116,7 @@ def test_gate_scripts_are_protected(repo):
 def test_extra_and_escaping_names(repo):
     root, base = repo
     names = cv.protected_paths(root, base, extra=["conftest.py", "../outside", "/abs", "a/./b/"])
-    assert "conftest.py" in names and "a/b" in names
+    assert "conftest.py" in names and "a/b/" in names  # a trailing slash: a directory name
     assert "../outside" not in names and "/abs" not in names
 
 
@@ -510,3 +510,68 @@ def test_scripts_named_by_the_gate_are_protected_and_overlaid(repo):
     v = cv.verify(root, base, tip, "sh scripts/gate.sh")
     assert v.protected_diff.changed == ("scripts/gate.sh",)
     assert not v.gate_passed  # the base's gate script ran: app.py is BAD
+
+
+# ---- the rebuild's own set, the live-worktree restore, the helpers it delegates (R4) --------
+
+
+def test_the_rebuild_set_options(repo):
+    root, base = repo
+    full = cv.protected_paths(root, base)
+    narrow = cv.protected_paths(root, base, harness=False, config=False, notes="committed")
+    assert narrow == list(cv.SPEC_FILES)  # no studio.toml/check.sh, no config, no absent notes
+    assert set(narrow) < set(full)
+    put(root, "REQUIREMENTS.glossary.json", "{}\n")
+    base2 = commit(root, "glossary")
+    got = cv.protected_paths(
+        root, base2, harness=False, config=False, notes="committed",
+        extra=["proto/", "x.cfg"], gates=["./check.sh"],
+    )  # fmt: skip
+    assert got == [*cv.SPEC_FILES, "proto/", "x.cfg", "REQUIREMENTS.glossary.json", "check.sh"]
+    with pytest.raises(ValueError):
+        cv.protected_paths(root, base, notes="some")
+
+
+def test_overlay_keep_ignored_leaves_ignored_files_under_a_protected_directory(repo, tmp_path):
+    root, base = repo
+    put(
+        root,
+        ".gitignore",
+        "junk.log\n__pycache__/\ntests/harness/gen/\nREQUIREMENTS.glossary.json\n",
+    )
+    base = commit(root, "ignore gen")
+    wt = tmp_path / "wt"
+    git(root, "worktree", "add", "-q", "--detach", str(wt), base)
+    put(wt, "tests/harness/gen/stub.py", "x\n")  # ignored, under a protected directory: kept
+    put(wt, "tests/harness/new.py", "x\n")  # not ignored: removed
+    put(wt, "REQUIREMENTS.glossary.json", "{}\n")  # ignored, but a protected name itself: removed
+    edited = cv.overlay_protected(root, base, wt, keep_ignored=True)
+    assert edited == ["REQUIREMENTS.glossary.json", "tests/harness/new.py"]
+    assert (wt / "tests/harness/gen/stub.py").exists()
+    assert not (wt / "tests/harness/new.py").exists()
+    # without it (the clean tree's default) the ignored file goes too
+    assert cv.overlay_protected(root, base, wt) == ["tests/harness/gen/stub.py"]
+
+
+def test_snapshot_tree_is_the_files_as_they_are(repo):
+    root, base = repo
+    put(root, "app.py", GOOD)
+    (root / "leaked.txt").write_text("u\n")
+    (root / "junk.log").write_text("ignored\n")
+    index = (root / ".git" / "index").read_bytes()
+    tree = cv.snapshot_tree(root, [":(exclude,glob)**/leaked.txt"])
+    assert (root / ".git" / "index").read_bytes() == index  # its own index is untouched
+    names = set(git(root, "ls-tree", "-r", "--name-only", tree).splitlines())
+    assert "app.py" in names and "leaked.txt" not in names and "junk.log" not in names
+    assert git(root, "cat-file", "-p", f"{tree}:app.py") == GOOD.strip()
+    assert "leaked.txt" in git(root, "ls-tree", "-r", "--name-only", cv.snapshot_tree(root))
+
+
+def test_add_worktree_and_its_error(repo, tmp_path):
+    root, base = repo
+    wt = cv.add_worktree(root, base, tmp_path / "w")
+    assert (wt / "app.py").read_text() == BAD and git(wt, "rev-parse", "HEAD") == base
+    with pytest.raises(cv.CleanVerifyError) as e:
+        cv.add_worktree(root, "nope", tmp_path / "w2")
+    assert str(e.value).startswith("fatal:")  # git's own message, as the rebuild reports it
+    assert not (tmp_path / "w2").exists()

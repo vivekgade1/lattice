@@ -110,6 +110,7 @@ CAUSES = (
     "token_budget",  # node_max_tokens
     "budget_cap",  # the CLI's --max-budget-usd, max_budget_usd used up, or node_max_usd
     "max_turns",  # the CLI's --max-turns ([rebuild] max_turns)
+    "clean_verify_failed",  # passed in the agent's tree, not on a clean checkout (gap G3)
     "regression",  # the level gate failed on a check that passed before
     "merge_conflict",
     "usage_limit",  # the CLI's usage limit

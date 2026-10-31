@@ -22,8 +22,11 @@ re-derives the verdict without trusting any of that:
 The logic is copied from ``lattice/studio/rebuild.py`` (``Rebuilder._protected_paths``,
 ``_restore_protected``, ``_restore_tree``, ``_snapshot_tree``, ``integration_worktree``,
 ``gate_round`` / ``remove_worktree``, ``gate_env``) and from the clean-archive check of
-``dogfood/dn_real_agent_run.py`` (``cmd_build``). It does not import ``rebuild`` (a later change
-makes ``rebuild`` delegate here), and it never calls a model.
+``dogfood/dn_real_agent_run.py`` (``cmd_build``). It does not import ``rebuild``; ``rebuild``
+delegates here (R4): :func:`protected_paths` with ``harness=False, config=False,
+notes="committed"`` is the rebuild's own set, :func:`overlay_protected` with ``keep_ignored``
+its restore, :func:`snapshot_tree` and :func:`add_worktree` its tree snapshot and integration
+worktree, and :func:`verify` its opt-in ``[rebuild] clean_verify``. It never calls a model.
 """
 
 from __future__ import annotations
@@ -55,6 +58,7 @@ __all__ = [
     "CleanVerdict",
     "CleanVerifyError",
     "ProtectedDiff",
+    "add_worktree",
     "clean_tree",
     "diff_protected",
     "dir_digest",
@@ -64,6 +68,7 @@ __all__ = [
     "protected_paths",
     "resolve",
     "run_gate",
+    "snapshot_tree",
     "verify",
 ]
 
@@ -116,11 +121,13 @@ def _show(repo: Path, sha: str, path: str) -> bytes | None:
 
 
 def _norm(raw: str) -> str | None:
-    """A repo-relative POSIX path, or None for an empty, absolute or escaping one."""
-    n = posixpath.normpath(str(raw).replace("\\", "/"))
+    """A repo-relative POSIX path, or None for an empty, absolute or escaping one. A trailing
+    ``/`` is kept (a directory name; ``dontAsk`` deny rules read it, R4)."""
+    s = str(raw).replace("\\", "/")
+    n = posixpath.normpath(s)
     if n in (".", "", "..") or n.startswith(("/", "../")):
         return None
-    return n
+    return n + "/" if s.endswith("/") else n
 
 
 def _gate_scripts(repo: Path, base: str, gates: Sequence[str]) -> list[str]:
@@ -150,6 +157,9 @@ def protected_paths(
     project_rel: str = ".",
     gates: Sequence[str] = (),
     extra: Sequence[str] = (),
+    harness: bool = True,
+    config: bool = True,
+    notes: str = "named",
 ) -> list[str]:
     """The repo-relative paths the agent must not change, read from the `base` commit.
 
@@ -157,11 +167,19 @@ def protected_paths(
     ``studio.toml``, ``check.sh``, ``[mcp] protected`` and ``[grpc] protos`` of ``studio.toml``,
     the rationale / glossary notes the trace's ``source`` names, and `extra` (more harness
     files; a directory means everything under it). Repo-relative: the scripts the `gates`
-    name that exist at `base`. A name may be a file or a directory."""
+    name that exist at `base`. A name may be a file or a directory.
+
+    A rebuild's own (narrower) set, ``Rebuilder._protected_paths`` (R4): ``harness=False``
+    (``studio.toml`` / ``check.sh`` only when `extra` or a gate names them), ``config=False``
+    (``[mcp] protected`` and the protos come from Studio's config, in `extra`) and
+    ``notes="committed"`` (a note only when the base has it; ``"named"``: whenever the trace
+    names it)."""
+    if notes not in ("named", "committed"):
+        raise ValueError(f"notes must be named or committed, not {notes!r}")
     repo = Path(repo)
     rel = "" if project_rel in (".", "") else project_rel.strip("/") + "/"
-    names: list[str] = [*SPEC_FILES, *HARNESS_FILES, *extra]
-    cfg_text = _show(repo, base, f"{rel}studio.toml")
+    names: list[str] = [*SPEC_FILES, *(HARNESS_FILES if harness else ()), *extra]
+    cfg_text = _show(repo, base, f"{rel}studio.toml") if config else None
     if cfg_text is not None:
         try:
             cfg = tomllib.loads(cfg_text.decode("utf-8"))
@@ -181,7 +199,12 @@ def protected_paths(
             from lattice.spec.rationale import notes_names
 
             nn = notes_names(source)
-            names += [nn[0], nn[2]]  # rationale, glossary (the .proposed.json drafts are free)
+            for n in (nn[0], nn[2]):  # rationale, glossary (the .proposed.json drafts are free)
+                if (
+                    notes == "named"
+                    or _git(repo, "cat-file", "-e", f"{base}:{rel}{n}").returncode == 0
+                ):
+                    names.append(n)
     out: list[str] = []
     for raw in names:
         n = _norm(raw)
@@ -374,7 +397,7 @@ def clean_tree(
             tree.mkdir()
             _extract_archive(repo, sha, tree)
         else:
-            _git_ok(repo, "worktree", "add", "-q", "--detach", str(tree), sha)
+            add_worktree(repo, sha, tree)
         yield tree
     finally:
         if mode == "worktree":
@@ -382,6 +405,36 @@ def clean_tree(
         shutil.rmtree(tmp, ignore_errors=True)
         if mode == "worktree":
             _git(repo, "worktree", "prune")
+
+
+def add_worktree(repo: Path, sha: str, dest: Path) -> Path:
+    """A detached ``git worktree`` of `repo` at `sha` in `dest` (``Rebuilder.
+    integration_worktree``); :class:`CleanVerifyError` with git's message when it fails."""
+    r = _git(Path(repo), "worktree", "add", "-q", "--detach", str(dest), sha)
+    if r.returncode != 0:
+        raise CleanVerifyError(r.stderr.decode(errors="replace").strip())
+    return Path(dest)
+
+
+def snapshot_tree(wt: Path, exclude: Sequence[str] = ()) -> str:
+    """The git tree id of the worktree's files as they are (``git add -A`` minus the
+    `exclude` pathspecs, git-ignored files never), through a throwaway index: the worktree's
+    own index is untouched (``rebuild._snapshot_tree``)."""
+    with tempfile.TemporaryDirectory(prefix="lattice-rebuild-idx-") as d:
+        env = {**os.environ, "GIT_INDEX_FILE": str(Path(d) / "index")}
+        for args in (("read-tree", "HEAD"), ("add", "-A", "--", ".", *exclude)):
+            r = subprocess.run(
+                ["git", "-C", str(wt), *args], capture_output=True, env=env, timeout=60
+            )
+            if r.returncode != 0:
+                msg = (r.stderr or r.stdout).decode(errors="replace").strip()
+                raise CleanVerifyError(f"git {' '.join(args)}: {msg}")
+        r = subprocess.run(
+            ["git", "-C", str(wt), "write-tree"], capture_output=True, env=env, timeout=60
+        )
+        if r.returncode != 0:
+            raise CleanVerifyError(f"git write-tree: {r.stderr.decode(errors='replace').strip()}")
+        return r.stdout.decode().strip()
 
 
 def _unlink_path(p: Path) -> None:
@@ -420,19 +473,31 @@ def overlay_protected(
     project_rel: str = ".",
     gates: Sequence[str] = (),
     extra: Sequence[str] = (),
+    keep_ignored: bool = False,
 ) -> list[str]:
     """Make the protected files under `root` the base commit's: each one rewritten from the
     base, a protected file the base lacks removed. Answers the paths it had to change (what
     ``_restore_protected`` calls edited), so a tampered ``check.sh`` or harness in the
-    candidate cannot reach the gate."""
+    candidate cannot reach the gate.
+
+    `keep_ignored` (a live git worktree, ``Rebuilder._restore_protected``): a file the base
+    lacks under a protected DIRECTORY is left when git ignores it (generated stubs); a
+    protected name itself is removed all the same."""
     repo, root = Path(repo), Path(root)
     base = resolve(repo, base)
     if paths is None:
         paths = protected_paths(repo, base, project_rel=project_rel, gates=gates, extra=extra)
     have = list_protected(repo, paths, ref=base)
     cur = list_protected(repo, paths, root=root)
+    direct = {p.rstrip("/") for p in paths}
     changed: list[str] = []
     for p in sorted(cur.keys() - have.keys()):  # a protected file the base never had
+        if (
+            keep_ignored
+            and p not in direct
+            and _git(root, "check-ignore", "-q", "--", p).returncode == 0
+        ):
+            continue
         _unlink_path(root / p)
         changed.append(p)
     for p, sig in sorted(have.items()):

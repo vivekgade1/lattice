@@ -87,6 +87,13 @@ default, the argv above) or the opt-in ``"dontAsk"``: Edit/Write only inside the
 calls the CLI refused (``agent.denials``, ``agent.denial_count``; a denial does not fail the
 run); the post hoc restore of the protected files stays the backstop in both modes.
 
+**Clean verify (gap G3)**: the protected-file helpers (``_protected_paths``,
+``_restore_protected``, ``_snapshot_tree``, ``integration_worktree``) delegate to
+:mod:`lattice.studio.cleanverify` (R4). The opt-in ``[rebuild] clean_verify`` re-runs a
+passing build's gates on a ``git archive`` of its commit with the base's protected files
+laid over it (:meth:`Rebuilder._clean_verify`); failing there, the build gives up with
+``reason: clean_verify_failed``.
+
 **Spec sync (API.md v1.12)**: the spec files a rebuild protects (``SPEC_FILES`` plus
 ``[mcp] protected``) as committed at the repository's ``HEAD`` are compared with a target
 branch's (:meth:`Rebuilder.spec_diff`, ``GET /api/branches`` ``spec``); ``POST
@@ -134,7 +141,7 @@ from lattice.improve import signals as sig
 from lattice.improve.events import EventLog
 from lattice.llm.cli_client import cli_env
 from lattice.studio import areas as areas_mod
-from lattice.studio import fencing
+from lattice.studio import cleanverify, fencing
 from lattice.studio.costing import (
     COST_BASIS_CLI,
     COST_BASIS_STREAM,
@@ -540,6 +547,13 @@ class RebuildConfig:
         denied, :func:`build_rebuild_argv`); any other value is the default."""
         m = self.table.get("permission_mode")
         return m if isinstance(m, str) and m in PERMISSION_MODES else DEFAULT_PERMISSION_MODE
+
+    @property
+    def clean_verify(self) -> bool:
+        """``[rebuild] clean_verify`` (gap G3, opt-in; default false, only ``true`` turns it
+        on): a build or plan node that passed its gates in the agent's worktree is verified
+        again on a clean checkout of its commit (:meth:`Rebuilder._clean_verify`)."""
+        return self.table.get("clean_verify") is True
 
     @property
     def stop_grace(self) -> float:
@@ -2387,9 +2401,10 @@ class Rebuilder:
         repo = self.repo()
         project_rel = self.project.relative_to(repo).as_posix()
         worktree = self._worktree_dir(repo, label)
-        r = _git(repo, "worktree", "add", "-q", "--detach", str(worktree), sha)
-        if r.returncode != 0:
-            raise RebuildError(500, f"git worktree add failed: {r.stderr.strip()}")
+        try:
+            cleanverify.add_worktree(repo, sha, worktree)  # R4: the one implementation
+        except cleanverify.CleanVerifyError as exc:
+            raise RebuildError(500, f"git worktree add failed: {exc}") from None
         trace_path = worktree / project_rel / "spec.trace.json"
         return _Run(
             record={"id": label, "warnings": []},
@@ -3610,27 +3625,25 @@ class Rebuilder:
         return out
 
     def _protected_paths(self, run: _Run) -> list[str]:
-        rel = "" if run.project_rel == "." else run.project_rel + "/"
-        names = [*SPEC_FILES, *self.protected, *grpc_table(self.project)[0]]  # L3: protos
-        # Spike G: the owner's approved notes, while they exist in the worktree or at the base
-        for n in self._notes_names(run.worktree / run.project_rel):
-            names.append(n)
-        for n in self._base_notes_names(run):
-            if n not in names:
-                names.append(n)
-        out = [f"{rel}{n}" for n in names]
-        for g in run.gates:  # the gate scripts themselves
-            try:
-                toks = shlex.split(g)
-            except ValueError:
-                continue
-            while toks and re.fullmatch(r"\w+=.*", toks[0]):
-                toks = toks[1:]
-            if toks and "/" in toks[0] and not os.path.isabs(toks[0]):
-                p = os.path.normpath(toks[0])
-                if _git(run.repo, "cat-file", "-e", f"{run.base}:{p}").returncode == 0:
-                    out.append(p)
-        return list(dict.fromkeys(out))
+        # R4 (gap G3): one implementation, cleanverify.protected_paths, with the rebuild's own
+        # narrower set: [mcp] protected and the protos (L3) from Studio's config, the owner's
+        # notes (Spike G) while they exist in the worktree or at the base, no studio.toml /
+        # check.sh unless named. Stricter than before: a gate script behind `sh`/`python` is
+        # protected, and names are normalised (an absolute or `..` name is dropped).
+        return cleanverify.protected_paths(
+            run.repo,
+            run.base,
+            project_rel=run.project_rel,
+            gates=run.gates,
+            extra=[
+                *self.protected,
+                *grpc_table(self.project)[0],
+                *self._notes_names(run.worktree / run.project_rel),
+            ],
+            harness=False,
+            config=False,
+            notes="committed",
+        )
 
     def _deny_paths(self, run: _Run) -> list[str]:
         """gap G4: the protected paths as ``dontAsk`` deny rules take them (a directory at the
@@ -3641,51 +3654,16 @@ class Rebuilder:
             out.append(d + "/" if p.endswith("/") or self._is_tree(run, d) else p)
         return out
 
-    def _base_notes_names(self, run: _Run) -> list[str]:
-        """The owner's rationale / glossary files committed at the run's base commit (so a file
-        a round deleted is restored); none without them."""
-        rel = "" if run.project_rel == "." else run.project_rel + "/"
-        r = _git(run.repo, "cat-file", "-p", f"{run.base}:{rel}spec.trace.json")
-        if r.returncode != 0:
-            return []
-        try:
-            source = json.loads(r.stdout).get("source")
-        except (ValueError, AttributeError):
-            return []
-        if not isinstance(source, str) or not source:
-            return []
-        from lattice.spec.rationale import notes_names
-
-        cands = (notes_names(source)[0], notes_names(source)[2])
-        return [
-            n
-            for n in cands
-            if _git(run.repo, "cat-file", "-e", f"{run.base}:{rel}{n}").returncode == 0
-        ]
-
     def _restore_protected(self, run: _Run, paths: Sequence[str] | None = None) -> list[str]:
-        """The protected files the round changed (restored to the base commit's)."""
-        edited = []
-        for p in self._protected_paths(run) if paths is None else paths:
-            if paths is None and self._is_tree(run, p):
-                edited += self._restore_tree(run, p.rstrip("/"))  # L1: a directory entry
-                continue
-            r = subprocess.run(
-                ["git", "-C", str(run.repo), "cat-file", "-p", f"{run.base}:{p}"],
-                capture_output=True,
-                timeout=60,
-            )
-            want = r.stdout if r.returncode == 0 else None
-            f = run.worktree / p
-            have = f.read_bytes() if f.is_file() else None
-            if have == want:
-                continue
-            edited.append(p)
-            if want is None:
-                f.unlink(missing_ok=True)
-            else:
-                _git_ok(run.worktree, "checkout", run.base, "--", p)
-        return edited
+        """The protected files the round changed (restored to the base commit's). R4: through
+        :func:`cleanverify.overlay_protected` (a directory entry: every file of it at the base,
+        L1; a git-ignored file under it is left), reported in the old order. Stricter than
+        before: a mode change or a symlink swap is an edit too."""
+        names = self._protected_paths(run) if paths is None else list(paths)
+        edited = cleanverify.overlay_protected(
+            run.repo, run.base, run.worktree, paths=names, keep_ignored=True
+        )
+        return _protected_order(edited, names, run.worktree)
 
     @staticmethod
     def _is_tree(run: _Run, p: str) -> bool:
@@ -3694,15 +3672,7 @@ class Rebuilder:
     def _restore_tree(self, run: _Run, d: str) -> list[str]:
         """L1: every file of the directory at the base commit must be byte-equal, and a
         non-ignored file the base lacks is an edit (removed); git-ignored files are left."""
-        ls = _git(run.repo, "ls-tree", "-r", "--name-only", run.base, "--", d).stdout
-        base = set(ls.split("\n")) - {""}
-        edited = self._restore_protected(run, sorted(base))
-        files = (f for f in (run.worktree / d).rglob("*") if f.is_file())
-        for p in sorted({f.relative_to(run.worktree).as_posix() for f in files} - base):
-            if _git(run.worktree, "check-ignore", "-q", "--", p).returncode != 0:
-                (run.worktree / p).unlink(missing_ok=True)
-                edited.append(p)
-        return edited
+        return self._restore_protected(run, [d])
 
     def _generate(self, run: _Run, n: int) -> dict[str, Any] | None:
         """L2: run ``[grpc] generate`` in the worktree with the gates' environment and timeout;
@@ -3954,6 +3924,15 @@ class Rebuilder:
                 rec["error"] = err
                 self._finish(run, "gave_up")
             return
+        # gap G3 (opt-in): the verdict that counts is the gates again on a clean checkout of
+        # the commit, not the agent's tree; failing there, nothing is recorded or advanced
+        cv_err = self._clean_verify(run, sha) if self.cfg.clean_verify else None
+        if cv_err is not None:
+            with self.lock:
+                rec["error"] = cv_err
+                self._finish(run, "gave_up")
+            self.log(f"rebuild {rec['id']}: gave up: {cv_err['message']}")
+            return
         name_status = [" ".join(x.split("\t")) for x in ns.splitlines() if x.strip()]
         files = [x.split("\t")[-1] for x in ns.splitlines() if x.strip()]
         hint = (
@@ -4007,6 +3986,60 @@ class Rebuilder:
                 self._finish(run, "passed")
         self.log(f"rebuild {rec['id']}: {'passed' if moved is None else 'gave up'} as "
                  f"{sha[:10]} on {run.branch}")  # fmt: skip
+
+    def _clean_verify(self, run: _Run, sha: str) -> dict[str, str] | None:
+        """gap G3 (``[rebuild] clean_verify``): each gate that passed in the agent's worktree
+        in the last round, again through :func:`cleanverify.verify`: on a ``git archive`` of
+        the commit `sha` with the base's protected files laid over it (the full set: also
+        ``studio.toml``, ``check.sh`` and the notes the trace names), strict (a commit that
+        changes a protected file fails). A gate that failed in the worktree (a scoped node's
+        judge allows that) is not re-run (``skipped``). The verdict goes on the round
+        (``clean_verify``); None when it passed, else the build's error, reason
+        ``clean_verify_failed``. It runs to its end (``[rebuild] gate_timeout`` each)."""
+        rnd = run.record["rounds"][-1]
+        gates = rnd.get("gates") or []
+        skipped = [g["command"] for g in gates if g["exit_code"] != 0]
+        out: dict[str, Any] = {"tip": sha, "base": run.base, "passed": True, "gates": [],
+                               "skipped": skipped}  # fmt: skip
+        env = {"LATTICE_REBUILD": run.record["id"], "LATTICE_REBUILD_ROUND": str(rnd["n"])}
+        err = None
+        for cmd in [g["command"] for g in gates if g["exit_code"] == 0]:
+            try:
+                v = cleanverify.verify(
+                    run.repo, run.base, sha, cmd, project_rel=run.project_rel,
+                    gates=run.gates, extra_protected=[*self.protected,
+                                                      *grpc_table(self.project)[0]],
+                    env=self._env if self._env is not None else os.environ, env_extra=env,
+                    sys_path=self.sys_path, timeout=self.cfg.gate_timeout,
+                    grace=self.cfg.stop_grace,
+                )  # fmt: skip
+            except cleanverify.CleanVerifyError as exc:
+                out["gates"].append({"command": cmd, "passed": False, "error": str(exc)})
+                err = f"`{cmd}` could not be verified on a clean checkout of {sha[:10]}: {exc}"
+                break
+            edited = v.protected_diff.edited
+            out["gates"].append({
+                "command": cmd, "passed": v.passed, "gate_passed": v.gate_passed,
+                "exit_code": v.exit_code, "timed_out": v.timed_out, "seconds": v.seconds,
+                "protected_edited": edited, "overlaid": v.overlaid,
+                "tree_digest": v.tree_digest, "output_tail": v.output_tail,
+            })  # fmt: skip
+            if not v.gate_passed:
+                err = (f"the gates passed in the agent's worktree, but `{cmd}` exited "
+                       f"{v.exit_code} on a clean checkout of {sha[:10]}")  # fmt: skip
+            elif edited:
+                err = f"the commit {sha[:10]} changes protected files: {', '.join(edited)}"
+            if err is not None:
+                break
+        out["passed"] = err is None
+        with self.lock:
+            rnd["clean_verify"] = out
+            self._save(run)
+        self.log(f"rebuild {run.record['id']}: clean verify of {sha[:10]} "
+                 f"{'passed' if err is None else 'failed'}")  # fmt: skip
+        if err is None:
+            return None
+        return {"kind": "clean_verify", "reason": "clean_verify_failed", "message": err}
 
     def _advance(self, run: _Run, sha: str) -> dict[str, str] | None:
         """Fast-forward the target branch to `sha`: ``update-ref`` with the tip at start
@@ -4357,12 +4390,21 @@ def _checked_out(repo: Path) -> dict[str, str]:
 
 def _snapshot_tree(wt: Path) -> str:
     """The tree of the worktree's files as they are (a throwaway index: the worktree's own
-    index is untouched)."""
-    with tempfile.TemporaryDirectory(prefix="lattice-rebuild-idx-") as d:
-        env = {**os.environ, "GIT_INDEX_FILE": str(Path(d) / "index")}
-        _git_ok(wt, "read-tree", "HEAD", env=env)
-        _git_ok(wt, "add", "-A", "--", ".", *_junk_pathspecs(), env=env)
-        return _git_ok(wt, "write-tree", env=env)
+    index is untouched); R4: :func:`cleanverify.snapshot_tree` without the junk."""
+    return cleanverify.snapshot_tree(wt, _junk_pathspecs())
+
+
+def _protected_order(edited: Sequence[str], names: Sequence[str], root: Path) -> list[str]:
+    """R4: the restored paths in the order the restore reported them before it delegated:
+    by protected entry, then the base's files (there now) before the removed ones, each
+    sorted (``overlay_protected`` answers them sorted)."""
+    entries = [n.rstrip("/") for n in names]
+
+    def key(p: str) -> tuple[int, bool, str]:
+        hits = [k for k, e in enumerate(entries) if p == e or p.startswith(f"{e}/")]
+        return (hits[0] if hits else len(entries)), not os.path.lexists(root / p), p
+
+    return sorted(edited, key=key)
 
 
 def _tree_diff(wt: Path, a: str, b: str) -> list[str]:
