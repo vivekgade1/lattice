@@ -145,3 +145,68 @@ tests/ui/test_roots_and_quotes.py::TestRootIsHonouredNotIgnored::test_cl_1h_band
 ```
 
 (The owner's working tree has uncommitted edits to `cyclops/ui/store.py` and other files; the registered input is the commit, not the working tree.)
+
+---
+
+## Amendment 1 (2026-10-31): the importer was fixed before the paid run; S1 now passes
+
+**Written and committed before any change to the driver for it, and before any model call (still USD 0.00).** It supersedes sections 2 (registered result), 3 (stage table rows
+S1 and S2) and 5 (predictions) where they differ. Everything else stands: the app (Cyclops viewer, `d4df0ad`), the Appendix A workarounds (adapter factory, appended app venv),
+**one run only**, **stop at first failure**, the **USD 0.80 total cap** with the same shim (`--max-budget-usd = min(0.80 - 0.10 - spent, 0.70)`, `--max-turns 30`, ledger), model
+`sonnet`, `max_rounds = 1`, and the label **EXPLORATORY, n = 1, no claim**.
+
+### A1.1 What changed
+
+Node I1 fixed the importer's FastAPI front end: commit **`ca65d05`** ("importer (FastAPI): plain holes for Starlette path converters; set a {name:path} catch-all apart", branch
+`nc/i1-fastapi`, lane `lattice/importer/frontends/fastapi.py` + `tests/importer/test_fastapi_converters.py`). It is merged into this branch as `5456907` (no conflict; disjoint files).
+A converter hole (`{id:int}`) becomes a plain hole. The SPA catch-all `GET /{path:path}`, which matches across `/` and so cannot be one spec hole, is **excluded** from the spec with the
+note `unsupported: catch-all path converter`. It is no longer emitted. The pre-registered result "failed at S1" therefore no longer describes the run that will happen. The run is now
+registered as below, at the new importer. The original section 2 stays as the record of what the unfixed importer did.
+
+### A1.2 The import again (fresh `git archive` copy, the Appendix A commands unchanged, importer at `5456907`)
+
+| | before (section 2) | after (Amendment 1) |
+|---|---|---|
+| import exit | 0 | 0 (3.3 s) |
+| rule items | 67: 36 verified, 31 unexercised | **65: 35 verified, 0 refuted, 30 unexercised, 0 unclear** |
+| routes | 0 of 31 verified | **0 of 30 verified** (verified share 0 %); 1 excluded: `GET /{path:path}` (unsupported catch-all) |
+| unclear profile decisions | 5 | the same 5 |
+| `review DIR emit` | refused (S020) | **exit 0, `spec.py` written** (30 contracts; sha256 `b6d4b4525f3d...`) |
+| `lattice.spec check --layers ABCDR` on the **reference** app | exit 2 (S020) | **exit 0**: `PASS: 0 findings (A 0, B 0, C 0, D 0, R 0); 0 cases run` |
+| the same check on a **bare scaffold** (`create_app` returns `FastAPI()`) | exit 2 (S020) | **exit 1**: `FAIL: 5 findings (R 5)`: R3 items `GET /api/bars/{rung}`, `/api/bars/{rung}/windows`, `/api/features/{rung}`, `/api/patterns/{rung}/similar`, `/api/memory/{ts}` state 422 on an invalid value, and the scaffold answers 404 |
+| held-out tests, reference / scaffold | 178 passed + 4 failing / 153 failed, 27 passed, 2 errors | unchanged (same files, same commit) |
+
+Data: `docs/results/data/2026-10-30-t13/import-cyclops-a1/` (report.md, spec.py, profile.py, natives.py, import.txt, emit.txt, check-reference.txt, check-scaffold.txt,
+import-summary.json with the sha256 of the full report.json). This **contradicts the original prediction for S2** ("the Lattice gate passes the scaffold, p ≈ 0.85"). The gate is
+**not vacuous** for Cyclops, but it is thin: 5 findings, all "answer 422 on an invalid path value". A server that only did that would pass it.
+
+### A1.3 Registered stages (replacing the S1 and S2 rows; S3 to S5 unchanged)
+
+| stage | pass |
+|---|---|
+| **S1 import** | the rules-first import exits 0, `review emit` exits 0 and writes `spec.py` (expected: 30 contracts, the catch-all excluded) |
+| **S2 fixture + calibration** | the reference passes the Lattice gate and the 178 held-out tests, **and** the scaffold fails the held-out tests. The scaffold's Lattice-gate verdict is recorded (expected now: **fail**, 5 R findings) and is still not a stop condition |
+| S3 loop | unchanged: status `passed` in 1 round. The scaffold fails the gate, so the agent's round must fix the 5 findings without a regression of the 35 verified items |
+| S4 clean Lattice gate | unchanged |
+| S5 held-out app tests | unchanged: the same 5 files, the same 4 deselected (Appendix B), all 178 must pass. About 7 of them exercise the excluded catch-all or `FRONTEND_DIST` (the built-frontend fallback). The spec says nothing of them now. They stay in the registered set: removing them after seeing the spec would be tuning |
+
+The driver's guard additionally requires that the prereg was added in a commit older than the driver's first commit, and that its last change (this amendment) is older than the driver's
+last change (the T1-4 precedent). It also refuses a relaunch once the ledger holds a model call.
+
+### A1.4 Predictions (replacing section 5; honest uncertainty, n = 1)
+
+- **S1 passes**, p ≈ 0.97 (observed here; the residual is the integrated tree differing from this branch).
+- **S2 passes**, p ≈ 0.97 (every part observed here; the residual is the gate environment of the integrated tree).
+- **S3 (loop `passed` in one round)**, p ≈ 0.45. The agent must write about 30 routes over a 2673-line `Store` it has to read. It does so within one call of at most USD 0.70 and
+  30 turns, and must turn the 5 R findings green without making any verified route answer 5xx. Failure modes: the budget or turn cap ends the round before the server imports or
+  passes the gate (the most likely, p ≈ 0.35), or a regression or new finding (p ≈ 0.2).
+- **S4 given S3**, p ≈ 0.9.
+- **S5 (all 178 held-out tests)**, p ≤ 0.02. Conditional on reaching S5, the held-out pass share has a point estimate of 0.35 (80 % interval 0.10 to 0.65). The spec does not carry the
+  error-body shape `{"error", "hint"}`, the 404/422/413/503 split, default ranges and caps, or `FRONTEND_DIST`.
+- **Overall: not built**, p ≈ 0.98. First failure at S3 is p ≈ 0.55, and at S5 p ≈ 0.4.
+- **Spend:** one model call (`max_rounds = 1`, `max_attempts = 1`). Expected USD 0.30 to 0.75, and at most 0.80 by the ledger. The CLI's own budget is hit with p ≈ 0.4.
+
+### A1.5 Dry runs to be re-run after this amendment (no model)
+
+`mini` with the reference fake: S1 to S5 pass. `cyclops` with the **no-op fake agent**: S1 and S2 now pass, and the run stops at **S3** (the gate still has the scaffold's 5 findings).
+`cyclops` with the **reference fake agent** (it writes the original `server.py`): S1 to S5 pass with 178 held-out tests, which is the positive control of the full registered pipeline.

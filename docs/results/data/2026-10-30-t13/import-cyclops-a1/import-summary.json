@@ -1,0 +1,86 @@
+{
+ "importer_commit": "ca65d05 (merged as 5456907)",
+ "framework": "fastapi",
+ "package": "cyclops.ui",
+ "summary": {
+  "items": {
+   "verified": 35,
+   "refuted": 0,
+   "unexercised": 30,
+   "unclear": 0
+  },
+  "tables": {
+   "verified": 0,
+   "total": 0
+  },
+  "routes": {
+   "verified": 0,
+   "total": 30
+  }
+ },
+ "excluded_routes": [
+  {
+   "method": "GET",
+   "path": "/{path:path}",
+   "kind": "unsupported",
+   "reason": "unsupported: catch-all path converter ({path:path} matches across '/'; a spec path hole is one segment)"
+  }
+ ],
+ "unreachable": [],
+ "unclear_profile": [
+  {
+   "topic": "users_table",
+   "subject": "cyclops.ui",
+   "reason": "no single current-user dependency names the users table",
+   "candidates": []
+  },
+  {
+   "topic": "auth",
+   "subject": "cyclops.ui",
+   "reason": "no token-decoding step found in a current-user dependency",
+   "candidates": []
+  },
+  {
+   "topic": "roles",
+   "subject": "cyclops.ui",
+   "reason": "no superuser dependency: roles_from is not inferred",
+   "candidates": []
+  },
+  {
+   "topic": "storage",
+   "subject": "cyclops.ui",
+   "reason": "dialect unknown: storage formats are not inferred",
+   "candidates": []
+  },
+  {
+   "topic": "datetime_wire",
+   "subject": "cyclops.ui",
+   "reason": "custom serialisation or a non-SQLite dialect: the datetime wire is not inferred",
+   "candidates": []
+  }
+ ],
+ "timing": {
+  "extract": 0.156,
+  "probe": 2.456,
+  "correct": 0.0,
+  "mine": 0.022,
+  "variant2": 0.606,
+  "total": 3.28
+ },
+ "report_json_sha256": "13b7ae3258b2958a71acc74184ce19446fa4a5bec533052d1e783b101d83b6bf",
+ "spec_sha256": "b6d4b4525f3dce1f2da6004f842f06077a04fc6d18d99ffa58cf8403b5dab7ad",
+ "held_out": {
+  "reference": "4 failed, 178 passed",
+  "scaffold": "153 failed, 27 passed, 2 errors"
+ },
+ "lattice_check": {
+  "reference": {
+   "rc": 0,
+   "line": "PASS: 0 findings (A 0, B 0, C 0, D 0, R 0); 0 cases run"
+  },
+  "scaffold": {
+   "rc": 1,
+   "line": "FAIL: 5 findings (A 0, B 0, C 0, D 0, R 5); 0 cases run"
+  }
+ }
+}
