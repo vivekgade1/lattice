@@ -27,7 +27,10 @@ package class (``return NoteCRUD(session)``) a ``repository`` whose methods are 
 the users table is what the current-user dependency returns, read from its return
 values when it has no annotation; the token decode may be PyJWT's or python-jose's, in
 the dependency or a helper; ``Request``-like parameters are ``framework`` parameters, and
-routes an app factory defines on its own local app are found (``enclosing``).
+routes an app factory defines on its own local app are found (``enclosing``); a Starlette
+path converter (``{id:int}``, ``{x:uuid}``) leaves a plain ``{id}`` hole typed by the
+converter, and a route with a ``{name:path}`` hole (it matches across ``/``, which a spec
+hole -- one segment -- cannot say) is set apart as ``unsupported`` (``excluded_routes``).
 
 ``RepoModel`` is a frozen dataclass tree of plain values; ``to_json()`` serialises it.
 """
@@ -45,6 +48,7 @@ from typing import TYPE_CHECKING
 from lattice.importer.appmodel import (
     DataModel,
     Dependency,
+    ExcludedRoute,
     FieldSpec,
     NativeCandidate,
     NativeParam,
@@ -137,6 +141,10 @@ FRAMEWORK_PARAMS = (
 JWT_MODULES = frozenset({"jwt", "jose", "authlib", "joserfc"})  # decode(token, ...) libraries
 # SQLAlchemy database URL schemes, for the dialect when the engine's URL is not a constant
 DB_URL = re.compile(r"\A(sqlite|postgres|postgresql|mysql|mariadb|mssql|oracle)(\+\w+)?://")
+# Starlette's path holes: ``{name}`` or ``{name:converter}``; a converter's hole type (``str``
+# keeps the annotation's; ``path`` matches across ``/``: no spec hole can say it)
+PATH_HOLE = re.compile(r"{(\w+)(?::(\w+))?}")
+CONVERTER_TYPES = {"int": "Int", "float": "Float", "uuid": "Uuid"}
 
 
 
@@ -167,6 +175,7 @@ class _Extractor:
         self.dep_memo: dict[str, Dependency] = {}
         # Depends(factory(args)): synthetic qual -> (module of the call, the call)
         self.factory_calls: dict[str, tuple[str, ast.Call]] = {}
+        self.excluded: list[ExcludedRoute] = []  # routes set apart (a catch-all path hole)
 
     # -- classes and fields --
 
@@ -1018,14 +1027,24 @@ class _Extractor:
             return None
         path = self.const(mod, dec.args[0] if dec.args else kws.get("path"))
         prefix, router_deps = routers[router]
-        full_path = prefix + (path if isinstance(path, str) else "")
+        written = prefix + (path if isinstance(path, str) else "")
+        full_path, converters = plain_path(written)
+        catch_all = [n for n, conv in converters.items() if conv == "path"]
+        if catch_all:
+            self.excluded.append(ExcludedRoute(
+                method, written, "unsupported",
+                f"unsupported: catch-all path converter ({{{catch_all[0]}:path}} matches across "
+                "'/'; a spec path hole is one segment)",
+            ))  # fmt: skip
+            return None
         path_names = set(re.findall(r"{(\w+)(?::[^}]*)?}", full_path))
 
         dep_quals: list[str] = [*router_deps, *self._dep_list(mod, kws.get("dependencies"))]
         params: list[RouteParam] = []
         caller_names: set[str] = set()
         for arg, default in _args_with_defaults(fn.args):
-            params.append(self._param(mod, arg, default, path_names, dep_quals, caller_names))
+            param = self._param(mod, arg, default, path_names, dep_quals, caller_names)
+            params.append(_converted(param, converters.get(arg.arg)))
 
         deps = [self.classify(q) for q in dep_quals]
         auth, reason = _route_auth(deps)
@@ -2076,6 +2095,26 @@ def _hint(column: str) -> str | None:
     return None
 
 
+def plain_path(path: str) -> tuple[str, dict[str, str]]:
+    """A route path with plain ``{name}`` holes (the spec's form: ``/items/{id:int}`` ->
+    ``/items/{id}``) and the converter of each hole that names one."""
+    converters = {m.group(1): m.group(2) for m in PATH_HOLE.finditer(path) if m.group(2)}
+    return PATH_HOLE.sub(r"{\1}", path), converters
+
+
+def _converted(p: RouteParam, converter: str | None) -> RouteParam:
+    """A path parameter typed by its hole's converter: the converter decides which values
+    reach the route (``{id:int}`` 404s ``abc`` before validation), so it wins over the
+    annotation; ``str`` only fills an unannotated parameter's type."""
+    if p.source != "path" or converter is None:
+        return p
+    if converter in CONVERTER_TYPES:
+        return dataclasses.replace(p, type=CONVERTER_TYPES[converter])
+    if converter == "str" and p.type is None:
+        return dataclasses.replace(p, type="Str")
+    return p
+
+
 def _route_auth(deps: list[Dependency]) -> tuple[str, str]:
     unknown = [d for d in deps if d.kind in ("unknown", "token")]
     if unknown:
@@ -2313,6 +2352,7 @@ def extract(repo_root: Path, app_package: str) -> RepoModel:
         exception_handlers=ex.exception_handlers(),
         custom_serialization=ex.custom_serialization(),
         role_scheme=scheme,
+        excluded_routes=tuple(ex.excluded),
     )
 
 
