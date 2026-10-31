@@ -17,12 +17,14 @@ Finding (every archived real stream with a result event, 2026-10-31): the assist
 records' input and cache token counts equal the result's exactly, but their
 ``output_tokens`` is the count when the record was written, before the message ended; only
 the ``message_delta`` stream events of ``--include-partial-messages`` carry the final count.
-With them the stream estimate equals ``total_cost_usd`` (64/64 streams); without them (the
-rebuild's own stream) it is a lower bound, within 5% on 69/126 streams and up to 42% under
-on short haiku runs. Two more plain streams are ``--resume`` steps of one session
-(``docs/results/data/2026-10-18-grpc-arms-m-l/armL-run1/ledger/logs/agent-0{2,3}.jsonl``):
-their ``total_cost_usd`` and ``modelUsage`` are the session's cumulative figures, while the
-top-level ``usage`` is the step's own."""
+With them the stream estimate equals ``total_cost_usd`` (64/64 streams), so the rebuild now
+passes that flag; legacy streams without it give a lower bound, within 5% on 69/126 streams
+and up to 42% under on short haiku runs. Two more plain streams are ``--resume`` steps of
+one session (``docs/results/data/2026-10-18-grpc-arms-m-l/armL-run1/ledger/logs/``
+``agent-0{2,3}.jsonl``): their ``total_cost_usd`` and ``modelUsage`` are the session's
+cumulative figures, while the top-level ``usage`` is the step's own; the R2 pre-flight
+(``tests/fixtures/cost_replay/resume/``, CLI 2.1.309) confirms it and shows that the CLI's
+``--max-budget-usd`` on a resumed session counts only the new step."""
 
 from __future__ import annotations
 
@@ -30,6 +32,7 @@ import json
 import os
 import stat
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
@@ -44,7 +47,13 @@ from lattice.studio.costing import (
     estimate_cost,
     price_for,
 )
-from lattice.studio.rebuild import RebuildConfig, Rebuilder, StreamUsage, load_table
+from lattice.studio.rebuild import (
+    RebuildConfig,
+    Rebuilder,
+    StreamUsage,
+    build_rebuild_argv,
+    load_table,
+)
 from tests.studio.seed import cleanup_worktrees, finish, manager, seed_project
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -161,10 +170,10 @@ def test_replay_with_partial_messages_is_within_5_percent() -> None:
         assert est == pytest.approx(res["total_cost_usd"], rel=0.05), p.name
 
 
-def test_replay_without_partial_messages_is_a_lower_bound() -> None:
-    """The rebuild's own stream (no ``--include-partial-messages``): input and cache tokens
-    are exact, output tokens are what the assistant records showed, so the estimate never
-    exceeds the CLI's cost."""
+def test_replay_legacy_streams_without_partial_messages_is_a_lower_bound() -> None:
+    """Legacy streams without ``--include-partial-messages`` (the rebuild's before R2's
+    follow-up): input and cache tokens are exact, output tokens are what the assistant
+    records showed, so the estimate never exceeds the CLI's cost."""
     usable = [p for p in REPLAY if not replay(p)[2]]
     assert len(usable) >= 3
     for p in usable:
@@ -181,14 +190,25 @@ def test_replay_without_partial_messages_is_a_lower_bound() -> None:
         assert est is not None and 0 < est <= res["total_cost_usd"] * (1 + 1e-9), p.name
 
 
-@pytest.mark.xfail(strict=True, reason="NOT MET for the rebuild's plain stream-json: the "
+@pytest.mark.xfail(strict=True, reason="legacy streams without partial messages: the "
                    "assistant records' output_tokens are counted before the message ends "
-                   "(up to 42% under on these haiku runs); see the module docstring")  # fmt: skip
-def test_replay_without_partial_messages_is_within_5_percent() -> None:
+                   "(up to 42% under on these haiku runs); the rebuild now passes "
+                   "--include-partial-messages, see the module docstring")  # fmt: skip
+def test_replay_legacy_streams_without_partial_messages_within_5_percent() -> None:
     for p in REPLAY:
         su, res, partial = replay(p)
         if not partial:
             assert su.cost_estimate() == pytest.approx(res["total_cost_usd"], rel=0.05), p.name
+
+
+def test_the_rebuild_argv_asks_for_partial_messages() -> None:
+    a = build_rebuild_argv(claude_bin="claude", text="go", model="sonnet",
+                           mcp_config=Path("/m.json"), settings=Path("/s.json"),
+                           gates=["./check.sh"])  # fmt: skip
+    # right after --verbose: the pinned 4-element prefix of test_rebuild/test_mcp_intake holds
+    assert a[1:6] == ["-p", "--output-format", "stream-json", "--verbose",
+                      "--include-partial-messages"]  # fmt: skip
+    assert a[-2:] == ["--", "go"]
 
 
 # ---- StreamUsage ---------------------------------------------------------------------------
@@ -385,4 +405,135 @@ def test_api_md_documents_node_max_usd() -> None:
     assert "node_max_usd = 0" in doc and "`node_max_usd`" in doc
     assert "node_max_tokens` counts output tokens only" in doc
     assert 'cost_basis: "stream_estimate"' in doc and '"cli_list_estimate"' in doc
+    assert "--verbose --include-partial-messages` in the worktree" in doc
+    assert "session_totals" in doc and "counts only the new step" in doc
     assert 'reason: "node_max_usd"' in doc and "`node_max_usd`)" in doc  # the cause
+
+
+# ---- the rebuild loop on REAL streams ------------------------------------------------------
+
+RESUME = sorted((ROOT / "tests" / "fixtures" / "cost_replay" / "resume").glob("*.jsonl"))
+PARTIAL = ROOT / "tests" / "fixtures" / "cost_replay" / "chat-r2-abl-R2-N2-sonnet-2.1.303.jsonl"
+
+# replays round n's stream file verbatim (FAKE_STREAMS, ':'-separated); FAKE_CUT drops the
+# result event and then hangs, as an agent that is killed before it finishes
+REPLAY_CLAUDE = """#!{python}
+import json, os, sys, time
+if "--version" in sys.argv:
+    print("2.0.0"); sys.exit(0)
+d = os.environ["FAKE_DIR"]
+n_path = os.path.join(d, "count")
+n = int(open(n_path).read()) + 1 if os.path.exists(n_path) else 1
+open(n_path, "w").write(str(n))
+with open(os.path.join(d, "claude.log"), "a") as f:
+    f.write(json.dumps(sys.argv[1:]) + "\\n")
+files = os.environ["FAKE_STREAMS"].split(":")
+code = 0
+for line in open(files[min(n, len(files)) - 1]):
+    rec = json.loads(line)
+    if rec.get("type") == "result":
+        if os.environ.get("FAKE_CUT"):
+            time.sleep(60)
+        code = 1 if rec.get("is_error") else 0
+    print(line.strip(), flush=True)
+sys.exit(code)
+"""
+
+
+def replay_build(tmp_path: Path, streams: list[Path], env: dict[str, str] | None = None,
+                 **table: Any) -> tuple[dict[str, Any], list[list[str]]]:  # fmt: skip
+    root = seed_project(tmp_path)
+    exe = tmp_path / "claude"
+    exe.write_text(REPLAY_CLAUDE.format(python=sys.executable))
+    exe.chmod(exe.stat().st_mode | stat.S_IEXEC)
+    t = {**load_table(root), "agent": "claude", **table}
+    rb = Rebuilder(root, t, name="notes", model="haiku", claude_bin=str(exe),
+                   env={**os.environ, "FAKE_DIR": str(tmp_path),
+                        "FAKE_STREAMS": ":".join(map(str, streams)), **(env or {})})  # fmt: skip
+    rid = rb.start([], scope={"area": "writing-notes"}, baseline_wait=60)["id"]
+    rec = rb.get(rid, wait=90)
+    cleanup_worktrees(root)
+    return rec, invocations(tmp_path / "claude.log")
+
+
+def test_a_killed_partial_message_step_books_the_cli_cost(tmp_path: Path) -> None:
+    """End to end on a real partial-message stream cut before its result event: the
+    in-process estimate is the CLI's own cost (the 5% bound, met here exactly)."""
+    res = result_of(records(PARTIAL))
+    assert res is not None
+    rec, _ = replay_build(tmp_path, [PARTIAL], {"FAKE_CUT": "1"}, max_rounds=1,
+                          round_timeout=3)  # fmt: skip
+    a = rec["rounds"][0]["agent"]
+    assert rec["rounds"][0]["error"]["reason"] == "round_timeout"
+    assert a["partial"] is True and a["cost_basis"] == "stream_estimate"
+    assert a["cost_usd_list_estimate"] == pytest.approx(res["total_cost_usd"], rel=0.05)
+
+
+def test_resumed_steps_book_only_their_own_cost(tmp_path: Path) -> None:
+    """The R2 pre-flight streams: A, then B and C resuming A's session. The CLI's
+    ``total_cost_usd`` / ``modelUsage`` are cumulative on --resume; each round books the
+    difference to the session's last total (= ``model_usage_since_last_result``)."""
+    assert [p.name[:16] for p in RESUME] == ["pf-r2-resume-a-h", "pf-r2-resume-b-h",
+                                            "pf-r2-resume-c-h"]  # fmt: skip
+    results = [result_of(records(p)) for p in RESUME]
+    rec, argvs = replay_build(tmp_path, RESUME, max_rounds=3, max_budget_usd=1.0)
+    assert len(argvs) == 3 and [len(r) for r in [rec["rounds"]]] == [3]
+    sid = results[0]["session_id"]
+    assert "--resume" not in argvs[0] and argvs[1][argvs[1].index("--resume") + 1] == sid
+    for rnd, res in zip(rec["rounds"], results, strict=True):
+        since = next(iter((res.get("model_usage_since_last_result") or {}).values()), None)
+        own = since["costUSD"] if since else res["total_cost_usd"]  # A: its own total
+        assert rnd["agent"]["cost_usd_list_estimate"] == pytest.approx(own, abs=1e-8)
+        assert rnd["agent"]["cost_basis"] == "cli_list_estimate"
+        if since:  # tokens too, also where the top-level usage is all zeros (C)
+            assert rnd["agent"]["output_tokens"] == since["outputTokens"]
+            assert rnd["agent"]["cache_read_input_tokens"] == since["cacheReadInputTokens"]
+    assert rec["rounds"][2]["error"]["reason"] == "max_budget_usd"
+    assert rec["usage"]["cost_usd_list_estimate"] == pytest.approx(
+        results[-1]["total_cost_usd"], abs=1e-6
+    )  # the session's real total, not 3 sums
+    assert rec["session_totals"][sid]["cost_usd"] == pytest.approx(results[-1]["total_cost_usd"])
+    # the CLI's --max-budget-usd counts the new step only (pre-flight R2): a resumed round's
+    # cap is the build budget left, no session cost added
+    left = 1.0 - results[0]["total_cost_usd"]
+    assert float(argvs[1][argvs[1].index("--max-budget-usd") + 1]) == pytest.approx(left, abs=1e-4)
+
+
+def test_a_result_without_cumulative_figures_is_the_steps_own(tmp_path: Path) -> None:
+    """A producer whose results carry no cumulative ``modelUsage`` (the suites' fakes) keeps
+    booking each result as it is, even on a resumed session."""
+    rec = build(tmp_path, {"FAKE_MODEL": "claude-sonnet-5-5", "FAKE_FINISH": "1"},
+                max_rounds=2)  # fmt: skip
+    assert [r["agent"]["cost_usd_list_estimate"] for r in rec["rounds"]] == [0.5, 0.5]
+    assert rec["usage"]["cost_usd_list_estimate"] == pytest.approx(1.0)
+
+
+# ---- the planner -----------------------------------------------------------------------------
+
+FAKE_PLANNER = """#!{python}
+import json, time
+print(json.dumps({{"type": "system", "subtype": "init", "session_id": "s"}}), flush=True)
+print(json.dumps({{"type": "assistant", "message": {{"id": "p1", "model": "claude-sonnet-5-5",
+      "content": [{{"type": "text", "text": "thinking"}}],
+      "usage": {{"input_tokens": 100, "output_tokens": 50, "cache_read_input_tokens": 1000,
+                 "cache_creation_input_tokens": 10}}}}}}), flush=True)
+time.sleep(60)
+"""
+
+
+def test_a_cut_off_planner_call_books_its_stream_estimate(tmp_path: Path) -> None:
+    root = seed_project(tmp_path)
+    exe = tmp_path / "claude"
+    exe.write_text(FAKE_PLANNER.format(python=sys.executable))
+    exe.chmod(exe.stat().st_mode | stat.S_IEXEC)
+    pm = manager(root, planner="agent", planner_timeout=1.5)
+    pm.rb.claude_bin = str(exe)
+    pid = pm.create({"scope": "all"})["id"]
+    rec = pm.get(pid, wait=60)
+    t0 = time.time()
+    while rec["status"] == "planning" and time.time() - t0 < 60:
+        rec = pm.get(pid, wait=30)
+    pu = rec["planner_usage"]
+    assert pu["calls"] >= 1 and pu["tokens_out"] == 50 * pu["calls"]
+    assert pu["cost_usd_list_estimate"] == pytest.approx(PER_MSG * pu["calls"], abs=1e-6)
+    assert pu["cost_usd_list_estimate"] > 0

@@ -136,6 +136,7 @@ from lattice.studio.costing import (
 )
 from lattice.studio.session import (
     _MODEL_TOOLS,
+    _TOKEN_KEYS,
     DEFAULT_MAX_TOKENS,
     LATTICE_ROOT,
     Transcript,
@@ -1196,8 +1197,12 @@ def build_rebuild_argv(
     max_budget_usd: float | None = None,
 ) -> list[str]:
     """The ``claude`` argv of one agent step. The prompt goes last behind ``--``; the caps
-    (``--max-turns``, ``--max-budget-usd``; None: omitted) go before it."""
-    argv = [claude_bin, "-p", "--output-format", "stream-json", "--verbose"]
+    (``--max-turns``, ``--max-budget-usd``; None: omitted) go before it.
+    ``--include-partial-messages``: its ``message_delta`` events carry each message's final
+    output count, so the in-process cost estimate (:class:`StreamUsage`) is exact at every
+    message boundary (without them it is a lower bound)."""
+    argv = [claude_bin, "-p", "--output-format", "stream-json", "--verbose",
+            "--include-partial-messages"]  # fmt: skip
     if resume:
         argv += ["--resume", resume]
     argv += [
@@ -3307,6 +3312,36 @@ class Rebuilder:
         caps = [x for x in (self.cfg.step_max_usd, left) if x is not None]
         return (min(caps) if caps else None), left
 
+    def _own_step_usage(self, run: _Run, rec: Mapping[str, Any], usage: dict[str, Any]) -> None:
+        """Book a resumed step's own cost. On ``--resume`` the CLI's ``total_cost_usd`` and
+        ``modelUsage`` are the session's cumulative figures, while the top-level ``usage`` is
+        the step's own (pre-flight R2, CLI 2.1.309): the record keeps the last totals per
+        session (``session_totals``) and the step books the difference. Only when the result
+        shows cumulative figures (``modelUsage`` tokens above the top-level ``usage``); the
+        tokens too when the top-level ``usage`` is all zeros (a budget stop, R1 then reads
+        ``modelUsage``). A killed step of the session in between (no result) is not added
+        to the totals, so the next delta may count it again: an over-count, never under."""
+        sid = str(rec.get("session_id") or "")
+        if not sid:
+            return
+        by_model = rec.get("modelUsage") if isinstance(rec.get("modelUsage"), Mapping) else {}
+        models = [m for m in by_model.values() if isinstance(m, Mapping)]
+        cum = {k: sum(int(m.get(mk) or 0) for m in models) for k, mk in _TOKEN_KEYS}
+        top = rec.get("usage") if isinstance(rec.get("usage"), Mapping) else {}
+        top_sum = sum(int(top.get(k) or 0) for k, _ in _TOKEN_KEYS)
+        total = float(usage.get("cost_usd_list_estimate") or 0.0)
+        with self.lock:
+            totals = run.record.setdefault("session_totals", {})
+            prev = totals.get(sid)
+            totals[sid] = {"cost_usd": round(total, 8), **cum}
+        if not isinstance(prev, Mapping) or sum(cum.values()) <= top_sum:
+            return  # a new session, or figures that are the step's own
+        own = round(max(total - float(prev.get("cost_usd") or 0.0), 0.0), 8)
+        usage["cost_usd"] = usage["cost_usd_list_estimate"] = own
+        if not top_sum:
+            for k in cum:
+                usage[k] = max(cum[k] - int(prev.get(k) or 0), 0)
+
     def _claude_step(self, run: _Run, n: int, prompt: str) -> dict[str, Any]:
         step_usd, left = self._step_budget(run)
         if left is not None and left < MIN_STEP_USD:
@@ -3397,6 +3432,7 @@ class Rebuilder:
         timer = threading.Timer(limit, on_timeout)
         timer.daemon = True
         timer.start()
+        raw_result: dict[str, Any] | None = None
         try:
             for line in proc.stdout or ():
                 line = line.strip()
@@ -3409,6 +3445,8 @@ class Rebuilder:
                 if isinstance(rec, dict):
                     t.feed(rec)
                     seen.feed(rec)
+                    if rec.get("type") == "result":
+                        raw_result = rec
                     if (
                         rec.get("type") == "assistant"
                         and t.claude_session_id
@@ -3463,6 +3501,8 @@ class Rebuilder:
             "session_id": t.claude_session_id,
             "cost_basis": COST_BASIS_CLI if result is not None else None,
         }
+        if result is not None and raw_result is not None:
+            self._own_step_usage(run, raw_result, out["usage"])
         if result is None and seen.messages:
             # no result event (a timeout, a cap, a crash): the usage the stream showed so
             # far, from the assistant messages, instead of 0 (API v1.11), and its

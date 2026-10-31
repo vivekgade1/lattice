@@ -156,3 +156,19 @@ Facts for H1/X4:
 ## Ledger
 
 `docs/results/data/2026-10-30-nc/spend-PF.jsonl` has one row per call (node, question, label, cap_usd, cost_usd from `total_cost_usd`, session_id, subtype, num_turns): 13 calls, total USD 0.0208.
+
+## R2 pre-flight: `--max-budget-usd` on a resumed session (2026-10-31)
+
+Question (node R2): does the CLI's own `--max-budget-usd` on a `--resume`d session count the session's cumulative cost or only the new step? CLI 2.1.309, haiku (claude-haiku-5-5), the P1 setup (`note.txt`, `--tools Read --permission-mode dontAsk --allowedTools Read`), `env -u ANTHROPIC_API_KEY claude -p --model haiku --output-format stream-json --verbose --max-turns 2 --setting-sources "" --disable-slash-commands --strict-mcp-config`. Raw streams: `tests/fixtures/cost_replay/resume/pf-r2-resume-{a,b,c}-haiku-2.1.309.jsonl`; ledger `docs/results/data/2026-10-30-nc/spend-R2.jsonl`.
+
+| step | flags | subtype | num_turns | `total_cost_usd` | `model_usage_since_last_result` costUSD |
+|---|---|---|---|---|---|
+| A | new session, `--max-budget-usd 0.02`; read note.txt, tell its second line | success | 2 | 0.00078993 | (A's own) |
+| B | `--resume A --max-budget-usd 0.00083` (above A's cost, below A+B); read it again, tell its first line | **success** | 2 | 0.00101399 | 0.00022406 |
+| C | `--resume A --max-budget-usd 0.00005` (below the step's own cost) | **error_max_budget_usd** | 1 | 0.00142205 | 0.00040806 |
+
+**Answer: the budget counts only the new step (this process).** B made two model calls; after the first one the session's cumulative cost was already above its 0.00083 cap, yet it finished (`success`, its own cost 0.00022406). The control C shows the cap is enforced on a resumed session when the step itself passes it (one-turn overshoot as in P1). So a resumed rebuild round's `--max-budget-usd` is the per-step budget as it is (no session cost added).
+
+Also confirmed: on `--resume`, `total_cost_usd` and `modelUsage` are the session's **cumulative** figures (B = A + 0.00022406, C = B + 0.00040806), while the top-level `usage` and the result's `model_usage_since_last_result` are the step's own; C's top-level `usage` is all zeros (budget-exhausted shape) while its `modelUsage` tokens are cumulative. Studio books the difference to the last cumulative total it saw for the session (`session_totals` on the rebuild record).
+
+Spend: 3 calls, USD 0.00142 of the 0.05 cap.
