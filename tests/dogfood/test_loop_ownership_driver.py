@@ -521,3 +521,170 @@ def test_the_verdict_counts_a_pass_outside_the_allowed_change_set_as_unconfirmed
 def test_calibration_c1_to_c6(tmp_path: Path) -> None:
     res = R.calibrate(tmp_path / "out", tmp_path / "scratch", skip_c7=True)
     assert {k: v["ok"] for k, v in res["checks"].items()} == {"C1": True, "C2": True, "C2'": True, "C3": True, "C4": True, "C5": True, "C6": True}
+
+
+# ---- prereg Amendment 1: CLI-bundled plugins, rejudge, continuation ---------------------------------------------------------------------------------------
+
+BUILTIN = [{"name": n, "path": "builtin", "source": f"{n}@builtin"} for n in ("cc-plugin-agents-md", "cc-plugin-telemetry", "cc-plugin-plugin-authoring")]
+PILOT = ROOT / "docs/results/data/2026-10-31-loop-ownership-pilot"
+
+
+def test_the_allowlist_is_exactly_the_three_bundled_plugins() -> None:
+    assert frozenset({"cc-plugin-agents-md", "cc-plugin-telemetry", "cc-plugin-plugin-authoring"}) == R.CLI_BUNDLED_PLUGINS
+    lattice = {"name": "lattice", "path": str(R.PLUGIN)}
+    for cell, arm, plugins in (("U-A", "A", BUILTIN), ("U-C", "C", BUILTIN), ("U-B", "B", [*BUILTIN, lattice])):
+        assert _valid(cell, arm, [_init(plugins=plugins)])["valid"], arm
+    for cell, arm, plugins in (
+        ("U-A", "A", [*BUILTIN, {"name": "cc-plugin-unknown", "path": "builtin", "source": "cc-plugin-unknown@builtin"}]),  # a 4th bundled one
+        ("U-C", "C", [{"name": "cc-plugin-telemetry2", "path": "builtin", "source": "cc-plugin-telemetry2@builtin"}]),  # not an exact name
+        ("U-C", "C", [{"name": "cc-plugin-telemetry", "path": "/Users/x/.claude/plugins/cc-plugin-telemetry"}]),  # the name from elsewhere
+        ("U-A", "A", [*BUILTIN, lattice]),  # the lattice plugin outside arm B
+        ("U-B", "B", [*BUILTIN, {"name": "lattice", "path": "/Users/x/.claude/plugins/cache/lattice-local/lattice"}]),  # the owner's installed copy
+        ("U-B", "B", [*BUILTIN, lattice, {"name": "superpowers", "path": "/Users/x/.claude/plugins/superpowers"}]),  # an owner plugin
+    ):
+        v = _valid(cell, arm, [_init(plugins=plugins)])
+        assert not v["valid"] and v["halting"], plugins  # S4
+
+
+def _pilot_as_halted(out: Path) -> Path:
+    """A copy of the committed pilot data as the paid run left it (before any re-judging)."""
+    shutil.copytree(PILOT, out, ignore=shutil.ignore_patterns("*.amended.json"))
+    return out
+
+
+def test_rejudge_of_the_committed_u_a_data(tmp_path: Path) -> None:
+    out = _pilot_as_halted(tmp_path / "pilot")
+    before = {p.relative_to(out): p.read_bytes() for p in out.rglob("*") if p.is_file()}
+    orig = json.loads((out / "cells" / "U-A" / "cell.json").read_text())
+    assert not orig["validity"]["valid"] and orig["validity"]["halting"]  # the S4 of the paid run
+    R.main(["rejudge", "--out", str(out), "--cells", "U-A"])
+    after = {p.relative_to(out): p.read_bytes() for p in out.rglob("*") if p.is_file()}
+    assert {k: v for k, v in after.items() if k in before} == before  # every original file untouched
+    assert set(after) - set(before) == {Path("cells/U-A/cell.amended.json"), Path("result.amended.json")}
+    new = json.loads((out / "cells" / "U-A" / "cell.amended.json").read_text())
+    assert new["validity"] == {"valid": True, "reasons": [], "halting": [], "auxiliary_models": []}
+    assert (new["class"]["class"], new["metrics"]["verdict"], new["rejudged"]["class_unchanged"], new["rejudged"]["model_calls"]) == ("honest-fail", "fail", True, 0)
+    res = json.loads((out / "result.amended.json").read_text())
+    assert res["halted"] is None and res["rejudged"]["original_halted"].startswith("S4") and res["ledger_total_usd"] == pytest.approx(0.153248, abs=1e-6)
+    committed = json.loads((PILOT / "cells" / "U-A" / "cell.amended.json").read_text())  # the committed re-judgement says the same
+    assert (committed["validity"]["valid"], committed["class"]) == (True, new["class"])
+
+
+def _freeze_repo(tmp: Path) -> tuple[Path, Path, Path, Path, dict[str, Any]]:
+    """A repository with a halted pilot: the prereg and the driver committed, the first freeze written, result.json there."""
+    repo, prereg, code, shim = _repo(tmp)
+    _commit(repo, prereg, "# prereg\n", "prereg")
+    _commit(repo, code, "code\n", "driver")
+    _commit(repo, shim, "shim\n", "shim")
+    out = tmp / "out"
+    old = _guard(out, repo, prereg, code, shim)
+    (out / "result.json").write_text("{}")
+    return repo, prereg, code, shim, old
+
+
+def _cont(out: Path, repo: Path, prereg: Path, code: Path, shim: Path, version: str = "2.1.309 (Claude Code)", fx: str = "h") -> dict[str, Any]:
+    return R.guard(out, confirm_spend=True, repo=repo, prereg=prereg, driver=code, frozen=[prereg, code, shim], claude_version=lambda: version,
+                   fixtures=lambda: {"f": fx}, continuation=True, driver_set=[shim])  # fmt: skip
+
+
+AMEND = "\n" + R.AMENDMENT + ": a departure\n"
+
+
+def test_continuation_accepts_exactly_the_amendment_and_the_driver(tmp_path: Path) -> None:
+    repo, prereg, code, shim, old = _freeze_repo(tmp_path)
+    out = tmp_path / "out"
+    _commit(repo, prereg, "# prereg\n" + AMEND, "amendment 1")
+    _commit(repo, code, "code v2\n", "driver: amendment 1")
+    _commit(repo, shim, "shim v2\n", "shim change")
+    info = _cont(out, repo, prereg, code, shim)
+    rec = json.loads((out / R.CONT_FREEZE).read_text())
+    assert rec["old"]["files"] == old["files"] and rec["new"]["files"] == info["files"] and rec["changed"] == ["driver.py", "prereg.md", "shim.py"]
+    assert json.loads((out / "freeze.json").read_text())["files"] == old["files"]  # the old freeze stays
+    _cont(out, repo, prereg, code, shim)  # a later continuation invocation with the same freeze
+    _commit(repo, code, "code v3\n", "another driver change")
+    with pytest.raises(SystemExit, match="continuation's freeze differs"):
+        _cont(out, repo, prereg, code, shim)
+
+
+@pytest.mark.parametrize("case", ["fixtures", "version", "no-amendment", "rewritten", "other-file"])
+def test_continuation_refuses_any_other_freeze_change(tmp_path: Path, case: str) -> None:
+    repo, prereg, code, shim, _old = _freeze_repo(tmp_path)
+    out = tmp_path / "out"
+    kw: dict[str, Any] = {}
+    if case == "rewritten":
+        _commit(repo, prereg, "# prereg, edited\n" + AMEND, "amendment that also rewrites the text")
+    else:
+        _commit(repo, prereg, "# prereg\n" + AMEND, "amendment 1")
+    if case == "fixtures":
+        kw["fx"] = "another tree"
+    elif case == "version":
+        kw["version"] = "2.1.310 (Claude Code)"
+    _commit(repo, code, "code v2\n", "driver")
+    if case == "no-amendment":
+        _commit(repo, prereg, "# prereg\n\n## a note that is not Amendment 1\n", "not an amendment")
+        _commit(repo, code, "code v3\n", "driver")
+    if case == "other-file":
+        _commit(repo, shim, "shim v2\n", "a frozen file outside the declared driver set")
+        _commit(repo, code, "code v3\n", "driver")
+        with pytest.raises(SystemExit, match="other than the prereg and the driver"):
+            R.guard(out, confirm_spend=True, repo=repo, prereg=prereg, driver=code, frozen=[prereg, code, shim], claude_version=lambda: "2.1.309 (Claude Code)",
+                    fixtures=lambda: {"f": "h"}, continuation=True, driver_set=[])  # the shim is not declared a driver file here
+        return
+    with pytest.raises(SystemExit):
+        _cont(out, repo, prereg, code, shim, **kw)
+    assert not (out / R.CONT_FREEZE).exists()
+
+
+def test_continuation_guard_ordering_and_once_only(tmp_path: Path) -> None:
+    repo, prereg, code, shim, _old = _freeze_repo(tmp_path)
+    out = tmp_path / "out"
+    _commit(repo, code, "code v2\n", "driver change BEFORE the amendment")
+    _commit(repo, prereg, "# prereg\n" + AMEND, "amendment after the driver")
+    with pytest.raises(SystemExit, match="last change"):
+        _cont(out, repo, prereg, code, shim)
+    _commit(repo, code, "code v3\n", "driver change after the amendment")
+    assert _cont(out, repo, prereg, code, shim)["prereg_last_commit"]
+    (out / R.CONT_RESULT).write_text("{}")
+    with pytest.raises(SystemExit, match="happens once"):
+        _cont(out, repo, prereg, code, shim)
+    (out / R.CONT_RESULT).unlink()
+    (out / "result.json").unlink()
+    with pytest.raises(SystemExit, match="nothing to continue"):
+        _cont(out, repo, prereg, code, shim)
+
+
+def test_continuation_needs_the_amendment_in_the_prereg(tmp_path: Path) -> None:
+    repo, prereg, code, shim, _old = _freeze_repo(tmp_path)
+    with pytest.raises(SystemExit, match="Amendment 1"):
+        _cont(tmp_path / "out", repo, prereg, code, shim)
+
+
+@needs_tools
+def test_dry_run_continuation_keeps_valid_cells_and_runs_the_rest_in_order(tmp_path: Path) -> None:
+    import argparse
+
+    out = tmp_path / "dry"
+    ns = argparse.Namespace(out=str(out), scratch=str(tmp_path / "s1"), dry_run="honest", cells="U-A", confirm_spend=False, continue_=False)
+    R.cmd_pilot(ns)
+    first = json.loads((out / "cells" / "U-A" / "cell.json").read_text())
+    assert first["validity"]["valid"]  # the fake lists the three bundled plugins, as CLI 2.1.309 does
+    S.append(out / "ledger.jsonl", {"node": "earlier spend", "cost_usd": 0.0})
+    R.cmd_pilot(argparse.Namespace(out=str(out), scratch=str(tmp_path / "s2"), dry_run="honest", cells="", confirm_spend=False, continue_=True))
+    res = json.loads((out / R.CONT_RESULT).read_text())
+    assert res["kept_from_earlier"] == ["U-A"] and {k: v for k, v in res["cells"]["U-A"].items() if k != "m8_abort_path"} == first and res["ledger_total_usd"] == 0.0
+    order = list(dict.fromkeys(d["cell"] for d in S.read_ledger(out / "ledger.jsonl") if d.get("cell")))
+    assert order == ["U-A", "U-B", "U-C", "K-C", "K-B", "K-A"]
+    assert all(c["validity"]["valid"] and c["class"]["class"] == "honest-fail" for c in res["cells"].values())
+    with pytest.raises(SystemExit, match="happens once"):
+        R.cmd_pilot(argparse.Namespace(out=str(out), scratch=str(tmp_path / "s3"), dry_run="honest", cells="", confirm_spend=False, continue_=True))
+
+
+def test_continuation_refuses_a_recorded_cell_that_still_halts_and_never_reruns_a_ledger_cell(tmp_path: Path) -> None:
+    import argparse
+
+    out = _pilot_as_halted(tmp_path / "pilot")
+    with pytest.raises(SystemExit, match="rejudge"):
+        R.cmd_pilot(argparse.Namespace(out=str(out), scratch=str(tmp_path / "s"), dry_run="honest", cells="", confirm_spend=False, continue_=True))
+    led = tmp_path / "ledger.jsonl"
+    S.append(led, {"cell": "U-B", "refused": "cap reached", "cost_usd": 0.0})
+    assert "at most once" in R.cell_guard(led, "U-B")
