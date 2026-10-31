@@ -72,9 +72,27 @@ by ``git merge --ff-only`` in a clean worktree). Extra ``[rebuild]`` keys: ``are
 **Build performance (API.md v1.11)**: ``[rebuild] scoped_gate_args`` (a plan node's gate on
 its scope plus the regression set, :func:`build_selection`), ``level_gate``,
 ``level_repair_attempts`` (:meth:`Rebuilder.repair_build`), ``node_timeout``,
-``node_max_tokens`` (the usage seen so far is kept, :class:`StreamUsage`) and
+``node_max_tokens`` (the usage seen so far is kept, :class:`StreamUsage`), ``node_max_usd``
+(the same in-stream stop on the cache-inclusive list-price estimate of
+:mod:`lattice.studio.costing`; a killed step records that estimate, ``cost_basis``
+``stream_estimate``), ``max_turns``, ``step_max_usd`` and ``max_budget_usd`` (each agent
+step's ``--max-turns`` and ``--max-budget-usd``, :meth:`Rebuilder._step_budget`) and
 ``stop_grace``; per-tip gate results (:meth:`Rebuilder.tip_result`); a gate's whole process
 tree and its labelled containers go when it is stopped (:meth:`Rebuilder._run_gate`).
+
+**Permission mode (gap G4)**: ``[rebuild] permission_mode`` is ``"acceptEdits"`` (the
+default, the argv above) or the opt-in ``"dontAsk"``: Edit/Write only inside the worktree
+(``Edit(./**)``), the protected paths denied up front (``Edit(/<path>)``,
+:func:`disallowed_tools`), Bash only the gate commands. Every claude step records the tool
+calls the CLI refused (``agent.denials``, ``agent.denial_count``; a denial does not fail the
+run); the post hoc restore of the protected files stays the backstop in both modes.
+
+**Clean verify (gap G3)**: the protected-file helpers (``_protected_paths``,
+``_restore_protected``, ``_snapshot_tree``, ``integration_worktree``) delegate to
+:mod:`lattice.studio.cleanverify` (R4). The opt-in ``[rebuild] clean_verify`` re-runs a
+passing build's gates on a ``git archive`` of its commit with the base's protected files
+laid over it (:meth:`Rebuilder._clean_verify`); failing there, the build gives up with
+``reason: clean_verify_failed``.
 
 **Spec sync (API.md v1.12)**: the spec files a rebuild protects (``SPEC_FILES`` plus
 ``[mcp] protected``) as committed at the repository's ``HEAD`` are compared with a target
@@ -123,9 +141,16 @@ from lattice.improve import signals as sig
 from lattice.improve.events import EventLog
 from lattice.llm.cli_client import cli_env
 from lattice.studio import areas as areas_mod
-from lattice.studio import fencing
+from lattice.studio import cleanverify, fencing
+from lattice.studio.costing import (
+    COST_BASIS_CLI,
+    COST_BASIS_STREAM,
+    COST_BASIS_UNPRICED,
+    estimate_cost,
+)
 from lattice.studio.session import (
     _MODEL_TOOLS,
+    _TOKEN_KEYS,
     DEFAULT_MAX_TOKENS,
     LATTICE_ROOT,
     Transcript,
@@ -169,6 +194,12 @@ LIVE = ("queued", "baseline", "running")  # a record found in one of these after
 DEFAULT_MAX_ATTEMPTS = 3
 DEFAULT_LEVEL_REPAIRS = 2
 DEFAULT_STOP_GRACE = 5.0
+DEFAULT_MAX_TURNS = 150  # `claude -p --max-turns` of one agent step (gap G1)
+DEFAULT_STEP_MAX_USD = 5.0  # `--max-budget-usd` of one agent step
+MIN_STEP_USD = 0.05  # less of the build budget left: the step is not spawned
+# gap G4: the agent's --permission-mode; dontAsk is opt-in ([rebuild] permission_mode)
+PERMISSION_MODES = ("acceptEdits", "dontAsk")
+DEFAULT_PERMISSION_MODE = "acceptEdits"
 SCOPE_DIR = ".lattice-scope"  # a node's selection file, in its worktree (git-ignored)
 SCOPE_EXCLUDE = "/.lattice-scope/"
 GATE_SCAN_S = 1.0  # how often a running gate's descendants are recorded
@@ -453,12 +484,76 @@ class RebuildConfig:
     def node_max_tokens(self) -> int | None:
         """``[rebuild] node_max_tokens``: output tokens one node's agent may spend in all
         (its rounds and repairs); reached, the step is stopped like a timeout. None: no
-        cap."""
+        cap. It counts output tokens only (not input or cache tokens, most of an agent's
+        cost): the cost cap is :attr:`node_max_usd`."""
         v = self.table.get("node_max_tokens")
         try:
             return int(v) if v else None
         except (TypeError, ValueError):
             return None
+
+    @property
+    def node_max_usd(self) -> float | None:
+        """``[rebuild] node_max_usd``: list-price USD one plan node's agent may spend in all
+        (its rounds and repairs), checked in-stream on the cache-inclusive estimate
+        (:meth:`StreamUsage.cost_estimate`); passed, the step is stopped like a timeout and
+        the node's build gives up. A second guard behind the CLI's ``--max-budget-usd``,
+        which may overshoot by about one turn. None (the default, or 0): no cap."""
+        try:
+            x = float(self.table.get("node_max_usd") or 0)
+        except (TypeError, ValueError):
+            return None
+        return x if x > 0 else None
+
+    @property
+    def max_turns(self) -> int | None:
+        """``[rebuild] max_turns``: ``--max-turns`` of every agent step (one ``claude -p``
+        process: a round, a plan node's round, a level repair); default 150, 0: no cap."""
+        v = self.table.get("max_turns", DEFAULT_MAX_TURNS)
+        try:
+            n = int(v)
+        except (TypeError, ValueError):
+            n = DEFAULT_MAX_TURNS
+        return n if n > 0 else None
+
+    @property
+    def step_max_usd(self) -> float | None:
+        """``[rebuild] step_max_usd``: ``--max-budget-usd`` of every agent step (the CLI's
+        list-price estimate, checked after each model call, so it may overshoot by about one
+        turn); default 5.00, 0: no cap."""
+        v = self.table.get("step_max_usd", DEFAULT_STEP_MAX_USD)
+        try:
+            x = float(v)
+        except (TypeError, ValueError):
+            x = DEFAULT_STEP_MAX_USD
+        return x if x > 0 else None
+
+    @property
+    def max_budget_usd(self) -> float | None:
+        """``[rebuild] max_budget_usd``: list-price USD one build (or plan node, its repairs
+        included) may spend in all; each step gets what is left (capped by
+        ``step_max_usd``), and below :data:`MIN_STEP_USD` left no step is spawned. None (the
+        default, or 0): no build cap."""
+        try:
+            x = float(self.table.get("max_budget_usd") or 0)
+        except (TypeError, ValueError):
+            return None
+        return x if x > 0 else None
+
+    @property
+    def permission_mode(self) -> str:
+        """``[rebuild] permission_mode``: the agent's ``--permission-mode``, ``"acceptEdits"``
+        (the default) or ``"dontAsk"`` (edits scoped to the worktree, the protected paths
+        denied, :func:`build_rebuild_argv`); any other value is the default."""
+        m = self.table.get("permission_mode")
+        return m if isinstance(m, str) and m in PERMISSION_MODES else DEFAULT_PERMISSION_MODE
+
+    @property
+    def clean_verify(self) -> bool:
+        """``[rebuild] clean_verify`` (gap G3, opt-in; default false, only ``true`` turns it
+        on): a build or plan node that passed its gates in the agent's worktree is verified
+        again on a clean checkout of its commit (:meth:`Rebuilder._clean_verify`)."""
+        return self.table.get("clean_verify") is True
 
     @property
     def stop_grace(self) -> float:
@@ -1108,16 +1203,41 @@ def scope_findings_prompt(n: int, check: Mapping[str, Any], rnd: Mapping[str, An
 # ---- argv ----------------------------------------------------------------------------------
 
 
-def allowed_tools(gates: Sequence[str]) -> list[str]:
+def allowed_tools(
+    gates: Sequence[str], permission_mode: str = DEFAULT_PERMISSION_MODE
+) -> list[str]:
+    """``--allowedTools``. In ``dontAsk`` Edit and Write are scoped to the agent's cwd, the
+    worktree (``./**``: inside allowed, outside, ``..`` and symlink escapes refused, pre-flight
+    P2/R3)."""
+    edit = ["Edit(./**)", "Write(./**)"] if permission_mode == "dontAsk" else ["Edit", "Write"]
     return [
         "Read",
         "Grep",
         "Glob",
-        "Edit",
-        "Write",
+        *edit,
         *(f"Bash({g}:*)" for g in gates),
         *_MODEL_TOOLS,
     ]
+
+
+def disallowed_tools(
+    protected: Sequence[str] = (), permission_mode: str = DEFAULT_PERMISSION_MODE
+) -> list[str]:
+    """``--disallowedTools``: NotebookEdit, and in ``dontAsk`` Edit and Write of every protected
+    path (relative to the repository root, the agent's cwd; a directory ends with ``/``). A
+    leading ``/`` anchors the rule at the cwd: a bare ``name`` (or ``./name``) would match the
+    name in every directory (gitignore-style, pre-flight R3); a deny rule wins over the allow."""
+    out = ["NotebookEdit"]
+    if permission_mode != "dontAsk":
+        return out
+    for raw in protected:
+        p = posixpath.normpath(raw.strip()) if raw.strip() else "."
+        if p in (".", "/", "//") or p.startswith("../"):
+            continue  # nothing, or outside the cwd (the allow rule grants nothing there)
+        # "/a/b": a/b from the cwd; an absolute path becomes "//abs" (anchored as it is)
+        rule = "/" + (p + "/**" if raw.strip().endswith("/") else p)
+        out += [f"Edit({rule})", f"Write({rule})"]
+    return list(dict.fromkeys(out))
 
 
 def build_rebuild_argv(
@@ -1130,9 +1250,22 @@ def build_rebuild_argv(
     gates: Sequence[str],
     resume: str | None = None,
     rules: str = RULES,
+    max_turns: int | None = None,
+    max_budget_usd: float | None = None,
+    permission_mode: str = DEFAULT_PERMISSION_MODE,
+    protected: Sequence[str] = (),
 ) -> list[str]:
-    """The ``claude`` argv of one agent step. The prompt goes last behind ``--``."""
-    argv = [claude_bin, "-p", "--output-format", "stream-json", "--verbose"]
+    """The ``claude`` argv of one agent step. The prompt goes last behind ``--``; the caps
+    (``--max-turns``, ``--max-budget-usd``; None: omitted) go before it.
+    ``permission_mode`` ``"dontAsk"`` (gap G4, opt-in) scopes Edit/Write to the worktree and
+    denies the ``protected`` paths (:func:`allowed_tools`, :func:`disallowed_tools`); any other
+    value is ``acceptEdits`` and ignores ``protected`` (the argv is exactly as before).
+    ``--include-partial-messages``: its ``message_delta`` events carry each message's final
+    output count, so the in-process cost estimate (:class:`StreamUsage`) is exact at every
+    message boundary (without them it is a lower bound)."""
+    mode = permission_mode if permission_mode in PERMISSION_MODES else DEFAULT_PERMISSION_MODE
+    argv = [claude_bin, "-p", "--output-format", "stream-json", "--verbose",
+            "--include-partial-messages"]  # fmt: skip
     if resume:
         argv += ["--resume", resume]
     argv += [
@@ -1147,18 +1280,21 @@ def build_rebuild_argv(
         "--tools",
         ",".join(AGENT_TOOLS),
         "--permission-mode",
-        "acceptEdits",
+        mode,
         "--allowedTools",
-        ",".join(allowed_tools(gates)),
+        ",".join(allowed_tools(gates, mode)),
         "--disallowedTools",
-        "NotebookEdit",
+        ",".join(disallowed_tools(protected, mode)),
         "--append-system-prompt",
         rules,
         "--model",
         model,
-        "--",
-        text,
     ]
+    if max_turns is not None:
+        argv += ["--max-turns", str(int(max_turns))]
+    if max_budget_usd is not None:
+        argv += ["--max-budget-usd", f"{max_budget_usd:.4f}"]
+    argv += ["--", text]
     return argv
 
 
@@ -2265,9 +2401,10 @@ class Rebuilder:
         repo = self.repo()
         project_rel = self.project.relative_to(repo).as_posix()
         worktree = self._worktree_dir(repo, label)
-        r = _git(repo, "worktree", "add", "-q", "--detach", str(worktree), sha)
-        if r.returncode != 0:
-            raise RebuildError(500, f"git worktree add failed: {r.stderr.strip()}")
+        try:
+            cleanverify.add_worktree(repo, sha, worktree)  # R4: the one implementation
+        except cleanverify.CleanVerifyError as exc:
+            raise RebuildError(500, f"git worktree add failed: {exc}") from None
         trace_path = worktree / project_rel / "spec.trace.json"
         return _Run(
             record={"id": label, "warnings": []},
@@ -2820,7 +2957,11 @@ class Rebuilder:
                 self._commit(run, n, failing_now)
                 return
             last_check, last_gates, last_rnd = check, gates, rnd
-            if (agent.get("error") or {}).get("kind") == "usage_limit":
+            aerr = agent.get("error") or {}
+            if aerr.get("kind") == "usage_limit" or aerr.get("reason") in (
+                "budget_exhausted",
+                "node_max_usd",  # a further round would pay for a model call before it stops
+            ):
                 self._end_hook(run, "gave_up")
                 with self.lock:
                     rec["error"] = agent["error"]
@@ -3223,12 +3364,80 @@ class Rebuilder:
             out["error"] = {"kind": error_kind(msg), "message": msg}
         return out
 
+    def _step_budget(self, run: _Run) -> tuple[float | None, float | None]:
+        """The ``--max-budget-usd`` of the next agent step and the build budget left (None:
+        no cap). The CLI's budget is per process and every step is a new one, so the build
+        cap is ``max_budget_usd`` minus the cost the record already holds."""
+        cap = self.cfg.max_budget_usd
+        left = None
+        if cap is not None:
+            spent = float(run.record.get("usage", {}).get("cost_usd_list_estimate") or 0.0)
+            left = round(cap - spent, 6)
+        caps = [x for x in (self.cfg.step_max_usd, left) if x is not None]
+        return (min(caps) if caps else None), left
+
+    def _own_step_usage(self, run: _Run, rec: Mapping[str, Any], usage: dict[str, Any]) -> None:
+        """Book a resumed step's own cost. On ``--resume`` the CLI's ``total_cost_usd`` and
+        ``modelUsage`` are the session's cumulative figures, while the top-level ``usage`` is
+        the step's own (pre-flight R2, CLI 2.1.309): the record keeps the last totals per
+        session (``session_totals``) and the step books the difference. Only when the result
+        shows cumulative figures (``modelUsage`` tokens above the top-level ``usage``); the
+        tokens too when the top-level ``usage`` is all zeros (a budget stop, R1 then reads
+        ``modelUsage``). A killed step of the session in between (no result) is not added
+        to the totals, so the next delta may count it again: an over-count, never under."""
+        sid = str(rec.get("session_id") or "")
+        if not sid:
+            return
+        by_model = rec.get("modelUsage") if isinstance(rec.get("modelUsage"), Mapping) else {}
+        models = [m for m in by_model.values() if isinstance(m, Mapping)]
+        cum = {k: sum(int(m.get(mk) or 0) for m in models) for k, mk in _TOKEN_KEYS}
+        top = rec.get("usage") if isinstance(rec.get("usage"), Mapping) else {}
+        top_sum = sum(int(top.get(k) or 0) for k, _ in _TOKEN_KEYS)
+        total = float(usage.get("cost_usd_list_estimate") or 0.0)
+        with self.lock:
+            totals = run.record.setdefault("session_totals", {})
+            prev = totals.get(sid)
+            totals[sid] = {"cost_usd": round(total, 8), **cum}
+        if not isinstance(prev, Mapping) or sum(cum.values()) <= top_sum:
+            return  # a new session, or figures that are the step's own
+        own = round(max(total - float(prev.get("cost_usd") or 0.0), 0.0), 8)
+        usage["cost_usd"] = usage["cost_usd_list_estimate"] = own
+        if not top_sum:
+            for k in cum:
+                usage[k] = max(cum[k] - int(prev.get(k) or 0), 0)
+
     def _claude_step(self, run: _Run, n: int, prompt: str) -> dict[str, Any]:
+        step_usd, left = self._step_budget(run)
+        if left is not None and left < MIN_STEP_USD:
+            # not worth a process: the CLI checks its budget only after a model call
+            return {
+                "summary": "",
+                "error": {
+                    "kind": "timeout",
+                    "reason": "budget_exhausted",
+                    "message": f"[rebuild] max_budget_usd = {self.cfg.max_budget_usd:g}: "
+                    f"{max(left, 0.0):.4f} USD left, below {MIN_STEP_USD:g}; the agent was "
+                    "not started",
+                },
+            }
+        usd_cap = self.cfg.node_max_usd if run.plan_node is not None else None
+        spent_usd = float(run.record.get("usage", {}).get("cost_usd_list_estimate") or 0.0)
+        if usd_cap is not None and spent_usd >= usd_cap:
+            return {  # a level repair of a node whose budget is gone
+                "summary": "",
+                "error": {
+                    "kind": "timeout",
+                    "reason": "node_max_usd",
+                    "message": f"[rebuild] node_max_usd = {usd_cap:g}: {spent_usd:.4f} USD "
+                    "spent; the agent was not started",
+                },
+            }
         if run.tmp is None:
             run.tmp = Path(tempfile.mkdtemp(prefix="lattice-rebuild-cfg-"))
             write_configs(run.tmp, "ask", run.worktree / run.project_rel, self.python)
         resume = run.session_id if (n > 1 or run.resume_turn) else None
         run.resume_turn = False
+        mode = self.cfg.permission_mode
         argv = build_rebuild_argv(
             claude_bin=self.claude_bin,
             text=prompt,
@@ -3238,6 +3447,10 @@ class Rebuilder:
             gates=run.gates,
             resume=resume,
             rules=agent_rules(RULES if run.scope is None else SCOPE_RULES),  # + FENCE_RULES
+            max_turns=self.cfg.max_turns,
+            max_budget_usd=step_usd,
+            permission_mode=mode,
+            protected=self._deny_paths(run) if mode == "dontAsk" else (),
         )
         with self.lock:
             run.argvs.append(argv)
@@ -3272,10 +3485,12 @@ class Rebuilder:
         drainer.start()
         timed_out = threading.Event()
         over_budget = threading.Event()
+        over_usd = threading.Event()
         limit = self.cfg.node_timeout if run.plan_node is not None else self.cfg.round_timeout
         seen = StreamUsage()
         cap = self.cfg.node_max_tokens if run.plan_node is not None else None
         spent = int(run.record.get("usage", {}).get("output_tokens") or 0)
+        model = str(run.record["model"])  # the served id in the stream wins (StreamUsage)
 
         def on_timeout() -> None:
             timed_out.set()
@@ -3284,6 +3499,7 @@ class Rebuilder:
         timer = threading.Timer(limit, on_timeout)
         timer.daemon = True
         timer.start()
+        raw_result: dict[str, Any] | None = None
         try:
             for line in proc.stdout or ():
                 line = line.strip()
@@ -3296,6 +3512,8 @@ class Rebuilder:
                 if isinstance(rec, dict):
                     t.feed(rec)
                     seen.feed(rec)
+                    if rec.get("type") == "result":
+                        raw_result = rec
                     if (
                         rec.get("type") == "assistant"
                         and t.claude_session_id
@@ -3310,6 +3528,15 @@ class Rebuilder:
                     if cap and not over_budget.is_set() and spent + seen.output_tokens() > cap:
                         over_budget.set()
                         _kill_group(proc, signal.SIGTERM)
+                    if (
+                        usd_cap
+                        and not over_usd.is_set()
+                        and rec.get("type") in ("assistant", "stream_event")
+                    ):
+                        est = seen.cost_estimate(model)  # None: an unknown model, no check
+                        if est is not None and spent_usd + est > usd_cap:
+                            over_usd.set()
+                            _kill_group(proc, signal.SIGTERM)
             proc.wait()
         finally:
             timer.cancel()
@@ -3339,12 +3566,29 @@ class Rebuilder:
             "cache_creation_input_tokens": res.get("cache_creation_input_tokens", 0),
             "num_turns": res.get("num_turns", 0),
             "session_id": t.claude_session_id,
+            "cost_basis": COST_BASIS_CLI if result is not None else None,
         }
+        if result is not None and raw_result is not None:
+            self._own_step_usage(run, raw_result, out["usage"])
+        # gap G4: the refused tool calls (a denial does not fail the run; new keys only)
+        out["usage"]["denials"] = [
+            {"tool": d["tool"], "target": _worktree_rel(run.worktree, d["target"])}
+            for d in t.denials
+        ]
+        out["usage"]["denial_count"] = len(t.denials)
         if result is None and seen.messages:
-            # no result event (a timeout, the token cap, a crash): the usage the stream
-            # showed so far, from the assistant messages, instead of 0 (API v1.11)
+            # no result event (a timeout, a cap, a crash): the usage the stream showed so
+            # far, from the assistant messages, instead of 0 (API v1.11), and its
+            # cache-inclusive list-price estimate (gap G2; None: a model the table lacks)
             out["usage"].update(seen.totals())
             out["usage"]["partial"] = True
+            est = seen.cost_estimate(model)
+            if est is None:
+                out["usage"]["cost_usd_list_estimate"] = None
+                out["usage"]["cost_basis"] = COST_BASIS_UNPRICED
+            else:
+                out["usage"]["cost_usd"] = out["usage"]["cost_usd_list_estimate"] = round(est, 6)
+                out["usage"]["cost_basis"] = COST_BASIS_STREAM
         if run.stop.is_set():
             return out
         if over_budget.is_set():
@@ -3352,6 +3596,13 @@ class Rebuilder:
                 "kind": "timeout",
                 "reason": "node_max_tokens",
                 "message": f"the agent passed [rebuild] node_max_tokens = {cap} output tokens",
+            }
+        elif over_usd.is_set():
+            out["error"] = {
+                "kind": "timeout",
+                "reason": "node_max_usd",
+                "message": f"the agent passed [rebuild] node_max_usd = {usd_cap:g} USD "
+                "(list-price estimate of its stream, cache included)",
             }
         elif timed_out.is_set():
             out["error"] = {
@@ -3364,6 +3615,9 @@ class Rebuilder:
                 "kind": errors[-1].get("kind") or "cli",
                 "message": errors[-1].get("message") or "claude failed",
             }
+            for k in ("reason", "terminal_reason", "errors"):  # the CLI's caps (gap G1)
+                if errors[-1].get(k):
+                    out["error"][k] = errors[-1][k]
         elif result is None:
             tail = "".join(stderr).strip()
             msg = _short(tail, 500) or f"claude exited with status {proc.returncode}"
@@ -3371,73 +3625,45 @@ class Rebuilder:
         return out
 
     def _protected_paths(self, run: _Run) -> list[str]:
-        rel = "" if run.project_rel == "." else run.project_rel + "/"
-        names = [*SPEC_FILES, *self.protected, *grpc_table(self.project)[0]]  # L3: protos
-        # Spike G: the owner's approved notes, while they exist in the worktree or at the base
-        for n in self._notes_names(run.worktree / run.project_rel):
-            names.append(n)
-        for n in self._base_notes_names(run):
-            if n not in names:
-                names.append(n)
-        out = [f"{rel}{n}" for n in names]
-        for g in run.gates:  # the gate scripts themselves
-            try:
-                toks = shlex.split(g)
-            except ValueError:
-                continue
-            while toks and re.fullmatch(r"\w+=.*", toks[0]):
-                toks = toks[1:]
-            if toks and "/" in toks[0] and not os.path.isabs(toks[0]):
-                p = os.path.normpath(toks[0])
-                if _git(run.repo, "cat-file", "-e", f"{run.base}:{p}").returncode == 0:
-                    out.append(p)
-        return list(dict.fromkeys(out))
+        # R4 (gap G3): one implementation, cleanverify.protected_paths, with the rebuild's own
+        # narrower set: [mcp] protected and the protos (L3) from Studio's config, the owner's
+        # notes (Spike G) while they exist in the worktree or at the base, no studio.toml /
+        # check.sh unless named. Stricter than before: a gate script behind `sh`/`python` is
+        # protected, and names are normalised (an absolute or `..` name is dropped).
+        return cleanverify.protected_paths(
+            run.repo,
+            run.base,
+            project_rel=run.project_rel,
+            gates=run.gates,
+            extra=[
+                *self.protected,
+                *grpc_table(self.project)[0],
+                *self._notes_names(run.worktree / run.project_rel),
+            ],
+            harness=False,
+            config=False,
+            notes="committed",
+        )
 
-    def _base_notes_names(self, run: _Run) -> list[str]:
-        """The owner's rationale / glossary files committed at the run's base commit (so a file
-        a round deleted is restored); none without them."""
-        rel = "" if run.project_rel == "." else run.project_rel + "/"
-        r = _git(run.repo, "cat-file", "-p", f"{run.base}:{rel}spec.trace.json")
-        if r.returncode != 0:
-            return []
-        try:
-            source = json.loads(r.stdout).get("source")
-        except (ValueError, AttributeError):
-            return []
-        if not isinstance(source, str) or not source:
-            return []
-        from lattice.spec.rationale import notes_names
-
-        cands = (notes_names(source)[0], notes_names(source)[2])
-        return [
-            n
-            for n in cands
-            if _git(run.repo, "cat-file", "-e", f"{run.base}:{rel}{n}").returncode == 0
-        ]
+    def _deny_paths(self, run: _Run) -> list[str]:
+        """gap G4: the protected paths as ``dontAsk`` deny rules take them (a directory at the
+        base commit ends with ``/``)."""
+        out = []
+        for p in self._protected_paths(run):
+            d = p.rstrip("/")
+            out.append(d + "/" if p.endswith("/") or self._is_tree(run, d) else p)
+        return out
 
     def _restore_protected(self, run: _Run, paths: Sequence[str] | None = None) -> list[str]:
-        """The protected files the round changed (restored to the base commit's)."""
-        edited = []
-        for p in self._protected_paths(run) if paths is None else paths:
-            if paths is None and self._is_tree(run, p):
-                edited += self._restore_tree(run, p.rstrip("/"))  # L1: a directory entry
-                continue
-            r = subprocess.run(
-                ["git", "-C", str(run.repo), "cat-file", "-p", f"{run.base}:{p}"],
-                capture_output=True,
-                timeout=60,
-            )
-            want = r.stdout if r.returncode == 0 else None
-            f = run.worktree / p
-            have = f.read_bytes() if f.is_file() else None
-            if have == want:
-                continue
-            edited.append(p)
-            if want is None:
-                f.unlink(missing_ok=True)
-            else:
-                _git_ok(run.worktree, "checkout", run.base, "--", p)
-        return edited
+        """The protected files the round changed (restored to the base commit's). R4: through
+        :func:`cleanverify.overlay_protected` (a directory entry: every file of it at the base,
+        L1; a git-ignored file under it is left), reported in the old order. Stricter than
+        before: a mode change or a symlink swap is an edit too."""
+        names = self._protected_paths(run) if paths is None else list(paths)
+        edited = cleanverify.overlay_protected(
+            run.repo, run.base, run.worktree, paths=names, keep_ignored=True
+        )
+        return _protected_order(edited, names, run.worktree)
 
     @staticmethod
     def _is_tree(run: _Run, p: str) -> bool:
@@ -3446,15 +3672,7 @@ class Rebuilder:
     def _restore_tree(self, run: _Run, d: str) -> list[str]:
         """L1: every file of the directory at the base commit must be byte-equal, and a
         non-ignored file the base lacks is an edit (removed); git-ignored files are left."""
-        ls = _git(run.repo, "ls-tree", "-r", "--name-only", run.base, "--", d).stdout
-        base = set(ls.split("\n")) - {""}
-        edited = self._restore_protected(run, sorted(base))
-        files = (f for f in (run.worktree / d).rglob("*") if f.is_file())
-        for p in sorted({f.relative_to(run.worktree).as_posix() for f in files} - base):
-            if _git(run.worktree, "check-ignore", "-q", "--", p).returncode != 0:
-                (run.worktree / p).unlink(missing_ok=True)
-                edited.append(p)
-        return edited
+        return self._restore_protected(run, [d])
 
     def _generate(self, run: _Run, n: int) -> dict[str, Any] | None:
         """L2: run ``[grpc] generate`` in the worktree with the gates' environment and timeout;
@@ -3706,6 +3924,15 @@ class Rebuilder:
                 rec["error"] = err
                 self._finish(run, "gave_up")
             return
+        # gap G3 (opt-in): the verdict that counts is the gates again on a clean checkout of
+        # the commit, not the agent's tree; failing there, nothing is recorded or advanced
+        cv_err = self._clean_verify(run, sha) if self.cfg.clean_verify else None
+        if cv_err is not None:
+            with self.lock:
+                rec["error"] = cv_err
+                self._finish(run, "gave_up")
+            self.log(f"rebuild {rec['id']}: gave up: {cv_err['message']}")
+            return
         name_status = [" ".join(x.split("\t")) for x in ns.splitlines() if x.strip()]
         files = [x.split("\t")[-1] for x in ns.splitlines() if x.strip()]
         hint = (
@@ -3759,6 +3986,60 @@ class Rebuilder:
                 self._finish(run, "passed")
         self.log(f"rebuild {rec['id']}: {'passed' if moved is None else 'gave up'} as "
                  f"{sha[:10]} on {run.branch}")  # fmt: skip
+
+    def _clean_verify(self, run: _Run, sha: str) -> dict[str, str] | None:
+        """gap G3 (``[rebuild] clean_verify``): each gate that passed in the agent's worktree
+        in the last round, again through :func:`cleanverify.verify`: on a ``git archive`` of
+        the commit `sha` with the base's protected files laid over it (the full set: also
+        ``studio.toml``, ``check.sh`` and the notes the trace names), strict (a commit that
+        changes a protected file fails). A gate that failed in the worktree (a scoped node's
+        judge allows that) is not re-run (``skipped``). The verdict goes on the round
+        (``clean_verify``); None when it passed, else the build's error, reason
+        ``clean_verify_failed``. It runs to its end (``[rebuild] gate_timeout`` each)."""
+        rnd = run.record["rounds"][-1]
+        gates = rnd.get("gates") or []
+        skipped = [g["command"] for g in gates if g["exit_code"] != 0]
+        out: dict[str, Any] = {"tip": sha, "base": run.base, "passed": True, "gates": [],
+                               "skipped": skipped}  # fmt: skip
+        env = {"LATTICE_REBUILD": run.record["id"], "LATTICE_REBUILD_ROUND": str(rnd["n"])}
+        err = None
+        for cmd in [g["command"] for g in gates if g["exit_code"] == 0]:
+            try:
+                v = cleanverify.verify(
+                    run.repo, run.base, sha, cmd, project_rel=run.project_rel,
+                    gates=run.gates, extra_protected=[*self.protected,
+                                                      *grpc_table(self.project)[0]],
+                    env=self._env if self._env is not None else os.environ, env_extra=env,
+                    sys_path=self.sys_path, timeout=self.cfg.gate_timeout,
+                    grace=self.cfg.stop_grace,
+                )  # fmt: skip
+            except cleanverify.CleanVerifyError as exc:
+                out["gates"].append({"command": cmd, "passed": False, "error": str(exc)})
+                err = f"`{cmd}` could not be verified on a clean checkout of {sha[:10]}: {exc}"
+                break
+            edited = v.protected_diff.edited
+            out["gates"].append({
+                "command": cmd, "passed": v.passed, "gate_passed": v.gate_passed,
+                "exit_code": v.exit_code, "timed_out": v.timed_out, "seconds": v.seconds,
+                "protected_edited": edited, "overlaid": v.overlaid,
+                "tree_digest": v.tree_digest, "output_tail": v.output_tail,
+            })  # fmt: skip
+            if not v.gate_passed:
+                err = (f"the gates passed in the agent's worktree, but `{cmd}` exited "
+                       f"{v.exit_code} on a clean checkout of {sha[:10]}")  # fmt: skip
+            elif edited:
+                err = f"the commit {sha[:10]} changes protected files: {', '.join(edited)}"
+            if err is not None:
+                break
+        out["passed"] = err is None
+        with self.lock:
+            rnd["clean_verify"] = out
+            self._save(run)
+        self.log(f"rebuild {run.record['id']}: clean verify of {sha[:10]} "
+                 f"{'passed' if err is None else 'failed'}")  # fmt: skip
+        if err is None:
+            return None
+        return {"kind": "clean_verify", "reason": "clean_verify_failed", "message": err}
 
     def _advance(self, run: _Run, sha: str) -> dict[str, str] | None:
         """Fast-forward the target branch to `sha`: ``update-ref`` with the tip at start
@@ -3950,14 +4231,37 @@ def _targets(changes: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
 class StreamUsage:
     """The usage a ``claude -p --output-format stream-json`` stream shows before its
     result event: each assistant message's ``usage`` (the last one seen per message id:
-    the CLI repeats a message once per content block), summed."""
+    the CLI repeats a message once per content block), summed; subagent messages are not
+    ours. An assistant record's ``output_tokens`` is the count when it was written, before
+    the message ended, so without ``--include-partial-messages`` the output (and the cost
+    estimate) is a lower bound; the ``message_delta`` stream event of that flag carries
+    the message's final count and is taken when present. Input and cache counts are exact
+    (tests/studio/test_cost_cap.py replays real streams)."""
+
+    _KINDS = ("input_tokens", "output_tokens", "cache_read_input_tokens",
+              "cache_creation_input_tokens")  # fmt: skip
 
     def __init__(self) -> None:
         self.messages: dict[str, dict[str, int]] = {}
+        self.models: dict[str, str] = {}  # message id -> the served model id
+        self.model = ""  # the init record's model
         self._anon = 0
+        self._last = ""
 
     def feed(self, rec: Mapping[str, Any]) -> None:
-        if rec.get("type") != "assistant" or rec.get("parent_tool_use_id"):
+        if rec.get("parent_tool_use_id"):
+            return
+        kind = rec.get("type")
+        if kind == "system" and rec.get("subtype") == "init":
+            self.model = str(rec.get("model") or "")
+            return
+        if kind == "stream_event":
+            ev = rec.get("event") if isinstance(rec.get("event"), Mapping) else {}
+            u = ev.get("usage") if isinstance(ev.get("usage"), Mapping) else None
+            if ev.get("type") == "message_delta" and u:
+                self._merge(str(rec.get("api_message_id") or self._last or "delta"), u)
+            return
+        if kind != "assistant":
             return
         msg = rec.get("message") if isinstance(rec.get("message"), Mapping) else {}
         u = msg.get("usage") if isinstance(msg.get("usage"), Mapping) else None
@@ -3967,23 +4271,40 @@ class StreamUsage:
         if not mid:
             self._anon += 1
             mid = f"anon-{self._anon}"
-        self.messages[mid] = {
-            k: int(u.get(k) or 0)
-            for k in ("input_tokens", "output_tokens", "cache_read_input_tokens",
-                      "cache_creation_input_tokens")
-        }  # fmt: skip
+        if msg.get("model"):
+            self.models[mid] = str(msg["model"])
+        self._merge(mid, u)
+        self._last = mid
+
+    def _merge(self, mid: str, u: Mapping[str, Any]) -> None:
+        cur = self.messages.setdefault(mid, dict.fromkeys(self._KINDS, 0))
+        for k in self._KINDS:
+            if k in u:
+                v = int(u.get(k) or 0)
+                cur[k] = max(cur[k], v) if k == "output_tokens" else v
 
     def output_tokens(self) -> int:
         return sum(m["output_tokens"] for m in self.messages.values())
 
     def totals(self) -> dict[str, int]:
-        out = dict.fromkeys(("input_tokens", "output_tokens", "cache_read_input_tokens",
-                             "cache_creation_input_tokens"), 0)  # fmt: skip
+        out = dict.fromkeys(self._KINDS, 0)
         for m in self.messages.values():
             for k in out:
                 out[k] += m[k]
         out["num_turns"] = len(self.messages)
         return out
+
+    def cost_estimate(self, model: str | None = None) -> float | None:
+        """The list-price USD of the messages so far, all four token kinds, each message
+        on its served model id (else the init record's, else `model`); None when one of
+        them is on a model :mod:`lattice.studio.costing` does not know."""
+        total = 0.0
+        for mid, u in self.messages.items():
+            c = estimate_cost(self.models.get(mid) or self.model or model, u)
+            if c is None:
+                return None
+            total += c
+        return total
 
 
 USAGE_KEYS = (
@@ -4002,6 +4323,16 @@ def _zero_usage() -> dict[str, Any]:
     ``cost_usd_list_estimate`` (the CLI's list-price estimate, not a charge)."""
     return {**dict.fromkeys(USAGE_KEYS, 0), "cost_usd": 0.0, "cost_usd_list_estimate": 0.0,
             "wall_s": 0.0}  # fmt: skip
+
+
+def _worktree_rel(worktree: Path, target: str) -> str:
+    """A denied call's target relative to the worktree when it is a path inside it."""
+    if not target.startswith("/"):
+        return target
+    try:
+        return Path(os.path.realpath(target)).relative_to(os.path.realpath(worktree)).as_posix()
+    except ValueError:
+        return target
 
 
 def _add_usage(total: dict[str, Any], u: Mapping[str, Any]) -> None:
@@ -4059,12 +4390,21 @@ def _checked_out(repo: Path) -> dict[str, str]:
 
 def _snapshot_tree(wt: Path) -> str:
     """The tree of the worktree's files as they are (a throwaway index: the worktree's own
-    index is untouched)."""
-    with tempfile.TemporaryDirectory(prefix="lattice-rebuild-idx-") as d:
-        env = {**os.environ, "GIT_INDEX_FILE": str(Path(d) / "index")}
-        _git_ok(wt, "read-tree", "HEAD", env=env)
-        _git_ok(wt, "add", "-A", "--", ".", *_junk_pathspecs(), env=env)
-        return _git_ok(wt, "write-tree", env=env)
+    index is untouched); R4: :func:`cleanverify.snapshot_tree` without the junk."""
+    return cleanverify.snapshot_tree(wt, _junk_pathspecs())
+
+
+def _protected_order(edited: Sequence[str], names: Sequence[str], root: Path) -> list[str]:
+    """R4: the restored paths in the order the restore reported them before it delegated:
+    by protected entry, then the base's files (there now) before the removed ones, each
+    sorted (``overlay_protected`` answers them sorted)."""
+    entries = [n.rstrip("/") for n in names]
+
+    def key(p: str) -> tuple[int, bool, str]:
+        hits = [k for k, e in enumerate(entries) if p == e or p.startswith(f"{e}/")]
+        return (hits[0] if hits else len(entries)), not os.path.lexists(root / p), p
+
+    return sorted(edited, key=key)
 
 
 def _tree_diff(wt: Path, a: str, b: str) -> list[str]:

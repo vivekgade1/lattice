@@ -1930,8 +1930,11 @@ class PlanManager:
             with self.lock:
                 _sum_into(plan.record["planner"]["usage"], _node_usage(u))
         elif seen.messages:  # no result (a timeout, a crash): the usage seen so far (v1.11)
+            # and its cache-inclusive list-price estimate (gap G2; unknown model: 0)
+            est = seen.cost_estimate(self.cfg.planner_model)
+            u = {**seen.totals(), "cost_usd_list_estimate": est}
             with self.lock:
-                _sum_into(plan.record["planner"]["usage"], _node_usage(seen.totals()))
+                _sum_into(plan.record["planner"]["usage"], _node_usage(u))
         if timed_out.is_set():
             return None, f"the planner did not answer within {self.cfg.planner_timeout:g}s"
         if errors:
