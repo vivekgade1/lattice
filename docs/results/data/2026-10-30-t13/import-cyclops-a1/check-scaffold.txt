@@ -1,0 +1,75 @@
+FAIL: 5 findings (A 0, B 0, C 0, D 0, R 5); 0 cases run
+
+rule (R: rule items probed on the app): GET /api/bars/{rung} answers 422 (invalid)
+  [R silent] GET /api/bars/valid rung (R3 GET /api/bars/{rung} 422 | GET /api/bars/{rung} | no caller | invalid body)
+    answered 404 'Not Found'; stated 422 None
+    observed: {"status": 404, "detail": "Not Found"} (predicted {"status": 422, "detail": null, "when": "invalid"})
+    answered 404 {"detail": "Not Found"}
+
+rule (R: rule items probed on the app): GET /api/bars/{rung}/windows answers 422 (invalid)
+  [R silent] GET /api/bars/valid rung/windows (R3 GET /api/bars/{rung}/windows 422 | GET /api/bars/{rung}/windows | no caller | invalid body)
+    answered 404 'Not Found'; stated 422 None
+    observed: {"status": 404, "detail": "Not Found"} (predicted {"status": 422, "detail": null, "when": "invalid"})
+    answered 404 {"detail": "Not Found"}
+
+rule (R: rule items probed on the app): GET /api/features/{rung} answers 422 (invalid)
+  [R silent] GET /api/features/valid rung (R3 GET /api/features/{rung} 422 | GET /api/features/{rung} | no caller | invalid body)
+    answered 404 'Not Found'; stated 422 None
+    observed: {"status": 404, "detail": "Not Found"} (predicted {"status": 422, "detail": null, "when": "invalid"})
+    answered 404 {"detail": "Not Found"}
+
+rule (R: rule items probed on the app): GET /api/patterns/{rung}/similar answers 422 (invalid)
+  [R silent] GET /api/patterns/valid rung/similar (R3 GET /api/patterns/{rung}/similar 422 | GET /api/patterns/{rung}/similar | no caller | invalid body)
+    answered 404 'Not Found'; stated 422 None
+    observed: {"status": 404, "detail": "Not Found"} (predicted {"status": 422, "detail": null, "when": "invalid"})
+    answered 404 {"detail": "Not Found"}
+
+rule (R: rule items probed on the app): GET /api/memory/{ts} answers 422 (invalid)
+  [R silent] GET /api/memory/valid ts (R3 GET /api/memory/{ts} 422 | GET /api/memory/{ts} | no caller | invalid body)
+    answered 404 'Not Found'; stated 422 None
+    observed: {"status": 404, "detail": "Not Found"} (predicted {"status": 422, "detail": null, "when": "invalid"})
+    answered 404 {"detail": "Not Found"}
+
+rule items (30 verified, 5 refuted, 30 unexercised, 0 unclear); tables verified 0/0, routes verified 0/30:
+  unexercised R1 GET /api/roots: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/quotes: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/meta: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/bars/{rung}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  refuted     R3 GET /api/bars/{rung} 422: answered 404 'Not Found'; stated 422 None
+  unexercised R1 GET /api/bars/{rung}/windows: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  refuted     R3 GET /api/bars/{rung}/windows 422: answered 404 'Not Found'; stated 422 None
+  unexercised R1 GET /api/features/{rung}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  refuted     R3 GET /api/features/{rung} 422: answered 404 'Not Found'; stated 422 None
+  unexercised R1 GET /api/regimes: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/bar/{ts}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/patterns/{rung}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/patterns/{rung}/similar: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  refuted     R3 GET /api/patterns/{rung}/similar 422: answered 404 'Not Found'; stated 422 None
+  unexercised R1 GET /api/structure/{rung}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/formations/{rung}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/bands/{rung}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/memory/{ts}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  refuted     R3 GET /api/memory/{ts} 422: answered 404 'Not Found'; stated 422 None
+  unexercised R1 GET /api/profiles: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/validation/{split}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/dq: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/eod: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/eod/{d}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/journal/{d}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/rolling: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/registry: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/parity: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/live: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/user/drawings/{rung}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 PUT /api/user/drawings/{rung}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/user/setups: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/user/setups/{slug}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 PUT /api/user/setups/{slug}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 DELETE /api/user/setups/{slug}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+
+notes:
+  - layer C: the spec has no invariants
+  - layer B: the spec has no programs; nothing to compare
+  - layer D: the spec has no scenarios
+
+timings: total 1.15s (A 0.11s, B 0.00s, C 0.00s, D 0.00s, R 1.04s)

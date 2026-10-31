@@ -1,0 +1,40 @@
+PASS: 0 findings (A 0, B 0, C 0, D 0, R 0); 0 cases run
+
+rule items (35 verified, 0 refuted, 30 unexercised, 0 unclear); tables verified 0/0, routes verified 0/30:
+  unexercised R1 GET /api/roots: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/quotes: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/meta: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/bars/{rung}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/bars/{rung}/windows: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/features/{rung}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/regimes: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/bar/{ts}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/patterns/{rung}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/patterns/{rung}/similar: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/structure/{rung}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/formations/{rung}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/bands/{rung}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/memory/{ts}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/profiles: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/validation/{split}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/dq: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/eod: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/eod/{d}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/journal/{d}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/rolling: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/registry: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/parity: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/live: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/user/drawings/{rung}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 PUT /api/user/drawings/{rung}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/user/setups: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 GET /api/user/setups/{slug}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 PUT /api/user/setups/{slug}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+  unexercised R1 DELETE /api/user/setups/{slug}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)
+
+notes:
+  - layer C: the spec has no invariants
+  - layer B: the spec has no programs; nothing to compare
+  - layer D: the spec has no scenarios
+
+timings: total 1.90s (A 0.34s, B 0.00s, C 0.00s, D 0.00s, R 1.56s)
