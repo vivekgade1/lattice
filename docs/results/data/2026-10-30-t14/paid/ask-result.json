@@ -1,0 +1,1334 @@
+{
+ "dry_run": null,
+ "data_status": "development data, exploratory (post hoc citation definition; dev spec)",
+ "head": "8d6e59b5624e78e6ebd761ef56cee01dad21519e",
+ "prereg_commit": "88c9b6830a24f515b31af3c03c1d7793f6d267cd",
+ "driver_commit": "9b0f883c276e7132d5896d9e8d2d59569b7ca7c5",
+ "prereg_last_commit": "1abbb4cf59be1e42fd920eddf057cd13b89ac4d7",
+ "driver_last_commit": "8d6e59b5624e78e6ebd761ef56cee01dad21519e",
+ "files": {
+  "docs/results/2026-10-30-t14-casko-corrected-citation-prereg.md": "afb9f2a8555fd387401546b278027bf5c5b8a41ea6ab5f02301820735f758be1",
+  "dogfood/t14_casko_questions.json": "34406098f0b756e8a52ff92f00c4423a63d6c478ea9318df5f83a0680c989ded",
+  "dogfood/t14_casko_run.py": "3ee6c457312130ae6f57418e639aeb092ba90fc5567c50eeb96c8f53d18b2736",
+  "dogfood/t14_casko_audit.py": "d8d712c7f9a3cfe68b7e61c97c21c71aa8978438d70cb598e7390415e78a0722",
+  "dogfood/t14_casko_shim.py": "afacc5221b9bb22ceadd18279d6e8141073172f1c1bea81ae446f24a27ea19b2",
+  "dogfood/dn_real_agent_shim.py": "1e6c77bbdd1e276073b277f8f4c885ccb444072869a620f1b9e4fd2e526c4617",
+  "dogfood/t14_casko_fake_claude.py": "1e624e3cf7818ebe04a338f95ece0af16330729a1a4d44491be458975699b9fb"
+ },
+ "model": "sonnet",
+ "cap_usd": 0.6,
+ "streak_rev": "a0679e9",
+ "inventory": {
+  "extract_sha256": "d51ef75340d54682a8bd2c3f40220e50c2ef31ae0eab17ef3ca68c9a39f89adc",
+  "source_files": 44,
+  "observed_workflows": false
+ },
+ "appmap_error": null,
+ "gates": {
+  "A-ANSWERED": "every question answered by the model: 6 of 6",
+  "A-CITED": "checked arm, prereg section 4: 0 known route / rule claims without a resolving, binding, accepted citation",
+  "A-COST": "ledger total <= USD 0.60"
+ },
+ "verdicts": {
+  "A-ANSWERED": true,
+  "A-CITED": true,
+  "A-COST": true
+ },
+ "counts": {
+  "questions": 6,
+  "answered": 6,
+  "not_run": 0,
+  "errors": 0,
+  "known_claims": 11,
+  "uncited_known_claims": 0,
+  "rejected_citations": 0,
+  "checked_nonresolving_citations": 0,
+  "raw_known_claims": 11,
+  "raw_uncited_known_claims": 0,
+  "raw_nonresolving_citations": 0,
+  "raw_library_rejects": 0,
+  "failure_claims_raw": 0,
+  "failure_claims_checked": 0,
+  "unknown_route_mentions": 1,
+  "unknown_rule_mentions": 0,
+  "lattice_inserted_claims": 0,
+  "downgraded_by_library": 0,
+  "correct_checked": 6,
+  "correct_raw": 6,
+  "damage": 0,
+  "total_usd": 0.371893,
+  "model_calls": 6
+ },
+ "reported": {
+  "A-REJECTED": 0,
+  "A-CORRECT": "6/6 checked, 6/6 raw, damage 0"
+ },
+ "rows": [
+  {
+   "id": "Q01",
+   "category": "routes",
+   "question": "Which API routes does the app have for check-ins?",
+   "status": "ANSWERED",
+   "seconds": 8.6,
+   "would_be_routed_model_free_by": null,
+   "model_replies": [
+    "{\"kind\":\"value\",\"answer\":\"Four routes: POST /v1/habits/{habit_id}/completions (create a check-in), GET /v1/habits/{habit_id}/completions (list them), DELETE /v1/habits/{habit_id}/completions/{id} (delete one), and POST /v1/completions/batch (create up to 100 at once).\",\"explanation\":\"The spec names all four routes in its rules and access matrix, and the code registers each of them in internal/completions/routes.go. No verified flow covers them, so the implementation is only statically extracted.\",\"implementation\":\"implemented_unverified\",\"implementation_basis\":\"static\",\"citations\":[{\"target\":\"impl:route:POST /v1/habits/{}/completions\",\"step\":null,\"quote\":\"implemented_unverified; auth Customer; registered code:internal/completions/routes.go:25\"},{\"target\":\"impl:route:GET /v1/habits/{}/completions\",\"step\":null,\"quote\":\"implemented_unverified; auth Customer; registered code:internal/completions/routes.go:26\"},{\"target\":\"impl:route:DELETE /v1/habits/{}/completions/{}\",\"step\":null,\"quote\":\"implemented_unverified; auth Customer; registered code:internal/completions/routes.go:27\"},{\"target\":\"impl:route:POST /v1/completions/batch\",\"step\":null,\"quote\":\"implemented_unverified; auth Customer; registered code:internal/completions/routes.go:28\"},{\"target\":\"rule:R72\",\"step\":null,\"quote\":\"`POST /v1/habits/{habit_id}/completions` takes `{id, date, note?}`\"},{\"target\":\"rule:R81\",\"step\":null,\"quote\":\"`GET /v1/habits/{habit_id}/completions` answers `{items, next_cursor, has_more}`\"},{\"target\":\"rule:R82\",\"step\":null,\"quote\":\"`DELETE /v1/habits/{habit_id}/completions/{id}` answers 204\"},{\"target\":\"rule:R83\",\"step\":null,\"quote\":\"`POST /v1/completions/batch` takes `{items: [{id, habit_id, date, note?}, ...]}` with 1 to 100 items\"}]}"
+   ],
+   "raw": {
+    "kind": "value",
+    "answer": "Four routes: POST /v1/habits/{habit_id}/completions (create a check-in), GET /v1/habits/{habit_id}/completions (list them), DELETE /v1/habits/{habit_id}/completions/{id} (delete one), and POST /v1/completions/batch (create up to 100 at once).",
+    "explanation": "The spec names all four routes in its rules and access matrix, and the code registers each of them in internal/completions/routes.go. No verified flow covers them, so the implementation is only statically extracted.",
+    "citations": [
+     {
+      "target": "impl:route:POST /v1/habits/{}/completions",
+      "step": null,
+      "quote": "implemented_unverified; auth Customer; registered code:internal/completions/routes.go:25"
+     },
+     {
+      "target": "impl:route:GET /v1/habits/{}/completions",
+      "step": null,
+      "quote": "implemented_unverified; auth Customer; registered code:internal/completions/routes.go:26"
+     },
+     {
+      "target": "impl:route:DELETE /v1/habits/{}/completions/{}",
+      "step": null,
+      "quote": "implemented_unverified; auth Customer; registered code:internal/completions/routes.go:27"
+     },
+     {
+      "target": "impl:route:POST /v1/completions/batch",
+      "step": null,
+      "quote": "implemented_unverified; auth Customer; registered code:internal/completions/routes.go:28"
+     },
+     {
+      "target": "rule:R72",
+      "step": null,
+      "quote": "`POST /v1/habits/{habit_id}/completions` takes `{id, date, note?}`"
+     },
+     {
+      "target": "rule:R81",
+      "step": null,
+      "quote": "`GET /v1/habits/{habit_id}/completions` answers `{items, next_cursor, has_more}`"
+     },
+     {
+      "target": "rule:R82",
+      "step": null,
+      "quote": "`DELETE /v1/habits/{habit_id}/completions/{id}` answers 204"
+     },
+     {
+      "target": "rule:R83",
+      "step": null,
+      "quote": "`POST /v1/completions/batch` takes `{items: [{id, habit_id, date, note?}, ...]}` with 1 to 100 items"
+     }
+    ],
+    "implementation": "implemented_unverified",
+    "parsed": true
+   },
+   "raw_library_rejects": [],
+   "checked": {
+    "kind": "value",
+    "answer": "Four routes: POST /v1/habits/{habit_id}/completions (create a check-in), GET /v1/habits/{habit_id}/completions (list them), DELETE /v1/habits/{habit_id}/completions/{id} (delete one), and POST /v1/completions/batch (create up to 100 at once).",
+    "explanation": "The spec names all four routes in its rules and access matrix, and the code registers each of them in internal/completions/routes.go. No verified flow covers them, so the implementation is only statically extracted.",
+    "citations": [
+     {
+      "target": "impl:route:POST /v1/habits/{}/completions",
+      "step": null,
+      "quote": "implemented_unverified; auth Customer; registered code:internal/completions/routes.go:25"
+     },
+     {
+      "target": "impl:route:GET /v1/habits/{}/completions",
+      "step": null,
+      "quote": "implemented_unverified; auth Customer; registered code:internal/completions/routes.go:26"
+     },
+     {
+      "target": "impl:route:DELETE /v1/habits/{}/completions/{}",
+      "step": null,
+      "quote": "implemented_unverified; auth Customer; registered code:internal/completions/routes.go:27"
+     },
+     {
+      "target": "impl:route:POST /v1/completions/batch",
+      "step": null,
+      "quote": "implemented_unverified; auth Customer; registered code:internal/completions/routes.go:28"
+     },
+     {
+      "target": "rule:R72",
+      "step": null,
+      "quote": "`POST /v1/habits/{habit_id}/completions` takes `{id, date, note?}`"
+     },
+     {
+      "target": "rule:R81",
+      "step": null,
+      "quote": "`GET /v1/habits/{habit_id}/completions` answers `{items, next_cursor, has_more}`"
+     },
+     {
+      "target": "rule:R82",
+      "step": null,
+      "quote": "`DELETE /v1/habits/{habit_id}/completions/{id}` answers 204"
+     },
+     {
+      "target": "rule:R83",
+      "step": null,
+      "quote": "`POST /v1/completions/batch` takes `{items: [{id, habit_id, date, note?}, ...]}` with 1 to 100 items"
+     }
+    ],
+    "rejected_citations": [],
+    "check": null,
+    "implementation": "implemented_unverified",
+    "implementation_basis": "static"
+   },
+   "downgraded_by_library": false,
+   "usage": {
+    "seconds": 8.59,
+    "tokens": 40099,
+    "input_tokens": 38995,
+    "output_tokens": 1104,
+    "cache_read_tokens": 0,
+    "cache_creation_tokens": 38993,
+    "rounds": 1,
+    "model": "sonnet",
+    "digest_elements": 435,
+    "calls": [
+     {
+      "input_tokens": 38995,
+      "cache_read_tokens": 0,
+      "prompt_tokens_est": 30676
+     }
+    ],
+    "cost_usd": 0.167016
+   },
+   "audit_raw": {
+    "claims": [
+     {
+      "claim": "POST /v1/habits/{}/completions",
+      "kind": "route",
+      "known": true,
+      "cited": true,
+      "binders": [
+       "impl:route:POST /v1/habits/{}/completions",
+       "rule:R72"
+      ],
+      "inserted": false
+     },
+     {
+      "claim": "GET /v1/habits/{}/completions",
+      "kind": "route",
+      "known": true,
+      "cited": true,
+      "binders": [
+       "impl:route:GET /v1/habits/{}/completions",
+       "rule:R81"
+      ],
+      "inserted": false
+     },
+     {
+      "claim": "DELETE /v1/habits/{}/completions/{}",
+      "kind": "route",
+      "known": true,
+      "cited": true,
+      "binders": [
+       "impl:route:DELETE /v1/habits/{}/completions/{}",
+       "rule:R82"
+      ],
+      "inserted": false
+     },
+     {
+      "claim": "POST /v1/completions/batch",
+      "kind": "route",
+      "known": true,
+      "cited": true,
+      "binders": [
+       "impl:route:POST /v1/completions/batch",
+       "rule:R83"
+      ],
+      "inserted": false
+     }
+    ],
+    "known": 4,
+    "uncited": 0,
+    "uncited_claims": [],
+    "inserted": [],
+    "unknown_routes": [],
+    "unknown_rules": [],
+    "citations": [
+     {
+      "target": "impl:route:POST /v1/habits/{}/completions",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "impl:route:GET /v1/habits/{}/completions",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "impl:route:DELETE /v1/habits/{}/completions/{}",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "impl:route:POST /v1/completions/batch",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "rule:R72",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "rule:R81",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "rule:R82",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "rule:R83",
+      "resolves": true,
+      "reason": ""
+     }
+    ],
+    "nonresolving": 0,
+    "failure_claims": []
+   },
+   "audit_checked": {
+    "claims": [
+     {
+      "claim": "POST /v1/habits/{}/completions",
+      "kind": "route",
+      "known": true,
+      "cited": true,
+      "binders": [
+       "impl:route:POST /v1/habits/{}/completions",
+       "rule:R72"
+      ],
+      "inserted": false
+     },
+     {
+      "claim": "GET /v1/habits/{}/completions",
+      "kind": "route",
+      "known": true,
+      "cited": true,
+      "binders": [
+       "impl:route:GET /v1/habits/{}/completions",
+       "rule:R81"
+      ],
+      "inserted": false
+     },
+     {
+      "claim": "DELETE /v1/habits/{}/completions/{}",
+      "kind": "route",
+      "known": true,
+      "cited": true,
+      "binders": [
+       "impl:route:DELETE /v1/habits/{}/completions/{}",
+       "rule:R82"
+      ],
+      "inserted": false
+     },
+     {
+      "claim": "POST /v1/completions/batch",
+      "kind": "route",
+      "known": true,
+      "cited": true,
+      "binders": [
+       "impl:route:POST /v1/completions/batch",
+       "rule:R83"
+      ],
+      "inserted": false
+     }
+    ],
+    "known": 4,
+    "uncited": 0,
+    "uncited_claims": [],
+    "inserted": [],
+    "unknown_routes": [],
+    "unknown_rules": [],
+    "citations": [
+     {
+      "target": "impl:route:POST /v1/habits/{}/completions",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "impl:route:GET /v1/habits/{}/completions",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "impl:route:DELETE /v1/habits/{}/completions/{}",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "impl:route:POST /v1/completions/batch",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "rule:R72",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "rule:R81",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "rule:R82",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "rule:R83",
+      "resolves": true,
+      "reason": ""
+     }
+    ],
+    "nonresolving": 0,
+    "failure_claims": []
+   },
+   "score_raw": {
+    "correct": true,
+    "why": []
+   },
+   "score_checked": {
+    "correct": true,
+    "why": []
+   },
+   "key_implementation": "implemented_unverified"
+  },
+  {
+   "id": "Q03",
+   "category": "rule requirement",
+   "question": "What does the spec require when a check-in date is more than 60 days before the user's today?",
+   "status": "ANSWERED",
+   "seconds": 4.5,
+   "would_be_routed_model_free_by": null,
+   "model_replies": [
+    "{\"kind\": \"value\", \"answer\": \"422 with code `date_too_old`; `t - 60` itself is still accepted.\", \"explanation\": \"R75 says a check-in date earlier than t - 60 answers 422 `date_too_old`, with t-60 accepted. In check_in_dates, step 4 shows a 422 date_too_old with no completion written (count=0), and step 5 shows an older-but-in-range date created with 201. The implementation is present in code for the completions route but not verified by a flow.\", \"citations\": [{\"target\": \"rule:R75\", \"step\": null, \"quote\": \"A check-in `date` more than 60 days before the user's today (earlier than `t - 60`) answers 422 with code `date_too_old`; `t - 60` itself is accepted.\"}, {\"target\": \"scenario:check_in_dates\", \"step\": 4, \"quote\": \"POST /v1/habits/00000000-0000-4000-8000-000000000102/completions as ann -> 422\"}, {\"target\": \"impl:route:POST /v1/habits/{}/completions\", \"step\": null, \"quote\": \"422 date_too_old\"}], \"implementation\": \"implemented_unverified\", \"implementation_basis\": \"static\"}"
+   ],
+   "raw": {
+    "kind": "value",
+    "answer": "422 with code `date_too_old`; `t - 60` itself is still accepted.",
+    "explanation": "R75 says a check-in date earlier than t - 60 answers 422 `date_too_old`, with t-60 accepted. In check_in_dates, step 4 shows a 422 date_too_old with no completion written (count=0), and step 5 shows an older-but-in-range date created with 201. The implementation is present in code for the completions route but not verified by a flow.",
+    "citations": [
+     {
+      "target": "rule:R75",
+      "step": null,
+      "quote": "A check-in `date` more than 60 days before the user's today (earlier than `t - 60`) answers 422 with code `date_too_old`; `t - 60` itself is accepted."
+     },
+     {
+      "target": "scenario:check_in_dates",
+      "step": 4,
+      "quote": "POST /v1/habits/00000000-0000-4000-8000-000000000102/completions as ann -> 422"
+     },
+     {
+      "target": "impl:route:POST /v1/habits/{}/completions",
+      "step": null,
+      "quote": "422 date_too_old"
+     }
+    ],
+    "implementation": "implemented_unverified",
+    "parsed": true
+   },
+   "raw_library_rejects": [],
+   "checked": {
+    "kind": "value",
+    "answer": "422 with code `date_too_old`; `t - 60` itself is still accepted.",
+    "explanation": "R75 says a check-in date earlier than t - 60 answers 422 `date_too_old`, with t-60 accepted. In check_in_dates, step 4 shows a 422 date_too_old with no completion written (count=0), and step 5 shows an older-but-in-range date created with 201. The implementation is present in code for the completions route but not verified by a flow.",
+    "citations": [
+     {
+      "target": "rule:R75",
+      "step": null,
+      "quote": "A check-in `date` more than 60 days before the user's today (earlier than `t - 60`) answers 422 with code `date_too_old`; `t - 60` itself is accepted."
+     },
+     {
+      "target": "scenario:check_in_dates",
+      "step": 4,
+      "quote": "POST /v1/habits/00000000-0000-4000-8000-000000000102/completions as ann -> 422"
+     },
+     {
+      "target": "impl:route:POST /v1/habits/{}/completions",
+      "step": null,
+      "quote": "422 date_too_old"
+     }
+    ],
+    "rejected_citations": [],
+    "check": null,
+    "implementation": "implemented_unverified",
+    "implementation_basis": "static"
+   },
+   "downgraded_by_library": false,
+   "usage": {
+    "seconds": 4.46,
+    "tokens": 39312,
+    "input_tokens": 38924,
+    "output_tokens": 388,
+    "cache_read_tokens": 31201,
+    "cache_creation_tokens": 7721,
+    "rounds": 1,
+    "model": "sonnet",
+    "digest_elements": 434,
+    "calls": [
+     {
+      "input_tokens": 38924,
+      "cache_read_tokens": 31201,
+      "prompt_tokens_est": 30721
+     }
+    ],
+    "cost_usd": 0.037888
+   },
+   "audit_raw": {
+    "claims": [
+     {
+      "claim": "R75",
+      "kind": "rule",
+      "known": true,
+      "cited": true,
+      "binders": [
+       "rule:R75"
+      ],
+      "inserted": false
+     }
+    ],
+    "known": 1,
+    "uncited": 0,
+    "uncited_claims": [],
+    "inserted": [],
+    "unknown_routes": [],
+    "unknown_rules": [],
+    "citations": [
+     {
+      "target": "rule:R75",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "scenario:check_in_dates",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "impl:route:POST /v1/habits/{}/completions",
+      "resolves": true,
+      "reason": ""
+     }
+    ],
+    "nonresolving": 0,
+    "failure_claims": []
+   },
+   "audit_checked": {
+    "claims": [
+     {
+      "claim": "R75",
+      "kind": "rule",
+      "known": true,
+      "cited": true,
+      "binders": [
+       "rule:R75"
+      ],
+      "inserted": false
+     }
+    ],
+    "known": 1,
+    "uncited": 0,
+    "uncited_claims": [],
+    "inserted": [],
+    "unknown_routes": [],
+    "unknown_rules": [],
+    "citations": [
+     {
+      "target": "rule:R75",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "scenario:check_in_dates",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "impl:route:POST /v1/habits/{}/completions",
+      "resolves": true,
+      "reason": ""
+     }
+    ],
+    "nonresolving": 0,
+    "failure_claims": []
+   },
+   "score_raw": {
+    "correct": true,
+    "why": []
+   },
+   "score_checked": {
+    "correct": true,
+    "why": []
+   },
+   "key_implementation": "implemented_unverified"
+  },
+  {
+   "id": "Q04",
+   "category": "not implemented",
+   "question": "Is there an endpoint to reset a forgotten password, and does the code implement one?",
+   "status": "ANSWERED",
+   "seconds": 7.4,
+   "would_be_routed_model_free_by": null,
+   "model_replies": [
+    "{\"kind\":\"not_specified\",\"answer\":\"No. The digest has no password-reset or forgotten-password endpoint, and the code registers none.\",\"explanation\":\"The spec names only register, login, refresh and logout under /v1/auth, and the code registers the same four routes. Nothing covers resetting a password; the only password rules are length bounds at registration and bad credentials at login.\",\"citations\":[{\"target\":\"cell:no token|POST /v1/auth/login\",\"step\":null,\"quote\":\"200/401\"},{\"target\":\"impl:route:POST /v1/auth/register\",\"step\":null,\"quote\":\"registered code:internal/auth/routes.go:25\"},{\"target\":\"impl:route:POST /v1/auth/refresh\",\"step\":null,\"quote\":\"registered code:internal/auth/routes.go:27\"},{\"target\":\"rule:R9\",\"step\":null,\"quote\":\"A password is 8 to 72 bytes\"}],\"implementation\":\"not_specified_not_implemented\",\"implementation_basis\":\"inferred\"}"
+   ],
+   "raw": {
+    "kind": "not_specified",
+    "answer": "No. The digest has no password-reset or forgotten-password endpoint, and the code registers none.",
+    "explanation": "The spec names only register, login, refresh and logout under /v1/auth, and the code registers the same four routes. Nothing covers resetting a password; the only password rules are length bounds at registration and bad credentials at login.",
+    "citations": [
+     {
+      "target": "cell:no token|POST /v1/auth/login",
+      "step": null,
+      "quote": "200/401"
+     },
+     {
+      "target": "impl:route:POST /v1/auth/register",
+      "step": null,
+      "quote": "registered code:internal/auth/routes.go:25"
+     },
+     {
+      "target": "impl:route:POST /v1/auth/refresh",
+      "step": null,
+      "quote": "registered code:internal/auth/routes.go:27"
+     },
+     {
+      "target": "rule:R9",
+      "step": null,
+      "quote": "A password is 8 to 72 bytes"
+     }
+    ],
+    "implementation": "not_specified_not_implemented",
+    "parsed": true
+   },
+   "raw_library_rejects": [],
+   "checked": {
+    "kind": "not_specified",
+    "answer": "No. The digest has no password-reset or forgotten-password endpoint, and the code registers none.",
+    "explanation": "The spec names only register, login, refresh and logout under /v1/auth, and the code registers the same four routes. Nothing covers resetting a password; the only password rules are length bounds at registration and bad credentials at login.",
+    "citations": [
+     {
+      "target": "cell:no token|POST /v1/auth/login",
+      "step": null,
+      "quote": "200/401"
+     },
+     {
+      "target": "impl:route:POST /v1/auth/register",
+      "step": null,
+      "quote": "registered code:internal/auth/routes.go:25"
+     },
+     {
+      "target": "impl:route:POST /v1/auth/refresh",
+      "step": null,
+      "quote": "registered code:internal/auth/routes.go:27"
+     },
+     {
+      "target": "rule:R9",
+      "step": null,
+      "quote": "A password is 8 to 72 bytes"
+     }
+    ],
+    "rejected_citations": [],
+    "check": null,
+    "implementation": "not_specified_not_implemented",
+    "implementation_basis": "inferred"
+   },
+   "downgraded_by_library": false,
+   "usage": {
+    "seconds": 7.36,
+    "tokens": 39889,
+    "input_tokens": 39321,
+    "output_tokens": 568,
+    "cache_read_tokens": 31201,
+    "cache_creation_tokens": 8118,
+    "rounds": 1,
+    "model": "sonnet",
+    "digest_elements": 435,
+    "calls": [
+     {
+      "input_tokens": 39321,
+      "cache_read_tokens": 31201,
+      "prompt_tokens_est": 30706
+     }
+    ],
+    "cost_usd": 0.041276
+   },
+   "audit_raw": {
+    "claims": [],
+    "known": 0,
+    "uncited": 0,
+    "uncited_claims": [],
+    "inserted": [],
+    "unknown_routes": [],
+    "unknown_rules": [],
+    "citations": [
+     {
+      "target": "cell:no token|POST /v1/auth/login",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "impl:route:POST /v1/auth/register",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "impl:route:POST /v1/auth/refresh",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "rule:R9",
+      "resolves": true,
+      "reason": ""
+     }
+    ],
+    "nonresolving": 0,
+    "failure_claims": []
+   },
+   "audit_checked": {
+    "claims": [],
+    "known": 0,
+    "uncited": 0,
+    "uncited_claims": [],
+    "inserted": [],
+    "unknown_routes": [],
+    "unknown_rules": [],
+    "citations": [
+     {
+      "target": "cell:no token|POST /v1/auth/login",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "impl:route:POST /v1/auth/register",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "impl:route:POST /v1/auth/refresh",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "rule:R9",
+      "resolves": true,
+      "reason": ""
+     }
+    ],
+    "nonresolving": 0,
+    "failure_claims": []
+   },
+   "score_raw": {
+    "correct": true,
+    "why": []
+   },
+   "score_checked": {
+    "correct": true,
+    "why": []
+   },
+   "key_implementation": "not_specified_not_implemented"
+  },
+  {
+   "id": "Q06",
+   "category": "who can call",
+   "question": "Who can delete a check-in, and what does another signed-in user get if they try?",
+   "status": "ANSWERED",
+   "seconds": 8.7,
+   "would_be_routed_model_free_by": null,
+   "model_replies": [
+    "{\"kind\":\"value\",\"answer\":\"Only the signed-in owner of the habit can delete a check-in (204). Another signed-in user gets 404 with code `not_found`, the same as for an id that does not exist, and nothing is written.\",\"explanation\":\"R82 gives 204 for a delete and sets `deleted_at`. R28 says another user's check-in answers 404 `not_found` on every route, and the access matrix has ben at 404 on this route. Ann's own cell also allows 404/409; the scenario shown confirms 404 for a check-in under a different habit or one already deleted, and 409 `habit_archived` for an archived habit.\",\"citations\":[{\"target\":\"rule:R82\",\"step\":null,\"quote\":\"answers 204 and sets the check-in's `deleted_at`\"},{\"target\":\"rule:R28\",\"step\":null,\"quote\":\"A habit, check-in, nudge or device of another user answers 404 with code `not_found` on every route\"},{\"target\":\"cell:ben|DELETE /v1/habits/{}/completions/{}\",\"step\":null,\"quote\":\"404\"},{\"target\":\"cell:ann|DELETE /v1/habits/{}/completions/{}\",\"step\":null,\"quote\":\"204/404/409\"},{\"target\":\"impl:route:DELETE /v1/habits/{}/completions/{}\",\"step\":null,\"quote\":\"implemented_unverified\"}],\"implementation\":\"implemented_unverified\",\"implementation_basis\":\"static\"}"
+   ],
+   "raw": {
+    "kind": "value",
+    "answer": "Only the signed-in owner of the habit can delete a check-in (204). Another signed-in user gets 404 with code `not_found`, the same as for an id that does not exist, and nothing is written.",
+    "explanation": "R82 gives 204 for a delete and sets `deleted_at`. R28 says another user's check-in answers 404 `not_found` on every route, and the access matrix has ben at 404 on this route. Ann's own cell also allows 404/409; the scenario shown confirms 404 for a check-in under a different habit or one already deleted, and 409 `habit_archived` for an archived habit.",
+    "citations": [
+     {
+      "target": "rule:R82",
+      "step": null,
+      "quote": "answers 204 and sets the check-in's `deleted_at`"
+     },
+     {
+      "target": "rule:R28",
+      "step": null,
+      "quote": "A habit, check-in, nudge or device of another user answers 404 with code `not_found` on every route"
+     },
+     {
+      "target": "cell:ben|DELETE /v1/habits/{}/completions/{}",
+      "step": null,
+      "quote": "404"
+     },
+     {
+      "target": "cell:ann|DELETE /v1/habits/{}/completions/{}",
+      "step": null,
+      "quote": "204/404/409"
+     },
+     {
+      "target": "impl:route:DELETE /v1/habits/{}/completions/{}",
+      "step": null,
+      "quote": "implemented_unverified"
+     }
+    ],
+    "implementation": "implemented_unverified",
+    "parsed": true
+   },
+   "raw_library_rejects": [],
+   "checked": {
+    "kind": "value",
+    "answer": "Only the signed-in owner of the habit can delete a check-in (204). Another signed-in user gets 404 with code `not_found`, the same as for an id that does not exist, and nothing is written.",
+    "explanation": "R82 gives 204 for a delete and sets `deleted_at`. R28 says another user's check-in answers 404 `not_found` on every route, and the access matrix has ben at 404 on this route. Ann's own cell also allows 404/409; the scenario shown confirms 404 for a check-in under a different habit or one already deleted, and 409 `habit_archived` for an archived habit.",
+    "citations": [
+     {
+      "target": "rule:R82",
+      "step": null,
+      "quote": "answers 204 and sets the check-in's `deleted_at`"
+     },
+     {
+      "target": "rule:R28",
+      "step": null,
+      "quote": "A habit, check-in, nudge or device of another user answers 404 with code `not_found` on every route"
+     },
+     {
+      "target": "cell:ben|DELETE /v1/habits/{}/completions/{}",
+      "step": null,
+      "quote": "404"
+     },
+     {
+      "target": "cell:ann|DELETE /v1/habits/{}/completions/{}",
+      "step": null,
+      "quote": "204/404/409"
+     },
+     {
+      "target": "impl:route:DELETE /v1/habits/{}/completions/{}",
+      "step": null,
+      "quote": "implemented_unverified"
+     }
+    ],
+    "rejected_citations": [],
+    "check": null,
+    "implementation": "implemented_unverified",
+    "implementation_basis": "static"
+   },
+   "downgraded_by_library": false,
+   "usage": {
+    "seconds": 8.66,
+    "tokens": 39934,
+    "input_tokens": 38898,
+    "output_tokens": 1036,
+    "cache_read_tokens": 31201,
+    "cache_creation_tokens": 7695,
+    "rounds": 1,
+    "model": "sonnet",
+    "digest_elements": 434,
+    "calls": [
+     {
+      "input_tokens": 38898,
+      "cache_read_tokens": 31201,
+      "prompt_tokens_est": 30677
+     }
+    ],
+    "cost_usd": 0.044264
+   },
+   "audit_raw": {
+    "claims": [
+     {
+      "claim": "R82",
+      "kind": "rule",
+      "known": true,
+      "cited": true,
+      "binders": [
+       "rule:R82"
+      ],
+      "inserted": false
+     },
+     {
+      "claim": "R28",
+      "kind": "rule",
+      "known": true,
+      "cited": true,
+      "binders": [
+       "rule:R28"
+      ],
+      "inserted": false
+     }
+    ],
+    "known": 2,
+    "uncited": 0,
+    "uncited_claims": [],
+    "inserted": [],
+    "unknown_routes": [],
+    "unknown_rules": [],
+    "citations": [
+     {
+      "target": "rule:R82",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "rule:R28",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "cell:ben|DELETE /v1/habits/{}/completions/{}",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "cell:ann|DELETE /v1/habits/{}/completions/{}",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "impl:route:DELETE /v1/habits/{}/completions/{}",
+      "resolves": true,
+      "reason": ""
+     }
+    ],
+    "nonresolving": 0,
+    "failure_claims": []
+   },
+   "audit_checked": {
+    "claims": [
+     {
+      "claim": "R82",
+      "kind": "rule",
+      "known": true,
+      "cited": true,
+      "binders": [
+       "rule:R82"
+      ],
+      "inserted": false
+     },
+     {
+      "claim": "R28",
+      "kind": "rule",
+      "known": true,
+      "cited": true,
+      "binders": [
+       "rule:R28"
+      ],
+      "inserted": false
+     }
+    ],
+    "known": 2,
+    "uncited": 0,
+    "uncited_claims": [],
+    "inserted": [],
+    "unknown_routes": [],
+    "unknown_rules": [],
+    "citations": [
+     {
+      "target": "rule:R82",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "rule:R28",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "cell:ben|DELETE /v1/habits/{}/completions/{}",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "cell:ann|DELETE /v1/habits/{}/completions/{}",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "impl:route:DELETE /v1/habits/{}/completions/{}",
+      "resolves": true,
+      "reason": ""
+     }
+    ],
+    "nonresolving": 0,
+    "failure_claims": []
+   },
+   "score_raw": {
+    "correct": true,
+    "why": []
+   },
+   "score_checked": {
+    "correct": true,
+    "why": []
+   },
+   "key_implementation": "implemented_unverified"
+  },
+  {
+   "id": "Q07",
+   "category": "not specified",
+   "question": "What is the maximum number of devices one user may register?",
+   "status": "ANSWERED",
+   "seconds": 6.2,
+   "would_be_routed_model_free_by": null,
+   "model_replies": [
+    "{\"kind\":\"not_specified\",\"answer\":\"The spec sets no maximum number of devices per user.\",\"explanation\":\"The only device limit is that a push_token is on at most one device row. Registering a device (R31) and re-registering an existing token (R32) say nothing about a per-user cap, and the 50-habit cap is the only per-user limit in the digest. The code extract lists no device limit either.\",\"citations\":[{\"target\":\"invariant:one_device_per_push_token\",\"step\":null,\"quote\":\"A push_token is on at most one device row.\"},{\"target\":\"rule:R31\",\"step\":null,\"quote\":\"`POST /v1/devices` takes `{installation_id, platform, push_token, timezone, app_version}` and answers 201 with the device\"},{\"target\":\"rule:R32\",\"step\":null,\"quote\":\"there is never more than one row per `push_token`\"}],\"implementation\":\"not_specified_not_implemented\",\"implementation_basis\":\"inferred\"}"
+   ],
+   "raw": {
+    "kind": "not_specified",
+    "answer": "The spec sets no maximum number of devices per user.",
+    "explanation": "The only device limit is that a push_token is on at most one device row. Registering a device (R31) and re-registering an existing token (R32) say nothing about a per-user cap, and the 50-habit cap is the only per-user limit in the digest. The code extract lists no device limit either.",
+    "citations": [
+     {
+      "target": "invariant:one_device_per_push_token",
+      "step": null,
+      "quote": "A push_token is on at most one device row."
+     },
+     {
+      "target": "rule:R31",
+      "step": null,
+      "quote": "`POST /v1/devices` takes `{installation_id, platform, push_token, timezone, app_version}` and answers 201 with the device"
+     },
+     {
+      "target": "rule:R32",
+      "step": null,
+      "quote": "there is never more than one row per `push_token`"
+     }
+    ],
+    "implementation": "not_specified_not_implemented",
+    "parsed": true
+   },
+   "raw_library_rejects": [],
+   "checked": {
+    "kind": "not_specified",
+    "answer": "The spec sets no maximum number of devices per user.",
+    "explanation": "The only device limit is that a push_token is on at most one device row. Registering a device (R31) and re-registering an existing token (R32) say nothing about a per-user cap, and the 50-habit cap is the only per-user limit in the digest. The code extract lists no device limit either.",
+    "citations": [
+     {
+      "target": "invariant:one_device_per_push_token",
+      "step": null,
+      "quote": "A push_token is on at most one device row."
+     },
+     {
+      "target": "rule:R31",
+      "step": null,
+      "quote": "`POST /v1/devices` takes `{installation_id, platform, push_token, timezone, app_version}` and answers 201 with the device"
+     },
+     {
+      "target": "rule:R32",
+      "step": null,
+      "quote": "there is never more than one row per `push_token`"
+     }
+    ],
+    "rejected_citations": [],
+    "check": null,
+    "implementation": "not_specified_not_implemented",
+    "implementation_basis": "inferred"
+   },
+   "downgraded_by_library": false,
+   "usage": {
+    "seconds": 6.19,
+    "tokens": 39402,
+    "input_tokens": 38841,
+    "output_tokens": 561,
+    "cache_read_tokens": 31201,
+    "cache_creation_tokens": 7638,
+    "rounds": 1,
+    "model": "sonnet",
+    "digest_elements": 437,
+    "calls": [
+     {
+      "input_tokens": 38841,
+      "cache_read_tokens": 31201,
+      "prompt_tokens_est": 30645
+     }
+    ],
+    "cost_usd": 0.039286
+   },
+   "audit_raw": {
+    "claims": [
+     {
+      "claim": "R31",
+      "kind": "rule",
+      "known": true,
+      "cited": true,
+      "binders": [
+       "rule:R31"
+      ],
+      "inserted": false
+     },
+     {
+      "claim": "R32",
+      "kind": "rule",
+      "known": true,
+      "cited": true,
+      "binders": [
+       "rule:R32"
+      ],
+      "inserted": false
+     }
+    ],
+    "known": 2,
+    "uncited": 0,
+    "uncited_claims": [],
+    "inserted": [],
+    "unknown_routes": [],
+    "unknown_rules": [],
+    "citations": [
+     {
+      "target": "invariant:one_device_per_push_token",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "rule:R31",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "rule:R32",
+      "resolves": true,
+      "reason": ""
+     }
+    ],
+    "nonresolving": 0,
+    "failure_claims": []
+   },
+   "audit_checked": {
+    "claims": [
+     {
+      "claim": "R31",
+      "kind": "rule",
+      "known": true,
+      "cited": true,
+      "binders": [
+       "rule:R31"
+      ],
+      "inserted": false
+     },
+     {
+      "claim": "R32",
+      "kind": "rule",
+      "known": true,
+      "cited": true,
+      "binders": [
+       "rule:R32"
+      ],
+      "inserted": false
+     }
+    ],
+    "known": 2,
+    "uncited": 0,
+    "uncited_claims": [],
+    "inserted": [],
+    "unknown_routes": [],
+    "unknown_rules": [],
+    "citations": [
+     {
+      "target": "invariant:one_device_per_push_token",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "rule:R31",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "rule:R32",
+      "resolves": true,
+      "reason": ""
+     }
+    ],
+    "nonresolving": 0,
+    "failure_claims": []
+   },
+   "score_raw": {
+    "correct": true,
+    "why": []
+   },
+   "score_checked": {
+    "correct": true,
+    "why": []
+   },
+   "key_implementation": null
+  },
+  {
+   "id": "Q08",
+   "category": "trap (false premise)",
+   "question": "What does DELETE /v1/nudges/{id} answer when the nudge was already dismissed?",
+   "status": "ANSWERED",
+   "seconds": 6.9,
+   "would_be_routed_model_free_by": null,
+   "model_replies": [
+    "{\"kind\": \"not_specified\", \"answer\": \"The digest does not specify any DELETE /v1/nudges/{id} endpoint. What it does specify is POST /v1/nudges/{id}/dismiss, which answers 409 with code nudge_dismissed when the nudge was already dismissed.\", \"explanation\": \"No access-matrix cell, scenario or rule mentions DELETE on a nudge, and the code registers no such route. Dismissing is only specified as POST /v1/nudges/{id}/dismiss, and R138 and the dismiss_twice_is_refused scenario give the 409 nudge_dismissed answer for a second dismiss.\", \"citations\": [{\"target\": \"rule:R138\", \"step\": null, \"quote\": \"a nudge already dismissed answers 409 with code `nudge_dismissed`, unchanged\"}, {\"target\": \"scenario:dismiss_twice_is_refused\", \"step\": 3, \"quote\": \"POST /v1/nudges/00000000-0000-4000-8000-000000000500/dismiss as ann -> 409\"}], \"implementation\": \"not_specified_not_implemented\", \"implementation_basis\": \"inferred\"}"
+   ],
+   "raw": {
+    "kind": "not_specified",
+    "answer": "The digest does not specify any DELETE /v1/nudges/{id} endpoint. What it does specify is POST /v1/nudges/{id}/dismiss, which answers 409 with code nudge_dismissed when the nudge was already dismissed.",
+    "explanation": "No access-matrix cell, scenario or rule mentions DELETE on a nudge, and the code registers no such route. Dismissing is only specified as POST /v1/nudges/{id}/dismiss, and R138 and the dismiss_twice_is_refused scenario give the 409 nudge_dismissed answer for a second dismiss.",
+    "citations": [
+     {
+      "target": "rule:R138",
+      "step": null,
+      "quote": "a nudge already dismissed answers 409 with code `nudge_dismissed`, unchanged"
+     },
+     {
+      "target": "scenario:dismiss_twice_is_refused",
+      "step": 3,
+      "quote": "POST /v1/nudges/00000000-0000-4000-8000-000000000500/dismiss as ann -> 409"
+     }
+    ],
+    "implementation": "not_specified_not_implemented",
+    "parsed": true
+   },
+   "raw_library_rejects": [],
+   "checked": {
+    "kind": "not_specified",
+    "answer": "The digest does not specify any DELETE /v1/nudges/{id} endpoint. What it does specify is POST /v1/nudges/{id}/dismiss, which answers 409 with code nudge_dismissed when the nudge was already dismissed.",
+    "explanation": "No access-matrix cell, scenario or rule mentions DELETE on a nudge, and the code registers no such route. Dismissing is only specified as POST /v1/nudges/{id}/dismiss, and R138 and the dismiss_twice_is_refused scenario give the 409 nudge_dismissed answer for a second dismiss.",
+    "citations": [
+     {
+      "target": "rule:R138",
+      "step": null,
+      "quote": "a nudge already dismissed answers 409 with code `nudge_dismissed`, unchanged"
+     },
+     {
+      "target": "scenario:dismiss_twice_is_refused",
+      "step": 3,
+      "quote": "POST /v1/nudges/00000000-0000-4000-8000-000000000500/dismiss as ann -> 409"
+     }
+    ],
+    "rejected_citations": [],
+    "check": null,
+    "implementation": "not_specified_not_implemented",
+    "implementation_basis": "inferred"
+   },
+   "downgraded_by_library": false,
+   "usage": {
+    "seconds": 6.86,
+    "tokens": 39782,
+    "input_tokens": 38995,
+    "output_tokens": 787,
+    "cache_read_tokens": 31201,
+    "cache_creation_tokens": 7792,
+    "rounds": 1,
+    "model": "sonnet",
+    "digest_elements": 434,
+    "calls": [
+     {
+      "input_tokens": 38995,
+      "cache_read_tokens": 31201,
+      "prompt_tokens_est": 30715
+     }
+    ],
+    "cost_usd": 0.042162
+   },
+   "audit_raw": {
+    "claims": [
+     {
+      "claim": "POST /v1/nudges/{}/dismiss",
+      "kind": "route",
+      "known": true,
+      "cited": true,
+      "binders": [
+       "rule:R138",
+       "scenario:dismiss_twice_is_refused"
+      ],
+      "inserted": false
+     },
+     {
+      "claim": "R138",
+      "kind": "rule",
+      "known": true,
+      "cited": true,
+      "binders": [
+       "rule:R138"
+      ],
+      "inserted": false
+     }
+    ],
+    "known": 2,
+    "uncited": 0,
+    "uncited_claims": [],
+    "inserted": [],
+    "unknown_routes": [
+     "DELETE /v1/nudges/{}"
+    ],
+    "unknown_rules": [],
+    "citations": [
+     {
+      "target": "rule:R138",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "scenario:dismiss_twice_is_refused",
+      "resolves": true,
+      "reason": ""
+     }
+    ],
+    "nonresolving": 0,
+    "failure_claims": []
+   },
+   "audit_checked": {
+    "claims": [
+     {
+      "claim": "POST /v1/nudges/{}/dismiss",
+      "kind": "route",
+      "known": true,
+      "cited": true,
+      "binders": [
+       "rule:R138",
+       "scenario:dismiss_twice_is_refused"
+      ],
+      "inserted": false
+     },
+     {
+      "claim": "R138",
+      "kind": "rule",
+      "known": true,
+      "cited": true,
+      "binders": [
+       "rule:R138"
+      ],
+      "inserted": false
+     }
+    ],
+    "known": 2,
+    "uncited": 0,
+    "uncited_claims": [],
+    "inserted": [],
+    "unknown_routes": [
+     "DELETE /v1/nudges/{}"
+    ],
+    "unknown_rules": [],
+    "citations": [
+     {
+      "target": "rule:R138",
+      "resolves": true,
+      "reason": ""
+     },
+     {
+      "target": "scenario:dismiss_twice_is_refused",
+      "resolves": true,
+      "reason": ""
+     }
+    ],
+    "nonresolving": 0,
+    "failure_claims": []
+   },
+   "score_raw": {
+    "correct": true,
+    "why": []
+   },
+   "score_checked": {
+    "correct": true,
+    "why": []
+   },
+   "key_implementation": null
+  }
+ ]
+}
