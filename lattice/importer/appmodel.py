@@ -283,8 +283,10 @@ class RpcInfo:
 class ExcludedRoute:
     """A route the front end found but sets apart: ``kind`` ``framework`` (the
     framework's own: docs, static files, an index redirecting to them -- not in the
-    route denominator) or ``unreachable`` (one of ``RepoModel.routes`` that probes cannot
-    exercise, e.g. it calls a network service), with the ``reason``."""
+    route denominator), ``unreachable`` (one of ``RepoModel.routes`` that probes cannot
+    exercise, e.g. it calls a network service) or ``unsupported`` (a route the spec
+    language cannot express, e.g. a ``{name:path}`` catch-all hole, which matches across
+    ``/`` while a spec path hole is one segment), with the ``reason``."""
 
     method: str
     path: str
