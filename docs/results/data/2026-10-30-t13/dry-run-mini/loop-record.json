@@ -1,0 +1,103 @@
+{
+ "id": "b1",
+ "project": "t13-mini",
+ "changes": [
+  "t13"
+ ],
+ "status": "passed",
+ "model": "sonnet",
+ "agent": "claude",
+ "max_rounds": 1,
+ "started": "2026-10-31T11:12:02Z",
+ "finished": "2026-10-31T11:12:03Z",
+ "rounds": [
+  {
+   "n": 1,
+   "started": "2026-10-31T11:12:02Z",
+   "finished": "2026-10-31T11:12:03Z",
+   "agent_summary": "fake agent: the reference file",
+   "files_changed": [
+    "minisvc/server.py"
+   ],
+   "check": {
+    "verdict": "pass",
+    "counts": {
+     "A": 0,
+     "B": 0,
+     "C": 0,
+     "D": 0,
+     "R": 0
+    },
+    "findings": []
+   },
+   "agent": {
+    "cost_usd": 0.0,
+    "cost_usd_list_estimate": 0.0,
+    "duration_ms": 1,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "num_turns": 1,
+    "session_id": "t13-fake-0000-0000-0000-000000000000"
+   },
+   "gates": [
+    {
+     "command": "./check.sh",
+     "exit_code": 0,
+     "seconds": 0.4,
+     "output_tail": "PASS: 0 findings (A 0, B 0, C 0, D 0, R 0); 0 cases run\n\nrule items (5 verified, 0 refuted, 8 unexercised, 0 unclear); tables verified 0/0, routes verified 0/5:\n  unexercised R1 GET /health: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 GET /notes: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 POST /notes: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R3 POST /notes 422 text must not be blank: unreachable-by-probe: no example triggers it\n  unexercised R1 GET /notes/{note_id}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R3 GET /notes/{note_id} 404 no such note: unreachable-by-probe: the route addresses no row by id\n  unexercised R1 DELETE /notes/{note_id}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R3 DELETE /notes/{note_id} 404 no such note: unreachable-by-probe: the route addresses no row by id\n\nnotes:\n  - layer C: the spec has no invariants\n  - layer B: the spec has no programs; nothing to compare\n  - layer D: the spec has no scenarios\n\ntimings: total 0.17s (A 0.01s, B 0.00s, C 0.00s, D 0.00s, R 0.16s)\n"
+    }
+   ],
+   "spec_edited": [],
+   "error": null,
+   "wall_s": 0.95
+  }
+ ],
+ "targets": [],
+ "gates": [
+  "./check.sh"
+ ],
+ "base": "089d6e63367a84cf4601cd0fe6e8a347322055c2",
+ "branch": "rebuild/t13",
+ "worktree": "<scratch>/build-repo/.lattice/rebuilds/t13-mini-b1-42319d",
+ "merge_hint": "Studio never merges. To take the rebuilt code, run `git merge rebuild/t13` in <scratch>/build-repo; the worktree <scratch>/build-repo/.lattice/rebuilds/t13-mini-b1-42319d stays for review.",
+ "usage": {
+  "cost_usd": 0.0,
+  "cost_usd_list_estimate": 0.0,
+  "duration_ms": 1,
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation_input_tokens": 0,
+  "wall_s": 1.06
+ },
+ "warnings": [],
+ "error": null,
+ "pids": [],
+ "attempts": 1,
+ "timeline": [
+  {
+   "at": "2026-10-31T11:12:02Z",
+   "event": "started"
+  },
+  {
+   "at": "2026-10-31T11:12:03Z",
+   "event": "passed"
+  }
+ ],
+ "interrupted": false,
+ "interrupted_at": null,
+ "interrupted_reason": null,
+ "session_id": "t13-fake-0000-0000-0000-000000000000",
+ "commit": {
+  "sha": "e0a89227bf2737c5e8a29d0cb10aec79aaeafc9d",
+  "message": "build: Build the app's HTTP API from the spec: implement minisvc/server.py (the factory create_app()) so that it serves every contract of spec.py's CONTRACTS with the behaviour the code base around it implies. Read CONTEXT.md first. Change only minisvc/server.py.\n\nRebuilt by Lattice Studio from the accepted change(s) t13; the gates passed in round 1 of 1.\n\nLattice-Rebuild: b1 (t13-mini)\nLattice-Rebuild: t13\n",
+  "files_changed": [
+   "minisvc/server.py"
+  ],
+  "name_status": [
+   "M minisvc/server.py"
+  ]
+ }
+}
