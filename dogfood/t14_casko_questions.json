@@ -10,6 +10,7 @@
  "questions": [
   {
    "id": "Q01",
+   "status": "live",
    "category": "routes",
    "question": "Which API routes does the app have for check-ins?",
    "key": {
@@ -83,6 +84,8 @@
   },
   {
    "id": "Q02",
+   "status": "dropped",
+   "dropped_by": "Amendment 1",
    "category": "trap (false premise)",
    "question": "Which admin role is allowed to delete another user's habits?",
    "key": {
@@ -133,6 +136,7 @@
   },
   {
    "id": "Q03",
+   "status": "live",
    "category": "rule requirement",
    "question": "What does the spec require when a check-in date is more than 60 days before the user's today?",
    "key": {
@@ -185,6 +189,7 @@
   },
   {
    "id": "Q04",
+   "status": "live",
    "category": "not implemented",
    "question": "Is there an endpoint to reset a forgotten password, and does the code implement one?",
    "key": {
@@ -240,6 +245,8 @@
   },
   {
    "id": "Q05",
+   "status": "dropped",
+   "dropped_by": "Amendment 1",
    "category": "where in the code",
    "question": "Where in the Go code is the limit of 120 requests per minute per signed-in user enforced?",
    "key": {
@@ -298,6 +305,7 @@
   },
   {
    "id": "Q06",
+   "status": "live",
    "category": "who can call",
    "question": "Who can delete a check-in, and what does another signed-in user get if they try?",
    "key": {
@@ -376,6 +384,7 @@
   },
   {
    "id": "Q07",
+   "status": "live",
    "category": "not specified",
    "question": "What is the maximum number of devices one user may register?",
    "key": {
@@ -422,6 +431,7 @@
   },
   {
    "id": "Q08",
+   "status": "live",
    "category": "trap (false premise)",
    "question": "What does DELETE /v1/nudges/{id} answer when the nudge was already dismissed?",
    "key": {
@@ -476,6 +486,8 @@
   },
   {
    "id": "Q09",
+   "status": "dropped",
+   "dropped_by": "Amendment 1",
    "category": "rule requirement",
    "question": "What happens when a client presents a refresh token that was already rotated?",
    "key": {
@@ -530,6 +542,8 @@
   },
   {
    "id": "Q10",
+   "status": "dropped",
+   "dropped_by": "Amendment 1",
    "category": "where in the code",
    "question": "In which file and line is the route that dismisses a nudge registered, and where is its handler?",
    "key": {
@@ -588,6 +602,8 @@
   },
   {
    "id": "Q11",
+   "status": "dropped",
+   "dropped_by": "Amendment 1",
    "category": "who can call",
    "question": "Can a client without an access token read GET /v1/sync?",
    "key": {
@@ -635,6 +651,8 @@
   },
   {
    "id": "Q12",
+   "status": "dropped",
+   "dropped_by": "Amendment 1",
    "category": "routes",
    "question": "Which routes can a client call without an access token?",
    "key": {
@@ -703,5 +721,6 @@
     "implementation_basis": "static"
    }
   }
- ]
+ ],
+ "amendment_1": "Prereg Amendment 1 (2026-10-31, before any model call): the cap stays USD 0.60, so only the six questions with status `live` are asked, in this order; the six with status `dropped` are kept here unrun."
 }

@@ -161,12 +161,14 @@ def test_score_against_the_key() -> None:
 
 
 def test_the_question_set_is_the_preregistered_one() -> None:
-    qs = R.load_questions()
-    assert [q["id"] for q in qs] == [f"Q{i:02d}" for i in range(1, 13)]
-    cats = {q["category"] for q in qs}
-    assert {"routes", "who can call", "rule requirement", "not implemented", "where in the code", "not specified"} <= cats
-    assert sum(1 for q in qs if q["category"].startswith("trap")) == 2
-    for q in qs:
+    every = R.load_questions(live_only=False)
+    assert [q["id"] for q in every] == [f"Q{i:02d}" for i in range(1, 13)]  # the 12 of section 6, none deleted
+    qs = R.load_questions()  # Amendment 1: six live, one per kind, run order kept
+    assert [q["id"] for q in qs] == ["Q01", "Q03", "Q04", "Q06", "Q07", "Q08"]
+    assert [q["category"] for q in qs] == ["routes", "rule requirement", "not implemented", "who can call", "not specified", "trap (false premise)"]
+    assert {q["id"] for q in every if q["status"] == "dropped"} == {"Q02", "Q05", "Q09", "Q10", "Q11", "Q12"}
+    assert all(q["status"] in ("live", "dropped") for q in every)
+    for q in every:
         assert set(q["key"]) >= {"kinds", "must", "must_not", "routes_required", "abstain_ok", "claims"}
         assert q["gold_reply"]["kind"] in q["key"]["kinds"]
 
@@ -293,6 +295,18 @@ def test_the_guard_refuses_a_prereg_committed_after_the_driver(tmp_path: Path) -
         guard(ns)
 
 
+def test_the_guard_refuses_a_prereg_amended_after_the_last_driver_commit(repo: SimpleNamespace) -> None:
+    repo.prereg.write_text("prereg\n## Amendment 1\n")
+    git(repo.root, "add", "prereg.md")
+    git(repo.root, "commit", "-q", "-m", "amendment after the driver")
+    with pytest.raises(SystemExit, match="amendment"):
+        guard(repo)
+    repo.driver.write_text("driver implementing the amendment\n")
+    git(repo.root, "add", "run.py")
+    git(repo.root, "commit", "-q", "-m", "driver after the amendment")
+    guard(repo)  # amend first, then the driver: accepted
+
+
 def test_the_guard_refuses_a_second_run(repo: SimpleNamespace) -> None:
     repo.out.mkdir()
     (repo.out / "ask-result.json").write_text("{}")
@@ -321,10 +335,11 @@ def test_the_dry_run_from_the_gold_key_passes_every_gate(tmp_path: Path) -> None
     v = res["verdicts"]
     assert v["A-ANSWERED"] and v["A-CITED"] and v["A-COST"], res["counts"]
     c = res["counts"]
-    assert c["answered"] == 12 and c["uncited_known_claims"] == 0 and c["rejected_citations"] == 0 and c["known_claims"] > 20
-    assert c["correct_checked"] == 12 and c["correct_raw"] == 12 and c["total_usd"] == 0.0
+    assert c["questions"] == 6 and c["answered"] == 6 and c["uncited_known_claims"] == 0 and c["rejected_citations"] == 0 and c["known_claims"] > 15
+    assert c["correct_checked"] == 6 and c["correct_raw"] == 6 and c["total_usd"] == 0.0
+    assert [r["id"] for r in res["rows"]] == ["Q01", "Q03", "Q04", "Q06", "Q07", "Q08"]
     ledger = [json.loads(x) for x in (out / "ledger.jsonl").read_text().splitlines()]
-    assert len(ledger) >= 12 and all(x["cost_usd"] == 0.0 for x in ledger)
+    assert len(ledger) == 6 and all(x["cost_usd"] == 0.0 for x in ledger)
     q8 = next(r for r in res["rows"] if r["id"] == "Q08")
     assert q8["audit_checked"]["unknown_routes"] == ["DELETE /v1/nudges/{}"]
 
@@ -336,4 +351,4 @@ def test_the_dry_run_with_wrong_citations_fails_a_cited(tmp_path: Path) -> None:
     res = json.loads((out / "ask-result.json").read_text())
     assert res["verdicts"]["A-ANSWERED"] and not res["verdicts"]["A-CITED"]
     c = res["counts"]
-    assert c["uncited_known_claims"] >= 12 and c["rejected_citations"] >= 12 and c["raw_nonresolving_citations"] >= 12
+    assert c["answered"] == 6 and c["uncited_known_claims"] >= 6 and c["rejected_citations"] == 6 and c["raw_nonresolving_citations"] == 6

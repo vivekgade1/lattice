@@ -3,7 +3,7 @@
 """T1-4: the real-model C-ASK on the Streak Go spec with the corrected citation definition (the ``claude`` CLI only, never an API key).
 
 Pre-registration: docs/results/2026-10-30-t14-casko-corrected-citation-prereg.md (committed before this driver; the guard refuses a
-model call otherwise). Questions and gold key: dogfood/t14_casko_questions.json. The audit: dogfood/t14_casko_audit.py.
+model call otherwise). Questions and gold key: dogfood/t14_casko_questions.json (six live since prereg Amendment 1). The audit: dogfood/t14_casko_audit.py.
 
     env -u ANTHROPIC_API_KEY uv run python dogfood/t14_casko_run.py ask --out docs/results/data/2026-10-30-t14 --confirm-spend   # ONCE
     uv run python dogfood/t14_casko_run.py ask --dry-run gold      --out docs/results/data/2026-10-30-t14/dry-run/gold        # no model
@@ -68,8 +68,10 @@ def git(cwd: Path, *args: str) -> str:
     return subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True).stdout.strip()
 
 
-def load_questions() -> list[dict[str, Any]]:
-    return json.loads(QUESTIONS.read_text())["questions"]
+def load_questions(live_only: bool = True) -> list[dict[str, Any]]:
+    """The questions in run order: the live ones (prereg Amendment 1: six), or all twelve of section 6."""
+    qs = json.loads(QUESTIONS.read_text())["questions"]
+    return [q for q in qs if q.get("status") == "live"] if live_only else qs
 
 
 def may_start(spent: float) -> bool:
@@ -113,7 +115,8 @@ def guard(
     claude_version: Callable[[], str] = _claude_version,
 ) -> dict[str, Any]:
     """Refuses (SystemExit) a model call unless: --confirm-spend; every frozen file committed and unchanged; the prereg added in a commit
-    older than (an ancestor of) the driver's; no result and no model call in `out` yet. Strips ANTHROPIC_* and writes the freeze."""
+    older than (an ancestor of) the driver's, and its last change (an amendment) older than the driver's last change; no result and no
+    model call in `out` yet. Strips ANTHROPIC_* and writes the freeze."""
     driver = driver or Path(__file__).resolve()
     files = list(files if files is not None else frozen_files())
     if not confirm_spend:
@@ -123,13 +126,18 @@ def guard(
     if dirty:
         raise SystemExit(f"refusing to call the model: not committed (prereg first, then the runner): {dirty}")
 
-    def added(p: Path) -> str:
-        shas = git(repo, "log", "--diff-filter=A", "--format=%H", "--", str(p.resolve().relative_to(repo.resolve()))).split()
-        return shas[-1] if shas else ""
+    def commits(p: Path, *flt: str) -> list[str]:
+        return git(repo, "log", *flt, "--format=%H", "--", str(p.resolve().relative_to(repo.resolve()))).split()
 
-    pre, drv = added(prereg), added(driver)
-    if not pre or not drv or pre == drv or subprocess.run(["git", "merge-base", "--is-ancestor", pre, drv], cwd=repo).returncode != 0:
+    def older(a: str, b: str) -> bool:
+        return bool(a and b) and a != b and subprocess.run(["git", "merge-base", "--is-ancestor", a, b], cwd=repo).returncode == 0
+
+    pre, drv = (commits(prereg, "--diff-filter=A") or [""])[-1], (commits(driver, "--diff-filter=A") or [""])[-1]
+    if not older(pre, drv):
         raise SystemExit("refusing to call the model: the prereg must be committed before the driver, in its own commit")
+    pre_last, drv_last = (commits(prereg) or [""])[0], (commits(driver) or [""])[0]
+    if not older(pre_last, drv_last):
+        raise SystemExit("refusing to call the model: the prereg's last amendment must be committed before the driver's last change")
     if (out / "ask-result.json").exists():
         raise SystemExit(f"{out / 'ask-result.json'} exists: the run happens once (a failure is a result)")
     calls = [d for d in ledger_lines(out / "ledger.jsonl") if not d.get("refused")]
@@ -138,7 +146,7 @@ def guard(
     for k in list(os.environ):
         if k.startswith(("ANTHROPIC_", "CLAUDE_CODE_USE_")) or k == "AWS_BEARER_TOKEN_BEDROCK":
             del os.environ[k]
-    info = {"head": git(repo, "rev-parse", "HEAD"), "prereg_commit": pre, "driver_commit": drv, "files": {f: sha(p.read_bytes()) for f, p in rel.items()}}
+    info = {"head": git(repo, "rev-parse", "HEAD"), "prereg_commit": pre, "driver_commit": drv, "prereg_last_commit": pre_last, "driver_last_commit": drv_last, "files": {f: sha(p.read_bytes()) for f, p in rel.items()}}
     out.mkdir(parents=True, exist_ok=True)
     (out / "ask-freeze.json").write_text(json.dumps({**info, "claude_version": claude_version(), "cap_usd": CAP, "model": MODEL, "at": time.time()}, indent=1))
     return info
