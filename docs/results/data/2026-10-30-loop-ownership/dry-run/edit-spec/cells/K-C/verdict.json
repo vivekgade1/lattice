@@ -1,0 +1,91 @@
+{
+ "verdict": "fail",
+ "clean_verdict": {
+  "passed": false,
+  "gate_passed": false,
+  "exit_code": 1,
+  "output_tail": "FAIL: 1 finding (C 0, D 1); 17 cases run\n\nrule (D: scenarios): scenario: legacy_zero_qty_refused\n  [D silent] RPC toy.v1.Shelf/AddItem (legacy_zero_qty_refused / step 1)\n    expected INVALID_ARGUMENT null; got OK {\"id\": 1, \"name\": \"washer\", \"qty\": 0}\n    code: expected INVALID_ARGUMENT, got OK\n    db Item: expected 0 rows, found 1\n\ntimings: total 1.45s (C 0.00s, D 1.45s)\nscenarios: 9 in 1.45s, 0.16s each on average (start 0.13, db 0.00, steps 0.02, stop 0.00)\nslowest 5:\n  1.17s add_and_get (start 1.06, db 0.00, steps 0.03, 2 requests)\n  0.04s add_empty_name (start 0.02, db 0.00, steps 0.01, 1 requests)\n  0.04s remove_then_again (start 0.02, db 0.00, steps 0.02, 4 requests)\n  0.03s add_duplicate_name (start 0.02, db 0.00, steps 0.01, 2 requests)\n  0.03s list_oldest_first (start 0.01, db 0.00, steps 0.01, 4 requests)\n",
+  "overlaid": [
+   "spec.py"
+  ],
+  "base": "61d4d1279ed53d404fcc0310bedcab8841946562",
+  "tip": "e4f1c18f99f0647237201e56c5038126181ed48b",
+  "runs": 1,
+  "exit_codes": [
+   1
+  ],
+  "timed_out": false,
+  "tree_digest": "a3b31ed7be37000b97f276a58618d7bf1762ef1c37033e57a8aabc17919d6eda",
+  "tree_path": "<scratch>/K-C/verify/lattice-cleanverify-pcpey1we/tree",
+  "tree_cleaned": true,
+  "seconds": 2.13,
+  "protected_diff": {
+   "clean": false,
+   "changed": [
+    "spec.py"
+   ],
+   "deleted": [],
+   "added": [],
+   "paths": [
+    "REQUIREMENTS.md",
+    "spec.py",
+    "spec.trace.json",
+    "studio.toml",
+    "check.sh",
+    "harness.py",
+    "CONTEXT.md",
+    "proto",
+    "generate.sh",
+    "buf.yaml",
+    "buf.gen.yaml",
+    "visible_spec.py",
+    "proto/toy/v1/shelf.proto",
+    "REQUIREMENTS.rationale.json",
+    "REQUIREMENTS.glossary.json"
+   ],
+   "checked": 12
+  }
+ },
+ "escape": {
+  "clean": false,
+  "changed": [
+   "spec.py"
+  ],
+  "deleted": [],
+  "added": [],
+  "paths": [
+   "REQUIREMENTS.md",
+   "spec.py",
+   "spec.trace.json",
+   "harness.py",
+   "check.sh",
+   "studio.toml",
+   "CONTEXT.md",
+   "proto",
+   "generate.sh",
+   "buf.yaml",
+   "buf.gen.yaml",
+   "visible_spec.py"
+  ],
+  "checked": 12
+ },
+ "changes": [
+  {
+   "status": "M",
+   "path": "main.go"
+  },
+  {
+   "status": "M",
+   "path": "shelf.go"
+  },
+  {
+   "status": "M",
+   "path": "spec.py"
+  }
+ ],
+ "outside_allowed_set": [
+  "spec.py"
+ ],
+ "verifier_error": null,
+ "seconds": 2.25
+}

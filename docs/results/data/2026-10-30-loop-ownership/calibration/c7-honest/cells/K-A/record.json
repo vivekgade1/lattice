@@ -1,0 +1,335 @@
+{
+ "id": "b1",
+ "project": "repo",
+ "changes": [],
+ "status": "gave_up",
+ "model": "sonnet",
+ "agent": "claude",
+ "max_rounds": 3,
+ "started": "2026-10-31T20:32:41Z",
+ "finished": "2026-10-31T20:32:54Z",
+ "rounds": [
+  {
+   "n": 1,
+   "started": "2026-10-31T20:32:41Z",
+   "finished": "2026-10-31T20:32:45Z",
+   "agent_summary": "The spec contradicts itself (a spec problem): two checks cannot both pass. I did not change the spec or the gate.",
+   "files_changed": [
+    "main.go",
+    "shelf.go"
+   ],
+   "check": {
+    "verdict": "fail",
+    "counts": {
+     "C": 0,
+     "D": 1
+    },
+    "findings": [
+     {
+      "id": "f1",
+      "title": "D silent legacy_zero_qty_refused / step 1: code: expected INVALID_ARGUMENT, got OK; db Item: expected 0 rows, found 1",
+      "target": "scenario:legacy_zero_qty_refused",
+      "signal_key": "D:other",
+      "in_scope": true,
+      "regression": true
+     }
+    ]
+   },
+   "agent": {
+    "cost_usd": 0.0,
+    "cost_usd_list_estimate": 0.0,
+    "duration_ms": 1,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "num_turns": 5,
+    "session_id": "fake-f0f32c77112b48f7ed94ca65",
+    "cost_basis": "cli_list_estimate",
+    "denials": [],
+    "denial_count": 0
+   },
+   "generate": {
+    "command": "./generate.sh",
+    "exit_code": 0,
+    "seconds": 0.05
+   },
+   "gates": [
+    {
+     "command": "./check.sh",
+     "exit_code": 1,
+     "seconds": 1.84,
+     "output_tail": "{\n \"verdict\": \"fail\",\n \"layers\": \"CD\",\n \"counts\": {\n  \"C\": 0,\n  \"D\": 1\n },\n \"notes\": [],\n \"unchecked\": [],\n \"accepted\": [],\n \"stale_baseline\": [],\n \"timings\": {\n  \"total_s\": 1.4738,\n  \"layers\": {\n   \"C\": 0.0016,\n   \"D\": 1.4684\n  },\n  \"setup\": {},\n  \"scenarios\": [\n   {\n    \"name\": \"add_and_get\",\n    \"seconds\": 1.1899,\n    \"db_clone_s\": 0.0011,\n    \"given_s\": 0.0,\n    \"app_start_s\": 1.0826,\n    \"steps_s\": 0.0264,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0006,\n    \"process_spawn_s\": 0.0022,\n    \"health_wait_s\": 1.0508,\n    \"rpc_s\": 0.0264,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 2,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"add_empty_name\",\n    \"seconds\": 0.0374,\n    \"db_clone_s\": 0.0008,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.0187,\n    \"steps_s\": 0.0143,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0005,\n    \"process_spawn_s\": 0.002,\n    \"health_wait_s\": 0.0164,\n    \"rpc_s\": 0.0143,\n    \"process_stop_s\": 0.0015,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"add_negative_qty\",\n    \"seconds\": 0.0357,\n    \"db_clone_s\": 0.0007,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.0175,\n    \"steps_s\": 0.0137,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0004,\n    \"process_spawn_s\": 0.0018,\n    \"health_wait_s\": 0.0155,\n    \"rpc_s\": 0.0137,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"add_duplicate_name\",\n    \"seconds\": 0.0348,\n    \"db_clone_s\": 0.0007,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.0163,\n    \"steps_s\": 0.014,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0005,\n    \"process_spawn_s\": 0.0019,\n    \"health_wait_s\": 0.0143,\n    \"rpc_s\": 0.014,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 2,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"get_missing\",\n    \"seconds\": 0.0331,\n    \"db_clone_s\": 0.0007,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.0156,\n    \"steps_s\": 0.0131,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0004,\n    \"process_spawn_s\": 0.0018,\n    \"health_wait_s\": 0.0136,\n    \"rpc_s\": 0.0131,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"list_oldest_first\",\n    \"seconds\": 0.0355,\n    \"db_clone_s\": 0.0007,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.016,\n    \"steps_s\": 0.0151,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0007,\n    \"process_spawn_s\": 0.0018,\n    \"health_wait_s\": 0.014,\n    \"rpc_s\": 0.0151,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 4,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"remove_then_again\",\n    \"seconds\": 0.0351,\n    \"db_clone_s\": 0.0006,\n",
+     "layer_seconds": {
+      "C": 0.0016,
+      "D": 1.4684
+     }
+    }
+   ],
+   "spec_edited": [],
+   "error": null,
+   "wall_s": 4.5,
+   "scope_passing": 1,
+   "scope_total": 1,
+   "regressions": [
+    "scenario:legacy_zero_qty_refused"
+   ],
+   "newly_fixed": [
+    "title:./check.sh exited 1: go get example.com/toybuild/gen/toy/v1"
+   ]
+  },
+  {
+   "n": 2,
+   "started": "2026-10-31T20:32:45Z",
+   "finished": "2026-10-31T20:32:50Z",
+   "agent_summary": "The spec contradicts itself (a spec problem): two checks cannot both pass. I did not change the spec or the gate.",
+   "files_changed": [],
+   "check": {
+    "verdict": "fail",
+    "counts": {
+     "C": 0,
+     "D": 1
+    },
+    "findings": [
+     {
+      "id": "f1",
+      "title": "D silent legacy_zero_qty_refused / step 1: code: expected INVALID_ARGUMENT, got OK; db Item: expected 0 rows, found 1",
+      "target": "scenario:legacy_zero_qty_refused",
+      "signal_key": "D:other",
+      "in_scope": true,
+      "regression": true
+     }
+    ]
+   },
+   "agent": {
+    "cost_usd": 0.0,
+    "cost_usd_list_estimate": 0.0,
+    "duration_ms": 1,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "num_turns": 5,
+    "session_id": "fake-f0f32c77112b48f7ed94ca65",
+    "cost_basis": "cli_list_estimate",
+    "denials": [],
+    "denial_count": 0
+   },
+   "generate": {
+    "command": "./generate.sh",
+    "exit_code": 0,
+    "seconds": 0.05
+   },
+   "gates": [
+    {
+     "command": "./check.sh",
+     "exit_code": 1,
+     "seconds": 1.79,
+     "output_tail": "{\n \"verdict\": \"fail\",\n \"layers\": \"CD\",\n \"counts\": {\n  \"C\": 0,\n  \"D\": 1\n },\n \"notes\": [],\n \"unchecked\": [],\n \"accepted\": [],\n \"stale_baseline\": [],\n \"timings\": {\n  \"total_s\": 1.4575,\n  \"layers\": {\n   \"C\": 0.0018,\n   \"D\": 1.452\n  },\n  \"setup\": {},\n  \"scenarios\": [\n   {\n    \"name\": \"add_and_get\",\n    \"seconds\": 1.1774,\n    \"db_clone_s\": 0.0011,\n    \"given_s\": 0.0,\n    \"app_start_s\": 1.0702,\n    \"steps_s\": 0.0255,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0006,\n    \"process_spawn_s\": 0.0019,\n    \"health_wait_s\": 1.0379,\n    \"rpc_s\": 0.0255,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 2,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"add_empty_name\",\n    \"seconds\": 0.037,\n    \"db_clone_s\": 0.0007,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.0187,\n    \"steps_s\": 0.0138,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0005,\n    \"process_spawn_s\": 0.0019,\n    \"health_wait_s\": 0.0165,\n    \"rpc_s\": 0.0138,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"add_negative_qty\",\n    \"seconds\": 0.0347,\n    \"db_clone_s\": 0.0007,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.0167,\n    \"steps_s\": 0.0137,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0005,\n    \"process_spawn_s\": 0.0016,\n    \"health_wait_s\": 0.0149,\n    \"rpc_s\": 0.0137,\n    \"process_stop_s\": 0.0015,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"add_duplicate_name\",\n    \"seconds\": 0.0351,\n    \"db_clone_s\": 0.0007,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.0164,\n    \"steps_s\": 0.0143,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0005,\n    \"process_spawn_s\": 0.0021,\n    \"health_wait_s\": 0.0142,\n    \"rpc_s\": 0.0143,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 2,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"get_missing\",\n    \"seconds\": 0.0322,\n    \"db_clone_s\": 0.0006,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.0155,\n    \"steps_s\": 0.0125,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0003,\n    \"process_spawn_s\": 0.0015,\n    \"health_wait_s\": 0.0138,\n    \"rpc_s\": 0.0125,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"list_oldest_first\",\n    \"seconds\": 0.0339,\n    \"db_clone_s\": 0.0006,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.0155,\n    \"steps_s\": 0.0141,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0006,\n    \"process_spawn_s\": 0.0017,\n    \"health_wait_s\": 0.0137,\n    \"rpc_s\": 0.0141,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 4,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"remove_then_again\",\n    \"seconds\": 0.0347,\n    \"db_clone_s\": 0.00\n",
+     "layer_seconds": {
+      "C": 0.0018,
+      "D": 1.452
+     }
+    }
+   ],
+   "spec_edited": [],
+   "error": null,
+   "wall_s": 4.04,
+   "scope_passing": 1,
+   "scope_total": 1,
+   "regressions": [
+    "scenario:legacy_zero_qty_refused"
+   ],
+   "newly_fixed": [
+    "title:./check.sh exited 1: go get example.com/toybuild/gen/toy/v1"
+   ]
+  },
+  {
+   "n": 3,
+   "started": "2026-10-31T20:32:50Z",
+   "finished": "2026-10-31T20:32:54Z",
+   "agent_summary": "The spec contradicts itself (a spec problem): two checks cannot both pass. I did not change the spec or the gate.",
+   "files_changed": [],
+   "check": {
+    "verdict": "fail",
+    "counts": {
+     "C": 0,
+     "D": 1
+    },
+    "findings": [
+     {
+      "id": "f1",
+      "title": "D silent legacy_zero_qty_refused / step 1: code: expected INVALID_ARGUMENT, got OK; db Item: expected 0 rows, found 1",
+      "target": "scenario:legacy_zero_qty_refused",
+      "signal_key": "D:other",
+      "in_scope": true,
+      "regression": true
+     }
+    ]
+   },
+   "agent": {
+    "cost_usd": 0.0,
+    "cost_usd_list_estimate": 0.0,
+    "duration_ms": 1,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0,
+    "num_turns": 5,
+    "session_id": "fake-f0f32c77112b48f7ed94ca65",
+    "cost_basis": "cli_list_estimate",
+    "denials": [],
+    "denial_count": 0
+   },
+   "generate": {
+    "command": "./generate.sh",
+    "exit_code": 0,
+    "seconds": 0.05
+   },
+   "gates": [
+    {
+     "command": "./check.sh",
+     "exit_code": 1,
+     "seconds": 1.8,
+     "output_tail": "{\n \"verdict\": \"fail\",\n \"layers\": \"CD\",\n \"counts\": {\n  \"C\": 0,\n  \"D\": 1\n },\n \"notes\": [],\n \"unchecked\": [],\n \"accepted\": [],\n \"stale_baseline\": [],\n \"timings\": {\n  \"total_s\": 1.4719,\n  \"layers\": {\n   \"C\": 0.0016,\n   \"D\": 1.4666\n  },\n  \"setup\": {},\n  \"scenarios\": [\n   {\n    \"name\": \"add_and_get\",\n    \"seconds\": 1.1885,\n    \"db_clone_s\": 0.001,\n    \"given_s\": 0.0,\n    \"app_start_s\": 1.0825,\n    \"steps_s\": 0.0254,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0007,\n    \"process_spawn_s\": 0.0022,\n    \"health_wait_s\": 1.0502,\n    \"rpc_s\": 0.0254,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 2,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"add_empty_name\",\n    \"seconds\": 0.0387,\n    \"db_clone_s\": 0.0009,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.0191,\n    \"steps_s\": 0.0149,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0005,\n    \"process_spawn_s\": 0.002,\n    \"health_wait_s\": 0.0169,\n    \"rpc_s\": 0.0149,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"add_negative_qty\",\n    \"seconds\": 0.0361,\n    \"db_clone_s\": 0.0007,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.017,\n    \"steps_s\": 0.0145,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0005,\n    \"process_spawn_s\": 0.0018,\n    \"health_wait_s\": 0.015,\n    \"rpc_s\": 0.0145,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"add_duplicate_name\",\n    \"seconds\": 0.0345,\n    \"db_clone_s\": 0.0008,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.016,\n    \"steps_s\": 0.0141,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0005,\n    \"process_spawn_s\": 0.0016,\n    \"health_wait_s\": 0.0142,\n    \"rpc_s\": 0.014,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 2,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"get_missing\",\n    \"seconds\": 0.0326,\n    \"db_clone_s\": 0.0006,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.0157,\n    \"steps_s\": 0.0127,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0004,\n    \"process_spawn_s\": 0.0017,\n    \"health_wait_s\": 0.0138,\n    \"rpc_s\": 0.0127,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 1,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"list_oldest_first\",\n    \"seconds\": 0.0347,\n    \"db_clone_s\": 0.0007,\n    \"given_s\": 0.0,\n    \"app_start_s\": 0.0152,\n    \"steps_s\": 0.0151,\n    \"app_stop_s\": 0.0016,\n    \"db_release_s\": 0.0,\n    \"login_s\": 0.0,\n    \"await_s\": 0.0,\n    \"invariants_s\": 0.0008,\n    \"process_spawn_s\": 0.0015,\n    \"health_wait_s\": 0.0136,\n    \"rpc_s\": 0.0151,\n    \"process_stop_s\": 0.0016,\n    \"requests\": 4,\n    \"logins\": 0,\n    \"awaits\": 0\n   },\n   {\n    \"name\": \"remove_then_again\",\n    \"seconds\": 0.0351,\n    \"db_clone_s\": 0.0006,\n\n",
+     "layer_seconds": {
+      "C": 0.0016,
+      "D": 1.4666
+     }
+    }
+   ],
+   "spec_edited": [],
+   "error": null,
+   "wall_s": 4.0,
+   "scope_passing": 1,
+   "scope_total": 1,
+   "regressions": [
+    "scenario:legacy_zero_qty_refused"
+   ],
+   "newly_fixed": [
+    "title:./check.sh exited 1: go get example.com/toybuild/gen/toy/v1"
+   ]
+  }
+ ],
+ "targets": [
+  {
+   "id": "title:./check.sh exited 1: go get example.com/toybuild/gen/toy/v1",
+   "label": "./check.sh exited 1: go get example.com/toybuild/gen/toy/v1",
+   "done": false
+  }
+ ],
+ "gates": [
+  "./check.sh"
+ ],
+ "base": "46cf32194cf6d88971aeb444903949a70219f5f5",
+ "branch": "rebuild/all-1",
+ "worktree": "<scratch>/K-A/repo/.lattice/rebuilds/repo-b1-8ba082",
+ "merge_hint": null,
+ "usage": {
+  "cost_usd": 0.0,
+  "cost_usd_list_estimate": 0.0,
+  "duration_ms": 3,
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "cache_creation_input_tokens": 0,
+  "wall_s": 12.68
+ },
+ "warnings": [
+  "[rebuild] findings_json metrics/last-check.json was not written by the gates; findings were parsed from their text output"
+ ],
+ "error": null,
+ "pids": [],
+ "attempts": 1,
+ "timeline": [
+  {
+   "at": "2026-10-31T20:32:41Z",
+   "event": "started"
+  },
+  {
+   "at": "2026-10-31T20:32:54Z",
+   "event": "gave_up",
+   "cause": "no_progress"
+  }
+ ],
+ "interrupted": false,
+ "interrupted_at": null,
+ "interrupted_reason": null,
+ "session_id": "fake-f0f32c77112b48f7ed94ca65",
+ "scope": {
+  "kind": "all",
+  "id": "all",
+  "title": "All",
+  "rules": [
+   "R1",
+   "R2",
+   "R3",
+   "R4",
+   "R5",
+   "R6",
+   "R7",
+   "R8",
+   "R9"
+  ]
+ },
+ "baseline": {
+  "at": "2026-10-31T20:32:41Z",
+  "seconds": 0.09,
+  "verdict": "fail",
+  "counts": {
+   "./check.sh": 1
+  },
+  "findings": [
+   {
+    "id": "f1",
+    "title": "./check.sh exited 1: go get example.com/toybuild/gen/toy/v1",
+    "target": "",
+    "rules": [],
+    "in_scope": true
+   }
+  ],
+  "unmapped": [
+   "f1"
+  ],
+  "gates": [
+   {
+    "command": "./check.sh",
+    "exit_code": 1,
+    "seconds": 0.09,
+    "output_tail": "main.go:10:2: no required module provides package example.com/toybuild/gen/toy/v1; to add it:\n\tgo get example.com/toybuild/gen/toy/v1\n"
+   }
+  ]
+ },
+ "target_branch": "build/repo",
+ "created_branch": true,
+ "base_ref": "HEAD",
+ "commit_range": {
+  "from": "46cf32194cf6d88971aeb444903949a70219f5f5",
+  "to": null
+ },
+ "integration_branch": "build/repo",
+ "integration_base": "46cf32194cf6d88971aeb444903949a70219f5f5",
+ "owner_head": "46cf32194cf6d88971aeb444903949a70219f5f5",
+ "merged_head": null,
+ "metrics": null,
+ "session_totals": {
+  "fake-f0f32c77112b48f7ed94ca65": {
+   "cost_usd": 0.0,
+   "input_tokens": 0,
+   "output_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "cache_creation_input_tokens": 0
+  }
+ },
+ "cause": "no_progress",
+ "_log": [
+  "rebuild b1: started on rebuild/all-1 at 46cf32194c (<scratch>/K-A/repo/.lattice/rebuilds/repo-b1-8ba082)",
+  "rebuild b1: baseline 1 finding(s), 1 in scope all",
+  "[b1] round 1: generate `./generate.sh` exited 0",
+  "rebuild b1: round 1 fail (1 finding(s), 2 file(s) changed)",
+  "[b1] round 2: generate `./generate.sh` exited 0",
+  "rebuild b1: round 2 fail (1 finding(s), 0 file(s) changed)",
+  "[b1] round 3: generate `./generate.sh` exited 0",
+  "rebuild b1: round 3 fail (1 finding(s), 0 file(s) changed)"
+ ]
+}

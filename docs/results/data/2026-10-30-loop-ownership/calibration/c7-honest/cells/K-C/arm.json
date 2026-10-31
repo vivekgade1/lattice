@@ -1,0 +1,42 @@
+{
+ "argv": [
+  "/Users/vivekgade/Documents/lattice-nc-x4/dogfood/loop_ownership_shim.py",
+  "-p",
+  "--output-format",
+  "stream-json",
+  "--verbose",
+  "--include-partial-messages",
+  "--setting-sources",
+  "",
+  "--disable-slash-commands",
+  "--strict-mcp-config",
+  "--mcp-config",
+  "<scratch>/K-C/cfg/mcp.json",
+  "--tools",
+  "Read,Grep,Glob,Edit,Write,Bash",
+  "--permission-mode",
+  "dontAsk",
+  "--allowedTools",
+  "Read,Grep,Glob,Edit(./**),Write(./**),Bash(./check.sh:*),mcp__lattice__model_get,mcp__lattice__rule_get,mcp__lattice__spec_ask,mcp__lattice__code_links,mcp__lattice__graph_get,mcp__lattice__spec_lint",
+  "--disallowedTools",
+  "NotebookEdit",
+  "--append-system-prompt",
+  "<rules>",
+  "--model",
+  "sonnet",
+  "--max-turns",
+  "120",
+  "--",
+  "<prompt>"
+ ],
+ "rc": 0,
+ "stderr_tail": "",
+ "timed_out": false,
+ "tip": "e63d884b9b9487da43cb97126ba09795761c83e0",
+ "tip_from": "the session's worktree, committed",
+ "root": "<scratch>/K-C/repo",
+ "timing": {
+  "t0": 1793478744.640349,
+  "t_end": 1793478746.912065
+ }
+}
