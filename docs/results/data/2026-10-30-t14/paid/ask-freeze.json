@@ -1,0 +1,20 @@
+{
+ "head": "8d6e59b5624e78e6ebd761ef56cee01dad21519e",
+ "prereg_commit": "88c9b6830a24f515b31af3c03c1d7793f6d267cd",
+ "driver_commit": "9b0f883c276e7132d5896d9e8d2d59569b7ca7c5",
+ "prereg_last_commit": "1abbb4cf59be1e42fd920eddf057cd13b89ac4d7",
+ "driver_last_commit": "8d6e59b5624e78e6ebd761ef56cee01dad21519e",
+ "files": {
+  "docs/results/2026-10-30-t14-casko-corrected-citation-prereg.md": "afb9f2a8555fd387401546b278027bf5c5b8a41ea6ab5f02301820735f758be1",
+  "dogfood/t14_casko_questions.json": "34406098f0b756e8a52ff92f00c4423a63d6c478ea9318df5f83a0680c989ded",
+  "dogfood/t14_casko_run.py": "3ee6c457312130ae6f57418e639aeb092ba90fc5567c50eeb96c8f53d18b2736",
+  "dogfood/t14_casko_audit.py": "d8d712c7f9a3cfe68b7e61c97c21c71aa8978438d70cb598e7390415e78a0722",
+  "dogfood/t14_casko_shim.py": "afacc5221b9bb22ceadd18279d6e8141073172f1c1bea81ae446f24a27ea19b2",
+  "dogfood/dn_real_agent_shim.py": "1e6c77bbdd1e276073b277f8f4c885ccb444072869a620f1b9e4fd2e526c4617",
+  "dogfood/t14_casko_fake_claude.py": "1e624e3cf7818ebe04a338f95ece0af16330729a1a4d44491be458975699b9fb"
+ },
+ "claude_version": "2.1.309 (Claude Code)",
+ "cap_usd": 0.6,
+ "model": "sonnet",
+ "at": 1793445334.434444
+}
