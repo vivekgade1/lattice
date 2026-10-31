@@ -80,6 +80,13 @@ step's ``--max-turns`` and ``--max-budget-usd``, :meth:`Rebuilder._step_budget`)
 ``stop_grace``; per-tip gate results (:meth:`Rebuilder.tip_result`); a gate's whole process
 tree and its labelled containers go when it is stopped (:meth:`Rebuilder._run_gate`).
 
+**Permission mode (gap G4)**: ``[rebuild] permission_mode`` is ``"acceptEdits"`` (the
+default, the argv above) or the opt-in ``"dontAsk"``: Edit/Write only inside the worktree
+(``Edit(./**)``), the protected paths denied up front (``Edit(/<path>)``,
+:func:`disallowed_tools`), Bash only the gate commands. Every claude step records the tool
+calls the CLI refused (``agent.denials``, ``agent.denial_count``; a denial does not fail the
+run); the post hoc restore of the protected files stays the backstop in both modes.
+
 **Spec sync (API.md v1.12)**: the spec files a rebuild protects (``SPEC_FILES`` plus
 ``[mcp] protected``) as committed at the repository's ``HEAD`` are compared with a target
 branch's (:meth:`Rebuilder.spec_diff`, ``GET /api/branches`` ``spec``); ``POST
@@ -183,6 +190,9 @@ DEFAULT_STOP_GRACE = 5.0
 DEFAULT_MAX_TURNS = 150  # `claude -p --max-turns` of one agent step (gap G1)
 DEFAULT_STEP_MAX_USD = 5.0  # `--max-budget-usd` of one agent step
 MIN_STEP_USD = 0.05  # less of the build budget left: the step is not spawned
+# gap G4: the agent's --permission-mode; dontAsk is opt-in ([rebuild] permission_mode)
+PERMISSION_MODES = ("acceptEdits", "dontAsk")
+DEFAULT_PERMISSION_MODE = "acceptEdits"
 SCOPE_DIR = ".lattice-scope"  # a node's selection file, in its worktree (git-ignored)
 SCOPE_EXCLUDE = "/.lattice-scope/"
 GATE_SCAN_S = 1.0  # how often a running gate's descendants are recorded
@@ -522,6 +532,14 @@ class RebuildConfig:
         except (TypeError, ValueError):
             return None
         return x if x > 0 else None
+
+    @property
+    def permission_mode(self) -> str:
+        """``[rebuild] permission_mode``: the agent's ``--permission-mode``, ``"acceptEdits"``
+        (the default) or ``"dontAsk"`` (edits scoped to the worktree, the protected paths
+        denied, :func:`build_rebuild_argv`); any other value is the default."""
+        m = self.table.get("permission_mode")
+        return m if isinstance(m, str) and m in PERMISSION_MODES else DEFAULT_PERMISSION_MODE
 
     @property
     def stop_grace(self) -> float:
@@ -1171,16 +1189,41 @@ def scope_findings_prompt(n: int, check: Mapping[str, Any], rnd: Mapping[str, An
 # ---- argv ----------------------------------------------------------------------------------
 
 
-def allowed_tools(gates: Sequence[str]) -> list[str]:
+def allowed_tools(
+    gates: Sequence[str], permission_mode: str = DEFAULT_PERMISSION_MODE
+) -> list[str]:
+    """``--allowedTools``. In ``dontAsk`` Edit and Write are scoped to the agent's cwd, the
+    worktree (``./**``: inside allowed, outside, ``..`` and symlink escapes refused, pre-flight
+    P2/R3)."""
+    edit = ["Edit(./**)", "Write(./**)"] if permission_mode == "dontAsk" else ["Edit", "Write"]
     return [
         "Read",
         "Grep",
         "Glob",
-        "Edit",
-        "Write",
+        *edit,
         *(f"Bash({g}:*)" for g in gates),
         *_MODEL_TOOLS,
     ]
+
+
+def disallowed_tools(
+    protected: Sequence[str] = (), permission_mode: str = DEFAULT_PERMISSION_MODE
+) -> list[str]:
+    """``--disallowedTools``: NotebookEdit, and in ``dontAsk`` Edit and Write of every protected
+    path (relative to the repository root, the agent's cwd; a directory ends with ``/``). A
+    leading ``/`` anchors the rule at the cwd: a bare ``name`` (or ``./name``) would match the
+    name in every directory (gitignore-style, pre-flight R3); a deny rule wins over the allow."""
+    out = ["NotebookEdit"]
+    if permission_mode != "dontAsk":
+        return out
+    for raw in protected:
+        p = posixpath.normpath(raw.strip()) if raw.strip() else "."
+        if p in (".", "/", "//") or p.startswith("../"):
+            continue  # nothing, or outside the cwd (the allow rule grants nothing there)
+        # "/a/b": a/b from the cwd; an absolute path becomes "//abs" (anchored as it is)
+        rule = "/" + (p + "/**" if raw.strip().endswith("/") else p)
+        out += [f"Edit({rule})", f"Write({rule})"]
+    return list(dict.fromkeys(out))
 
 
 def build_rebuild_argv(
@@ -1195,12 +1238,18 @@ def build_rebuild_argv(
     rules: str = RULES,
     max_turns: int | None = None,
     max_budget_usd: float | None = None,
+    permission_mode: str = DEFAULT_PERMISSION_MODE,
+    protected: Sequence[str] = (),
 ) -> list[str]:
     """The ``claude`` argv of one agent step. The prompt goes last behind ``--``; the caps
     (``--max-turns``, ``--max-budget-usd``; None: omitted) go before it.
+    ``permission_mode`` ``"dontAsk"`` (gap G4, opt-in) scopes Edit/Write to the worktree and
+    denies the ``protected`` paths (:func:`allowed_tools`, :func:`disallowed_tools`); any other
+    value is ``acceptEdits`` and ignores ``protected`` (the argv is exactly as before).
     ``--include-partial-messages``: its ``message_delta`` events carry each message's final
     output count, so the in-process cost estimate (:class:`StreamUsage`) is exact at every
     message boundary (without them it is a lower bound)."""
+    mode = permission_mode if permission_mode in PERMISSION_MODES else DEFAULT_PERMISSION_MODE
     argv = [claude_bin, "-p", "--output-format", "stream-json", "--verbose",
             "--include-partial-messages"]  # fmt: skip
     if resume:
@@ -1217,11 +1266,11 @@ def build_rebuild_argv(
         "--tools",
         ",".join(AGENT_TOOLS),
         "--permission-mode",
-        "acceptEdits",
+        mode,
         "--allowedTools",
-        ",".join(allowed_tools(gates)),
+        ",".join(allowed_tools(gates, mode)),
         "--disallowedTools",
-        "NotebookEdit",
+        ",".join(disallowed_tools(protected, mode)),
         "--append-system-prompt",
         rules,
         "--model",
@@ -3373,6 +3422,7 @@ class Rebuilder:
             write_configs(run.tmp, "ask", run.worktree / run.project_rel, self.python)
         resume = run.session_id if (n > 1 or run.resume_turn) else None
         run.resume_turn = False
+        mode = self.cfg.permission_mode
         argv = build_rebuild_argv(
             claude_bin=self.claude_bin,
             text=prompt,
@@ -3384,6 +3434,8 @@ class Rebuilder:
             rules=agent_rules(RULES if run.scope is None else SCOPE_RULES),  # + FENCE_RULES
             max_turns=self.cfg.max_turns,
             max_budget_usd=step_usd,
+            permission_mode=mode,
+            protected=self._deny_paths(run) if mode == "dontAsk" else (),
         )
         with self.lock:
             run.argvs.append(argv)
@@ -3503,6 +3555,12 @@ class Rebuilder:
         }
         if result is not None and raw_result is not None:
             self._own_step_usage(run, raw_result, out["usage"])
+        # gap G4: the refused tool calls (a denial does not fail the run; new keys only)
+        out["usage"]["denials"] = [
+            {"tool": d["tool"], "target": _worktree_rel(run.worktree, d["target"])}
+            for d in t.denials
+        ]
+        out["usage"]["denial_count"] = len(t.denials)
         if result is None and seen.messages:
             # no result event (a timeout, a cap, a crash): the usage the stream showed so
             # far, from the assistant messages, instead of 0 (API v1.11), and its
@@ -3573,6 +3631,15 @@ class Rebuilder:
                 if _git(run.repo, "cat-file", "-e", f"{run.base}:{p}").returncode == 0:
                     out.append(p)
         return list(dict.fromkeys(out))
+
+    def _deny_paths(self, run: _Run) -> list[str]:
+        """gap G4: the protected paths as ``dontAsk`` deny rules take them (a directory at the
+        base commit ends with ``/``)."""
+        out = []
+        for p in self._protected_paths(run):
+            d = p.rstrip("/")
+            out.append(d + "/" if p.endswith("/") or self._is_tree(run, d) else p)
+        return out
 
     def _base_notes_names(self, run: _Run) -> list[str]:
         """The owner's rationale / glossary files committed at the run's base commit (so a file
@@ -4223,6 +4290,16 @@ def _zero_usage() -> dict[str, Any]:
     ``cost_usd_list_estimate`` (the CLI's list-price estimate, not a charge)."""
     return {**dict.fromkeys(USAGE_KEYS, 0), "cost_usd": 0.0, "cost_usd_list_estimate": 0.0,
             "wall_s": 0.0}  # fmt: skip
+
+
+def _worktree_rel(worktree: Path, target: str) -> str:
+    """A denied call's target relative to the worktree when it is a path inside it."""
+    if not target.startswith("/"):
+        return target
+    try:
+        return Path(os.path.realpath(target)).relative_to(os.path.realpath(worktree)).as_posix()
+    except ValueError:
+        return target
 
 
 def _add_usage(total: dict[str, Any], u: Mapping[str, Any]) -> None:

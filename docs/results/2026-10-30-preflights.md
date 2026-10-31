@@ -172,3 +172,50 @@ Question (node R2): does the CLI's own `--max-budget-usd` on a `--resume`d sessi
 Also confirmed: on `--resume`, `total_cost_usd` and `modelUsage` are the session's **cumulative** figures (B = A + 0.00022406, C = B + 0.00040806), while the top-level `usage` and the result's `model_usage_since_last_result` are the step's own; C's top-level `usage` is all zeros (budget-exhausted shape) while its `modelUsage` tokens are cumulative. Studio books the difference to the last cumulative total it saw for the session (`session_totals` on the rebuild record).
 
 Spend: 3 calls, USD 0.00142 of the 0.05 cap.
+
+## R3 pre-flight: the rebuild's `dontAsk` rule syntax (2026-10-31)
+
+Questions (node R3, gap G4): (a) does the comma-joined `--allowedTools` form that `build_rebuild_argv` uses behave like P2's space-separated rules; (b) under `dontAsk`, with an allow list scoped to the cwd plus the gate's `Bash(<gate>:*)` and a `--disallowedTools` naming the protected files, are normal edits allowed, the protected files denied (does deny win over allow), the gate runnable, and `rm`/`mv`/`cp`/`sed -i` denied; (c) does every denial reach `permission_denials`. CLI 2.1.309, haiku (claude-haiku-5-5), a scratch git repo (`src/a.txt`, `other/b.txt`, `spec.py`, `sub/spec.py`, an executable `check.sh` that echoes `CHECK-RAN "$@"`), cwd = repo root, `--tools Read,Grep,Glob,Edit,Write,Bash` (the rebuild's tools), `--permission-mode dontAsk`, prompts asking for one tool call per step without retries. Command template (scratchpad `r3pf/run.sh`):
+
+```
+env -u ANTHROPIC_API_KEY claude -p --model haiku --output-format stream-json --verbose --max-budget-usd 0.015 --max-turns 8 \
+  --setting-sources "" --disable-slash-commands --strict-mcp-config --tools Read,Grep,Glob,Edit,Write,Bash \
+  --permission-mode dontAsk --allowedTools "<comma-joined>" --disallowedTools "<comma-joined>" -- "<prompt>"
+```
+
+| run | `--allowedTools` | `--disallowedTools` | step | verdict |
+|---|---|---|---|---|
+| A | `Read,Grep,Glob,Edit(src/**),Write(src/**)` | `NotebookEdit` | Edit `src/a.txt` | ALLOWED |
+| | | | Edit `other/b.txt` | DENIED (mode) |
+| | | | Write an absolute path outside the repo | DENIED (mode) |
+| | | | Bash `rm src/a.txt` | DENIED (mode) |
+| B1 | `Read,Grep,Glob,Edit(./**),Write(./**),Bash(./check.sh:*)` | `NotebookEdit,Edit(spec.py),Write(spec.py),Edit(check.sh),Write(check.sh)` | Edit `src/a.txt` | ALLOWED |
+| | | | Write `other/deep/n.txt` (new dirs) | ALLOWED |
+| | | | Edit `spec.py` | DENIED (rule) |
+| | | | Write `check.sh` | DENIED (rule) |
+| | | | Edit `sub/spec.py` | DENIED (rule; the bare name matches at any depth) |
+| | | | (outside write: not reached, `error_max_turns` at 8 turns) | |
+| B2 | as B1 | as B1 | Bash `./check.sh` | ALLOWED (ran) |
+| | | | Bash `./check.sh --layers CD` | ALLOWED (ran; `:*` takes extra args) |
+| | | | Bash `rm src/a.txt` | DENIED (mode) |
+| | | | Bash `cp other/b.txt src/c.txt` | DENIED (mode) |
+| | | | Bash `sed -i '' 's/one/TWO/' other/b.txt` | DENIED (mode) |
+| | | | Bash `./check.sh && mv src/a.txt src/moved.txt` | DENIED (mode; the compound command is not covered by the gate's rule) |
+| B3 | as B1 | `NotebookEdit,Edit(./spec.py),Write(./spec.py),Edit(./check.sh),Write(./check.sh)` | Edit `spec.py` | DENIED (rule) |
+| | | | Edit `sub/spec.py` | DENIED (rule; `./name` is NOT anchored either) |
+| | | | Write an absolute path outside the repo | DENIED (mode; `Edit(./**)` is the cwd only) |
+| | | | Write `sub/new.txt` | ALLOWED |
+| B4 | as B1 | `NotebookEdit,Edit(/spec.py),Write(/spec.py),Edit(//<abs repo>/check.sh),Write(//<abs repo>/check.sh)` | Edit `spec.py` | DENIED (rule) |
+| | | | Edit `sub/spec.py` | ALLOWED (`/name` is anchored at the cwd) |
+| | | | Write `check.sh` | DENIED (rule) |
+| | | | Write `sub/check.sh` | ALLOWED (`//abs` is anchored) |
+
+The filesystem afterwards matched every verdict (no protected file changed, `src/a.txt` still present after the denied `rm`, no `outside.txt`).
+
+**Answers.**
+
+- (a) Yes: the comma-joined single argument behaves exactly like P2's space-separated rules (run A reproduces P2 v1 step for step), for `--allowedTools` and `--disallowedTools` alike.
+- (b) Deny wins over allow: `Edit(./**)` allows the file, the deny rule refuses it. `Bash(./check.sh:*)` runs the gate with or without extra arguments, and nothing else: `rm`, `cp`, `sed -i` and a gate command chained with `&& mv` are denied (unlike `acceptEdits`, where the handoff found rm/mv/cp allowed inside the worktree). Edit/Write rules are gitignore-style: a bare `name` and `./name` match that name **at any depth**; `/name` (relative to the cwd, the worktree root) and `//<absolute path>` match exactly that file. The rebuild therefore emits `Edit(/<repo-relative path>)` / `Write(/<repo-relative path>)` per protected file (`/<dir>/**` for a protected directory) and `Edit(./**)` / `Write(./**)` as the allow scope.
+- (c) Yes, both kinds of denial are in the result's `permission_denials` (`{tool_name, tool_use_id, tool_input}`), and the result is still `subtype: success` (B1 hit `--max-turns`, unrelated). They differ in the stream: a **mode** denial (no allow rule) gives a `system` event `subtype: permission_denied` and a `tool_result` `is_error: true` "Permission to use <Tool> has been denied because Claude Code is running in don't ask mode..."; a **deny-rule** denial gives no `system` event and a `tool_result` `is_error: true` `<tool_use_error>File is in a directory that is denied by your permission settings.</tool_use_error>`. A counter must read `permission_denials` and fall back on both tool_result texts when the result event is missing (a killed step).
+
+The B3 stream is kept verbatim as `tests/studio/fixtures/claude-2.1.309-dontask-denials.jsonl` (both denial kinds, a success result). Ledger `docs/results/data/2026-10-30-nc/spend-R3.jsonl`: 5 calls, USD 0.01108 of the 0.06 cap.

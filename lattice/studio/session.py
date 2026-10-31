@@ -63,6 +63,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shlex
 import shutil
 import signal
@@ -421,6 +422,26 @@ def result_usage(rec: Mapping[str, Any]) -> tuple[dict[str, int], float]:
 # ---- the transcript: a stream-json normalizer over an event log -------------------------------
 
 
+# A tool call the CLI refused (gap G4): its tool_result is an error with one of these texts --
+# dontAsk's mode denial, a deny rule (pre-flight R3, CLI 2.1.309) or the lattice guard's
+# PreToolUse deny (CLI 2.1.296). The result event lists them all in `permission_denials`.
+_DENIAL_RE = re.compile(
+    r"Permission to use \S+ has been denied|denied by your permission settings"
+    r"|hook error: Blocked:"
+)
+
+
+def denial_target(tool_input: Any) -> str:
+    """What a refused tool call was aimed at: the file path, else the Bash command, else ""."""
+    if not isinstance(tool_input, Mapping):
+        return ""
+    for k in ("file_path", "notebook_path", "path", "command", "pattern", "url"):
+        v = tool_input.get(k)
+        if isinstance(v, str) and v:
+            return v
+    return ""
+
+
 class Transcript:
     """The normalized event log of one session, fed with Claude Code stream-json records.
     Thread safe. Used by the real :class:`Session` and by the mock server's replay."""
@@ -442,6 +463,11 @@ class Transcript:
         self._tc: TurnCheck | None = None  # API v1.26: the claim checker of the running turn
         self._raw_seen: set[tuple[str, str]] = set()
         self.report_routed = False  # API v1.26: `result.routed` is reported (`[chat] route`)
+        # gap G4: the tool calls the CLI refused, [{tool, target}], each tool call once; a
+        # denial does not fail the run, so this is the only place it shows
+        self.denials: list[dict[str, str]] = []
+        self._denied: set[str] = set()
+        self._tool_inputs: dict[str, Any] = {}
 
     # -- the log
     def _add(self, event: dict[str, Any]) -> dict[str, Any]:
@@ -603,6 +629,7 @@ class Transcript:
                 name = str(block.get("name") or "")
                 self._tool_names[tid] = name
                 inp = block.get("input") if isinstance(block.get("input"), dict) else {}
+                self._tool_inputs[tid] = inp
                 self._add(
                     {
                         "type": "tool_use",
@@ -651,6 +678,8 @@ class Transcript:
                 tid = str(block.get("tool_use_id") or "")
                 if self._tc is not None and self._tool_names.get(tid, "").endswith("change_impact"):
                     self._tc.add_tool_result(_content_text(block.get("content")))
+                if block.get("is_error") and _DENIAL_RE.search(_content_text(block.get("content"))):
+                    self._add_denial(tid, self._tool_names.get(tid, ""), self._tool_inputs.get(tid))
                 self._add(
                     {
                         "type": "tool_result",
@@ -660,10 +689,22 @@ class Transcript:
                     }
                 )
 
+    def _add_denial(self, tid: str, tool: str, tool_input: Any) -> None:
+        if tid and tid in self._denied:
+            return
+        if tid:
+            self._denied.add(tid)
+        self.denials.append({"tool": tool, "target": denial_target(tool_input)})
+
     def _result(self, rec: Mapping[str, Any]) -> None:
         sid = rec.get("session_id")
         if isinstance(sid, str) and sid:
             self.claude_session_id = sid
+        denials = rec.get("permission_denials")
+        for d in denials if isinstance(denials, list) else ():
+            if isinstance(d, dict):
+                self._add_denial(str(d.get("tool_use_id") or ""), str(d.get("tool_name") or ""),
+                                 d.get("tool_input"))  # fmt: skip
         text = str(rec.get("result") or "")
         subtype = str(rec.get("subtype") or "")
         is_error = bool(rec.get("is_error")) or subtype.startswith("error")
