@@ -72,8 +72,9 @@ by ``git merge --ff-only`` in a clean worktree). Extra ``[rebuild]`` keys: ``are
 **Build performance (API.md v1.11)**: ``[rebuild] scoped_gate_args`` (a plan node's gate on
 its scope plus the regression set, :func:`build_selection`), ``level_gate``,
 ``level_repair_attempts`` (:meth:`Rebuilder.repair_build`), ``node_timeout``,
-``node_max_tokens`` (the usage seen so far is kept, :class:`StreamUsage`) and
-``stop_grace``; per-tip gate results (:meth:`Rebuilder.tip_result`); a gate's whole process
+``node_max_tokens`` (the usage seen so far is kept, :class:`StreamUsage`), ``max_turns``,
+``step_max_usd`` and ``max_budget_usd`` (each agent step's ``--max-turns`` and
+``--max-budget-usd``, :meth:`Rebuilder._step_budget`) and ``stop_grace``; per-tip gate results (:meth:`Rebuilder.tip_result`); a gate's whole process
 tree and its labelled containers go when it is stopped (:meth:`Rebuilder._run_gate`).
 
 **Spec sync (API.md v1.12)**: the spec files a rebuild protects (``SPEC_FILES`` plus
@@ -169,6 +170,9 @@ LIVE = ("queued", "baseline", "running")  # a record found in one of these after
 DEFAULT_MAX_ATTEMPTS = 3
 DEFAULT_LEVEL_REPAIRS = 2
 DEFAULT_STOP_GRACE = 5.0
+DEFAULT_MAX_TURNS = 150  # `claude -p --max-turns` of one agent step (gap G1)
+DEFAULT_STEP_MAX_USD = 5.0  # `--max-budget-usd` of one agent step
+MIN_STEP_USD = 0.05  # less of the build budget left: the step is not spawned
 SCOPE_DIR = ".lattice-scope"  # a node's selection file, in its worktree (git-ignored)
 SCOPE_EXCLUDE = "/.lattice-scope/"
 GATE_SCAN_S = 1.0  # how often a running gate's descendants are recorded
@@ -459,6 +463,41 @@ class RebuildConfig:
             return int(v) if v else None
         except (TypeError, ValueError):
             return None
+
+    @property
+    def max_turns(self) -> int | None:
+        """``[rebuild] max_turns``: ``--max-turns`` of every agent step (one ``claude -p``
+        process: a round, a plan node's round, a level repair); default 150, 0: no cap."""
+        v = self.table.get("max_turns", DEFAULT_MAX_TURNS)
+        try:
+            n = int(v)
+        except (TypeError, ValueError):
+            n = DEFAULT_MAX_TURNS
+        return n if n > 0 else None
+
+    @property
+    def step_max_usd(self) -> float | None:
+        """``[rebuild] step_max_usd``: ``--max-budget-usd`` of every agent step (the CLI's
+        list-price estimate, checked after each model call, so it may overshoot by about one
+        turn); default 5.00, 0: no cap."""
+        v = self.table.get("step_max_usd", DEFAULT_STEP_MAX_USD)
+        try:
+            x = float(v)
+        except (TypeError, ValueError):
+            x = DEFAULT_STEP_MAX_USD
+        return x if x > 0 else None
+
+    @property
+    def max_budget_usd(self) -> float | None:
+        """``[rebuild] max_budget_usd``: list-price USD one build (or plan node, its repairs
+        included) may spend in all; each step gets what is left (capped by
+        ``step_max_usd``), and below :data:`MIN_STEP_USD` left no step is spawned. None (the
+        default, or 0): no build cap."""
+        try:
+            x = float(self.table.get("max_budget_usd") or 0)
+        except (TypeError, ValueError):
+            return None
+        return x if x > 0 else None
 
     @property
     def stop_grace(self) -> float:
@@ -1130,8 +1169,11 @@ def build_rebuild_argv(
     gates: Sequence[str],
     resume: str | None = None,
     rules: str = RULES,
+    max_turns: int | None = None,
+    max_budget_usd: float | None = None,
 ) -> list[str]:
-    """The ``claude`` argv of one agent step. The prompt goes last behind ``--``."""
+    """The ``claude`` argv of one agent step. The prompt goes last behind ``--``; the caps
+    (``--max-turns``, ``--max-budget-usd``; None: omitted) go before it."""
     argv = [claude_bin, "-p", "--output-format", "stream-json", "--verbose"]
     if resume:
         argv += ["--resume", resume]
@@ -1156,9 +1198,12 @@ def build_rebuild_argv(
         rules,
         "--model",
         model,
-        "--",
-        text,
     ]
+    if max_turns is not None:
+        argv += ["--max-turns", str(int(max_turns))]
+    if max_budget_usd is not None:
+        argv += ["--max-budget-usd", f"{max_budget_usd:.4f}"]
+    argv += ["--", text]
     return argv
 
 
@@ -2820,7 +2865,8 @@ class Rebuilder:
                 self._commit(run, n, failing_now)
                 return
             last_check, last_gates, last_rnd = check, gates, rnd
-            if (agent.get("error") or {}).get("kind") == "usage_limit":
+            aerr = agent.get("error") or {}
+            if aerr.get("kind") == "usage_limit" or aerr.get("reason") == "budget_exhausted":
                 self._end_hook(run, "gave_up")
                 with self.lock:
                     rec["error"] = agent["error"]
@@ -3223,7 +3269,32 @@ class Rebuilder:
             out["error"] = {"kind": error_kind(msg), "message": msg}
         return out
 
+    def _step_budget(self, run: _Run) -> tuple[float | None, float | None]:
+        """The ``--max-budget-usd`` of the next agent step and the build budget left (None:
+        no cap). The CLI's budget is per process and every step is a new one, so the build
+        cap is ``max_budget_usd`` minus the cost the record already holds."""
+        cap = self.cfg.max_budget_usd
+        left = None
+        if cap is not None:
+            spent = float(run.record.get("usage", {}).get("cost_usd_list_estimate") or 0.0)
+            left = round(cap - spent, 6)
+        caps = [x for x in (self.cfg.step_max_usd, left) if x is not None]
+        return (min(caps) if caps else None), left
+
     def _claude_step(self, run: _Run, n: int, prompt: str) -> dict[str, Any]:
+        step_usd, left = self._step_budget(run)
+        if left is not None and left < MIN_STEP_USD:
+            # not worth a process: the CLI checks its budget only after a model call
+            return {
+                "summary": "",
+                "error": {
+                    "kind": "timeout",
+                    "reason": "budget_exhausted",
+                    "message": f"[rebuild] max_budget_usd = {self.cfg.max_budget_usd:g}: "
+                    f"{max(left, 0.0):.4f} USD left, below {MIN_STEP_USD:g}; the agent was "
+                    "not started",
+                },
+            }
         if run.tmp is None:
             run.tmp = Path(tempfile.mkdtemp(prefix="lattice-rebuild-cfg-"))
             write_configs(run.tmp, "ask", run.worktree / run.project_rel, self.python)
@@ -3238,6 +3309,8 @@ class Rebuilder:
             gates=run.gates,
             resume=resume,
             rules=agent_rules(RULES if run.scope is None else SCOPE_RULES),  # + FENCE_RULES
+            max_turns=self.cfg.max_turns,
+            max_budget_usd=step_usd,
         )
         with self.lock:
             run.argvs.append(argv)
@@ -3364,6 +3437,9 @@ class Rebuilder:
                 "kind": errors[-1].get("kind") or "cli",
                 "message": errors[-1].get("message") or "claude failed",
             }
+            for k in ("reason", "terminal_reason", "errors"):  # the CLI's caps (gap G1)
+                if errors[-1].get(k):
+                    out["error"][k] = errors[-1][k]
         elif result is None:
             tail = "".join(stderr).strip()
             msg = _short(tail, 500) or f"claude exited with status {proc.returncode}"

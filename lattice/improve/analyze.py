@@ -446,6 +446,18 @@ def _template(c: Cluster) -> dict[str, Any]:
                 ["studio.toml"],
                 "nodes ran out of output tokens",
             ),
+            "budget_cap": (
+                "Raise step_max_usd / max_budget_usd or split the node",
+                "change_set",
+                ["studio.toml"],
+                "agent steps ran out of their USD budget",
+            ),
+            "max_turns": (
+                "Raise max_turns or split the node",
+                "change_set",
+                ["studio.toml"],
+                "agent steps ran out of turns",
+            ),
             "regression": (
                 "Find why merged nodes break each other",
                 "experiment",

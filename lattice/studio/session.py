@@ -392,6 +392,32 @@ def error_kind(text: str) -> str:
     return "usage_limit" if _USAGE_LIMIT_RE.search(text) else "cli"
 
 
+# a `claude -p` result subtype -> the error's `reason` (pre-flight P1, CLI 2.1.309)
+CLI_ERROR_REASONS = {"error_max_turns": "max_turns", "error_max_budget_usd": "max_budget_usd"}
+_TOKEN_KEYS = (
+    ("input_tokens", "inputTokens"),
+    ("output_tokens", "outputTokens"),
+    ("cache_read_input_tokens", "cacheReadInputTokens"),
+    ("cache_creation_input_tokens", "cacheCreationInputTokens"),
+)
+
+
+def result_usage(rec: Mapping[str, Any]) -> tuple[dict[str, int], float]:
+    """A result event's token counts and cost. The top-level ``usage`` is all zeros when the
+    CLI stops on its budget (pre-flight P1): then the tokens are ``modelUsage``'s, summed
+    over the models; the cost is ``total_cost_usd``, else the models' ``costUSD``."""
+    usage = rec.get("usage") if isinstance(rec.get("usage"), Mapping) else {}
+    by_model = rec.get("modelUsage") if isinstance(rec.get("modelUsage"), Mapping) else {}
+    models = [m for m in by_model.values() if isinstance(m, Mapping)]
+    tokens = {k: int(usage.get(k) or 0) for k, _ in _TOKEN_KEYS}
+    if not any(tokens.values()):
+        tokens = {k: sum(int(m.get(mk) or 0) for m in models) for k, mk in _TOKEN_KEYS}
+    cost = rec.get("total_cost_usd")
+    if isinstance(cost, int | float) and not isinstance(cost, bool):
+        return tokens, float(cost)
+    return tokens, float(sum(float(m.get("costUSD") or 0) for m in models))
+
+
 # ---- the transcript: a stream-json normalizer over an event log -------------------------------
 
 
@@ -639,12 +665,22 @@ class Transcript:
         if isinstance(sid, str) and sid:
             self.claude_session_id = sid
         text = str(rec.get("result") or "")
-        is_error = bool(rec.get("is_error")) or str(rec.get("subtype") or "").startswith("error")
+        subtype = str(rec.get("subtype") or "")
+        is_error = bool(rec.get("is_error")) or subtype.startswith("error")
         if is_error:
-            self._add(
-                {"type": "error", "message": _short(text or "claude failed", 500),
-                 "kind": error_kind(text)}
-            )  # fmt: skip
+            # the CLI's caps end with an `errors` list and no `result` (pre-flight P1)
+            errs = [str(e) for e in rec.get("errors") or [] if e] if isinstance(
+                rec.get("errors"), list) else []  # fmt: skip
+            why = text or "; ".join(errs)
+            err: dict[str, Any] = {"type": "error", "message": _short(why or "claude failed", 500),
+                                   "kind": error_kind(why)}  # fmt: skip
+            if subtype in CLI_ERROR_REASONS:
+                err["reason"] = CLI_ERROR_REASONS[subtype]
+            if errs:
+                err["errors"] = errs
+            if rec.get("terminal_reason"):
+                err["terminal_reason"] = str(rec["terminal_reason"])
+            self._add(err)
         elif not any(e["type"] == "text" for e in self.events[self._last_user_index() :]) and text:
             if self._tc is not None:
                 if all(text != r for _, r in self._raw_seen):
@@ -666,9 +702,7 @@ class Transcript:
             self._tc = None
         elif self.report_routed:
             extra = {"routed": None}
-        usage = rec.get("usage") if isinstance(rec.get("usage"), dict) else {}
-        cost = rec.get("total_cost_usd")
-        cost = float(cost) if isinstance(cost, int | float) else 0.0
+        tokens, cost = result_usage(rec)
         self.cost_total += cost
         self._add(
             {
@@ -677,10 +711,7 @@ class Transcript:
                 "text": text,
                 "cost_usd": cost,
                 "duration_ms": int(rec.get("duration_ms") or 0),
-                "input_tokens": int(usage.get("input_tokens") or 0),
-                "output_tokens": int(usage.get("output_tokens") or 0),
-                "cache_read_input_tokens": int(usage.get("cache_read_input_tokens") or 0),
-                "cache_creation_input_tokens": int(usage.get("cache_creation_input_tokens") or 0),
+                **tokens,
                 "num_turns": int(rec.get("num_turns") or 0),
                 "claude_session_id": self.claude_session_id,
                 **extra,
