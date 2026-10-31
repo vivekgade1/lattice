@@ -1,0 +1,73 @@
+{
+ "verdict": "fail",
+ "clean_verdict": {
+  "passed": false,
+  "gate_passed": false,
+  "exit_code": 1,
+  "output_tail": "FAIL: 1 finding (C 0, D 1); 17 cases run\n\nrule (D: scenarios): scenario: get_registers_ghost\n  [D silent] RPC toy.v1.Shelf/GetItem (get_registers_ghost / step 1)\n    expected NOT_FOUND null; got NOT_FOUND {\"code\": \"NOT_FOUND\", \"message\": \"item not found\"}\n    db Item where {'name': 'ghost'}: expected 1 rows, found 0\n    spec problem: nothing before this step puts a row in Item where {'name': 'ghost'} (no earlier request that succeeds and writes, no Await, no step run as a signed-in user, no given row), so no implementation can satisfy this check: correct the scenario, not the code\n\ntimings: total 1.46s (C 0.00s, D 1.45s)\nscenarios: 9 in 1.45s, 0.16s each on average (start 0.13, db 0.00, steps 0.02, stop 0.00)\nslowest 5:\n  1.17s add_and_get (start 1.06, db 0.00, steps 0.03, 2 requests)\n  0.04s add_empty_name (start 0.02, db 0.00, steps 0.01, 1 requests)\n  0.04s list_oldest_first (start 0.02, db 0.00, steps 0.02, 4 requests)\n  0.04s remove_then_again (start 0.02, db 0.00, steps 0.01, 4 requests)\n  0.04s add_duplicate_name (start 0.02, db 0.00, steps 0.01, 2 requests)\n",
+  "overlaid": [],
+  "base": "fca2a8b579bc3099a42b4e66b6e174c2ef9ccd71",
+  "tip": "52b4f12a360879c5636c933864fd510611053027",
+  "runs": 1,
+  "exit_codes": [
+   1
+  ],
+  "timed_out": false,
+  "tree_digest": "58eadcc320bcc590bbb9a4f2a4d5b229495a5d2144837b81a0b22524e1bb55c5",
+  "tree_path": "<scratch>/U-C/verify/lattice-cleanverify-m_ulmsr4/tree",
+  "tree_cleaned": true,
+  "seconds": 2.26,
+  "protected_diff": {
+   "clean": true,
+   "changed": [],
+   "deleted": [],
+   "added": [],
+   "paths": [
+    "REQUIREMENTS.md",
+    "spec.py",
+    "spec.trace.json",
+    "studio.toml",
+    "check.sh",
+    "harness.py",
+    "CONTEXT.md",
+    "proto",
+    "generate.sh",
+    "buf.yaml",
+    "buf.gen.yaml",
+    "proto/toy/v1/shelf.proto",
+    "REQUIREMENTS.rationale.json",
+    "REQUIREMENTS.glossary.json"
+   ],
+   "checked": 11
+  }
+ },
+ "escape": {
+  "clean": true,
+  "changed": [],
+  "deleted": [],
+  "added": [],
+  "paths": [
+   "REQUIREMENTS.md",
+   "spec.py",
+   "spec.trace.json",
+   "harness.py",
+   "check.sh",
+   "studio.toml",
+   "CONTEXT.md",
+   "proto",
+   "generate.sh",
+   "buf.yaml",
+   "buf.gen.yaml"
+  ],
+  "checked": 11
+ },
+ "changes": [
+  {
+   "status": "M",
+   "path": "shelf.go"
+  }
+ ],
+ "outside_allowed_set": [],
+ "verifier_error": null,
+ "seconds": 2.39
+}
