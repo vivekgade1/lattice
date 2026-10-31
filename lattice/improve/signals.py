@@ -133,10 +133,11 @@ def build_cause(rec: Mapping[str, Any], *, stopped_by: str | None = None) -> str
     Precedence: ``stopped_by_owner`` (a stop the owner asked for; another stop is ``other``),
     ``usage_limit``, ``spec_unsatisfiable`` (the last round's findings hold the check's "spec
     problem" line: nothing could have passed), ``token_budget``, ``budget_cap`` (the CLI's
-    ``--max-budget-usd``, or too little of ``[rebuild] max_budget_usd`` left to start a step),
-    ``max_turns`` (the CLI's ``--max-turns``), ``timeout``, ``no_progress`` (the last two
-    rounds failed on the same set), ``regression`` (every in-scope target passes, a check that
-    passed before fails), ``repair_exhausted`` (every round used), ``other``."""
+    ``--max-budget-usd``, too little of ``[rebuild] max_budget_usd`` left to start a step, or
+    ``node_max_usd`` passed in-stream), ``max_turns`` (the CLI's ``--max-turns``),
+    ``timeout``, ``no_progress`` (the last two rounds failed on the same set), ``regression``
+    (every in-scope target passes, a check that passed before fails), ``repair_exhausted``
+    (every round used), ``other``."""
     status = rec.get("status")
     if status == "passed":
         return None
@@ -160,7 +161,7 @@ def build_cause(rec: Mapping[str, Any], *, stopped_by: str | None = None) -> str
     if lerr.get("kind") == "timeout" and lerr.get("reason") == "node_max_tokens":
         return "token_budget"
     reason = lerr.get("reason") or err.get("reason")
-    if reason in ("max_budget_usd", "budget_exhausted"):
+    if reason in ("max_budget_usd", "budget_exhausted", "node_max_usd"):
         return "budget_cap"
     if reason == "max_turns":
         return "max_turns"

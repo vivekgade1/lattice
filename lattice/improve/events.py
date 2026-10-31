@@ -108,7 +108,7 @@ CAUSES = (
     "no_progress",  # the same failing set in two consecutive rounds
     "timeout",  # node_timeout / round timeout
     "token_budget",  # node_max_tokens
-    "budget_cap",  # the CLI's --max-budget-usd (step_max_usd), or max_budget_usd used up
+    "budget_cap",  # the CLI's --max-budget-usd, max_budget_usd used up, or node_max_usd
     "max_turns",  # the CLI's --max-turns ([rebuild] max_turns)
     "regression",  # the level gate failed on a check that passed before
     "merge_conflict",

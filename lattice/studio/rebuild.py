@@ -72,9 +72,12 @@ by ``git merge --ff-only`` in a clean worktree). Extra ``[rebuild]`` keys: ``are
 **Build performance (API.md v1.11)**: ``[rebuild] scoped_gate_args`` (a plan node's gate on
 its scope plus the regression set, :func:`build_selection`), ``level_gate``,
 ``level_repair_attempts`` (:meth:`Rebuilder.repair_build`), ``node_timeout``,
-``node_max_tokens`` (the usage seen so far is kept, :class:`StreamUsage`), ``max_turns``,
-``step_max_usd`` and ``max_budget_usd`` (each agent step's ``--max-turns`` and
-``--max-budget-usd``, :meth:`Rebuilder._step_budget`) and ``stop_grace``; per-tip gate results (:meth:`Rebuilder.tip_result`); a gate's whole process
+``node_max_tokens`` (the usage seen so far is kept, :class:`StreamUsage`), ``node_max_usd``
+(the same in-stream stop on the cache-inclusive list-price estimate of
+:mod:`lattice.studio.costing`; a killed step records that estimate, ``cost_basis``
+``stream_estimate``), ``max_turns``, ``step_max_usd`` and ``max_budget_usd`` (each agent
+step's ``--max-turns`` and ``--max-budget-usd``, :meth:`Rebuilder._step_budget`) and
+``stop_grace``; per-tip gate results (:meth:`Rebuilder.tip_result`); a gate's whole process
 tree and its labelled containers go when it is stopped (:meth:`Rebuilder._run_gate`).
 
 **Spec sync (API.md v1.12)**: the spec files a rebuild protects (``SPEC_FILES`` plus
@@ -125,6 +128,12 @@ from lattice.improve.events import EventLog
 from lattice.llm.cli_client import cli_env
 from lattice.studio import areas as areas_mod
 from lattice.studio import fencing
+from lattice.studio.costing import (
+    COST_BASIS_CLI,
+    COST_BASIS_STREAM,
+    COST_BASIS_UNPRICED,
+    estimate_cost,
+)
 from lattice.studio.session import (
     _MODEL_TOOLS,
     DEFAULT_MAX_TOKENS,
@@ -457,12 +466,26 @@ class RebuildConfig:
     def node_max_tokens(self) -> int | None:
         """``[rebuild] node_max_tokens``: output tokens one node's agent may spend in all
         (its rounds and repairs); reached, the step is stopped like a timeout. None: no
-        cap."""
+        cap. It counts output tokens only (not input or cache tokens, most of an agent's
+        cost): the cost cap is :attr:`node_max_usd`."""
         v = self.table.get("node_max_tokens")
         try:
             return int(v) if v else None
         except (TypeError, ValueError):
             return None
+
+    @property
+    def node_max_usd(self) -> float | None:
+        """``[rebuild] node_max_usd``: list-price USD one plan node's agent may spend in all
+        (its rounds and repairs), checked in-stream on the cache-inclusive estimate
+        (:meth:`StreamUsage.cost_estimate`); passed, the step is stopped like a timeout and
+        the node's build gives up. A second guard behind the CLI's ``--max-budget-usd``,
+        which may overshoot by about one turn. None (the default, or 0): no cap."""
+        try:
+            x = float(self.table.get("node_max_usd") or 0)
+        except (TypeError, ValueError):
+            return None
+        return x if x > 0 else None
 
     @property
     def max_turns(self) -> int | None:
@@ -2866,7 +2889,10 @@ class Rebuilder:
                 return
             last_check, last_gates, last_rnd = check, gates, rnd
             aerr = agent.get("error") or {}
-            if aerr.get("kind") == "usage_limit" or aerr.get("reason") == "budget_exhausted":
+            if aerr.get("kind") == "usage_limit" or aerr.get("reason") in (
+                "budget_exhausted",
+                "node_max_usd",  # a further round would pay for a model call before it stops
+            ):
                 self._end_hook(run, "gave_up")
                 with self.lock:
                     rec["error"] = agent["error"]
@@ -3295,6 +3321,18 @@ class Rebuilder:
                     "not started",
                 },
             }
+        usd_cap = self.cfg.node_max_usd if run.plan_node is not None else None
+        spent_usd = float(run.record.get("usage", {}).get("cost_usd_list_estimate") or 0.0)
+        if usd_cap is not None and spent_usd >= usd_cap:
+            return {  # a level repair of a node whose budget is gone
+                "summary": "",
+                "error": {
+                    "kind": "timeout",
+                    "reason": "node_max_usd",
+                    "message": f"[rebuild] node_max_usd = {usd_cap:g}: {spent_usd:.4f} USD "
+                    "spent; the agent was not started",
+                },
+            }
         if run.tmp is None:
             run.tmp = Path(tempfile.mkdtemp(prefix="lattice-rebuild-cfg-"))
             write_configs(run.tmp, "ask", run.worktree / run.project_rel, self.python)
@@ -3345,10 +3383,12 @@ class Rebuilder:
         drainer.start()
         timed_out = threading.Event()
         over_budget = threading.Event()
+        over_usd = threading.Event()
         limit = self.cfg.node_timeout if run.plan_node is not None else self.cfg.round_timeout
         seen = StreamUsage()
         cap = self.cfg.node_max_tokens if run.plan_node is not None else None
         spent = int(run.record.get("usage", {}).get("output_tokens") or 0)
+        model = str(run.record["model"])  # the served id in the stream wins (StreamUsage)
 
         def on_timeout() -> None:
             timed_out.set()
@@ -3383,6 +3423,15 @@ class Rebuilder:
                     if cap and not over_budget.is_set() and spent + seen.output_tokens() > cap:
                         over_budget.set()
                         _kill_group(proc, signal.SIGTERM)
+                    if (
+                        usd_cap
+                        and not over_usd.is_set()
+                        and rec.get("type") in ("assistant", "stream_event")
+                    ):
+                        est = seen.cost_estimate(model)  # None: an unknown model, no check
+                        if est is not None and spent_usd + est > usd_cap:
+                            over_usd.set()
+                            _kill_group(proc, signal.SIGTERM)
             proc.wait()
         finally:
             timer.cancel()
@@ -3412,12 +3461,21 @@ class Rebuilder:
             "cache_creation_input_tokens": res.get("cache_creation_input_tokens", 0),
             "num_turns": res.get("num_turns", 0),
             "session_id": t.claude_session_id,
+            "cost_basis": COST_BASIS_CLI if result is not None else None,
         }
         if result is None and seen.messages:
-            # no result event (a timeout, the token cap, a crash): the usage the stream
-            # showed so far, from the assistant messages, instead of 0 (API v1.11)
+            # no result event (a timeout, a cap, a crash): the usage the stream showed so
+            # far, from the assistant messages, instead of 0 (API v1.11), and its
+            # cache-inclusive list-price estimate (gap G2; None: a model the table lacks)
             out["usage"].update(seen.totals())
             out["usage"]["partial"] = True
+            est = seen.cost_estimate(model)
+            if est is None:
+                out["usage"]["cost_usd_list_estimate"] = None
+                out["usage"]["cost_basis"] = COST_BASIS_UNPRICED
+            else:
+                out["usage"]["cost_usd"] = out["usage"]["cost_usd_list_estimate"] = round(est, 6)
+                out["usage"]["cost_basis"] = COST_BASIS_STREAM
         if run.stop.is_set():
             return out
         if over_budget.is_set():
@@ -3425,6 +3483,13 @@ class Rebuilder:
                 "kind": "timeout",
                 "reason": "node_max_tokens",
                 "message": f"the agent passed [rebuild] node_max_tokens = {cap} output tokens",
+            }
+        elif over_usd.is_set():
+            out["error"] = {
+                "kind": "timeout",
+                "reason": "node_max_usd",
+                "message": f"the agent passed [rebuild] node_max_usd = {usd_cap:g} USD "
+                "(list-price estimate of its stream, cache included)",
             }
         elif timed_out.is_set():
             out["error"] = {
@@ -4026,14 +4091,37 @@ def _targets(changes: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
 class StreamUsage:
     """The usage a ``claude -p --output-format stream-json`` stream shows before its
     result event: each assistant message's ``usage`` (the last one seen per message id:
-    the CLI repeats a message once per content block), summed."""
+    the CLI repeats a message once per content block), summed; subagent messages are not
+    ours. An assistant record's ``output_tokens`` is the count when it was written, before
+    the message ended, so without ``--include-partial-messages`` the output (and the cost
+    estimate) is a lower bound; the ``message_delta`` stream event of that flag carries
+    the message's final count and is taken when present. Input and cache counts are exact
+    (tests/studio/test_cost_cap.py replays real streams)."""
+
+    _KINDS = ("input_tokens", "output_tokens", "cache_read_input_tokens",
+              "cache_creation_input_tokens")  # fmt: skip
 
     def __init__(self) -> None:
         self.messages: dict[str, dict[str, int]] = {}
+        self.models: dict[str, str] = {}  # message id -> the served model id
+        self.model = ""  # the init record's model
         self._anon = 0
+        self._last = ""
 
     def feed(self, rec: Mapping[str, Any]) -> None:
-        if rec.get("type") != "assistant" or rec.get("parent_tool_use_id"):
+        if rec.get("parent_tool_use_id"):
+            return
+        kind = rec.get("type")
+        if kind == "system" and rec.get("subtype") == "init":
+            self.model = str(rec.get("model") or "")
+            return
+        if kind == "stream_event":
+            ev = rec.get("event") if isinstance(rec.get("event"), Mapping) else {}
+            u = ev.get("usage") if isinstance(ev.get("usage"), Mapping) else None
+            if ev.get("type") == "message_delta" and u:
+                self._merge(str(rec.get("api_message_id") or self._last or "delta"), u)
+            return
+        if kind != "assistant":
             return
         msg = rec.get("message") if isinstance(rec.get("message"), Mapping) else {}
         u = msg.get("usage") if isinstance(msg.get("usage"), Mapping) else None
@@ -4043,23 +4131,40 @@ class StreamUsage:
         if not mid:
             self._anon += 1
             mid = f"anon-{self._anon}"
-        self.messages[mid] = {
-            k: int(u.get(k) or 0)
-            for k in ("input_tokens", "output_tokens", "cache_read_input_tokens",
-                      "cache_creation_input_tokens")
-        }  # fmt: skip
+        if msg.get("model"):
+            self.models[mid] = str(msg["model"])
+        self._merge(mid, u)
+        self._last = mid
+
+    def _merge(self, mid: str, u: Mapping[str, Any]) -> None:
+        cur = self.messages.setdefault(mid, dict.fromkeys(self._KINDS, 0))
+        for k in self._KINDS:
+            if k in u:
+                v = int(u.get(k) or 0)
+                cur[k] = max(cur[k], v) if k == "output_tokens" else v
 
     def output_tokens(self) -> int:
         return sum(m["output_tokens"] for m in self.messages.values())
 
     def totals(self) -> dict[str, int]:
-        out = dict.fromkeys(("input_tokens", "output_tokens", "cache_read_input_tokens",
-                             "cache_creation_input_tokens"), 0)  # fmt: skip
+        out = dict.fromkeys(self._KINDS, 0)
         for m in self.messages.values():
             for k in out:
                 out[k] += m[k]
         out["num_turns"] = len(self.messages)
         return out
+
+    def cost_estimate(self, model: str | None = None) -> float | None:
+        """The list-price USD of the messages so far, all four token kinds, each message
+        on its served model id (else the init record's, else `model`); None when one of
+        them is on a model :mod:`lattice.studio.costing` does not know."""
+        total = 0.0
+        for mid, u in self.messages.items():
+            c = estimate_cost(self.models.get(mid) or self.model or model, u)
+            if c is None:
+                return None
+            total += c
+        return total
 
 
 USAGE_KEYS = (

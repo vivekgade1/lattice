@@ -447,7 +447,7 @@ def _template(c: Cluster) -> dict[str, Any]:
                 "nodes ran out of output tokens",
             ),
             "budget_cap": (
-                "Raise step_max_usd / max_budget_usd or split the node",
+                "Raise step_max_usd / max_budget_usd / node_max_usd or split the node",
                 "change_set",
                 ["studio.toml"],
                 "agent steps ran out of their USD budget",
