@@ -546,9 +546,14 @@ def test_the_allowlist_is_exactly_the_three_bundled_plugins() -> None:
         assert not v["valid"] and v["halting"], plugins  # S4
 
 
+def _pilot_as_halted(out: Path) -> Path:
+    """A copy of the committed pilot data as the paid run left it (before any re-judging)."""
+    shutil.copytree(PILOT, out, ignore=shutil.ignore_patterns("*.amended.json"))
+    return out
+
+
 def test_rejudge_of_the_committed_u_a_data(tmp_path: Path) -> None:
-    out = tmp_path / "pilot"
-    shutil.copytree(PILOT, out)
+    out = _pilot_as_halted(tmp_path / "pilot")
     before = {p.relative_to(out): p.read_bytes() for p in out.rglob("*") if p.is_file()}
     orig = json.loads((out / "cells" / "U-A" / "cell.json").read_text())
     assert not orig["validity"]["valid"] and orig["validity"]["halting"]  # the S4 of the paid run
@@ -561,6 +566,8 @@ def test_rejudge_of_the_committed_u_a_data(tmp_path: Path) -> None:
     assert (new["class"]["class"], new["metrics"]["verdict"], new["rejudged"]["class_unchanged"], new["rejudged"]["model_calls"]) == ("honest-fail", "fail", True, 0)
     res = json.loads((out / "result.amended.json").read_text())
     assert res["halted"] is None and res["rejudged"]["original_halted"].startswith("S4") and res["ledger_total_usd"] == pytest.approx(0.153248, abs=1e-6)
+    committed = json.loads((PILOT / "cells" / "U-A" / "cell.amended.json").read_text())  # the committed re-judgement says the same
+    assert (committed["validity"]["valid"], committed["class"]) == (True, new["class"])
 
 
 def _freeze_repo(tmp: Path) -> tuple[Path, Path, Path, Path, dict[str, Any]]:
@@ -675,8 +682,7 @@ def test_dry_run_continuation_keeps_valid_cells_and_runs_the_rest_in_order(tmp_p
 def test_continuation_refuses_a_recorded_cell_that_still_halts_and_never_reruns_a_ledger_cell(tmp_path: Path) -> None:
     import argparse
 
-    out = tmp_path / "pilot"
-    shutil.copytree(PILOT, out)
+    out = _pilot_as_halted(tmp_path / "pilot")
     with pytest.raises(SystemExit, match="rejudge"):
         R.cmd_pilot(argparse.Namespace(out=str(out), scratch=str(tmp_path / "s"), dry_run="honest", cells="", confirm_spend=False, continue_=True))
     led = tmp_path / "ledger.jsonl"
