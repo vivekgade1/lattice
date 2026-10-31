@@ -120,6 +120,7 @@ type xInterceptor struct {
 
 	Option *xOptGate `json:"option,omitempty"` // E4b: the skip condition reads a method option
 	codes  []xCode   // E3d: the codes the refusal answers
+	fn     *Func     // GA2: the interceptor's function (nil when unresolved)
 }
 
 // xOptGate is a skip condition `<read of the extension> ==|!= <Enum>_<Value>` (E4b); Guard is a literal
@@ -698,6 +699,8 @@ func (g *gx) findGrpcRegistrations(w *grpcWalk) (regs []*grpcReg, dropped []xExc
 			rs := []*grpcReg{r}
 			if os := g.optionRegs(w, r, call, fn); os != nil {
 				rs = os // E2
+			} else if ts := g.tableRegs(r, call, fn); ts != nil {
+				rs = ts // GA2
 			} else if dp, ip := paramAt(fn, call.Args[0]), paramAt(fn, call.Args[1]); fn.Lit == nil && (ip >= 0 || dp >= 0 && r.desc == nil) {
 				rs = nil // D1.1: a descriptor or impl that is a parameter is read at each wired call of the helper
 				for _, s := range w.callSites(fn, false) {
@@ -944,6 +947,7 @@ func (g *gx) findGrpc() {
 	gr.Gateway = g.findGateways(gr.Services)
 
 	var recs []*routeRec
+	hand := map[string]*errSrc{} // GA2: each implemented rpc's handler errors, for its interceptors (E3e)
 	for _, svc := range gr.Services {
 		reg := byService[svc.Name]
 		run := &grpcRun{memo: map[*Func]*errSrc{}, busy: map[*Func]bool{}}
@@ -1010,10 +1014,12 @@ func (g *gx) findGrpc() {
 			ci := g.analyze(h)
 			recs = append(recs, &routeRec{closure: ci, out: &xRoute{Method: "RPC", PathTemplate: "/" + key}})
 			es := g.errOfFunc(h, 0, run)
+			hand[key] = es
 			g.fillRPC(r, h, ci, es, run)
 		}
 	}
 	g.rpcAuth(gr, ics, &grpcRun{memo: map[*Func]*errSrc{}, busy: map[*Func]bool{}})
+	g.interceptorCodes(gr, ics, hand) // GA2 (E3e)
 
 	// state writes rooted at the rpcs: the existing finder, run once more with the rpcs as the
 	// route list, then merged in place of the roots the HTTP run gave the same writes

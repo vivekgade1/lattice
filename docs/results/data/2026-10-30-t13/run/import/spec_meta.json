@@ -1,0 +1,493 @@
+{
+  "schema": "lattice-spec-meta/1",
+  "package": "cyclops.ui",
+  "spec": "b6d4b4525f3dce1f2da6004f842f06077a04fc6d18d99ffa58cf8403b5dab7ad",
+  "proposals": {},
+  "counts": {
+    "items": {
+      "inferred": 30,
+      "verified": 35
+    },
+    "proposals": {}
+  },
+  "rules_summary": {
+    "items": {
+      "verified": 35,
+      "refuted": 0,
+      "unexercised": 30,
+      "unclear": 0
+    },
+    "tables": {
+      "verified": 0,
+      "total": 0
+    },
+    "routes": {
+      "verified": 0,
+      "total": 30
+    }
+  },
+  "sources": {
+    "report.json": "7ac8175b5431a8caa71ae70f3eedac4edab147efd73be428a14d8c87e71e4aab",
+    "candidate_spec.py": "86174d9e6365465e72f3a3cc63ebc4a9d07c7032edbbda33e70083a2f15c22aa",
+    "proposals.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "review.jsonl": null
+  },
+  "import_dir": "/Users/vivekgade/Documents/lattice-nc-t13run/docs/results/data/2026-10-30-t13/run/import",
+  "items": {
+    "R1 GET /api/roots": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /api/roots 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 GET /api/quotes": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /api/quotes 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 GET /api/meta": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /api/meta 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 GET /api/bars/{rung}": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /api/bars/{rung} 422": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R3 GET /api/bars/{rung} 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 GET /api/bars/{rung}/windows": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /api/bars/{rung}/windows 422": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R3 GET /api/bars/{rung}/windows 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 GET /api/features/{rung}": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /api/features/{rung} 422": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R3 GET /api/features/{rung} 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 GET /api/regimes": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /api/regimes 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 GET /api/bar/{ts}": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /api/bar/{ts} 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 GET /api/patterns/{rung}": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /api/patterns/{rung} 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 GET /api/patterns/{rung}/similar": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /api/patterns/{rung}/similar 422": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R3 GET /api/patterns/{rung}/similar 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 GET /api/structure/{rung}": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /api/structure/{rung} 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 GET /api/formations/{rung}": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /api/formations/{rung} 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 GET /api/bands/{rung}": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /api/bands/{rung} 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 GET /api/memory/{ts}": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /api/memory/{ts} 422": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R3 GET /api/memory/{ts} 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 GET /api/profiles": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /api/profiles 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 GET /api/validation/{split}": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /api/validation/{split} 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 GET /api/dq": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /api/dq 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 GET /api/eod": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /api/eod 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 GET /api/eod/{d}": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /api/eod/{d} 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 GET /api/journal/{d}": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /api/journal/{d} 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 GET /api/rolling": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /api/rolling 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 GET /api/registry": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /api/registry 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 GET /api/parity": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /api/parity 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 GET /api/live": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /api/live 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 GET /api/user/drawings/{rung}": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /api/user/drawings/{rung} 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 PUT /api/user/drawings/{rung}": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 PUT /api/user/drawings/{rung} 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 GET /api/user/setups": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /api/user/setups 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 GET /api/user/setups/{slug}": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /api/user/setups/{slug} 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 PUT /api/user/setups/{slug}": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 PUT /api/user/setups/{slug} 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 DELETE /api/user/setups/{slug}": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 DELETE /api/user/setups/{slug} 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    }
+  }
+}

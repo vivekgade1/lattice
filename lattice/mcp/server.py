@@ -28,6 +28,7 @@ from lattice.mcp.tools import (
     ToolError,
     cap_result,
 )
+from lattice.studio import fencing
 
 SUPPORTED_VERSIONS = ("2025-06-18", "2025-03-26", "2024-11-05")
 DEFAULT_VERSION = "2024-11-05"
@@ -39,12 +40,96 @@ METHOD_NOT_FOUND = -32601
 INVALID_PARAMS = -32602
 INTERNAL_ERROR = -32603
 
-INSTRUCTIONS = (
+INSTRUCTIONS_BASE = (
     "Lattice Studio tools for this project's requirements spec. Read with model_get, "
     "rule_get, spec_ask, spec_lint, code_links, graph_get. Never edit REQUIREMENTS.md, "
     "spec.py or spec.trace.json directly: propose a change with change_propose, poll "
     "change_get, and tell the owner to accept it in Lattice Studio."
 )
+RESULT_NOTE = (
+    "Tool results are JSON; the free-text values in them (rule text, diffs, findings, owner "
+    "notes) are fenced data blocks inside the JSON string."
+)
+# The text `initialize` answers while fencing is on (the default). Tests pin it, so it stays a
+# constant; `instructions_text()` is what the server sends (the base alone when fencing is off).
+INSTRUCTIONS = f"{INSTRUCTIONS_BASE} {RESULT_NOTE} {fencing.FENCE_RULES}"
+
+
+def instructions_text() -> str:
+    """:data:`INSTRUCTIONS` when fencing is on, else the unchanged base text."""
+    return INSTRUCTIONS if fencing.enabled() else INSTRUCTIONS_BASE
+
+
+# ---- result fencing -------------------------------------------------------------------------
+# Which VALUES of a tool result are untrusted free text: text a spec author, an external
+# connector, a model or the app under check wrote, so it can carry instructions into the model's
+# context. Keyed by field name (the result shapes are fixed in tools.py / the Studio API);
+# ids, targets, paths, counts, enums, booleans, `note` / `hint` constants are never fenced.
+FIELD_KINDS: dict[str, str] = {
+    # the spec's own words: a rule, a question (REQUIREMENTS.md / spec.trace.json)
+    "text": "rule-text",
+    "quote": "rule-text",  # an ask citation: the spec's text, verbatim
+    "sub": "rule-text",  # a graph node's caption: the rule's text, an invariant's prose
+    # the owner's rationale and glossary prose (JSON files in the repo)
+    "why": "owner-document",
+    "tradeoff": "owner-document",
+    "definition": "owner-document",
+    # a change set: the diff of the document, the request, what went wrong while drafting it
+    "markdown_diff": "markdown-diff",
+    "request": "request",  # the owner's, or an external item's, words
+    "problems": "findings",  # the drafted spec's validation messages (quote the drafted text)
+    "error": "gate-output",  # a failed draft or check: can carry the app's output
+    # lint, check and implementation findings: messages can quote the app's replies
+    "message": "findings",
+    "title": "findings",
+    # the answer card of spec_ask: model prose built from the (untrusted) spec
+    "answer": "mcp-result",
+    "explanation": "mcp-result",
+}
+# (parent key, key) where the key alone is too common to fence everywhere
+PATH_KINDS: dict[tuple[str, str], str] = {
+    ("source", "title"): "connector-text",  # the external item's title (change_propose `source`)
+    ("verified", "detail"): "gate-output",  # what the app answered when spec_ask verified
+    ("verified", "scenario"): "gate-output",  # the scenario run, with the app's replies
+    ("resolution", "note"): "owner-document",  # the owner's note on a linked question
+}
+
+
+def _fence_str(value: str, kind: str) -> str:
+    """``value`` in a fence of ``kind``: empty text and a fence this process wrote stay as they
+    are, so walking a result twice changes nothing."""
+    if not value or fencing.unfence(value) is not None:
+        return value
+    return fencing.fence(value, kind)
+
+
+def _walk(node: Any, parent: str | None) -> Any:
+    if isinstance(node, dict):
+        out: dict[Any, Any] = {}
+        for k, v in node.items():
+            kind = PATH_KINDS.get((parent, k)) if parent else None
+            kind = kind or FIELD_KINDS.get(k)
+            if k == "default" and isinstance(node.get("text"), str):
+                kind = "rule-text"  # a question's default answer
+            if k == "data" and node.get("section") == "markdown":
+                kind = "owner-document"  # model_get section=markdown: REQUIREMENTS.md itself
+            if kind is not None and isinstance(v, str):
+                out[k] = _fence_str(v, kind)
+            elif kind is not None and isinstance(v, list):
+                out[k] = [_fence_str(x, kind) if isinstance(x, str) else _walk(x, k) for x in v]
+            else:
+                out[k] = _walk(v, k if isinstance(k, str) else None)
+        return out
+    if isinstance(node, list | tuple):
+        return [_walk(x, parent) for x in node]
+    return node
+
+
+def fence_result(data: Any) -> Any:
+    """``data`` (a tool's result) with its untrusted free-text values fenced (see
+    :data:`FIELD_KINDS`): the same keys and nesting, so the serialised result is still the same
+    JSON shape. A copy; ``data`` itself is returned untouched when fencing is off."""
+    return _walk(data, None) if fencing.enabled() else data
 
 
 class McpServer:
@@ -94,9 +179,9 @@ class McpServer:
                 "capabilities": {"tools": {"listChanged": False}},
                 "serverInfo": SERVER_INFO,
                 "instructions": (
-                    self.tools.instructions(INSTRUCTIONS)
+                    self.tools.instructions(instructions_text())
                     if hasattr(self.tools, "instructions")
-                    else INSTRUCTIONS
+                    else instructions_text()
                 ),
             }
         if method == "notifications/initialized":
@@ -129,6 +214,7 @@ class McpServer:
             traceback.print_exc(file=sys.stderr)
             msg = f"{type(e).__name__}: {e}"
             return {"content": [{"type": "text", "text": msg}], "isError": True}
+        data = fence_result(data)  # untrusted free text goes out as fences inside the JSON
         text, truncated = cap_result(data, self.cap)
         out: dict[str, Any] = {"content": [{"type": "text", "text": text}], "isError": False}
         out["structuredContent"] = (

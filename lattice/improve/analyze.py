@@ -446,6 +446,25 @@ def _template(c: Cluster) -> dict[str, Any]:
                 ["studio.toml"],
                 "nodes ran out of output tokens",
             ),
+            "budget_cap": (
+                "Raise step_max_usd / max_budget_usd / node_max_usd or split the node",
+                "change_set",
+                ["studio.toml"],
+                "agent steps ran out of their USD budget",
+            ),
+            "max_turns": (
+                "Raise max_turns or split the node",
+                "change_set",
+                ["studio.toml"],
+                "agent steps ran out of turns",
+            ),
+            "clean_verify_failed": (
+                "Find what the agent's worktree had that its commit lacked",
+                "experiment",
+                ["lattice/studio/rebuild.py"],
+                "builds passed their gates in the agent's own tree but not on a clean "
+                "checkout of the commit (untracked files, or protected files it changed)",
+            ),
             "regression": (
                 "Find why merged nodes break each other",
                 "experiment",

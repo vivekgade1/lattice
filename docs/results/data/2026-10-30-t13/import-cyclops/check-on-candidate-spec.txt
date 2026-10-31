@@ -1,0 +1,2 @@
+error: CheckError: the spec is not valid:
+  S020: contract GET /{path:path} parameter 'path': the path has no hole for it (hint: write {path} in the path)

@@ -58,6 +58,7 @@ reads run with the ``final = 1`` setting, so a ``ReplacingMergeTree`` /
 
 from __future__ import annotations
 
+import re
 import sqlite3
 from collections.abc import Iterable, Mapping, Sequence
 from pathlib import Path
@@ -181,6 +182,17 @@ def url_for(ref: DbRef, driver: str = "canonical") -> str:
     if found is None:
         raise ValueError(f"no {driver!r} form of a {u.dialect} URL")
     return found
+
+
+_UTC_INSTANT = re.compile(r"(\d{4}-\d\d-\d\d)T(\d\d:\d\d:\d\d(?:\.\d{1,6})?)(?:Z|\+00:00)")
+
+
+def naive_utc_instant(value: Any) -> Any:
+    """An ISO 8601 UTC instant (``2026-03-01T00:00:00Z``, ``...T00:00:00.5+00:00``) as
+    the naive UTC literal ``2026-03-01 00:00:00[.5]``; any other value as it is."""
+    if isinstance(value, str) and (m := _UTC_INSTANT.fullmatch(value)):
+        return f"{m[1]} {m[2]}"
+    return value
 
 
 # ---- the interface ---------------------------------------------------------------------
@@ -404,6 +416,28 @@ class MysqlDatabase(Database):
 
     def execute(self, sql: str, params: Sequence[Any] = ()) -> None:
         self._run(sql, params)
+
+    def insert(self, table: str, rows: Iterable[Mapping[str, Any]]) -> None:
+        """As :meth:`Database.insert`, except that an ISO 8601 UTC instant (a spec's
+        ``2026-03-01T00:00:00Z``, which a strict MySQL refuses: error 1292) going into a
+        DATETIME or TIMESTAMP column is sent as the naive UTC literal
+        (:func:`naive_utc_instant`); other columns' values, text included, are unchanged."""
+        rows = [dict(row) for row in rows]
+        if any(naive_utc_instant(v) is not v for row in rows for v in row.values()):
+            timed = {
+                str(r[0]).lower()
+                for r in self.query(
+                    "SELECT column_name FROM information_schema.columns WHERE "
+                    "table_schema = DATABASE() AND table_name = %s AND "
+                    "data_type IN ('datetime', 'timestamp')",
+                    [table],
+                )
+            }
+            rows = [
+                {c: naive_utc_instant(v) if c.lower() in timed else v for c, v in row.items()}
+                for row in rows
+            ]
+        super().insert(table, rows)
 
     def close(self) -> None:
         try:

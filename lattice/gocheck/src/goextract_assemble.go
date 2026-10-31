@@ -513,6 +513,10 @@ func (g *gx) assemble(rec *routeRec, aliased map[*Func]int) {
 		out.Raises = []xRaise{}
 	}
 	// auth (D5)
+	var self *Func // a handler that authenticates the caller itself (node GD)
+	if rec.closure != nil && authenticating == nil && adminMw == nil {
+		self = g.selfAuth(rec.closure)
+	}
 	switch {
 	case unclearWhy != "":
 		out.Auth, out.AuthReason = "unclear", unclearWhy
@@ -526,11 +530,67 @@ func (g *gx) assemble(rec *routeRec, aliased map[*Func]int) {
 		out.AuthReason = fmt.Sprintf("authenticated by %s (%s:%d): a 401 refusal and the caller recorded under %s; chain %s",
 			authenticating.Func, authenticating.File, authenticating.Line, strings.Join(authenticating.RecordsCaller, ","),
 			strings.Join(rec.alt.chain, " > "))
+	case self != nil:
+		out.Auth, out.Member = "Customer", true
+		out.AuthReason = fmt.Sprintf("authenticated in the handler by %s (%s:%d): it reads the Authorization header and refuses 401; no authenticating middleware in the chain (%s)",
+			qual(self), self.File.Rel, g.line(self.Pos), strings.Join(rec.alt.chain, " > "))
 	default:
 		out.Auth = "Public"
 		out.AuthReason = "no authenticating middleware in the chain (" + strings.Join(rec.alt.chain, " > ") + ")"
 	}
 	_ = m
+}
+
+// selfAuth answers the function of a handler's closure that authenticates the caller itself
+// (node GD): it reads the Authorization header and raises 401. Nil when there is none.
+func (g *gx) selfAuth(ci *closureInfo) *Func {
+	for _, v := range ci.visits {
+		in := qual(v.fn)
+		refuses := false
+		for _, r := range ci.raises {
+			if r.In == in && r.Status != nil && *r.Status == 401 {
+				refuses = true
+			}
+		}
+		if refuses && g.readsAuthHeader(v.fn) {
+			return v.fn
+		}
+	}
+	return nil
+}
+
+// readsAuthHeader: fn (or a literal in it) reads `c.GetHeader("Authorization")` /
+// `c.Request.Header.Get("Authorization")`.
+func (g *gx) readsAuthHeader(fn *Func) bool {
+	m := g.m
+	for _, b := range g.bodies(fn) {
+		e := m.EnvOf(b)
+		found := false
+		stmtWalk(b.Body, func(call *ast.CallExpr, _ []ast.Node) {
+			sel, ok := call.Fun.(*ast.SelectorExpr)
+			if found || !ok || len(call.Args) < 1 {
+				return
+			}
+			s, ok := m.constString(e, call.Args[0])
+			if !ok || !strings.EqualFold(s, "Authorization") {
+				return
+			}
+			switch {
+			case (sel.Sel.Name == "GetHeader" || sel.Sel.Name == "Header") && m.isCtx(e, sel.X):
+				found = true
+			case sel.Sel.Name == "Get":
+				if h, ok := unparen(sel.X).(*ast.SelectorExpr); ok && h.Sel.Name == "Header" {
+					if r, ok := unparen(h.X).(*ast.SelectorExpr); ok && r.Sel.Name == "Request" && m.isCtx(e, r.X) {
+						found = true
+					}
+				}
+			}
+		})
+		if found {
+			return true
+		}
+	}
+	return false
 }
 
 func firstOr(ws []*Func) *Func {

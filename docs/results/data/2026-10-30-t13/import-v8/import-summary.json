@@ -1,0 +1,79 @@
+{
+ "framework": "fastapi",
+ "app_factory": "t13_adapter:make_app",
+ "package": "v8.ui",
+ "summary": {
+  "items": {
+   "verified": 7,
+   "refuted": 0,
+   "unexercised": 8,
+   "unclear": 0
+  },
+  "tables": {
+   "verified": 0,
+   "total": 0
+  },
+  "routes": {
+   "verified": 0,
+   "total": 7
+  }
+ },
+ "unreachable": [
+  [
+   "R3 GET /api/regime/{axis}/{frame} 404",
+   "unreachable-by-probe: the route addresses no row by id"
+  ]
+ ],
+ "excluded_routes": [],
+ "corrections": 0,
+ "mining": {
+  "proposed": 0,
+  "refuted": 0,
+  "uncompiled": 0,
+  "snapshots": 1,
+  "runs": 17,
+  "app_rows": 0
+ },
+ "unclear_profile": [
+  {
+   "topic": "users_table",
+   "subject": "v8.ui",
+   "reason": "no single current-user dependency names the users table",
+   "candidates": []
+  },
+  {
+   "topic": "auth",
+   "subject": "v8.ui",
+   "reason": "no token-decoding step found in a current-user dependency",
+   "candidates": []
+  },
+  {
+   "topic": "roles",
+   "subject": "v8.ui",
+   "reason": "no superuser dependency: roles_from is not inferred",
+   "candidates": []
+  },
+  {
+   "topic": "storage",
+   "subject": "v8.ui",
+   "reason": "dialect unknown: storage formats are not inferred",
+   "candidates": []
+  },
+  {
+   "topic": "datetime_wire",
+   "subject": "v8.ui",
+   "reason": "custom serialisation or a non-SQLite dialect: the datetime wire is not inferred",
+   "candidates": []
+  }
+ ],
+ "timing": {
+  "extract": 0.022,
+  "probe": 0.456,
+  "correct": 0.0,
+  "mine": 0.004,
+  "variant2": 0.036,
+  "total": 0.522
+ },
+ "report_json_sha256": "aaca8f54ce8d08e60a5388d5b194d56250d77a553edf35a52c060eb99310b1e6",
+ "candidate_spec_sha256": "41e43dc3733ab815d7f36bdfe84c736e5e34847aca01cf5782a9c0897eda706b"
+}

@@ -1,0 +1,376 @@
+{
+ "target": "mini",
+ "dry_run": true,
+ "agent": "reference",
+ "head": "5b5d0b48b55a12b617b806efa8e97fb936598e73",
+ "caps": {
+  "total_usd": 0.8,
+  "margin_usd": 0.1,
+  "call_usd": 0.7,
+  "max_turns": 30,
+  "max_rounds": 1
+ },
+ "stages": [
+  {
+   "id": "S1",
+   "status": "pass",
+   "runs": {
+    "import": {
+     "rc": 0,
+     "tail": "/Users/vivekgade/Documents/lattice-nc-t13/docs/results/data/2026-10-30-t13/dry-run-mini/import: fastapi, 13 rule items (5 verified, 0 refuted, 8 unexercised, 0 unclear); tables verified 0/0, routes verified 0/5; 0 corrections, 0 baseline; 0.2s\n"
+    },
+    "emit": {
+     "rc": 0,
+     "tail": "wrote /Users/vivekgade/Documents/lattice-nc-t13/docs/results/data/2026-10-30-t13/dry-run-mini/import/spec.py and /Users/vivekgade/Documents/lattice-nc-t13/docs/results/data/2026-10-30-t13/dry-run-mini/import/spec_meta.json\n"
+    }
+   },
+   "report": {
+    "framework": "fastapi",
+    "summary": {
+     "items": {
+      "verified": 5,
+      "refuted": 0,
+      "unexercised": 8,
+      "unclear": 0
+     },
+     "tables": {
+      "verified": 0,
+      "total": 0
+     },
+     "routes": {
+      "verified": 0,
+      "total": 5
+     }
+    },
+    "unclear_profile": [
+     {
+      "topic": "users_table",
+      "subject": "minisvc",
+      "reason": "no single current-user dependency names the users table",
+      "candidates": []
+     },
+     {
+      "topic": "auth",
+      "subject": "minisvc",
+      "reason": "no token-decoding step found in a current-user dependency",
+      "candidates": []
+     },
+     {
+      "topic": "roles",
+      "subject": "minisvc",
+      "reason": "no superuser dependency: roles_from is not inferred",
+      "candidates": []
+     },
+     {
+      "topic": "storage",
+      "subject": "minisvc",
+      "reason": "dialect unknown: storage formats are not inferred",
+      "candidates": []
+     },
+     {
+      "topic": "datetime_wire",
+      "subject": "minisvc",
+      "reason": "custom serialisation or a non-SQLite dialect: the datetime wire is not inferred",
+      "candidates": []
+     }
+    ]
+   },
+   "spec_sha256": "1a4ef7af408e9f099a0b123ff7ca7e86e91c3c93e6f6fb956ed15b0bdf993d30"
+  },
+  {
+   "id": "S2",
+   "status": "pass",
+   "base": "705c50d3ab3425ad089756ab19c1c2a67062de23",
+   "protected": 9,
+   "calibration": {
+    "reference": {
+     "lattice_gate": {
+      "passed": true,
+      "gate_passed": true,
+      "exit_code": 0,
+      "output_tail": "PASS: 0 findings (A 0, B 0, C 0, D 0, R 0); 0 cases run\n\nrule items (5 verified, 0 refuted, 8 unexercised, 0 unclear); tables verified 0/0, routes verified 0/5:\n  unexercised R1 GET /health: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 GET /notes: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 POST /notes: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R3 POST /notes 422 text must not be blank: unreachable-by-probe: no example triggers it\n  unexercised R1 GET /notes/{note_id}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R3 GET /notes/{note_id} 404 no such note: unreachable-by-probe: the route addresses no row by id\n  unexercised R1 DELETE /notes/{note_id}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R3 DELETE /notes/{note_id} 404 no such note: unreachable-by-probe: the route addresses no row by id\n\nnotes:\n  - layer C: the spec has no invariants\n  - layer B: the spec has no programs; nothing to compare\n  - layer D: the spec has no scenarios\n\ntimings: total 0.16s (A 0.01s, B 0.00s, C 0.00s, D 0.00s, R 0.15s)\n",
+      "overlaid": [],
+      "base": "705c50d3ab3425ad089756ab19c1c2a67062de23",
+      "tip": "679303e12a77ea979da74e97da4a32c10e3640d6",
+      "runs": 1,
+      "exit_codes": [
+       0
+      ],
+      "timed_out": false,
+      "tree_digest": "db836429972db8408dc854639b2cf62365f97ef8e37fb03b3637021bbdaa2e3a",
+      "tree_path": "<scratch>/verify/lattice-cleanverify-um17ote7/tree",
+      "tree_cleaned": true,
+      "seconds": 0.44,
+      "protected_diff": {
+       "clean": true,
+       "changed": [],
+       "deleted": [],
+       "added": [],
+       "paths": [
+        "REQUIREMENTS.md",
+        "spec.py",
+        "spec.trace.json",
+        "studio.toml",
+        "check.sh",
+        "profile.py",
+        "natives.py",
+        "spec_meta.json",
+        "harness.py",
+        "CONTEXT.md",
+        "minisvc/__init__.py"
+       ],
+       "checked": 9
+      }
+     },
+     "held_out": {
+      "passed": true,
+      "gate_passed": true,
+      "exit_code": 0,
+      "output_tail": "......                                                                   [100%]\n6 passed in 0.17s\n",
+      "overlaid": [],
+      "base": "705c50d3ab3425ad089756ab19c1c2a67062de23",
+      "tip": "679303e12a77ea979da74e97da4a32c10e3640d6",
+      "runs": 1,
+      "exit_codes": [
+       0
+      ],
+      "timed_out": false,
+      "tree_digest": "db836429972db8408dc854639b2cf62365f97ef8e37fb03b3637021bbdaa2e3a",
+      "tree_path": "<scratch>/verify/lattice-cleanverify-c459o_7n/tree",
+      "tree_cleaned": true,
+      "seconds": 0.43,
+      "protected_diff": {
+       "clean": true,
+       "changed": [],
+       "deleted": [],
+       "added": [],
+       "paths": [
+        "REQUIREMENTS.md",
+        "spec.py",
+        "spec.trace.json",
+        "studio.toml",
+        "check.sh",
+        "profile.py",
+        "natives.py",
+        "spec_meta.json",
+        "harness.py",
+        "CONTEXT.md",
+        "minisvc/__init__.py"
+       ],
+       "checked": 9
+      },
+      "counts": {
+       "passed": 6,
+       "failed": 0,
+       "errors": 0,
+       "deselected": 0
+      }
+     }
+    },
+    "scaffold": {
+     "lattice_gate": {
+      "passed": true,
+      "gate_passed": true,
+      "exit_code": 0,
+      "output_tail": "PASS: 0 findings (A 0, B 0, C 0, D 0, R 0); 0 cases run\n\nrule items (5 verified, 0 refuted, 8 unexercised, 0 unclear); tables verified 0/0, routes verified 0/5:\n  unexercised R1 GET /health: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 GET /notes: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 POST /notes: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R3 POST /notes 422 text must not be blank: unreachable-by-probe: no example triggers it\n  unexercised R1 GET /notes/{note_id}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R3 GET /notes/{note_id} 404 no such note: unreachable-by-probe: the route addresses no row by id\n  unexercised R1 DELETE /notes/{note_id}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R3 DELETE /notes/{note_id} 404 no such note: unreachable-by-probe: the route addresses no row by id\n\nnotes:\n  - layer C: the spec has no invariants\n  - layer B: the spec has no programs; nothing to compare\n  - layer D: the spec has no scenarios\n\ntimings: total 0.13s (A 0.00s, B 0.00s, C 0.00s, D 0.00s, R 0.13s)\n",
+      "overlaid": [],
+      "base": "705c50d3ab3425ad089756ab19c1c2a67062de23",
+      "tip": "705c50d3ab3425ad089756ab19c1c2a67062de23",
+      "runs": 1,
+      "exit_codes": [
+       0
+      ],
+      "timed_out": false,
+      "tree_digest": "4f34234f9e0ab79b741a64a571bd2d540eecff08cb87ff2de3bd9a1ba9b793c4",
+      "tree_path": "<scratch>/verify/lattice-cleanverify-l67fyea2/tree",
+      "tree_cleaned": true,
+      "seconds": 0.42,
+      "protected_diff": {
+       "clean": true,
+       "changed": [],
+       "deleted": [],
+       "added": [],
+       "paths": [
+        "REQUIREMENTS.md",
+        "spec.py",
+        "spec.trace.json",
+        "studio.toml",
+        "check.sh",
+        "profile.py",
+        "natives.py",
+        "spec_meta.json",
+        "harness.py",
+        "CONTEXT.md",
+        "minisvc/__init__.py"
+       ],
+       "checked": 9
+      }
+     },
+     "held_out": {
+      "passed": false,
+      "gate_passed": false,
+      "exit_code": 1,
+      "output_tail": "    {'detail': 'Not Found'}\nE         Right contains 1 more item:\nE         {'ok': True}\nE         Use -v to get more diff\n\ntests/test_server.py:12: AssertionError\n_______________________________ test_empty_list ________________________________\n\n    def test_empty_list():\n>       assert client().get(\"/notes\").json() == []\nE       AssertionError: assert {'detail': 'Not Found'} == []\nE         \nE         Use -v to get more diff\n\ntests/test_server.py:16: AssertionError\n______________________________ test_add_then_get _______________________________\n\n    def test_add_then_get():\n        c = client()\n        r = c.post(\"/notes\", json={\"text\": \"hi\"})\n>       assert r.status_code == 201 and r.json() == {\"id\": 1, \"text\": \"hi\"}\nE       assert (404 == 201)\nE        +  where 404 = <Response [404 Not Found]>.status_code\n\ntests/test_server.py:22: AssertionError\n____________________________ test_blank_text_is_422 ____________________________\n\n    def test_blank_text_is_422():\n>       assert client().post(\"/notes\", json={\"text\": \"  \"}).status_code == 422\nE       AssertionError: assert 404 == 422\nE        +  where 404 = <Response [404 Not Found]>.status_code\nE        +    where <Response [404 Not Found]> = post('/notes', json={'text': '  '})\nE        +      where post = <starlette.testclient.TestClient object at 0x107d13230>.post\nE        +        where <starlette.testclient.TestClient object at 0x107d13230> = client()\n\ntests/test_server.py:27: AssertionError\n_________________________________ test_delete __________________________________\n\n    def test_delete():\n        c = client()\n        c.post(\"/notes\", json={\"text\": \"a\"})\n>       assert c.delete(\"/notes/1\").status_code == 204\nE       AssertionError: assert 404 == 204\nE        +  where 404 = <Response [404 Not Found]>.status_code\nE        +    where <Response [404 Not Found]> = delete('/notes/1')\nE        +      where delete = <starlette.testclient.TestClient object at 0x107da2e70>.delete\n\ntests/test_server.py:37: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_server.py::test_health - AssertionError: assert {'detail': ...\nFAILED tests/test_server.py::test_empty_list - AssertionError: assert {'detai...\nFAILED tests/test_server.py::test_add_then_get - assert (404 == 201)\nFAILED tests/test_server.py::test_blank_text_is_422 - AssertionError: assert ...\nFAILED tests/test_server.py::test_delete - AssertionError: assert 404 == 204\n5 failed, 1 passed in 0.16s\n",
+      "overlaid": [],
+      "base": "705c50d3ab3425ad089756ab19c1c2a67062de23",
+      "tip": "705c50d3ab3425ad089756ab19c1c2a67062de23",
+      "runs": 1,
+      "exit_codes": [
+       1
+      ],
+      "timed_out": false,
+      "tree_digest": "4f34234f9e0ab79b741a64a571bd2d540eecff08cb87ff2de3bd9a1ba9b793c4",
+      "tree_path": "<scratch>/verify/lattice-cleanverify-76xzlbzt/tree",
+      "tree_cleaned": true,
+      "seconds": 0.42,
+      "protected_diff": {
+       "clean": true,
+       "changed": [],
+       "deleted": [],
+       "added": [],
+       "paths": [
+        "REQUIREMENTS.md",
+        "spec.py",
+        "spec.trace.json",
+        "studio.toml",
+        "check.sh",
+        "profile.py",
+        "natives.py",
+        "spec_meta.json",
+        "harness.py",
+        "CONTEXT.md",
+        "minisvc/__init__.py"
+       ],
+       "checked": 9
+      },
+      "counts": {
+       "passed": 1,
+       "failed": 5,
+       "errors": 0,
+       "deselected": 0
+      }
+     }
+    }
+   },
+   "lattice_gate_vacuous": true
+  },
+  {
+   "id": "S3",
+   "status": "pass",
+   "loop_status": "passed",
+   "rounds": 1,
+   "wall_s": 1.1,
+   "base": "705c50d3ab3425ad089756ab19c1c2a67062de23",
+   "tip": "d0e55a0048017032bd49ba0d793fef11823be3b5",
+   "error": null,
+   "files_changed": [
+    "minisvc/server.py"
+   ],
+   "fake_calls": {
+    "n": 1,
+    "max_budget_usd": [
+     "0.70"
+    ],
+    "max_turns": [
+     "30"
+    ],
+    "credential_env_names": []
+   }
+  },
+  {
+   "id": "S4",
+   "status": "pass",
+   "verdict": {
+    "passed": true,
+    "gate_passed": true,
+    "exit_code": 0,
+    "output_tail": "PASS: 0 findings (A 0, B 0, C 0, D 0, R 0); 0 cases run\n\nrule items (5 verified, 0 refuted, 8 unexercised, 0 unclear); tables verified 0/0, routes verified 0/5:\n  unexercised R1 GET /health: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 GET /notes: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 POST /notes: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R3 POST /notes 422 text must not be blank: unreachable-by-probe: no example triggers it\n  unexercised R1 GET /notes/{note_id}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R3 GET /notes/{note_id} 404 no such note: unreachable-by-probe: the route addresses no row by id\n  unexercised R1 DELETE /notes/{note_id}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R3 DELETE /notes/{note_id} 404 no such note: unreachable-by-probe: the route addresses no row by id\n\nnotes:\n  - layer C: the spec has no invariants\n  - layer B: the spec has no programs; nothing to compare\n  - layer D: the spec has no scenarios\n\ntimings: total 0.16s (A 0.01s, B 0.00s, C 0.00s, D 0.00s, R 0.15s)\n",
+    "overlaid": [],
+    "base": "705c50d3ab3425ad089756ab19c1c2a67062de23",
+    "tip": "d0e55a0048017032bd49ba0d793fef11823be3b5",
+    "runs": 1,
+    "exit_codes": [
+     0
+    ],
+    "timed_out": false,
+    "tree_digest": "db836429972db8408dc854639b2cf62365f97ef8e37fb03b3637021bbdaa2e3a",
+    "tree_path": "<scratch>/verify/lattice-cleanverify-my2xj1rt/tree",
+    "tree_cleaned": true,
+    "seconds": 0.43,
+    "protected_diff": {
+     "clean": true,
+     "changed": [],
+     "deleted": [],
+     "added": [],
+     "paths": [
+      "REQUIREMENTS.md",
+      "spec.py",
+      "spec.trace.json",
+      "studio.toml",
+      "check.sh",
+      "profile.py",
+      "natives.py",
+      "spec_meta.json",
+      "harness.py",
+      "CONTEXT.md",
+      "minisvc/__init__.py"
+     ],
+     "checked": 9
+    }
+   }
+  },
+  {
+   "id": "S5",
+   "status": "pass",
+   "verdict": {
+    "passed": true,
+    "gate_passed": true,
+    "exit_code": 0,
+    "output_tail": "......                                                                   [100%]\n6 passed in 0.17s\n",
+    "overlaid": [],
+    "base": "705c50d3ab3425ad089756ab19c1c2a67062de23",
+    "tip": "d0e55a0048017032bd49ba0d793fef11823be3b5",
+    "runs": 1,
+    "exit_codes": [
+     0
+    ],
+    "timed_out": false,
+    "tree_digest": "db836429972db8408dc854639b2cf62365f97ef8e37fb03b3637021bbdaa2e3a",
+    "tree_path": "<scratch>/verify/lattice-cleanverify-jb8jofq3/tree",
+    "tree_cleaned": true,
+    "seconds": 0.44,
+    "protected_diff": {
+     "clean": true,
+     "changed": [],
+     "deleted": [],
+     "added": [],
+     "paths": [
+      "REQUIREMENTS.md",
+      "spec.py",
+      "spec.trace.json",
+      "studio.toml",
+      "check.sh",
+      "profile.py",
+      "natives.py",
+      "spec_meta.json",
+      "harness.py",
+      "CONTEXT.md",
+      "minisvc/__init__.py"
+     ],
+     "checked": 9
+    }
+   },
+   "counts": {
+    "passed": 6,
+    "failed": 0,
+    "errors": 0,
+    "deselected": 0
+   }
+  }
+ ],
+ "first_failure": null,
+ "built": true,
+ "total_usd": 0.0,
+ "ledger_lines": 1,
+ "within_cap": true
+}

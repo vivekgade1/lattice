@@ -27,6 +27,8 @@ NOT_APPLIED = "NOT APPLIED: this draft changes nothing; the owner decides."
 KNOBS = {
     "cause:timeout": "node_timeout",
     "cause:token_budget": "node_max_tokens",
+    "cause:budget_cap": "max_budget_usd",
+    "cause:max_turns": "max_turns",
     "cause:usage_limit": "max_parallel",
 }
 

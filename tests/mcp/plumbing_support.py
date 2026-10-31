@@ -14,6 +14,8 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
+from tests.mcp.fence_support import strip_fences
+
 INIT = {"protocolVersion": "2024-11-05", "capabilities": {}, "clientInfo": {"name": "plumbing"}}
 
 
@@ -81,7 +83,7 @@ def tool_result(line: str) -> tuple[bool, Any]:
     """(isError, parsed JSON payload or the error text) of a ``tools/call`` reply line."""
     res = json.loads(line)["result"]
     text = res["content"][0]["text"]
-    return bool(res["isError"]), (text if res["isError"] else json.loads(text))
+    return bool(res["isError"]), (text if res["isError"] else strip_fences(json.loads(text)))
 
 
 class FakeStudio:

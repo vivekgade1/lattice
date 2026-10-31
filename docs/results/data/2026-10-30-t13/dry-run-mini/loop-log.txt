@@ -1,0 +1,3 @@
+rebuild b1: started on rebuild/t13 at 705c50d3ab (<scratch>/build-repo/.lattice/rebuilds/t13-mini-b1-4b9656)
+rebuild b1: round 1 pass (0 finding(s), 1 file(s) changed)
+rebuild b1: passed as d0e55a0048 on rebuild/t13

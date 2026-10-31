@@ -38,7 +38,7 @@ sequenceDiagram
 | ask | `dontAsk` (anything not allowlisted is denied) | Read, Grep, Glob + model_get, rule_get, spec_ask, code_links, graph_get, spec_lint (MCP server `--readonly`) | guard |
 | explain | `dontAsk` | same as ask, code-reading prompt | guard |
 | change | `dontAsk` | ask's tools + `change_propose`, `change_get`, `change_list` (MCP server talks to Studio via `--studio-url`) | guard |
-| rebuild (not enabled yet) | acceptEdits, in a git worktree | read tools, check_run, Edit/Write on code paths, Bash for `./check.sh` | guard + Stop gate (`LATTICE_GATE=strict`) |
+| rebuild (not enabled yet) | acceptEdits, in a git worktree | read tools, check_run, Edit/Write on code paths, Bash for `./check.sh` | guard + Stop gate (strict by default; at most `LATTICE_GATE_MAX_BLOCKS` extra rounds per stop, not until green) |
 
 Every mode also passes `--tools Read,Grep,Glob` (only these built-ins exist), `--disallowedTools Edit,Write,MultiEdit,NotebookEdit,Bash`, `--strict-mcp-config --mcp-config <session mcp.json>`, `--settings <session settings.json>` (the guard hook) and `--setting-sources "" --disable-slash-commands`.
 
@@ -67,7 +67,7 @@ Run against the real CLI (subscription login, `apiKeySource: "none"`, no `ANTHRO
 ```
 claude --plugin-dir ./lattice-claude-plugin        # from the lattice repo root, inside your project
 lattice mcp serve --project DIR                    # standalone server (= python -m lattice.mcp serve ...)
-LATTICE_GATE=strict claude --plugin-dir ...         # blocking Stop gate
+claude --plugin-dir ... --max-turns N               # Stop gate is strict by default: at most 3 extra rounds per stop (LATTICE_GATE_MAX_BLOCKS), then it lets go; LATTICE_GATE=warn|off
 ```
 
 See `lattice-claude-plugin/README.md` for details and fallbacks.

@@ -24,6 +24,7 @@ from lattice.mcp.tools import (
     norm_route,
 )
 from lattice.studio.server import make_server
+from tests.mcp.fence_support import strip_fences
 from tests.spec.incremental_toy import NOTES_V2
 from tests.studio.test_server import (
     BEN_404,
@@ -91,7 +92,7 @@ def call(i: int, name: str, **args: Any) -> dict[str, Any]:
 
 def payload(resp: dict[str, Any]) -> Any:
     assert "result" in resp, resp
-    return json.loads(resp["result"]["content"][0]["text"])
+    return strip_fences(json.loads(resp["result"]["content"][0]["text"]))  # fences off
 
 
 INIT = req(
@@ -178,7 +179,7 @@ def test_read_tools_round_trip(project: Path) -> None:
     by = {o["id"]: o for o in out}
     for i in range(1, 9):
         assert by[i]["result"]["isError"] is False, by[i]
-        assert by[i]["result"]["structuredContent"] == payload(by[i])
+        assert strip_fences(by[i]["result"]["structuredContent"]) == payload(by[i])
     overview = payload(by[1])
     assert overview["rule_count"] >= 4 and overview["rules"][0]["id"] == "R1"
     assert "markdown" not in overview and "views" not in overview

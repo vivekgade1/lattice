@@ -8,8 +8,17 @@ Wire it in ``.claude/settings.json``::
                    "command": "python -m lattice.mcp.guard --project /path/to/project"}]}]}}
 
 It reads the hook's JSON from stdin (``tool_name``, ``tool_input``, ``cwd``, ...). The
-protected files are a project's ``REQUIREMENTS.md``, ``spec.py`` and ``spec.trace.json``
-(plus names under ``[mcp] protected = [...]`` in ``studio.toml``, relative to the project).
+protected files are a project's ``REQUIREMENTS.md``, ``spec.py`` and ``spec.trace.json``, and
+the gate itself: ``check.sh`` and ``studio.toml`` (always, whatever the config says; the agent
+runs ``./check.sh`` but never edits, deletes or replaces it). A project extends the set in
+``studio.toml``, names relative to the project (a directory protects everything under it)::
+
+    [mcp]
+    protected = ["CONTEXT.md"]               # any extra file the agent must not touch
+    harness   = ["tests/spec_harness.py"]    # the spec test harness the gate runs
+
+``protected`` and ``harness`` are the same rule; ``harness`` says what the entry is for. A key
+that is not a list of strings is ignored, and an unreadable ``studio.toml`` leaves the defaults.
 While they exist, the owner's approved ``<stem>.rationale.json`` and ``<stem>.glossary.json``
 (Spike G, named from the trace's ``source``) are protected too; the proposals files are not.
 
@@ -71,7 +80,12 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
-DEFAULT_PROTECTED = ("REQUIREMENTS.md", "spec.py", "spec.trace.json")
+SPEC_FILES = ("REQUIREMENTS.md", "spec.py", "spec.trace.json")
+# the gate: protected like the spec, whatever studio.toml says (same pair as studio.cleanverify)
+HARNESS_FILES = ("check.sh", "studio.toml")
+DEFAULT_PROTECTED = (*SPEC_FILES, *HARNESS_FILES)
+# the studio.toml keys under [mcp] whose string entries are extra protected paths
+CONFIG_KEYS = ("protected", "harness")
 # Spike G: the owner's approved rationale and glossary files, protected while they exist
 NOTES_SUFFIXES = (".rationale.json", ".glossary.json")
 EDIT_TOOLS = {"Edit", "Write", "MultiEdit", "NotebookEdit"}
@@ -120,6 +134,13 @@ def _reason(name: str, project: Path | None = None) -> str:
             "`.proposed.json` file beside it with `rationale draft --out` or `glossary draft "
             "--out`; the owner approves them."
         )
+    if name not in SPEC_FILES:  # the gate, or a harness file the project named
+        return (
+            f"Blocked: {name}{where} is part of the gate that decides whether the build passes, "
+            "and the agent does not change it (not with Edit/Write and not from the shell; "
+            "deleting or replacing it counts). Run `./check.sh`, read its findings, and fix the "
+            "code instead. If the gate itself is wrong, tell the owner."
+        )
     return (
         f"Blocked: {name}{where} is a Lattice spec file that Studio owns, and nothing changes in "
         "it without a checked change set. Do not edit it directly (not with Edit/Write and not "
@@ -135,9 +156,11 @@ class Guard:
         names = [*DEFAULT_PROTECTED, *extra]
         try:
             cfg = tomllib.loads((self.project / "studio.toml").read_text(encoding="utf-8"))
-            more = (cfg.get("mcp") or {}).get("protected") or []
-            names += [str(x) for x in more if isinstance(x, str)]
-        except (OSError, tomllib.TOMLDecodeError):
+            table = cfg.get("mcp")
+            for key in CONFIG_KEYS if isinstance(table, dict) else ():
+                more = table.get(key)
+                names += [x for x in more if isinstance(x, str)] if isinstance(more, list) else []
+        except (OSError, UnicodeDecodeError, tomllib.TOMLDecodeError):
             pass
         names += notes_files(self.project)  # Spike G: only while the owner's files exist
         self.names = list(dict.fromkeys(names))

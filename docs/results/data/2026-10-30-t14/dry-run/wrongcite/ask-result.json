@@ -1,0 +1,1321 @@
+{
+ "dry_run": "wrongcite",
+ "data_status": "development data, exploratory (post hoc citation definition; dev spec)",
+ "head": "1abbb4cf59be1e42fd920eddf057cd13b89ac4d7",
+ "files": {
+  "docs/results/2026-10-30-t14-casko-corrected-citation-prereg.md": "afb9f2a8555fd387401546b278027bf5c5b8a41ea6ab5f02301820735f758be1",
+  "dogfood/t14_casko_questions.json": "34406098f0b756e8a52ff92f00c4423a63d6c478ea9318df5f83a0680c989ded",
+  "dogfood/t14_casko_run.py": "3ee6c457312130ae6f57418e639aeb092ba90fc5567c50eeb96c8f53d18b2736",
+  "dogfood/t14_casko_audit.py": "d8d712c7f9a3cfe68b7e61c97c21c71aa8978438d70cb598e7390415e78a0722",
+  "dogfood/t14_casko_shim.py": "afacc5221b9bb22ceadd18279d6e8141073172f1c1bea81ae446f24a27ea19b2",
+  "dogfood/dn_real_agent_shim.py": "1e6c77bbdd1e276073b277f8f4c885ccb444072869a620f1b9e4fd2e526c4617",
+  "dogfood/t14_casko_fake_claude.py": "1e624e3cf7818ebe04a338f95ece0af16330729a1a4d44491be458975699b9fb"
+ },
+ "model": "sonnet",
+ "cap_usd": 0.6,
+ "streak_rev": "a0679e9",
+ "inventory": {
+  "extract_sha256": "d51ef75340d54682a8bd2c3f40220e50c2ef31ae0eab17ef3ca68c9a39f89adc",
+  "source_files": 44,
+  "observed_workflows": false
+ },
+ "appmap_error": null,
+ "gates": {
+  "A-ANSWERED": "every question answered by the model: 6 of 6",
+  "A-CITED": "checked arm, prereg section 4: 0 known route / rule claims without a resolving, binding, accepted citation",
+  "A-COST": "ledger total <= USD 0.60"
+ },
+ "verdicts": {
+  "A-ANSWERED": true,
+  "A-CITED": false,
+  "A-COST": true
+ },
+ "counts": {
+  "questions": 6,
+  "answered": 6,
+  "not_run": 0,
+  "errors": 0,
+  "known_claims": 24,
+  "uncited_known_claims": 24,
+  "rejected_citations": 6,
+  "checked_nonresolving_citations": 0,
+  "raw_known_claims": 24,
+  "raw_uncited_known_claims": 24,
+  "raw_nonresolving_citations": 6,
+  "raw_library_rejects": 6,
+  "failure_claims_raw": 0,
+  "failure_claims_checked": 0,
+  "unknown_route_mentions": 1,
+  "unknown_rule_mentions": 0,
+  "lattice_inserted_claims": 0,
+  "downgraded_by_library": 0,
+  "correct_checked": 6,
+  "correct_raw": 6,
+  "damage": 0,
+  "total_usd": 0.0,
+  "model_calls": 12
+ },
+ "reported": {
+  "A-REJECTED": 6,
+  "A-CORRECT": "6/6 checked, 6/6 raw, damage 0"
+ },
+ "rows": [
+  {
+   "id": "Q01",
+   "category": "routes",
+   "question": "Which API routes does the app have for check-ins?",
+   "status": "ANSWERED",
+   "seconds": 0.8,
+   "would_be_routed_model_free_by": null,
+   "model_replies": [
+    "{\"kind\": \"value\", \"answer\": \"Four: POST /v1/habits/{habit_id}/completions creates a check-in, GET /v1/habits/{habit_id}/completions lists them, DELETE /v1/habits/{habit_id}/completions/{id} deletes one, and POST /v1/completions/batch creates up to 100 in one request.\", \"explanation\": \"The spec requires them in R72, R81, R82 and R83, and the code registers all four in internal/completions/routes.go.\", \"citations\": [{\"target\": \"impl:route:GET /v1/does-not-exist\", \"step\": null, \"quote\": \"registered code:nowhere.go:1\"}, {\"target\": \"invariant:one_account_per_email\", \"step\": null, \"quote\": \"An email is registered at most once\"}], \"implementation\": \"implemented_unverified\", \"implementation_basis\": \"static\"}",
+    "{\"kind\": \"value\", \"answer\": \"Four: POST /v1/habits/{habit_id}/completions creates a check-in, GET /v1/habits/{habit_id}/completions lists them, DELETE /v1/habits/{habit_id}/completions/{id} deletes one, and POST /v1/completions/batch creates up to 100 in one request.\", \"explanation\": \"The spec requires them in R72, R81, R82 and R83, and the code registers all four in internal/completions/routes.go.\", \"citations\": [{\"target\": \"impl:route:GET /v1/does-not-exist\", \"step\": null, \"quote\": \"registered code:nowhere.go:1\"}, {\"target\": \"invariant:one_account_per_email\", \"step\": null, \"quote\": \"An email is registered at most once\"}], \"implementation\": \"implemented_unverified\", \"implementation_basis\": \"static\"}"
+   ],
+   "raw": {
+    "kind": "value",
+    "answer": "Four: POST /v1/habits/{habit_id}/completions creates a check-in, GET /v1/habits/{habit_id}/completions lists them, DELETE /v1/habits/{habit_id}/completions/{id} deletes one, and POST /v1/completions/batch creates up to 100 in one request.",
+    "explanation": "The spec requires them in R72, R81, R82 and R83, and the code registers all four in internal/completions/routes.go.",
+    "citations": [
+     {
+      "target": "impl:route:GET /v1/does-not-exist",
+      "step": null,
+      "quote": "registered code:nowhere.go:1"
+     },
+     {
+      "target": "invariant:one_account_per_email",
+      "step": null,
+      "quote": "An email is registered at most once"
+     }
+    ],
+    "implementation": "implemented_unverified",
+    "parsed": true
+   },
+   "raw_library_rejects": [
+    {
+     "target": "impl:route:GET /v1/does-not-exist",
+     "reason": "no element 'impl:route:GET /v1/does-not-exist' in the spec"
+    }
+   ],
+   "checked": {
+    "kind": "value",
+    "answer": "Four: POST /v1/habits/{habit_id}/completions creates a check-in, GET /v1/habits/{habit_id}/completions lists them, DELETE /v1/habits/{habit_id}/completions/{id} deletes one, and POST /v1/completions/batch creates up to 100 in one request.",
+    "explanation": "The spec requires them in R72, R81, R82 and R83, and the code registers all four in internal/completions/routes.go.",
+    "citations": [
+     {
+      "target": "invariant:one_account_per_email",
+      "step": null,
+      "quote": "An email is registered at most once"
+     }
+    ],
+    "rejected_citations": [
+     {
+      "target": "impl:route:GET /v1/does-not-exist",
+      "reason": "no element 'impl:route:GET /v1/does-not-exist' in the spec"
+     }
+    ],
+    "check": null,
+    "implementation": "unsettled",
+    "implementation_basis": null
+   },
+   "downgraded_by_library": false,
+   "usage": {
+    "seconds": 0.79,
+    "tokens": 0,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_creation_tokens": 0,
+    "rounds": 2,
+    "model": "sonnet",
+    "digest_elements": 435,
+    "calls": [
+     {
+      "input_tokens": 0,
+      "cache_read_tokens": 0,
+      "prompt_tokens_est": 30676
+     },
+     {
+      "input_tokens": 0,
+      "cache_read_tokens": 0,
+      "prompt_tokens_est": 31047
+     }
+    ],
+    "cost_usd": 0.0
+   },
+   "audit_raw": {
+    "claims": [
+     {
+      "claim": "POST /v1/habits/{}/completions",
+      "kind": "route",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "GET /v1/habits/{}/completions",
+      "kind": "route",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "DELETE /v1/habits/{}/completions/{}",
+      "kind": "route",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "POST /v1/completions/batch",
+      "kind": "route",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "R72",
+      "kind": "rule",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "R81",
+      "kind": "rule",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "R82",
+      "kind": "rule",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "R83",
+      "kind": "rule",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     }
+    ],
+    "known": 8,
+    "uncited": 8,
+    "uncited_claims": [
+     "POST /v1/habits/{}/completions",
+     "GET /v1/habits/{}/completions",
+     "DELETE /v1/habits/{}/completions/{}",
+     "POST /v1/completions/batch",
+     "R72",
+     "R81",
+     "R82",
+     "R83"
+    ],
+    "inserted": [],
+    "unknown_routes": [],
+    "unknown_rules": [],
+    "citations": [
+     {
+      "target": "impl:route:GET /v1/does-not-exist",
+      "resolves": false,
+      "reason": "no impl_route element 'impl:route:GET /v1/does-not-exist'"
+     },
+     {
+      "target": "invariant:one_account_per_email",
+      "resolves": true,
+      "reason": ""
+     }
+    ],
+    "nonresolving": 1,
+    "failure_claims": []
+   },
+   "audit_checked": {
+    "claims": [
+     {
+      "claim": "POST /v1/habits/{}/completions",
+      "kind": "route",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "GET /v1/habits/{}/completions",
+      "kind": "route",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "DELETE /v1/habits/{}/completions/{}",
+      "kind": "route",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "POST /v1/completions/batch",
+      "kind": "route",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "R72",
+      "kind": "rule",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "R81",
+      "kind": "rule",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "R82",
+      "kind": "rule",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "R83",
+      "kind": "rule",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     }
+    ],
+    "known": 8,
+    "uncited": 8,
+    "uncited_claims": [
+     "POST /v1/habits/{}/completions",
+     "GET /v1/habits/{}/completions",
+     "DELETE /v1/habits/{}/completions/{}",
+     "POST /v1/completions/batch",
+     "R72",
+     "R81",
+     "R82",
+     "R83"
+    ],
+    "inserted": [],
+    "unknown_routes": [],
+    "unknown_rules": [],
+    "citations": [
+     {
+      "target": "invariant:one_account_per_email",
+      "resolves": true,
+      "reason": ""
+     }
+    ],
+    "nonresolving": 0,
+    "failure_claims": []
+   },
+   "score_raw": {
+    "correct": true,
+    "why": []
+   },
+   "score_checked": {
+    "correct": true,
+    "why": []
+   },
+   "key_implementation": "implemented_unverified"
+  },
+  {
+   "id": "Q03",
+   "category": "rule requirement",
+   "question": "What does the spec require when a check-in date is more than 60 days before the user's today?",
+   "status": "ANSWERED",
+   "seconds": 0.7,
+   "would_be_routed_model_free_by": null,
+   "model_replies": [
+    "{\"kind\": \"value\", \"answer\": \"The check-in answers 422 with code date_too_old and writes nothing; a date exactly 60 days back (t - 60) is still accepted.\", \"explanation\": \"R75 applies to POST /v1/habits/{habit_id}/completions and to each batch item; when the date is also in the future or out of the habit's range, date_in_future and then date_out_of_range are answered first (R76).\", \"citations\": [{\"target\": \"impl:route:GET /v1/does-not-exist\", \"step\": null, \"quote\": \"registered code:nowhere.go:1\"}, {\"target\": \"invariant:one_account_per_email\", \"step\": null, \"quote\": \"An email is registered at most once\"}], \"implementation\": \"implemented_unverified\", \"implementation_basis\": \"static\"}",
+    "{\"kind\": \"value\", \"answer\": \"The check-in answers 422 with code date_too_old and writes nothing; a date exactly 60 days back (t - 60) is still accepted.\", \"explanation\": \"R75 applies to POST /v1/habits/{habit_id}/completions and to each batch item; when the date is also in the future or out of the habit's range, date_in_future and then date_out_of_range are answered first (R76).\", \"citations\": [{\"target\": \"impl:route:GET /v1/does-not-exist\", \"step\": null, \"quote\": \"registered code:nowhere.go:1\"}, {\"target\": \"invariant:one_account_per_email\", \"step\": null, \"quote\": \"An email is registered at most once\"}], \"implementation\": \"implemented_unverified\", \"implementation_basis\": \"static\"}"
+   ],
+   "raw": {
+    "kind": "value",
+    "answer": "The check-in answers 422 with code date_too_old and writes nothing; a date exactly 60 days back (t - 60) is still accepted.",
+    "explanation": "R75 applies to POST /v1/habits/{habit_id}/completions and to each batch item; when the date is also in the future or out of the habit's range, date_in_future and then date_out_of_range are answered first (R76).",
+    "citations": [
+     {
+      "target": "impl:route:GET /v1/does-not-exist",
+      "step": null,
+      "quote": "registered code:nowhere.go:1"
+     },
+     {
+      "target": "invariant:one_account_per_email",
+      "step": null,
+      "quote": "An email is registered at most once"
+     }
+    ],
+    "implementation": "implemented_unverified",
+    "parsed": true
+   },
+   "raw_library_rejects": [
+    {
+     "target": "impl:route:GET /v1/does-not-exist",
+     "reason": "no element 'impl:route:GET /v1/does-not-exist' in the spec"
+    }
+   ],
+   "checked": {
+    "kind": "value",
+    "answer": "The check-in answers 422 with code date_too_old and writes nothing; a date exactly 60 days back (t - 60) is still accepted.",
+    "explanation": "R75 applies to POST /v1/habits/{habit_id}/completions and to each batch item; when the date is also in the future or out of the habit's range, date_in_future and then date_out_of_range are answered first (R76).",
+    "citations": [
+     {
+      "target": "invariant:one_account_per_email",
+      "step": null,
+      "quote": "An email is registered at most once"
+     }
+    ],
+    "rejected_citations": [
+     {
+      "target": "impl:route:GET /v1/does-not-exist",
+      "reason": "no element 'impl:route:GET /v1/does-not-exist' in the spec"
+     }
+    ],
+    "check": null,
+    "implementation": "unsettled",
+    "implementation_basis": null
+   },
+   "downgraded_by_library": false,
+   "usage": {
+    "seconds": 0.71,
+    "tokens": 0,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_creation_tokens": 0,
+    "rounds": 2,
+    "model": "sonnet",
+    "digest_elements": 434,
+    "calls": [
+     {
+      "input_tokens": 0,
+      "cache_read_tokens": 0,
+      "prompt_tokens_est": 30721
+     },
+     {
+      "input_tokens": 0,
+      "cache_read_tokens": 0,
+      "prompt_tokens_est": 31085
+     }
+    ],
+    "cost_usd": 0.0
+   },
+   "audit_raw": {
+    "claims": [
+     {
+      "claim": "POST /v1/habits/{}/completions",
+      "kind": "route",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "R75",
+      "kind": "rule",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "R76",
+      "kind": "rule",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     }
+    ],
+    "known": 3,
+    "uncited": 3,
+    "uncited_claims": [
+     "POST /v1/habits/{}/completions",
+     "R75",
+     "R76"
+    ],
+    "inserted": [],
+    "unknown_routes": [],
+    "unknown_rules": [],
+    "citations": [
+     {
+      "target": "impl:route:GET /v1/does-not-exist",
+      "resolves": false,
+      "reason": "no impl_route element 'impl:route:GET /v1/does-not-exist'"
+     },
+     {
+      "target": "invariant:one_account_per_email",
+      "resolves": true,
+      "reason": ""
+     }
+    ],
+    "nonresolving": 1,
+    "failure_claims": []
+   },
+   "audit_checked": {
+    "claims": [
+     {
+      "claim": "POST /v1/habits/{}/completions",
+      "kind": "route",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "R75",
+      "kind": "rule",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "R76",
+      "kind": "rule",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     }
+    ],
+    "known": 3,
+    "uncited": 3,
+    "uncited_claims": [
+     "POST /v1/habits/{}/completions",
+     "R75",
+     "R76"
+    ],
+    "inserted": [],
+    "unknown_routes": [],
+    "unknown_rules": [],
+    "citations": [
+     {
+      "target": "invariant:one_account_per_email",
+      "resolves": true,
+      "reason": ""
+     }
+    ],
+    "nonresolving": 0,
+    "failure_claims": []
+   },
+   "score_raw": {
+    "correct": true,
+    "why": []
+   },
+   "score_checked": {
+    "correct": true,
+    "why": []
+   },
+   "key_implementation": "implemented_unverified"
+  },
+  {
+   "id": "Q04",
+   "category": "not implemented",
+   "question": "Is there an endpoint to reset a forgotten password, and does the code implement one?",
+   "status": "ANSWERED",
+   "seconds": 0.7,
+   "would_be_routed_model_free_by": null,
+   "model_replies": [
+    "{\"kind\": \"not_specified\", \"answer\": \"Not specified: neither the spec nor the code has a password-reset endpoint.\", \"explanation\": \"The only auth routes, in the spec and in the code, are POST /v1/auth/register, POST /v1/auth/login, POST /v1/auth/refresh and POST /v1/auth/logout; none of them resets a password.\", \"citations\": [{\"target\": \"impl:route:GET /v1/does-not-exist\", \"step\": null, \"quote\": \"registered code:nowhere.go:1\"}, {\"target\": \"invariant:one_account_per_email\", \"step\": null, \"quote\": \"An email is registered at most once\"}], \"implementation\": \"not_specified_not_implemented\", \"implementation_basis\": \"inferred\"}",
+    "{\"kind\": \"not_specified\", \"answer\": \"Not specified: neither the spec nor the code has a password-reset endpoint.\", \"explanation\": \"The only auth routes, in the spec and in the code, are POST /v1/auth/register, POST /v1/auth/login, POST /v1/auth/refresh and POST /v1/auth/logout; none of them resets a password.\", \"citations\": [{\"target\": \"impl:route:GET /v1/does-not-exist\", \"step\": null, \"quote\": \"registered code:nowhere.go:1\"}, {\"target\": \"invariant:one_account_per_email\", \"step\": null, \"quote\": \"An email is registered at most once\"}], \"implementation\": \"not_specified_not_implemented\", \"implementation_basis\": \"inferred\"}"
+   ],
+   "raw": {
+    "kind": "not_specified",
+    "answer": "Not specified: neither the spec nor the code has a password-reset endpoint.",
+    "explanation": "The only auth routes, in the spec and in the code, are POST /v1/auth/register, POST /v1/auth/login, POST /v1/auth/refresh and POST /v1/auth/logout; none of them resets a password.",
+    "citations": [
+     {
+      "target": "impl:route:GET /v1/does-not-exist",
+      "step": null,
+      "quote": "registered code:nowhere.go:1"
+     },
+     {
+      "target": "invariant:one_account_per_email",
+      "step": null,
+      "quote": "An email is registered at most once"
+     }
+    ],
+    "implementation": "not_specified_not_implemented",
+    "parsed": true
+   },
+   "raw_library_rejects": [
+    {
+     "target": "impl:route:GET /v1/does-not-exist",
+     "reason": "no element 'impl:route:GET /v1/does-not-exist' in the spec"
+    }
+   ],
+   "checked": {
+    "kind": "not_specified",
+    "answer": "Not specified: neither the spec nor the code has a password-reset endpoint.",
+    "explanation": "The only auth routes, in the spec and in the code, are POST /v1/auth/register, POST /v1/auth/login, POST /v1/auth/refresh and POST /v1/auth/logout; none of them resets a password.",
+    "citations": [
+     {
+      "target": "invariant:one_account_per_email",
+      "step": null,
+      "quote": "An email is registered at most once"
+     }
+    ],
+    "rejected_citations": [
+     {
+      "target": "impl:route:GET /v1/does-not-exist",
+      "reason": "no element 'impl:route:GET /v1/does-not-exist' in the spec"
+     }
+    ],
+    "check": null,
+    "implementation": "not_specified_not_implemented",
+    "implementation_basis": "inferred"
+   },
+   "downgraded_by_library": false,
+   "usage": {
+    "seconds": 0.71,
+    "tokens": 0,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_creation_tokens": 0,
+    "rounds": 2,
+    "model": "sonnet",
+    "digest_elements": 435,
+    "calls": [
+     {
+      "input_tokens": 0,
+      "cache_read_tokens": 0,
+      "prompt_tokens_est": 30706
+     },
+     {
+      "input_tokens": 0,
+      "cache_read_tokens": 0,
+      "prompt_tokens_est": 31049
+     }
+    ],
+    "cost_usd": 0.0
+   },
+   "audit_raw": {
+    "claims": [
+     {
+      "claim": "POST /v1/auth/register",
+      "kind": "route",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "POST /v1/auth/login",
+      "kind": "route",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "POST /v1/auth/refresh",
+      "kind": "route",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "POST /v1/auth/logout",
+      "kind": "route",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     }
+    ],
+    "known": 4,
+    "uncited": 4,
+    "uncited_claims": [
+     "POST /v1/auth/register",
+     "POST /v1/auth/login",
+     "POST /v1/auth/refresh",
+     "POST /v1/auth/logout"
+    ],
+    "inserted": [],
+    "unknown_routes": [],
+    "unknown_rules": [],
+    "citations": [
+     {
+      "target": "impl:route:GET /v1/does-not-exist",
+      "resolves": false,
+      "reason": "no impl_route element 'impl:route:GET /v1/does-not-exist'"
+     },
+     {
+      "target": "invariant:one_account_per_email",
+      "resolves": true,
+      "reason": ""
+     }
+    ],
+    "nonresolving": 1,
+    "failure_claims": []
+   },
+   "audit_checked": {
+    "claims": [
+     {
+      "claim": "POST /v1/auth/register",
+      "kind": "route",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "POST /v1/auth/login",
+      "kind": "route",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "POST /v1/auth/refresh",
+      "kind": "route",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "POST /v1/auth/logout",
+      "kind": "route",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     }
+    ],
+    "known": 4,
+    "uncited": 4,
+    "uncited_claims": [
+     "POST /v1/auth/register",
+     "POST /v1/auth/login",
+     "POST /v1/auth/refresh",
+     "POST /v1/auth/logout"
+    ],
+    "inserted": [],
+    "unknown_routes": [],
+    "unknown_rules": [],
+    "citations": [
+     {
+      "target": "invariant:one_account_per_email",
+      "resolves": true,
+      "reason": ""
+     }
+    ],
+    "nonresolving": 0,
+    "failure_claims": []
+   },
+   "score_raw": {
+    "correct": true,
+    "why": []
+   },
+   "score_checked": {
+    "correct": true,
+    "why": []
+   },
+   "key_implementation": "not_specified_not_implemented"
+  },
+  {
+   "id": "Q06",
+   "category": "who can call",
+   "question": "Who can delete a check-in, and what does another signed-in user get if they try?",
+   "status": "ANSWERED",
+   "seconds": 0.7,
+   "would_be_routed_model_free_by": null,
+   "model_replies": [
+    "{\"kind\": \"value\", \"answer\": \"Only the signed-in owner of the habit; there are no roles or admins. Another signed-in user gets 404 not_found, and a request without a token gets 401.\", \"explanation\": \"DELETE /v1/habits/{habit_id}/completions/{id} answers 204 for the owner (R82); another user's check-in answers 404 not_found exactly like an unknown id (R28, R27); without a token the route answers 401 (R21).\", \"citations\": [{\"target\": \"impl:route:GET /v1/does-not-exist\", \"step\": null, \"quote\": \"registered code:nowhere.go:1\"}, {\"target\": \"invariant:one_account_per_email\", \"step\": null, \"quote\": \"An email is registered at most once\"}], \"implementation\": \"implemented_unverified\", \"implementation_basis\": \"static\"}",
+    "{\"kind\": \"value\", \"answer\": \"Only the signed-in owner of the habit; there are no roles or admins. Another signed-in user gets 404 not_found, and a request without a token gets 401.\", \"explanation\": \"DELETE /v1/habits/{habit_id}/completions/{id} answers 204 for the owner (R82); another user's check-in answers 404 not_found exactly like an unknown id (R28, R27); without a token the route answers 401 (R21).\", \"citations\": [{\"target\": \"impl:route:GET /v1/does-not-exist\", \"step\": null, \"quote\": \"registered code:nowhere.go:1\"}, {\"target\": \"invariant:one_account_per_email\", \"step\": null, \"quote\": \"An email is registered at most once\"}], \"implementation\": \"implemented_unverified\", \"implementation_basis\": \"static\"}"
+   ],
+   "raw": {
+    "kind": "value",
+    "answer": "Only the signed-in owner of the habit; there are no roles or admins. Another signed-in user gets 404 not_found, and a request without a token gets 401.",
+    "explanation": "DELETE /v1/habits/{habit_id}/completions/{id} answers 204 for the owner (R82); another user's check-in answers 404 not_found exactly like an unknown id (R28, R27); without a token the route answers 401 (R21).",
+    "citations": [
+     {
+      "target": "impl:route:GET /v1/does-not-exist",
+      "step": null,
+      "quote": "registered code:nowhere.go:1"
+     },
+     {
+      "target": "invariant:one_account_per_email",
+      "step": null,
+      "quote": "An email is registered at most once"
+     }
+    ],
+    "implementation": "implemented_unverified",
+    "parsed": true
+   },
+   "raw_library_rejects": [
+    {
+     "target": "impl:route:GET /v1/does-not-exist",
+     "reason": "no element 'impl:route:GET /v1/does-not-exist' in the spec"
+    }
+   ],
+   "checked": {
+    "kind": "value",
+    "answer": "Only the signed-in owner of the habit; there are no roles or admins. Another signed-in user gets 404 not_found, and a request without a token gets 401.",
+    "explanation": "DELETE /v1/habits/{habit_id}/completions/{id} answers 204 for the owner (R82); another user's check-in answers 404 not_found exactly like an unknown id (R28, R27); without a token the route answers 401 (R21).",
+    "citations": [
+     {
+      "target": "invariant:one_account_per_email",
+      "step": null,
+      "quote": "An email is registered at most once"
+     }
+    ],
+    "rejected_citations": [
+     {
+      "target": "impl:route:GET /v1/does-not-exist",
+      "reason": "no element 'impl:route:GET /v1/does-not-exist' in the spec"
+     }
+    ],
+    "check": null,
+    "implementation": "unsettled",
+    "implementation_basis": null
+   },
+   "downgraded_by_library": false,
+   "usage": {
+    "seconds": 0.71,
+    "tokens": 0,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_creation_tokens": 0,
+    "rounds": 2,
+    "model": "sonnet",
+    "digest_elements": 434,
+    "calls": [
+     {
+      "input_tokens": 0,
+      "cache_read_tokens": 0,
+      "prompt_tokens_est": 30677
+     },
+     {
+      "input_tokens": 0,
+      "cache_read_tokens": 0,
+      "prompt_tokens_est": 31050
+     }
+    ],
+    "cost_usd": 0.0
+   },
+   "audit_raw": {
+    "claims": [
+     {
+      "claim": "DELETE /v1/habits/{}/completions/{}",
+      "kind": "route",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "R82",
+      "kind": "rule",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "R28",
+      "kind": "rule",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "R27",
+      "kind": "rule",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "R21",
+      "kind": "rule",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     }
+    ],
+    "known": 5,
+    "uncited": 5,
+    "uncited_claims": [
+     "DELETE /v1/habits/{}/completions/{}",
+     "R82",
+     "R28",
+     "R27",
+     "R21"
+    ],
+    "inserted": [],
+    "unknown_routes": [],
+    "unknown_rules": [],
+    "citations": [
+     {
+      "target": "impl:route:GET /v1/does-not-exist",
+      "resolves": false,
+      "reason": "no impl_route element 'impl:route:GET /v1/does-not-exist'"
+     },
+     {
+      "target": "invariant:one_account_per_email",
+      "resolves": true,
+      "reason": ""
+     }
+    ],
+    "nonresolving": 1,
+    "failure_claims": []
+   },
+   "audit_checked": {
+    "claims": [
+     {
+      "claim": "DELETE /v1/habits/{}/completions/{}",
+      "kind": "route",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "R82",
+      "kind": "rule",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "R28",
+      "kind": "rule",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "R27",
+      "kind": "rule",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "R21",
+      "kind": "rule",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     }
+    ],
+    "known": 5,
+    "uncited": 5,
+    "uncited_claims": [
+     "DELETE /v1/habits/{}/completions/{}",
+     "R82",
+     "R28",
+     "R27",
+     "R21"
+    ],
+    "inserted": [],
+    "unknown_routes": [],
+    "unknown_rules": [],
+    "citations": [
+     {
+      "target": "invariant:one_account_per_email",
+      "resolves": true,
+      "reason": ""
+     }
+    ],
+    "nonresolving": 0,
+    "failure_claims": []
+   },
+   "score_raw": {
+    "correct": true,
+    "why": []
+   },
+   "score_checked": {
+    "correct": true,
+    "why": []
+   },
+   "key_implementation": "implemented_unverified"
+  },
+  {
+   "id": "Q07",
+   "category": "not specified",
+   "question": "What is the maximum number of devices one user may register?",
+   "status": "ANSWERED",
+   "seconds": 0.7,
+   "would_be_routed_model_free_by": null,
+   "model_replies": [
+    "{\"kind\": \"not_specified\", \"answer\": \"Not specified: the spec sets no limit on the number of devices per user.\", \"explanation\": \"It only says that POST /v1/devices is idempotent per push_token, with never more than one row per push_token (R32).\", \"citations\": [{\"target\": \"impl:route:GET /v1/does-not-exist\", \"step\": null, \"quote\": \"registered code:nowhere.go:1\"}, {\"target\": \"invariant:one_account_per_email\", \"step\": null, \"quote\": \"An email is registered at most once\"}], \"implementation\": null, \"implementation_basis\": null}",
+    "{\"kind\": \"not_specified\", \"answer\": \"Not specified: the spec sets no limit on the number of devices per user.\", \"explanation\": \"It only says that POST /v1/devices is idempotent per push_token, with never more than one row per push_token (R32).\", \"citations\": [{\"target\": \"impl:route:GET /v1/does-not-exist\", \"step\": null, \"quote\": \"registered code:nowhere.go:1\"}, {\"target\": \"invariant:one_account_per_email\", \"step\": null, \"quote\": \"An email is registered at most once\"}], \"implementation\": null, \"implementation_basis\": null}"
+   ],
+   "raw": {
+    "kind": "not_specified",
+    "answer": "Not specified: the spec sets no limit on the number of devices per user.",
+    "explanation": "It only says that POST /v1/devices is idempotent per push_token, with never more than one row per push_token (R32).",
+    "citations": [
+     {
+      "target": "impl:route:GET /v1/does-not-exist",
+      "step": null,
+      "quote": "registered code:nowhere.go:1"
+     },
+     {
+      "target": "invariant:one_account_per_email",
+      "step": null,
+      "quote": "An email is registered at most once"
+     }
+    ],
+    "parsed": true
+   },
+   "raw_library_rejects": [
+    {
+     "target": "impl:route:GET /v1/does-not-exist",
+     "reason": "no element 'impl:route:GET /v1/does-not-exist' in the spec"
+    }
+   ],
+   "checked": {
+    "kind": "not_specified",
+    "answer": "Not specified: the spec sets no limit on the number of devices per user.",
+    "explanation": "It only says that POST /v1/devices is idempotent per push_token, with never more than one row per push_token (R32).",
+    "citations": [
+     {
+      "target": "invariant:one_account_per_email",
+      "step": null,
+      "quote": "An email is registered at most once"
+     }
+    ],
+    "rejected_citations": [
+     {
+      "target": "impl:route:GET /v1/does-not-exist",
+      "reason": "no element 'impl:route:GET /v1/does-not-exist' in the spec"
+     }
+    ],
+    "check": null,
+    "implementation": null,
+    "implementation_basis": null
+   },
+   "downgraded_by_library": false,
+   "usage": {
+    "seconds": 0.71,
+    "tokens": 0,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_creation_tokens": 0,
+    "rounds": 2,
+    "model": "sonnet",
+    "digest_elements": 437,
+    "calls": [
+     {
+      "input_tokens": 0,
+      "cache_read_tokens": 0,
+      "prompt_tokens_est": 30645
+     },
+     {
+      "input_tokens": 0,
+      "cache_read_tokens": 0,
+      "prompt_tokens_est": 30955
+     }
+    ],
+    "cost_usd": 0.0
+   },
+   "audit_raw": {
+    "claims": [
+     {
+      "claim": "POST /v1/devices",
+      "kind": "route",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "R32",
+      "kind": "rule",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     }
+    ],
+    "known": 2,
+    "uncited": 2,
+    "uncited_claims": [
+     "POST /v1/devices",
+     "R32"
+    ],
+    "inserted": [],
+    "unknown_routes": [],
+    "unknown_rules": [],
+    "citations": [
+     {
+      "target": "impl:route:GET /v1/does-not-exist",
+      "resolves": false,
+      "reason": "no impl_route element 'impl:route:GET /v1/does-not-exist'"
+     },
+     {
+      "target": "invariant:one_account_per_email",
+      "resolves": true,
+      "reason": ""
+     }
+    ],
+    "nonresolving": 1,
+    "failure_claims": []
+   },
+   "audit_checked": {
+    "claims": [
+     {
+      "claim": "POST /v1/devices",
+      "kind": "route",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "R32",
+      "kind": "rule",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     }
+    ],
+    "known": 2,
+    "uncited": 2,
+    "uncited_claims": [
+     "POST /v1/devices",
+     "R32"
+    ],
+    "inserted": [],
+    "unknown_routes": [],
+    "unknown_rules": [],
+    "citations": [
+     {
+      "target": "invariant:one_account_per_email",
+      "resolves": true,
+      "reason": ""
+     }
+    ],
+    "nonresolving": 0,
+    "failure_claims": []
+   },
+   "score_raw": {
+    "correct": true,
+    "why": []
+   },
+   "score_checked": {
+    "correct": true,
+    "why": []
+   },
+   "key_implementation": null
+  },
+  {
+   "id": "Q08",
+   "category": "trap (false premise)",
+   "question": "What does DELETE /v1/nudges/{id} answer when the nudge was already dismissed?",
+   "status": "ANSWERED",
+   "seconds": 0.7,
+   "would_be_routed_model_free_by": null,
+   "model_replies": [
+    "{\"kind\": \"value\", \"answer\": \"There is no DELETE /v1/nudges/{id} route in the spec or the code: a nudge is dismissed with POST /v1/nudges/{id}/dismiss, which answers 409 nudge_dismissed when the nudge was already dismissed.\", \"explanation\": \"R138 defines the dismiss route and its 409; the access matrix and the code list no DELETE route for nudges.\", \"citations\": [{\"target\": \"impl:route:GET /v1/does-not-exist\", \"step\": null, \"quote\": \"registered code:nowhere.go:1\"}, {\"target\": \"invariant:one_account_per_email\", \"step\": null, \"quote\": \"An email is registered at most once\"}], \"implementation\": \"implemented_unverified\", \"implementation_basis\": \"static\"}",
+    "{\"kind\": \"value\", \"answer\": \"There is no DELETE /v1/nudges/{id} route in the spec or the code: a nudge is dismissed with POST /v1/nudges/{id}/dismiss, which answers 409 nudge_dismissed when the nudge was already dismissed.\", \"explanation\": \"R138 defines the dismiss route and its 409; the access matrix and the code list no DELETE route for nudges.\", \"citations\": [{\"target\": \"impl:route:GET /v1/does-not-exist\", \"step\": null, \"quote\": \"registered code:nowhere.go:1\"}, {\"target\": \"invariant:one_account_per_email\", \"step\": null, \"quote\": \"An email is registered at most once\"}], \"implementation\": \"implemented_unverified\", \"implementation_basis\": \"static\"}"
+   ],
+   "raw": {
+    "kind": "value",
+    "answer": "There is no DELETE /v1/nudges/{id} route in the spec or the code: a nudge is dismissed with POST /v1/nudges/{id}/dismiss, which answers 409 nudge_dismissed when the nudge was already dismissed.",
+    "explanation": "R138 defines the dismiss route and its 409; the access matrix and the code list no DELETE route for nudges.",
+    "citations": [
+     {
+      "target": "impl:route:GET /v1/does-not-exist",
+      "step": null,
+      "quote": "registered code:nowhere.go:1"
+     },
+     {
+      "target": "invariant:one_account_per_email",
+      "step": null,
+      "quote": "An email is registered at most once"
+     }
+    ],
+    "implementation": "implemented_unverified",
+    "parsed": true
+   },
+   "raw_library_rejects": [
+    {
+     "target": "impl:route:GET /v1/does-not-exist",
+     "reason": "no element 'impl:route:GET /v1/does-not-exist' in the spec"
+    }
+   ],
+   "checked": {
+    "kind": "value",
+    "answer": "There is no DELETE /v1/nudges/{id} route in the spec or the code: a nudge is dismissed with POST /v1/nudges/{id}/dismiss, which answers 409 nudge_dismissed when the nudge was already dismissed.",
+    "explanation": "R138 defines the dismiss route and its 409; the access matrix and the code list no DELETE route for nudges.",
+    "citations": [
+     {
+      "target": "invariant:one_account_per_email",
+      "step": null,
+      "quote": "An email is registered at most once"
+     }
+    ],
+    "rejected_citations": [
+     {
+      "target": "impl:route:GET /v1/does-not-exist",
+      "reason": "no element 'impl:route:GET /v1/does-not-exist' in the spec"
+     }
+    ],
+    "check": null,
+    "implementation": "unsettled",
+    "implementation_basis": null
+   },
+   "downgraded_by_library": false,
+   "usage": {
+    "seconds": 0.71,
+    "tokens": 0,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "cache_read_tokens": 0,
+    "cache_creation_tokens": 0,
+    "rounds": 2,
+    "model": "sonnet",
+    "digest_elements": 434,
+    "calls": [
+     {
+      "input_tokens": 0,
+      "cache_read_tokens": 0,
+      "prompt_tokens_est": 30715
+     },
+     {
+      "input_tokens": 0,
+      "cache_read_tokens": 0,
+      "prompt_tokens_est": 31068
+     }
+    ],
+    "cost_usd": 0.0
+   },
+   "audit_raw": {
+    "claims": [
+     {
+      "claim": "POST /v1/nudges/{}/dismiss",
+      "kind": "route",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "R138",
+      "kind": "rule",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     }
+    ],
+    "known": 2,
+    "uncited": 2,
+    "uncited_claims": [
+     "POST /v1/nudges/{}/dismiss",
+     "R138"
+    ],
+    "inserted": [],
+    "unknown_routes": [
+     "DELETE /v1/nudges/{}"
+    ],
+    "unknown_rules": [],
+    "citations": [
+     {
+      "target": "impl:route:GET /v1/does-not-exist",
+      "resolves": false,
+      "reason": "no impl_route element 'impl:route:GET /v1/does-not-exist'"
+     },
+     {
+      "target": "invariant:one_account_per_email",
+      "resolves": true,
+      "reason": ""
+     }
+    ],
+    "nonresolving": 1,
+    "failure_claims": []
+   },
+   "audit_checked": {
+    "claims": [
+     {
+      "claim": "POST /v1/nudges/{}/dismiss",
+      "kind": "route",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     },
+     {
+      "claim": "R138",
+      "kind": "rule",
+      "known": true,
+      "cited": false,
+      "binders": [],
+      "inserted": false
+     }
+    ],
+    "known": 2,
+    "uncited": 2,
+    "uncited_claims": [
+     "POST /v1/nudges/{}/dismiss",
+     "R138"
+    ],
+    "inserted": [],
+    "unknown_routes": [
+     "DELETE /v1/nudges/{}"
+    ],
+    "unknown_rules": [],
+    "citations": [
+     {
+      "target": "invariant:one_account_per_email",
+      "resolves": true,
+      "reason": ""
+     }
+    ],
+    "nonresolving": 0,
+    "failure_claims": []
+   },
+   "score_raw": {
+    "correct": true,
+    "why": []
+   },
+   "score_checked": {
+    "correct": true,
+    "why": []
+   },
+   "key_implementation": null
+  }
+ ]
+}

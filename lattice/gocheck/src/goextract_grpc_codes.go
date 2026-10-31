@@ -80,7 +80,7 @@ func (g *gx) codeOf(f *File, e *Env, x ast.Expr, depth int) (int, bool) {
 	case *ast.Ident:
 		if e != nil {
 			if _, local := e.lookup(v.Name); local {
-				if vals := e.valuesOf(v.Name); len(vals) == 1 {
+				if vals := e.valuesOf(v.Name); len(vals) == 1 && (readV5 || !multiAssigned(e, v.Name)) {
 					return g.codeOf(f, e, vals[0], depth+1)
 				}
 				return 0, false
@@ -107,6 +107,15 @@ func (g *gx) codeOf(f *File, e *Env, x ast.Expr, depth int) (int, bool) {
 type errSrc struct {
 	codes  []xCode
 	unread []xUnread
+	typed  []typedErr // GA2: values of module error types without GRPCStatus, where they are built
+}
+
+// typedErr is a value of a module error type (no GRPCStatus) the function can return: x, built in b.
+type typedErr struct {
+	b  *Func
+	e  *Env
+	x  ast.Expr
+	ti *TypeInfo
 }
 
 func (s *errSrc) addCode(c xCode) {
@@ -134,6 +143,11 @@ func (s *errSrc) merge(o *errSrc) {
 	for _, u := range o.unread {
 		s.addUnread(u)
 	}
+	for _, t := range o.typed {
+		if !slices.ContainsFunc(s.typed, func(x typedErr) bool { return x.x == t.x }) {
+			s.typed = append(s.typed, t)
+		}
+	}
 }
 
 func (s *errSrc) has(name string) bool {
@@ -150,7 +164,17 @@ type grpcRun struct {
 	busy map[*Func]bool
 	bind map[string]int // E3b: the codes the call being read passes for its codes.Code parameters
 	tab  *sentTab       // E1.4: the translation of one service's wrapped descriptor (else the module's)
+	// GA2: the errors the call being read passes for fn's `error` parameters (efn: that function)
+	ebind map[string]*errSrc
+	esent map[string]sentSet // what a bound parameter can be, when only sentinels or errors from outside the module
+	efn   *Func
+	hand  *errSrc // E3e: the errors of the rpc whose interceptor is being read (its handler's answer)
+	typed bool    // E3e: reading a translation of the handler's answer: only asMapCodes answers a code
 }
+
+// readV5 is set while the auth readers read codes: they read them as round 5 did (GA2 changes the codes an
+// rpc lists, never an auth decision; a better-read UNAUTHENTICATED would otherwise move the helper rule).
+var readV5 bool
 
 // table is the translation sentinels take: this service's, else the module's.
 func (r *grpcRun) table() *sentTab {
@@ -162,7 +186,7 @@ func (r *grpcRun) table() *sentTab {
 
 // errOfFunc answers every error fn can return: the union over its return statements.
 func (g *gx) errOfFunc(fn *Func, depth int, run *grpcRun) *errSrc {
-	if s, ok := run.memo[fn]; ok && run.bind == nil {
+	if s, ok := run.memo[fn]; ok && run.bind == nil && run.ebind == nil && !run.typed {
 		return s
 	}
 	out := &errSrc{}
@@ -171,6 +195,10 @@ func (g *gx) errOfFunc(fn *Func, depth int, run *grpcRun) *errSrc {
 	}
 	run.busy[fn] = true
 	defer func() { delete(run.busy, fn) }()
+	var dead map[ast.Node]bool
+	if fn == run.efn && run.esent != nil {
+		dead = g.deadBranches(fn, run.esent)
+	}
 	for _, b := range g.bodies(fn) {
 		if !b.ErrorResult() {
 			continue
@@ -178,7 +206,7 @@ func (g *gx) errOfFunc(fn *Func, depth int, run *grpcRun) *errSrc {
 		e := g.m.EnvOf(b)
 		nres := len(b.Results())
 		ast.Inspect(b.Body, func(n ast.Node) bool {
-			if _, ok := n.(*ast.FuncLit); ok {
+			if _, ok := n.(*ast.FuncLit); ok || dead[n] {
 				return false
 			}
 			ret, ok := n.(*ast.ReturnStmt)
@@ -198,7 +226,7 @@ func (g *gx) errOfFunc(fn *Func, depth int, run *grpcRun) *errSrc {
 			return true
 		})
 	}
-	if run.bind == nil {
+	if run.bind == nil && run.ebind == nil && !run.typed {
 		run.memo[fn] = out
 	}
 	return out
@@ -233,6 +261,9 @@ func (g *gx) evalErr(b *Func, e *Env, x ast.Expr, at token.Pos, depth int, run *
 			if vi, ok := f.Pkg.Vars[v.Name]; ok && vi.value != nil {
 				return g.evalSentinel(vi, depth, run) // D2.3: a package-level sentinel
 			}
+		}
+		if bound, ok := run.ebind[v.Name]; !found && ok && b == run.efn && paramAt(b, v) >= 0 {
+			return g.passOn(b, v.Name, at, bound) // GA2: what the caller passes
 		}
 		if !found {
 			notTraced(v.Pos(), "the error `"+v.Name+"` is not assigned in the function")
@@ -275,6 +306,9 @@ func (g *gx) evalErr(b *Func, e *Env, x ast.Expr, at token.Pos, depth int, run *
 		return out
 	}
 	notTraced(x.Pos(), "the error expression `"+g.src(x)+"` is not traced")
+	if ti := g.errType(e, x); ti != nil {
+		out.typed = append(out.typed, typedErr{b, e, x, ti})
+	}
 	return out
 }
 
@@ -328,10 +362,21 @@ func (g *gx) evalCallErr(b *Func, e *Env, c *ast.CallExpr, depth int, run *grpcR
 	}
 	if path, name, ok := pkgCall(f, e, c); ok {
 		switch {
+		case path == grpcStatus && (name == "Error" || name == "Errorf") && len(c.Args) >= 1 && run.typed:
+			if ns, ok := g.asMapCodes(b, e, c.Args[0], run); ok {
+				for _, n := range ns {
+					out.addCode(site(n, "status_error"))
+				}
+			}
+			return out
 		case path == grpcStatus && (name == "Error" || name == "Errorf") && len(c.Args) >= 1:
 			if n, ok := g.codeArg(f, e, c.Args[0], run); ok {
 				out.addCode(site(n, "status_error"))
 			} else if ns := g.codesFrom(b, e, c.Args[0]); ns != nil {
+				for _, n := range ns {
+					out.addCode(site(n, "status_error"))
+				}
+			} else if ns, ok := g.asMapCodes(b, e, c.Args[0], run); ok {
 				for _, n := range ns {
 					out.addCode(site(n, "status_error"))
 				}
@@ -373,6 +418,9 @@ func (g *gx) evalCallErr(b *Func, e *Env, c *ast.CallExpr, depth int, run *grpcR
 	// status.New(code, msg)[.WithDetails(..)].Err(), directly or through locals (E3c)
 	if sel, ok := unparen(c.Fun).(*ast.SelectorExpr); ok && sel.Sel.Name == "Err" {
 		ca := func(a ast.Expr) (int, bool) { return g.codeArg(f, e, a, run) }
+		if p, bound := g.asTarget(b, sel.X, run); bound != nil { // GA2: `x.GRPCStatus().Err()`, x the errors.As target of a bound parameter
+			return g.passOn(b, p, token.NoPos, bound)
+		}
 		if n, ok, seen := g.statusCode(b, e, sel.X, c.Pos(), ca, 0); seen {
 			if ok {
 				out.addCode(site(n, "status_error"))
@@ -386,6 +434,21 @@ func (g *gx) evalCallErr(b *Func, e *Env, c *ast.CallExpr, depth int, run *grpcR
 	// a module function: its errors (a project error constructor, a helper); a code it takes as a
 	// parameter is read at this call (E3b)
 	if callee := g.m.Callee(e, c); callee != nil && callee.ErrorResult() {
+		var eb map[string]*errSrc // GA2: the errors this call passes for the callee's error parameters
+		var es map[string]sentSet
+		for i, p := range callee.Params() {
+			if id, ok := p.typ.(*ast.Ident); ok && id.Name == "error" && i < len(c.Args) && p.name != "" && !readV5 {
+				if eb == nil {
+					eb, es = map[string]*errSrc{}, map[string]sentSet{}
+				}
+				eb[p.name] = g.evalErr(b, e, c.Args[i], c.Pos(), depth, run)
+				if ss, ok := g.sentinelsOf(b, e, c.Args[i], c.Pos(), 0, run); ok {
+					es[p.name] = ss
+				}
+			}
+		}
+		savedE, savedS, savedF := run.ebind, run.esent, run.efn
+		run.ebind, run.esent, run.efn = eb, es, callee
 		saved := run.bind
 		run.bind = nil
 		for i, p := range callee.Params() {
@@ -399,7 +462,7 @@ func (g *gx) evalCallErr(b *Func, e *Env, c *ast.CallExpr, depth int, run *grpcR
 			}
 		}
 		out.merge(g.errOfFunc(callee, depth+1, run))
-		run.bind = saved
+		run.bind, run.ebind, run.esent, run.efn = saved, savedE, savedS, savedF
 		return out
 	}
 	// a gorm call's error
@@ -409,6 +472,9 @@ func (g *gx) evalCallErr(b *Func, e *Env, c *ast.CallExpr, depth int, run *grpcR
 	}
 	out.addUnread(xUnread{File: file, Line: line, What: "grpc_error_not_traced",
 		Reason: "the error of `" + g.src(c) + "` is not traced"})
+	if ti := g.errType(e, c); ti != nil {
+		out.typed = append(out.typed, typedErr{b, e, c, ti})
+	}
 	return out
 }
 
@@ -794,49 +860,18 @@ func (g *gx) statusOf(b *Func, e *Env, x ast.Expr, ti *TypeInfo, run *grpcRun) *
 }
 
 // siteField answers the code assigned to field of the value x builds: a composite literal `&T{..}`, or the
-// literal a constructor returns with its parameters bound to the call's arguments.
+// literal a constructor returns with its parameters bound to the call's arguments; through constructors that
+// return another constructor's call or a local one built (`e := fail(c); e.Field = f; return e`), and a code a
+// constructor looks up in a package map by a key the call passes (GA2).
 func (g *gx) siteField(b *Func, e *Env, x ast.Expr, ti *TypeInfo, field string, run *grpcRun) (int, bool) {
-	x = unparen(x)
-	if u, ok := x.(*ast.UnaryExpr); ok && u.Op == token.AND {
-		x = unparen(u.X)
+	if readV5 {
+		return g.siteFieldV5(b, e, x, ti, field, run)
 	}
-	cb, ce, args := b, e, map[string]ast.Expr{}
-	if c, ok := x.(*ast.CallExpr); ok { // a constructor
-		ctor := g.calleeOf(e, c)
-		if ctor == nil {
-			return 0, false
-		}
-		x, cb, ce = nil, ctor, g.m.EnvOf(ctor)
-		for i, p := range ctor.Params() {
-			if i < len(c.Args) {
-				args[p.name] = c.Args[i]
-			}
-		}
-		ast.Inspect(ctor.Body, func(nd ast.Node) bool {
-			if r, ok := nd.(*ast.ReturnStmt); ok && len(r.Results) == 1 && x == nil {
-				x = unparen(r.Results[0])
-				if u, ok := x.(*ast.UnaryExpr); ok && u.Op == token.AND {
-					x = unparen(u.X)
-				}
-			}
-			return x == nil
-		})
-	}
-	cl, ok := x.(*ast.CompositeLit)
-	if !ok {
-		return 0, false
-	}
-	v := fieldExpr(cl, ti, field)
+	cb, ce, v, args := g.siteValue(b, e, x, ti, field)
 	if v == nil {
 		return 0, false
 	}
-	if n, ok := g.codeOf(cb.File, ce, v, 0); ok {
-		return n, true
-	}
-	if id, ok := unparen(v).(*ast.Ident); ok && args[id.Name] != nil {
-		return g.codeArg(b.File, e, args[id.Name], run)
-	}
-	return 0, false
+	return g.ctorCode(b, cb, ce, v, args, run)
 }
 
 // fieldExpr answers the expression a struct literal gives field: keyed, or (with the struct's type) by position.
