@@ -1,0 +1,5206 @@
+{
+  "schema": "lattice-import-report/2",
+  "repo": "/private/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/t13-6o4o32at/source",
+  "package": "cyclops.ui",
+  "app_factory": "t13_adapter:make_app",
+  "llm": false,
+  "method": null,
+  "model": null,
+  "coverage": {
+    "routes": 0,
+    "R0": 0,
+    "R1": 0,
+    "R2": 0,
+    "R3": 0,
+    "R4": 0,
+    "needs-llm": 0,
+    "verified": 0,
+    "lattice_pct": 0.0,
+    "carve_out_pct": 0.0,
+    "island_pct": 0.0,
+    "needs_llm_pct": 0.0,
+    "verified_pct": 0.0,
+    "complete": true,
+    "lines": {},
+    "ast_nodes": {},
+    "tiers": {
+      "T0": 0,
+      "T1": 0,
+      "T2": 0,
+      "T3": 0,
+      "island": 0,
+      "needs-llm": 0
+    },
+    "carve_kinds": {
+      "procedure": 0,
+      "native": 0
+    },
+    "rules": {
+      "items": {
+        "verified": 35,
+        "refuted": 0,
+        "unexercised": 30,
+        "unclear": 0
+      },
+      "tables": {
+        "verified": 0,
+        "total": 0
+      },
+      "routes": {
+        "verified": 0,
+        "total": 30
+      }
+    }
+  },
+  "budget": null,
+  "cost": {
+    "usd": 0.0,
+    "notes_usd": 0.0,
+    "per_llm_verified_route_usd": null,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "llm_rounds": 0,
+    "wall_s": 0.0
+  },
+  "routes": [],
+  "behaviour_changes": [],
+  "islands": [],
+  "carve_out_natives": [],
+  "unclear": [
+    {
+      "topic": "users_table",
+      "subject": "cyclops.ui",
+      "reason": "no single current-user dependency names the users table",
+      "candidates": []
+    },
+    {
+      "topic": "auth",
+      "subject": "cyclops.ui",
+      "reason": "no token-decoding step found in a current-user dependency",
+      "candidates": []
+    },
+    {
+      "topic": "roles",
+      "subject": "cyclops.ui",
+      "reason": "no superuser dependency: roles_from is not inferred",
+      "candidates": []
+    },
+    {
+      "topic": "storage",
+      "subject": "cyclops.ui",
+      "reason": "dialect unknown: storage formats are not inferred",
+      "candidates": []
+    },
+    {
+      "topic": "datetime_wire",
+      "subject": "cyclops.ui",
+      "reason": "custom serialisation or a non-SQLite dialect: the datetime wire is not inferred",
+      "candidates": []
+    }
+  ],
+  "notes_disagreements": [],
+  "rules": {
+    "summary": {
+      "items": {
+        "verified": 35,
+        "refuted": 0,
+        "unexercised": 30,
+        "unclear": 0
+      },
+      "tables": {
+        "verified": 0,
+        "total": 0
+      },
+      "routes": {
+        "verified": 0,
+        "total": 30
+      }
+    },
+    "items": {
+      "R1 GET /api/roots": {
+        "id": "R1 GET /api/roots",
+        "kind": "R1",
+        "subject": "GET /api/roots",
+        "sentence": "GET /api/roots admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /api/roots | no caller | anonymous",
+          "GET /api/roots | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/roots 5xx": {
+        "id": "R3 GET /api/roots 5xx",
+        "kind": "R3",
+        "subject": "GET /api/roots",
+        "sentence": "GET /api/roots answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 2 probes (2 past the auth check)",
+        "probes": [
+          "GET /api/roots | no caller | anonymous",
+          "GET /api/roots | malformed token | call"
+        ],
+        "decisive": [
+          "GET /api/roots | no caller | anonymous",
+          "GET /api/roots | malformed token | call"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /api/quotes": {
+        "id": "R1 GET /api/quotes",
+        "kind": "R1",
+        "subject": "GET /api/quotes",
+        "sentence": "GET /api/quotes admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /api/quotes | no caller | anonymous",
+          "GET /api/quotes | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/quotes 5xx": {
+        "id": "R3 GET /api/quotes 5xx",
+        "kind": "R3",
+        "subject": "GET /api/quotes",
+        "sentence": "GET /api/quotes answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 2 probes (2 past the auth check)",
+        "probes": [
+          "GET /api/quotes | no caller | anonymous",
+          "GET /api/quotes | malformed token | call"
+        ],
+        "decisive": [
+          "GET /api/quotes | no caller | anonymous",
+          "GET /api/quotes | malformed token | call"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /api/meta": {
+        "id": "R1 GET /api/meta",
+        "kind": "R1",
+        "subject": "GET /api/meta",
+        "sentence": "GET /api/meta admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /api/meta | no caller | anonymous",
+          "GET /api/meta | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/meta 5xx": {
+        "id": "R3 GET /api/meta 5xx",
+        "kind": "R3",
+        "subject": "GET /api/meta",
+        "sentence": "GET /api/meta answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 2 probes (2 past the auth check)",
+        "probes": [
+          "GET /api/meta | no caller | anonymous",
+          "GET /api/meta | malformed token | call"
+        ],
+        "decisive": [
+          "GET /api/meta | no caller | anonymous",
+          "GET /api/meta | malformed token | call"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /api/bars/{rung}": {
+        "id": "R1 GET /api/bars/{rung}",
+        "kind": "R1",
+        "subject": "GET /api/bars/{rung}",
+        "sentence": "GET /api/bars/{rung} admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /api/bars/{rung} | no caller | anonymous",
+          "GET /api/bars/{rung} | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/bars/{rung} 422": {
+        "id": "R3 GET /api/bars/{rung} 422",
+        "kind": "R3",
+        "subject": "GET /api/bars/{rung}",
+        "sentence": "GET /api/bars/{rung} answers 422 (invalid)",
+        "predicted": {
+          "status": 422,
+          "detail": null,
+          "when": "invalid"
+        },
+        "verdict": "verified",
+        "reason": "answered 422 [{'type': 'greater_than_equal', 'loc': ['query', 'max_points'], 'msg': 'Input should be greater than or equal to 1', 'input': '0', 'ctx': {'ge': 1}}]; stated 422 None",
+        "probes": [
+          "GET /api/bars/{rung} | no caller | invalid body"
+        ],
+        "decisive": [
+          "GET /api/bars/{rung} | no caller | invalid body"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/bars/{rung} 5xx": {
+        "id": "R3 GET /api/bars/{rung} 5xx",
+        "kind": "R3",
+        "subject": "GET /api/bars/{rung}",
+        "sentence": "GET /api/bars/{rung} answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 4 probes (4 past the auth check)",
+        "probes": [
+          "GET /api/bars/{rung} | no caller | anonymous",
+          "GET /api/bars/{rung} | malformed token | call",
+          "GET /api/bars/{rung} | no caller | every optional query parameter",
+          "GET /api/bars/{rung} | no caller | invalid body"
+        ],
+        "decisive": [
+          "GET /api/bars/{rung} | no caller | anonymous",
+          "GET /api/bars/{rung} | malformed token | call",
+          "GET /api/bars/{rung} | no caller | every optional query parameter",
+          "GET /api/bars/{rung} | no caller | invalid body"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /api/bars/{rung}/windows": {
+        "id": "R1 GET /api/bars/{rung}/windows",
+        "kind": "R1",
+        "subject": "GET /api/bars/{rung}/windows",
+        "sentence": "GET /api/bars/{rung}/windows admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /api/bars/{rung}/windows | no caller | anonymous",
+          "GET /api/bars/{rung}/windows | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/bars/{rung}/windows 422": {
+        "id": "R3 GET /api/bars/{rung}/windows 422",
+        "kind": "R3",
+        "subject": "GET /api/bars/{rung}/windows",
+        "sentence": "GET /api/bars/{rung}/windows answers 422 (invalid)",
+        "predicted": {
+          "status": 422,
+          "detail": null,
+          "when": "invalid"
+        },
+        "verdict": "verified",
+        "reason": "answered 422 [{'type': 'greater_than_equal', 'loc': ['query', 'before'], 'msg': 'Input should be greater than or equal to 0', 'input': '-1', 'ctx': {'ge': 0}}]; stated 422 None",
+        "probes": [
+          "GET /api/bars/{rung}/windows | no caller | invalid body"
+        ],
+        "decisive": [
+          "GET /api/bars/{rung}/windows | no caller | invalid body"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/bars/{rung}/windows 5xx": {
+        "id": "R3 GET /api/bars/{rung}/windows 5xx",
+        "kind": "R3",
+        "subject": "GET /api/bars/{rung}/windows",
+        "sentence": "GET /api/bars/{rung}/windows answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 4 probes (4 past the auth check)",
+        "probes": [
+          "GET /api/bars/{rung}/windows | no caller | anonymous",
+          "GET /api/bars/{rung}/windows | malformed token | call",
+          "GET /api/bars/{rung}/windows | no caller | every optional query parameter",
+          "GET /api/bars/{rung}/windows | no caller | invalid body"
+        ],
+        "decisive": [
+          "GET /api/bars/{rung}/windows | no caller | anonymous",
+          "GET /api/bars/{rung}/windows | malformed token | call",
+          "GET /api/bars/{rung}/windows | no caller | every optional query parameter",
+          "GET /api/bars/{rung}/windows | no caller | invalid body"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /api/features/{rung}": {
+        "id": "R1 GET /api/features/{rung}",
+        "kind": "R1",
+        "subject": "GET /api/features/{rung}",
+        "sentence": "GET /api/features/{rung} admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /api/features/{rung} | no caller | anonymous",
+          "GET /api/features/{rung} | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/features/{rung} 422": {
+        "id": "R3 GET /api/features/{rung} 422",
+        "kind": "R3",
+        "subject": "GET /api/features/{rung}",
+        "sentence": "GET /api/features/{rung} answers 422 (invalid)",
+        "predicted": {
+          "status": 422,
+          "detail": null,
+          "when": "invalid"
+        },
+        "verdict": "verified",
+        "reason": "answered 422 [{'type': 'greater_than_equal', 'loc': ['query', 'max_points'], 'msg': 'Input should be greater than or equal to 1', 'input': '0', 'ctx': {'ge': 1}}]; stated 422 None",
+        "probes": [
+          "GET /api/features/{rung} | no caller | invalid body"
+        ],
+        "decisive": [
+          "GET /api/features/{rung} | no caller | invalid body"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/features/{rung} 5xx": {
+        "id": "R3 GET /api/features/{rung} 5xx",
+        "kind": "R3",
+        "subject": "GET /api/features/{rung}",
+        "sentence": "GET /api/features/{rung} answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 4 probes (4 past the auth check)",
+        "probes": [
+          "GET /api/features/{rung} | no caller | anonymous",
+          "GET /api/features/{rung} | malformed token | call",
+          "GET /api/features/{rung} | no caller | every optional query parameter",
+          "GET /api/features/{rung} | no caller | invalid body"
+        ],
+        "decisive": [
+          "GET /api/features/{rung} | no caller | anonymous",
+          "GET /api/features/{rung} | malformed token | call",
+          "GET /api/features/{rung} | no caller | every optional query parameter",
+          "GET /api/features/{rung} | no caller | invalid body"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /api/regimes": {
+        "id": "R1 GET /api/regimes",
+        "kind": "R1",
+        "subject": "GET /api/regimes",
+        "sentence": "GET /api/regimes admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /api/regimes | no caller | anonymous",
+          "GET /api/regimes | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/regimes 5xx": {
+        "id": "R3 GET /api/regimes 5xx",
+        "kind": "R3",
+        "subject": "GET /api/regimes",
+        "sentence": "GET /api/regimes answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 3 probes (3 past the auth check)",
+        "probes": [
+          "GET /api/regimes | no caller | anonymous",
+          "GET /api/regimes | malformed token | call",
+          "GET /api/regimes | no caller | every optional query parameter"
+        ],
+        "decisive": [
+          "GET /api/regimes | no caller | anonymous",
+          "GET /api/regimes | malformed token | call",
+          "GET /api/regimes | no caller | every optional query parameter"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /api/bar/{ts}": {
+        "id": "R1 GET /api/bar/{ts}",
+        "kind": "R1",
+        "subject": "GET /api/bar/{ts}",
+        "sentence": "GET /api/bar/{ts} admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /api/bar/{ts} | no caller | anonymous",
+          "GET /api/bar/{ts} | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/bar/{ts} 5xx": {
+        "id": "R3 GET /api/bar/{ts} 5xx",
+        "kind": "R3",
+        "subject": "GET /api/bar/{ts}",
+        "sentence": "GET /api/bar/{ts} answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 3 probes (3 past the auth check)",
+        "probes": [
+          "GET /api/bar/{ts} | no caller | anonymous",
+          "GET /api/bar/{ts} | malformed token | call",
+          "GET /api/bar/{ts} | no caller | every optional query parameter"
+        ],
+        "decisive": [
+          "GET /api/bar/{ts} | no caller | anonymous",
+          "GET /api/bar/{ts} | malformed token | call",
+          "GET /api/bar/{ts} | no caller | every optional query parameter"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /api/patterns/{rung}": {
+        "id": "R1 GET /api/patterns/{rung}",
+        "kind": "R1",
+        "subject": "GET /api/patterns/{rung}",
+        "sentence": "GET /api/patterns/{rung} admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /api/patterns/{rung} | no caller | anonymous",
+          "GET /api/patterns/{rung} | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/patterns/{rung} 5xx": {
+        "id": "R3 GET /api/patterns/{rung} 5xx",
+        "kind": "R3",
+        "subject": "GET /api/patterns/{rung}",
+        "sentence": "GET /api/patterns/{rung} answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 3 probes (3 past the auth check)",
+        "probes": [
+          "GET /api/patterns/{rung} | no caller | anonymous",
+          "GET /api/patterns/{rung} | malformed token | call",
+          "GET /api/patterns/{rung} | no caller | every optional query parameter"
+        ],
+        "decisive": [
+          "GET /api/patterns/{rung} | no caller | anonymous",
+          "GET /api/patterns/{rung} | malformed token | call",
+          "GET /api/patterns/{rung} | no caller | every optional query parameter"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /api/patterns/{rung}/similar": {
+        "id": "R1 GET /api/patterns/{rung}/similar",
+        "kind": "R1",
+        "subject": "GET /api/patterns/{rung}/similar",
+        "sentence": "GET /api/patterns/{rung}/similar admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /api/patterns/{rung}/similar | no caller | anonymous",
+          "GET /api/patterns/{rung}/similar | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/patterns/{rung}/similar 422": {
+        "id": "R3 GET /api/patterns/{rung}/similar 422",
+        "kind": "R3",
+        "subject": "GET /api/patterns/{rung}/similar",
+        "sentence": "GET /api/patterns/{rung}/similar answers 422 (invalid)",
+        "predicted": {
+          "status": 422,
+          "detail": null,
+          "when": "invalid"
+        },
+        "verdict": "verified",
+        "reason": "answered 422 [{'type': 'greater_than_equal', 'loc': ['query', 'k'], 'msg': 'Input should be greater than or equal to 1', 'input': '0', 'ctx': {'ge': 1}}]; stated 422 None",
+        "probes": [
+          "GET /api/patterns/{rung}/similar | no caller | invalid body"
+        ],
+        "decisive": [
+          "GET /api/patterns/{rung}/similar | no caller | invalid body"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/patterns/{rung}/similar 5xx": {
+        "id": "R3 GET /api/patterns/{rung}/similar 5xx",
+        "kind": "R3",
+        "subject": "GET /api/patterns/{rung}/similar",
+        "sentence": "GET /api/patterns/{rung}/similar answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 4 probes (4 past the auth check)",
+        "probes": [
+          "GET /api/patterns/{rung}/similar | no caller | anonymous",
+          "GET /api/patterns/{rung}/similar | malformed token | call",
+          "GET /api/patterns/{rung}/similar | no caller | every optional query parameter",
+          "GET /api/patterns/{rung}/similar | no caller | invalid body"
+        ],
+        "decisive": [
+          "GET /api/patterns/{rung}/similar | no caller | anonymous",
+          "GET /api/patterns/{rung}/similar | malformed token | call",
+          "GET /api/patterns/{rung}/similar | no caller | every optional query parameter",
+          "GET /api/patterns/{rung}/similar | no caller | invalid body"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /api/structure/{rung}": {
+        "id": "R1 GET /api/structure/{rung}",
+        "kind": "R1",
+        "subject": "GET /api/structure/{rung}",
+        "sentence": "GET /api/structure/{rung} admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /api/structure/{rung} | no caller | anonymous",
+          "GET /api/structure/{rung} | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/structure/{rung} 5xx": {
+        "id": "R3 GET /api/structure/{rung} 5xx",
+        "kind": "R3",
+        "subject": "GET /api/structure/{rung}",
+        "sentence": "GET /api/structure/{rung} answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 3 probes (3 past the auth check)",
+        "probes": [
+          "GET /api/structure/{rung} | no caller | anonymous",
+          "GET /api/structure/{rung} | malformed token | call",
+          "GET /api/structure/{rung} | no caller | every optional query parameter"
+        ],
+        "decisive": [
+          "GET /api/structure/{rung} | no caller | anonymous",
+          "GET /api/structure/{rung} | malformed token | call",
+          "GET /api/structure/{rung} | no caller | every optional query parameter"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /api/formations/{rung}": {
+        "id": "R1 GET /api/formations/{rung}",
+        "kind": "R1",
+        "subject": "GET /api/formations/{rung}",
+        "sentence": "GET /api/formations/{rung} admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /api/formations/{rung} | no caller | anonymous",
+          "GET /api/formations/{rung} | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/formations/{rung} 5xx": {
+        "id": "R3 GET /api/formations/{rung} 5xx",
+        "kind": "R3",
+        "subject": "GET /api/formations/{rung}",
+        "sentence": "GET /api/formations/{rung} answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 3 probes (3 past the auth check)",
+        "probes": [
+          "GET /api/formations/{rung} | no caller | anonymous",
+          "GET /api/formations/{rung} | malformed token | call",
+          "GET /api/formations/{rung} | no caller | every optional query parameter"
+        ],
+        "decisive": [
+          "GET /api/formations/{rung} | no caller | anonymous",
+          "GET /api/formations/{rung} | malformed token | call",
+          "GET /api/formations/{rung} | no caller | every optional query parameter"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /api/bands/{rung}": {
+        "id": "R1 GET /api/bands/{rung}",
+        "kind": "R1",
+        "subject": "GET /api/bands/{rung}",
+        "sentence": "GET /api/bands/{rung} admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /api/bands/{rung} | no caller | anonymous",
+          "GET /api/bands/{rung} | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/bands/{rung} 5xx": {
+        "id": "R3 GET /api/bands/{rung} 5xx",
+        "kind": "R3",
+        "subject": "GET /api/bands/{rung}",
+        "sentence": "GET /api/bands/{rung} answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 3 probes (3 past the auth check)",
+        "probes": [
+          "GET /api/bands/{rung} | no caller | anonymous",
+          "GET /api/bands/{rung} | malformed token | call",
+          "GET /api/bands/{rung} | no caller | every optional query parameter"
+        ],
+        "decisive": [
+          "GET /api/bands/{rung} | no caller | anonymous",
+          "GET /api/bands/{rung} | malformed token | call",
+          "GET /api/bands/{rung} | no caller | every optional query parameter"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /api/memory/{ts}": {
+        "id": "R1 GET /api/memory/{ts}",
+        "kind": "R1",
+        "subject": "GET /api/memory/{ts}",
+        "sentence": "GET /api/memory/{ts} admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /api/memory/{ts} | no caller | anonymous",
+          "GET /api/memory/{ts} | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/memory/{ts} 422": {
+        "id": "R3 GET /api/memory/{ts} 422",
+        "kind": "R3",
+        "subject": "GET /api/memory/{ts}",
+        "sentence": "GET /api/memory/{ts} answers 422 (invalid)",
+        "predicted": {
+          "status": 422,
+          "detail": null,
+          "when": "invalid"
+        },
+        "verdict": "verified",
+        "reason": "answered 422 [{'type': 'greater_than_equal', 'loc': ['query', 'k'], 'msg': 'Input should be greater than or equal to 1', 'input': '0', 'ctx': {'ge': 1}}]; stated 422 None",
+        "probes": [
+          "GET /api/memory/{ts} | no caller | invalid body"
+        ],
+        "decisive": [
+          "GET /api/memory/{ts} | no caller | invalid body"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/memory/{ts} 5xx": {
+        "id": "R3 GET /api/memory/{ts} 5xx",
+        "kind": "R3",
+        "subject": "GET /api/memory/{ts}",
+        "sentence": "GET /api/memory/{ts} answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 4 probes (4 past the auth check)",
+        "probes": [
+          "GET /api/memory/{ts} | no caller | anonymous",
+          "GET /api/memory/{ts} | malformed token | call",
+          "GET /api/memory/{ts} | no caller | every optional query parameter",
+          "GET /api/memory/{ts} | no caller | invalid body"
+        ],
+        "decisive": [
+          "GET /api/memory/{ts} | no caller | anonymous",
+          "GET /api/memory/{ts} | malformed token | call",
+          "GET /api/memory/{ts} | no caller | every optional query parameter",
+          "GET /api/memory/{ts} | no caller | invalid body"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /api/profiles": {
+        "id": "R1 GET /api/profiles",
+        "kind": "R1",
+        "subject": "GET /api/profiles",
+        "sentence": "GET /api/profiles admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /api/profiles | no caller | anonymous",
+          "GET /api/profiles | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/profiles 5xx": {
+        "id": "R3 GET /api/profiles 5xx",
+        "kind": "R3",
+        "subject": "GET /api/profiles",
+        "sentence": "GET /api/profiles answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 2 probes (2 past the auth check)",
+        "probes": [
+          "GET /api/profiles | no caller | anonymous",
+          "GET /api/profiles | malformed token | call"
+        ],
+        "decisive": [
+          "GET /api/profiles | no caller | anonymous",
+          "GET /api/profiles | malformed token | call"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /api/validation/{split}": {
+        "id": "R1 GET /api/validation/{split}",
+        "kind": "R1",
+        "subject": "GET /api/validation/{split}",
+        "sentence": "GET /api/validation/{split} admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /api/validation/{split} | no caller | anonymous",
+          "GET /api/validation/{split} | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/validation/{split} 5xx": {
+        "id": "R3 GET /api/validation/{split} 5xx",
+        "kind": "R3",
+        "subject": "GET /api/validation/{split}",
+        "sentence": "GET /api/validation/{split} answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 2 probes (2 past the auth check)",
+        "probes": [
+          "GET /api/validation/{split} | no caller | anonymous",
+          "GET /api/validation/{split} | malformed token | call"
+        ],
+        "decisive": [
+          "GET /api/validation/{split} | no caller | anonymous",
+          "GET /api/validation/{split} | malformed token | call"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /api/dq": {
+        "id": "R1 GET /api/dq",
+        "kind": "R1",
+        "subject": "GET /api/dq",
+        "sentence": "GET /api/dq admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /api/dq | no caller | anonymous",
+          "GET /api/dq | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/dq 5xx": {
+        "id": "R3 GET /api/dq 5xx",
+        "kind": "R3",
+        "subject": "GET /api/dq",
+        "sentence": "GET /api/dq answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 2 probes (2 past the auth check)",
+        "probes": [
+          "GET /api/dq | no caller | anonymous",
+          "GET /api/dq | malformed token | call"
+        ],
+        "decisive": [
+          "GET /api/dq | no caller | anonymous",
+          "GET /api/dq | malformed token | call"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /api/eod": {
+        "id": "R1 GET /api/eod",
+        "kind": "R1",
+        "subject": "GET /api/eod",
+        "sentence": "GET /api/eod admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /api/eod | no caller | anonymous",
+          "GET /api/eod | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/eod 5xx": {
+        "id": "R3 GET /api/eod 5xx",
+        "kind": "R3",
+        "subject": "GET /api/eod",
+        "sentence": "GET /api/eod answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 2 probes (2 past the auth check)",
+        "probes": [
+          "GET /api/eod | no caller | anonymous",
+          "GET /api/eod | malformed token | call"
+        ],
+        "decisive": [
+          "GET /api/eod | no caller | anonymous",
+          "GET /api/eod | malformed token | call"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /api/eod/{d}": {
+        "id": "R1 GET /api/eod/{d}",
+        "kind": "R1",
+        "subject": "GET /api/eod/{d}",
+        "sentence": "GET /api/eod/{d} admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /api/eod/{d} | no caller | anonymous",
+          "GET /api/eod/{d} | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/eod/{d} 5xx": {
+        "id": "R3 GET /api/eod/{d} 5xx",
+        "kind": "R3",
+        "subject": "GET /api/eod/{d}",
+        "sentence": "GET /api/eod/{d} answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 2 probes (2 past the auth check)",
+        "probes": [
+          "GET /api/eod/{d} | no caller | anonymous",
+          "GET /api/eod/{d} | malformed token | call"
+        ],
+        "decisive": [
+          "GET /api/eod/{d} | no caller | anonymous",
+          "GET /api/eod/{d} | malformed token | call"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /api/journal/{d}": {
+        "id": "R1 GET /api/journal/{d}",
+        "kind": "R1",
+        "subject": "GET /api/journal/{d}",
+        "sentence": "GET /api/journal/{d} admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /api/journal/{d} | no caller | anonymous",
+          "GET /api/journal/{d} | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/journal/{d} 5xx": {
+        "id": "R3 GET /api/journal/{d} 5xx",
+        "kind": "R3",
+        "subject": "GET /api/journal/{d}",
+        "sentence": "GET /api/journal/{d} answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 2 probes (2 past the auth check)",
+        "probes": [
+          "GET /api/journal/{d} | no caller | anonymous",
+          "GET /api/journal/{d} | malformed token | call"
+        ],
+        "decisive": [
+          "GET /api/journal/{d} | no caller | anonymous",
+          "GET /api/journal/{d} | malformed token | call"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /api/rolling": {
+        "id": "R1 GET /api/rolling",
+        "kind": "R1",
+        "subject": "GET /api/rolling",
+        "sentence": "GET /api/rolling admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /api/rolling | no caller | anonymous",
+          "GET /api/rolling | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/rolling 5xx": {
+        "id": "R3 GET /api/rolling 5xx",
+        "kind": "R3",
+        "subject": "GET /api/rolling",
+        "sentence": "GET /api/rolling answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 2 probes (2 past the auth check)",
+        "probes": [
+          "GET /api/rolling | no caller | anonymous",
+          "GET /api/rolling | malformed token | call"
+        ],
+        "decisive": [
+          "GET /api/rolling | no caller | anonymous",
+          "GET /api/rolling | malformed token | call"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /api/registry": {
+        "id": "R1 GET /api/registry",
+        "kind": "R1",
+        "subject": "GET /api/registry",
+        "sentence": "GET /api/registry admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /api/registry | no caller | anonymous",
+          "GET /api/registry | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/registry 5xx": {
+        "id": "R3 GET /api/registry 5xx",
+        "kind": "R3",
+        "subject": "GET /api/registry",
+        "sentence": "GET /api/registry answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 2 probes (2 past the auth check)",
+        "probes": [
+          "GET /api/registry | no caller | anonymous",
+          "GET /api/registry | malformed token | call"
+        ],
+        "decisive": [
+          "GET /api/registry | no caller | anonymous",
+          "GET /api/registry | malformed token | call"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /api/parity": {
+        "id": "R1 GET /api/parity",
+        "kind": "R1",
+        "subject": "GET /api/parity",
+        "sentence": "GET /api/parity admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /api/parity | no caller | anonymous",
+          "GET /api/parity | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/parity 5xx": {
+        "id": "R3 GET /api/parity 5xx",
+        "kind": "R3",
+        "subject": "GET /api/parity",
+        "sentence": "GET /api/parity answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 2 probes (2 past the auth check)",
+        "probes": [
+          "GET /api/parity | no caller | anonymous",
+          "GET /api/parity | malformed token | call"
+        ],
+        "decisive": [
+          "GET /api/parity | no caller | anonymous",
+          "GET /api/parity | malformed token | call"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /api/live": {
+        "id": "R1 GET /api/live",
+        "kind": "R1",
+        "subject": "GET /api/live",
+        "sentence": "GET /api/live admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /api/live | no caller | anonymous",
+          "GET /api/live | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/live 5xx": {
+        "id": "R3 GET /api/live 5xx",
+        "kind": "R3",
+        "subject": "GET /api/live",
+        "sentence": "GET /api/live answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 2 probes (2 past the auth check)",
+        "probes": [
+          "GET /api/live | no caller | anonymous",
+          "GET /api/live | malformed token | call"
+        ],
+        "decisive": [
+          "GET /api/live | no caller | anonymous",
+          "GET /api/live | malformed token | call"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /api/user/drawings/{rung}": {
+        "id": "R1 GET /api/user/drawings/{rung}",
+        "kind": "R1",
+        "subject": "GET /api/user/drawings/{rung}",
+        "sentence": "GET /api/user/drawings/{rung} admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /api/user/drawings/{rung} | no caller | anonymous",
+          "GET /api/user/drawings/{rung} | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/user/drawings/{rung} 5xx": {
+        "id": "R3 GET /api/user/drawings/{rung} 5xx",
+        "kind": "R3",
+        "subject": "GET /api/user/drawings/{rung}",
+        "sentence": "GET /api/user/drawings/{rung} answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 2 probes (2 past the auth check)",
+        "probes": [
+          "GET /api/user/drawings/{rung} | no caller | anonymous",
+          "GET /api/user/drawings/{rung} | malformed token | call"
+        ],
+        "decisive": [
+          "GET /api/user/drawings/{rung} | no caller | anonymous",
+          "GET /api/user/drawings/{rung} | malformed token | call"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 PUT /api/user/drawings/{rung}": {
+        "id": "R1 PUT /api/user/drawings/{rung}",
+        "kind": "R1",
+        "subject": "PUT /api/user/drawings/{rung}",
+        "sentence": "PUT /api/user/drawings/{rung} admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "PUT /api/user/drawings/{rung} | no caller | anonymous",
+          "PUT /api/user/drawings/{rung} | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 PUT /api/user/drawings/{rung} 5xx": {
+        "id": "R3 PUT /api/user/drawings/{rung} 5xx",
+        "kind": "R3",
+        "subject": "PUT /api/user/drawings/{rung}",
+        "sentence": "PUT /api/user/drawings/{rung} answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 2 probes (2 past the auth check)",
+        "probes": [
+          "PUT /api/user/drawings/{rung} | no caller | anonymous",
+          "PUT /api/user/drawings/{rung} | malformed token | call"
+        ],
+        "decisive": [
+          "PUT /api/user/drawings/{rung} | no caller | anonymous",
+          "PUT /api/user/drawings/{rung} | malformed token | call"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /api/user/setups": {
+        "id": "R1 GET /api/user/setups",
+        "kind": "R1",
+        "subject": "GET /api/user/setups",
+        "sentence": "GET /api/user/setups admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /api/user/setups | no caller | anonymous",
+          "GET /api/user/setups | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/user/setups 5xx": {
+        "id": "R3 GET /api/user/setups 5xx",
+        "kind": "R3",
+        "subject": "GET /api/user/setups",
+        "sentence": "GET /api/user/setups answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 2 probes (2 past the auth check)",
+        "probes": [
+          "GET /api/user/setups | no caller | anonymous",
+          "GET /api/user/setups | malformed token | call"
+        ],
+        "decisive": [
+          "GET /api/user/setups | no caller | anonymous",
+          "GET /api/user/setups | malformed token | call"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 GET /api/user/setups/{slug}": {
+        "id": "R1 GET /api/user/setups/{slug}",
+        "kind": "R1",
+        "subject": "GET /api/user/setups/{slug}",
+        "sentence": "GET /api/user/setups/{slug} admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "GET /api/user/setups/{slug} | no caller | anonymous",
+          "GET /api/user/setups/{slug} | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 GET /api/user/setups/{slug} 5xx": {
+        "id": "R3 GET /api/user/setups/{slug} 5xx",
+        "kind": "R3",
+        "subject": "GET /api/user/setups/{slug}",
+        "sentence": "GET /api/user/setups/{slug} answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 2 probes (2 past the auth check)",
+        "probes": [
+          "GET /api/user/setups/{slug} | no caller | anonymous",
+          "GET /api/user/setups/{slug} | malformed token | call"
+        ],
+        "decisive": [
+          "GET /api/user/setups/{slug} | no caller | anonymous",
+          "GET /api/user/setups/{slug} | malformed token | call"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 PUT /api/user/setups/{slug}": {
+        "id": "R1 PUT /api/user/setups/{slug}",
+        "kind": "R1",
+        "subject": "PUT /api/user/setups/{slug}",
+        "sentence": "PUT /api/user/setups/{slug} admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "PUT /api/user/setups/{slug} | no caller | anonymous",
+          "PUT /api/user/setups/{slug} | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 PUT /api/user/setups/{slug} 5xx": {
+        "id": "R3 PUT /api/user/setups/{slug} 5xx",
+        "kind": "R3",
+        "subject": "PUT /api/user/setups/{slug}",
+        "sentence": "PUT /api/user/setups/{slug} answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 2 probes (2 past the auth check)",
+        "probes": [
+          "PUT /api/user/setups/{slug} | no caller | anonymous",
+          "PUT /api/user/setups/{slug} | malformed token | call"
+        ],
+        "decisive": [
+          "PUT /api/user/setups/{slug} | no caller | anonymous",
+          "PUT /api/user/setups/{slug} | malformed token | call"
+        ],
+        "observed": null,
+        "notes": []
+      },
+      "R1 DELETE /api/user/setups/{slug}": {
+        "id": "R1 DELETE /api/user/setups/{slug}",
+        "kind": "R1",
+        "subject": "DELETE /api/user/setups/{slug}",
+        "sentence": "DELETE /api/user/setups/{slug} admits exactly: Public",
+        "predicted": {
+          "allowed": "anyone"
+        },
+        "verdict": "unexercised",
+        "reason": "no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)",
+        "probes": [
+          "DELETE /api/user/setups/{slug} | no caller | anonymous",
+          "DELETE /api/user/setups/{slug} | malformed token | call"
+        ],
+        "decisive": [],
+        "observed": null,
+        "notes": []
+      },
+      "R3 DELETE /api/user/setups/{slug} 5xx": {
+        "id": "R3 DELETE /api/user/setups/{slug} 5xx",
+        "kind": "R3",
+        "subject": "DELETE /api/user/setups/{slug}",
+        "sentence": "DELETE /api/user/setups/{slug} answers no 5xx that its errors do not state",
+        "predicted": {
+          "statuses": []
+        },
+        "verdict": "verified",
+        "reason": "no unstated 5xx in 2 probes (2 past the auth check)",
+        "probes": [
+          "DELETE /api/user/setups/{slug} | no caller | anonymous",
+          "DELETE /api/user/setups/{slug} | malformed token | call"
+        ],
+        "decisive": [
+          "DELETE /api/user/setups/{slug} | no caller | anonymous",
+          "DELETE /api/user/setups/{slug} | malformed token | call"
+        ],
+        "observed": null,
+        "notes": []
+      }
+    },
+    "tables": {},
+    "routes": {
+      "GET /api/roots": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /api/roots": "unexercised",
+          "R3 GET /api/roots 5xx": "verified"
+        }
+      },
+      "GET /api/quotes": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /api/quotes": "unexercised",
+          "R3 GET /api/quotes 5xx": "verified"
+        }
+      },
+      "GET /api/meta": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /api/meta": "unexercised",
+          "R3 GET /api/meta 5xx": "verified"
+        }
+      },
+      "GET /api/bars/{rung}": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /api/bars/{rung}": "unexercised",
+          "R3 GET /api/bars/{rung} 422": "verified",
+          "R3 GET /api/bars/{rung} 5xx": "verified"
+        }
+      },
+      "GET /api/bars/{rung}/windows": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /api/bars/{rung}/windows": "unexercised",
+          "R3 GET /api/bars/{rung}/windows 422": "verified",
+          "R3 GET /api/bars/{rung}/windows 5xx": "verified"
+        }
+      },
+      "GET /api/features/{rung}": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /api/features/{rung}": "unexercised",
+          "R3 GET /api/features/{rung} 422": "verified",
+          "R3 GET /api/features/{rung} 5xx": "verified"
+        }
+      },
+      "GET /api/regimes": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /api/regimes": "unexercised",
+          "R3 GET /api/regimes 5xx": "verified"
+        }
+      },
+      "GET /api/bar/{ts}": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /api/bar/{ts}": "unexercised",
+          "R3 GET /api/bar/{ts} 5xx": "verified"
+        }
+      },
+      "GET /api/patterns/{rung}": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /api/patterns/{rung}": "unexercised",
+          "R3 GET /api/patterns/{rung} 5xx": "verified"
+        }
+      },
+      "GET /api/patterns/{rung}/similar": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /api/patterns/{rung}/similar": "unexercised",
+          "R3 GET /api/patterns/{rung}/similar 422": "verified",
+          "R3 GET /api/patterns/{rung}/similar 5xx": "verified"
+        }
+      },
+      "GET /api/structure/{rung}": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /api/structure/{rung}": "unexercised",
+          "R3 GET /api/structure/{rung} 5xx": "verified"
+        }
+      },
+      "GET /api/formations/{rung}": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /api/formations/{rung}": "unexercised",
+          "R3 GET /api/formations/{rung} 5xx": "verified"
+        }
+      },
+      "GET /api/bands/{rung}": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /api/bands/{rung}": "unexercised",
+          "R3 GET /api/bands/{rung} 5xx": "verified"
+        }
+      },
+      "GET /api/memory/{ts}": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /api/memory/{ts}": "unexercised",
+          "R3 GET /api/memory/{ts} 422": "verified",
+          "R3 GET /api/memory/{ts} 5xx": "verified"
+        }
+      },
+      "GET /api/profiles": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /api/profiles": "unexercised",
+          "R3 GET /api/profiles 5xx": "verified"
+        }
+      },
+      "GET /api/validation/{split}": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /api/validation/{split}": "unexercised",
+          "R3 GET /api/validation/{split} 5xx": "verified"
+        }
+      },
+      "GET /api/dq": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /api/dq": "unexercised",
+          "R3 GET /api/dq 5xx": "verified"
+        }
+      },
+      "GET /api/eod": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /api/eod": "unexercised",
+          "R3 GET /api/eod 5xx": "verified"
+        }
+      },
+      "GET /api/eod/{d}": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /api/eod/{d}": "unexercised",
+          "R3 GET /api/eod/{d} 5xx": "verified"
+        }
+      },
+      "GET /api/journal/{d}": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /api/journal/{d}": "unexercised",
+          "R3 GET /api/journal/{d} 5xx": "verified"
+        }
+      },
+      "GET /api/rolling": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /api/rolling": "unexercised",
+          "R3 GET /api/rolling 5xx": "verified"
+        }
+      },
+      "GET /api/registry": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /api/registry": "unexercised",
+          "R3 GET /api/registry 5xx": "verified"
+        }
+      },
+      "GET /api/parity": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /api/parity": "unexercised",
+          "R3 GET /api/parity 5xx": "verified"
+        }
+      },
+      "GET /api/live": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /api/live": "unexercised",
+          "R3 GET /api/live 5xx": "verified"
+        }
+      },
+      "GET /api/user/drawings/{rung}": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /api/user/drawings/{rung}": "unexercised",
+          "R3 GET /api/user/drawings/{rung} 5xx": "verified"
+        }
+      },
+      "PUT /api/user/drawings/{rung}": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 PUT /api/user/drawings/{rung}": "unexercised",
+          "R3 PUT /api/user/drawings/{rung} 5xx": "verified"
+        }
+      },
+      "GET /api/user/setups": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /api/user/setups": "unexercised",
+          "R3 GET /api/user/setups 5xx": "verified"
+        }
+      },
+      "GET /api/user/setups/{slug}": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 GET /api/user/setups/{slug}": "unexercised",
+          "R3 GET /api/user/setups/{slug} 5xx": "verified"
+        }
+      },
+      "PUT /api/user/setups/{slug}": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 PUT /api/user/setups/{slug}": "unexercised",
+          "R3 PUT /api/user/setups/{slug} 5xx": "verified"
+        }
+      },
+      "DELETE /api/user/setups/{slug}": {
+        "verdict": "unverified",
+        "reason": "R1 unexercised",
+        "items": {
+          "R1 DELETE /api/user/setups/{slug}": "unexercised",
+          "R3 DELETE /api/user/setups/{slug} 5xx": "verified"
+        }
+      }
+    },
+    "probes": {
+      "GET /api/roots | no caller | anonymous": {
+        "route": "GET /api/roots",
+        "items": [
+          "R1 GET /api/roots"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/roots",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "roots": [
+            {
+              "root": "CL",
+              "label": "CL",
+              "rungs": [],
+              "live": false,
+              "bands": [
+                "5m",
+                "15m",
+                "1h"
+              ],
+              "single_root_bands": [
+                "1h"
+              ]
+            },
+            {
+              "root": "GC",
+              "label": "GC",
+              "rungs": [],
+              "live": false,
+              "bands": [],
+              "single_root_bands": []
+            },
+            {
+              "root": "NQ",
+              "label": "NQ",
+              "rungs": [],
+              "live": false,
+              "bands": [
+                "5m",
+                "15m"
+              ],
+              "single_root_bands": []
+            },
+            {
+              "root": "SI",
+              "label": "SI",
+              "rungs": [],
+              "live": false,
+              "bands": [],
+              "single_root_bands": []
+            }
+          ],
+          "default": "NQ",
+          "note": "only the default root has a live feed; the others are nightly batch and every quote carries its own as_of"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /api/roots": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 GET /api/roots 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/roots | malformed token | call": {
+        "route": "GET /api/roots",
+        "items": [
+          "R1 GET /api/roots"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/roots",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "roots": [
+            {
+              "root": "CL",
+              "label": "CL",
+              "rungs": [],
+              "live": false,
+              "bands": [
+                "5m",
+                "15m",
+                "1h"
+              ],
+              "single_root_bands": [
+                "1h"
+              ]
+            },
+            {
+              "root": "GC",
+              "label": "GC",
+              "rungs": [],
+              "live": false,
+              "bands": [],
+              "single_root_bands": []
+            },
+            {
+              "root": "NQ",
+              "label": "NQ",
+              "rungs": [],
+              "live": false,
+              "bands": [
+                "5m",
+                "15m"
+              ],
+              "single_root_bands": []
+            },
+            {
+              "root": "SI",
+              "label": "SI",
+              "rungs": [],
+              "live": false,
+              "bands": [],
+              "single_root_bands": []
+            }
+          ],
+          "default": "NQ",
+          "note": "only the default root has a live feed; the others are nightly batch and every quote carries its own as_of"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /api/roots": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 GET /api/roots 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/quotes | no caller | anonymous": {
+        "route": "GET /api/quotes",
+        "items": [
+          "R1 GET /api/quotes"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/quotes",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "quotes": [
+            {
+              "root": "CL",
+              "last": null,
+              "prev": null,
+              "change": null,
+              "change_pct": null,
+              "as_of": null,
+              "rung": null,
+              "live": false,
+              "stale_minutes": null
+            },
+            {
+              "root": "GC",
+              "last": null,
+              "prev": null,
+              "change": null,
+              "change_pct": null,
+              "as_of": null,
+              "rung": null,
+              "live": false,
+              "stale_minutes": null
+            },
+            {
+              "root": "NQ",
+              "last": null,
+              "prev": null,
+              "change": null,
+              "change_pct": null,
+              "as_of": null,
+              "rung": null,
+              "live": false,
+              "stale_minutes": null
+            },
+            {
+              "root": "SI",
+              "last": null,
+              "prev": null,
+              "change": null,
+              "change_pct": null,
+              "as_of": null,
+              "rung": null,
+              "live": false,
+              "stale_minutes": null
+            }
+          ],
+          "generated_at": "2026-10-31T08:03:52.150118-04:00",
+          "note": "each quote carries its OWN as_of; only a root with live=true is still receiving data"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /api/quotes": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 GET /api/quotes 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/quotes | malformed token | call": {
+        "route": "GET /api/quotes",
+        "items": [
+          "R1 GET /api/quotes"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/quotes",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "quotes": [
+            {
+              "root": "CL",
+              "last": null,
+              "prev": null,
+              "change": null,
+              "change_pct": null,
+              "as_of": null,
+              "rung": null,
+              "live": false,
+              "stale_minutes": null
+            },
+            {
+              "root": "GC",
+              "last": null,
+              "prev": null,
+              "change": null,
+              "change_pct": null,
+              "as_of": null,
+              "rung": null,
+              "live": false,
+              "stale_minutes": null
+            },
+            {
+              "root": "NQ",
+              "last": null,
+              "prev": null,
+              "change": null,
+              "change_pct": null,
+              "as_of": null,
+              "rung": null,
+              "live": false,
+              "stale_minutes": null
+            },
+            {
+              "root": "SI",
+              "last": null,
+              "prev": null,
+              "change": null,
+              "change_pct": null,
+              "as_of": null,
+              "rung": null,
+              "live": false,
+              "stale_minutes": null
+            }
+          ],
+          "generated_at": "2026-10-31T08:03:52.159643-04:00",
+          "note": "each quote carries its OWN as_of; only a root with live=true is still receiving data"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /api/quotes": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 GET /api/quotes 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/meta | no caller | anonymous": {
+        "route": "GET /api/meta",
+        "items": [
+          "R1 GET /api/meta"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/meta",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "root": "/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/lattice-check-r-xcikefah/cyclops-root",
+          "data_as_of": null,
+          "as_of_by_rung": {
+            "15m": null,
+            "1h": null,
+            "4h": null,
+            "1d": null
+          },
+          "data_as_of_batch": null,
+          "data_as_of_live": null,
+          "live": false,
+          "live_from": null,
+          "artifacts": {
+            "nq_15m": {
+              "exists": false,
+              "hint": "run `cyclops build`",
+              "path": "data/processed/nq_15m.parquet"
+            },
+            "nq_1h": {
+              "exists": false,
+              "hint": "run `cyclops build`",
+              "path": "data/processed/nq_1h.parquet"
+            },
+            "nq_4h": {
+              "exists": false,
+              "hint": "run `cyclops build`",
+              "path": "data/processed/nq_4h.parquet"
+            },
+            "nq_1d": {
+              "exists": false,
+              "hint": "run `cyclops build`",
+              "path": "data/processed/nq_1d.parquet"
+            },
+            "nq_1h_features": {
+              "exists": false,
+              "hint": "run `cyclops features`",
+              "path": "data/features/nq_1h_features.parquet"
+            },
+            "nq_15m_features": {
+              "exists": false,
+              "hint": "run `cyclops features`",
+              "path": "data/features/nq_15m_features.parquet"
+            },
+            "nq_1h_rung_features": {
+              "exists": false,
+              "hint": "run `cyclops features`",
+              "path": "data/features/nq_1h_rung_features.parquet"
+            },
+            "nq_4h_features": {
+              "exists": false,
+              "hint": "run `cyclops features`",
+              "path": "data/features/nq_4h_features.parquet"
+            },
+            "nq_1d_features": {
+              "exists": false,
+              "hint": "run `cyclops features`",
+              "path": "data/features/nq_1d_features.parquet"
+            },
+            "nq_1h_regimes": {
+              "exists": false,
+              "hint": "run `cyclops regimes`",
+              "path": "data/regimes/nq_1h_regimes.parquet"
+            },
+            "nq_1h_memory": {
+              "exists": false,
+              "hint": "run `cyclops regimes`",
+              "path": "data/state_memory/nq_1h_memory.parquet"
+            },
+            "nq_1h_neighbors": {
+              "exists": false,
+              "hint": "run `cyclops regimes`",
+              "path": "data/state_memory/nq_1h_neighbors.parquet"
+            },
+            "rolling": {
+              "exists": false,
+              "hint": "run `cyclops eod`",
+              "path": "data/eod/rolling.parquet"
+            },
+            "live_bars_15m": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/bars_15m.parquet"
+            },
+            "live_bars_1h": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/bars_1h.parquet"
+            },
+            "live_bars_4h": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/bars_4h.parquet"
+            },
+            "live_bars_1d": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/bars_1d.parquet"
+            },
+            "live_labels_15m": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/labels_15m.parquet"
+            },
+            "live_labels_1h": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/labels_1h.parquet"
+            },
+            "live_labels_4h": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/labels_4h.parquet"
+            },
+            "live_labels_1d": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/labels_1d.parquet"
+            },
+            "nq_15m_patterns": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/nq_15m_patterns.parquet"
+            },
+            "nq_1h_patterns": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/nq_1h_patterns.parquet"
+            },
+            "nq_4h_patterns": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/nq_4h_patterns.parquet"
+            },
+            "nq_1d_patterns": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/nq_1d_patterns.parquet"
+            },
+            "structure_15m": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/structure_15m.parquet"
+            },
+            "structure_1h": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/structure_1h.parquet"
+            },
+            "structure_4h": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/structure_4h.parquet"
+            },
+            "structure_1d": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/structure_1d.parquet"
+            },
+            "live_patterns_15m": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/patterns_15m.parquet"
+            },
+            "live_patterns_1h": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/patterns_1h.parquet"
+            },
+            "live_patterns_4h": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/patterns_4h.parquet"
+            },
+            "live_patterns_1d": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/patterns_1d.parquet"
+            },
+            "live_structure_15m": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/structure_live_15m.parquet"
+            },
+            "live_structure_1h": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/structure_live_1h.parquet"
+            },
+            "live_structure_4h": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/structure_live_4h.parquet"
+            },
+            "live_structure_1d": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/structure_live_1d.parquet"
+            },
+            "formations_15m": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/formations_15m.parquet"
+            },
+            "formations_1h": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/formations_1h.parquet"
+            },
+            "formations_4h": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/formations_4h.parquet"
+            },
+            "formations_1d": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/formations_1d.parquet"
+            },
+            "live_formations_15m": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/formations_live_15m.parquet"
+            },
+            "live_formations_1h": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/formations_live_1h.parquet"
+            },
+            "live_formations_4h": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/formations_live_4h.parquet"
+            },
+            "live_formations_1d": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/formations_live_1d.parquet"
+            },
+            "regimes_config": {
+              "exists": false,
+              "hint": "run `cyclops regimes`",
+              "path": "data/regimes/config.json"
+            },
+            "persistence": {
+              "exists": false,
+              "hint": "run `cyclops regimes`",
+              "path": "data/regimes/persistence.json"
+            },
+            "hmm": {
+              "exists": false,
+              "hint": "run `cyclops regimes`",
+              "path": "data/regimes/hmm.json"
+            },
+            "regimes_report": {
+              "exists": false,
+              "hint": "run `cyclops regimes`",
+              "path": "data/regimes/regimes_report.json"
+            },
+            "profiles": {
+              "exists": false,
+              "hint": "run `cyclops regimes`",
+              "path": "data/state_memory/profiles.json"
+            },
+            "registry": {
+              "exists": false,
+              "hint": "run `cyclops configs list`",
+              "path": "data/regimes/configs/registry.json"
+            },
+            "dq_report": {
+              "exists": false,
+              "hint": "run `cyclops build`",
+              "path": "data/dq/report.json"
+            },
+            "eod_index": {
+              "exists": false,
+              "hint": "run `cyclops eod`",
+              "path": "data/eod/index.json"
+            },
+            "parity": {
+              "exists": false,
+              "hint": "run `cyclops live-parity`",
+              "path": "data/live/parity_last.json"
+            },
+            "live_state": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/state.json"
+            },
+            "stream_status": {
+              "exists": false,
+              "hint": "run `cyclops live`",
+              "path": "data/live/stream_status.json"
+            },
+            "patterns_report": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/patterns_report.json"
+            },
+            "patterns_config_15m": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/config_15m.json"
+            },
+            "patterns_config_1h": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/config_1h.json"
+            },
+            "patterns_config_4h": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/config_4h.json"
+            },
+            "patterns_config_1d": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/config_1d.json"
+            },
+            "validation_validation": {
+              "exists": false,
+              "hint": "run `cyclops validate --split validation`",
+              "path": "data/validation/validation/summary.json"
+            },
+            "validation_test": {
+              "exists": false,
+              "hint": "run `cyclops validate --split test`",
+              "path": "data/validation/test/summary.json"
+            }
+          },
+          "versions": {
+            "config_version": null,
+            "registry_current": null,
+            "registry_version": null
+          },
+          "rungs": [
+            "15m",
+            "1h",
+            "4h",
+            "1d"
+          ]
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /api/meta": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 GET /api/meta 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/meta | malformed token | call": {
+        "route": "GET /api/meta",
+        "items": [
+          "R1 GET /api/meta"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/meta",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "root": "/var/folders/fj/tl69n2xd067clrqbx31xtrtr0000gn/T/lattice-check-r-xcikefah/cyclops-root",
+          "data_as_of": null,
+          "as_of_by_rung": {
+            "15m": null,
+            "1h": null,
+            "4h": null,
+            "1d": null
+          },
+          "data_as_of_batch": null,
+          "data_as_of_live": null,
+          "live": false,
+          "live_from": null,
+          "artifacts": {
+            "nq_15m": {
+              "exists": false,
+              "hint": "run `cyclops build`",
+              "path": "data/processed/nq_15m.parquet"
+            },
+            "nq_1h": {
+              "exists": false,
+              "hint": "run `cyclops build`",
+              "path": "data/processed/nq_1h.parquet"
+            },
+            "nq_4h": {
+              "exists": false,
+              "hint": "run `cyclops build`",
+              "path": "data/processed/nq_4h.parquet"
+            },
+            "nq_1d": {
+              "exists": false,
+              "hint": "run `cyclops build`",
+              "path": "data/processed/nq_1d.parquet"
+            },
+            "nq_1h_features": {
+              "exists": false,
+              "hint": "run `cyclops features`",
+              "path": "data/features/nq_1h_features.parquet"
+            },
+            "nq_15m_features": {
+              "exists": false,
+              "hint": "run `cyclops features`",
+              "path": "data/features/nq_15m_features.parquet"
+            },
+            "nq_1h_rung_features": {
+              "exists": false,
+              "hint": "run `cyclops features`",
+              "path": "data/features/nq_1h_rung_features.parquet"
+            },
+            "nq_4h_features": {
+              "exists": false,
+              "hint": "run `cyclops features`",
+              "path": "data/features/nq_4h_features.parquet"
+            },
+            "nq_1d_features": {
+              "exists": false,
+              "hint": "run `cyclops features`",
+              "path": "data/features/nq_1d_features.parquet"
+            },
+            "nq_1h_regimes": {
+              "exists": false,
+              "hint": "run `cyclops regimes`",
+              "path": "data/regimes/nq_1h_regimes.parquet"
+            },
+            "nq_1h_memory": {
+              "exists": false,
+              "hint": "run `cyclops regimes`",
+              "path": "data/state_memory/nq_1h_memory.parquet"
+            },
+            "nq_1h_neighbors": {
+              "exists": false,
+              "hint": "run `cyclops regimes`",
+              "path": "data/state_memory/nq_1h_neighbors.parquet"
+            },
+            "rolling": {
+              "exists": false,
+              "hint": "run `cyclops eod`",
+              "path": "data/eod/rolling.parquet"
+            },
+            "live_bars_15m": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/bars_15m.parquet"
+            },
+            "live_bars_1h": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/bars_1h.parquet"
+            },
+            "live_bars_4h": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/bars_4h.parquet"
+            },
+            "live_bars_1d": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/bars_1d.parquet"
+            },
+            "live_labels_15m": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/labels_15m.parquet"
+            },
+            "live_labels_1h": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/labels_1h.parquet"
+            },
+            "live_labels_4h": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/labels_4h.parquet"
+            },
+            "live_labels_1d": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/labels_1d.parquet"
+            },
+            "nq_15m_patterns": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/nq_15m_patterns.parquet"
+            },
+            "nq_1h_patterns": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/nq_1h_patterns.parquet"
+            },
+            "nq_4h_patterns": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/nq_4h_patterns.parquet"
+            },
+            "nq_1d_patterns": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/nq_1d_patterns.parquet"
+            },
+            "structure_15m": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/structure_15m.parquet"
+            },
+            "structure_1h": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/structure_1h.parquet"
+            },
+            "structure_4h": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/structure_4h.parquet"
+            },
+            "structure_1d": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/structure_1d.parquet"
+            },
+            "live_patterns_15m": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/patterns_15m.parquet"
+            },
+            "live_patterns_1h": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/patterns_1h.parquet"
+            },
+            "live_patterns_4h": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/patterns_4h.parquet"
+            },
+            "live_patterns_1d": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/patterns_1d.parquet"
+            },
+            "live_structure_15m": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/structure_live_15m.parquet"
+            },
+            "live_structure_1h": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/structure_live_1h.parquet"
+            },
+            "live_structure_4h": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/structure_live_4h.parquet"
+            },
+            "live_structure_1d": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/structure_live_1d.parquet"
+            },
+            "formations_15m": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/formations_15m.parquet"
+            },
+            "formations_1h": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/formations_1h.parquet"
+            },
+            "formations_4h": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/formations_4h.parquet"
+            },
+            "formations_1d": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/formations_1d.parquet"
+            },
+            "live_formations_15m": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/formations_live_15m.parquet"
+            },
+            "live_formations_1h": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/formations_live_1h.parquet"
+            },
+            "live_formations_4h": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/formations_live_4h.parquet"
+            },
+            "live_formations_1d": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/formations_live_1d.parquet"
+            },
+            "regimes_config": {
+              "exists": false,
+              "hint": "run `cyclops regimes`",
+              "path": "data/regimes/config.json"
+            },
+            "persistence": {
+              "exists": false,
+              "hint": "run `cyclops regimes`",
+              "path": "data/regimes/persistence.json"
+            },
+            "hmm": {
+              "exists": false,
+              "hint": "run `cyclops regimes`",
+              "path": "data/regimes/hmm.json"
+            },
+            "regimes_report": {
+              "exists": false,
+              "hint": "run `cyclops regimes`",
+              "path": "data/regimes/regimes_report.json"
+            },
+            "profiles": {
+              "exists": false,
+              "hint": "run `cyclops regimes`",
+              "path": "data/state_memory/profiles.json"
+            },
+            "registry": {
+              "exists": false,
+              "hint": "run `cyclops configs list`",
+              "path": "data/regimes/configs/registry.json"
+            },
+            "dq_report": {
+              "exists": false,
+              "hint": "run `cyclops build`",
+              "path": "data/dq/report.json"
+            },
+            "eod_index": {
+              "exists": false,
+              "hint": "run `cyclops eod`",
+              "path": "data/eod/index.json"
+            },
+            "parity": {
+              "exists": false,
+              "hint": "run `cyclops live-parity`",
+              "path": "data/live/parity_last.json"
+            },
+            "live_state": {
+              "exists": false,
+              "hint": "run `cyclops scheduler`",
+              "path": "data/live/state.json"
+            },
+            "stream_status": {
+              "exists": false,
+              "hint": "run `cyclops live`",
+              "path": "data/live/stream_status.json"
+            },
+            "patterns_report": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/patterns_report.json"
+            },
+            "patterns_config_15m": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/config_15m.json"
+            },
+            "patterns_config_1h": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/config_1h.json"
+            },
+            "patterns_config_4h": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/config_4h.json"
+            },
+            "patterns_config_1d": {
+              "exists": false,
+              "hint": "run `cyclops patterns`",
+              "path": "data/patterns/config_1d.json"
+            },
+            "validation_validation": {
+              "exists": false,
+              "hint": "run `cyclops validate --split validation`",
+              "path": "data/validation/validation/summary.json"
+            },
+            "validation_test": {
+              "exists": false,
+              "hint": "run `cyclops validate --split test`",
+              "path": "data/validation/test/summary.json"
+            }
+          },
+          "versions": {
+            "config_version": null,
+            "registry_current": null,
+            "registry_version": null
+          },
+          "rungs": [
+            "15m",
+            "1h",
+            "4h",
+            "1d"
+          ]
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /api/meta": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 GET /api/meta 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/bars/{rung} | no caller | anonymous": {
+        "route": "GET /api/bars/{rung}",
+        "items": [
+          "R1 GET /api/bars/{rung}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/bars/valid rung",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "error": "unknown rung 'valid rung'",
+          "hint": "rung must be one of 15m, 1h, 4h, 1d"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /api/bars/{rung}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (404)"
+          },
+          "R3 GET /api/bars/{rung} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/bars/{rung} | malformed token | call": {
+        "route": "GET /api/bars/{rung}",
+        "items": [
+          "R1 GET /api/bars/{rung}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/bars/valid rung",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "error": "unknown rung 'valid rung'",
+          "hint": "rung must be one of 15m, 1h, 4h, 1d"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /api/bars/{rung}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (404)"
+          },
+          "R3 GET /api/bars/{rung} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/bars/{rung}/windows | no caller | anonymous": {
+        "route": "GET /api/bars/{rung}/windows",
+        "items": [
+          "R1 GET /api/bars/{rung}/windows"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/bars/valid rung/windows",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "unknown rung 'valid rung'",
+          "hint": "rung must be one of 15m, 1h, 4h, 1d"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /api/bars/{rung}/windows": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 GET /api/bars/{rung}/windows 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/bars/{rung}/windows | malformed token | call": {
+        "route": "GET /api/bars/{rung}/windows",
+        "items": [
+          "R1 GET /api/bars/{rung}/windows"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/bars/valid rung/windows",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "unknown rung 'valid rung'",
+          "hint": "rung must be one of 15m, 1h, 4h, 1d"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /api/bars/{rung}/windows": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 GET /api/bars/{rung}/windows 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/features/{rung} | no caller | anonymous": {
+        "route": "GET /api/features/{rung}",
+        "items": [
+          "R1 GET /api/features/{rung}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/features/valid rung",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "unknown rung 'valid rung'",
+          "hint": "rung must be one of 15m, 1h, 4h, 1d"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /api/features/{rung}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 GET /api/features/{rung} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/features/{rung} | malformed token | call": {
+        "route": "GET /api/features/{rung}",
+        "items": [
+          "R1 GET /api/features/{rung}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/features/valid rung",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "unknown rung 'valid rung'",
+          "hint": "rung must be one of 15m, 1h, 4h, 1d"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /api/features/{rung}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 GET /api/features/{rung} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/regimes | no caller | anonymous": {
+        "route": "GET /api/regimes",
+        "items": [
+          "R1 GET /api/regimes"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/regimes",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "start and end are required",
+          "hint": "pass ?start=<iso>&end=<iso>"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /api/regimes": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 GET /api/regimes 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/regimes | malformed token | call": {
+        "route": "GET /api/regimes",
+        "items": [
+          "R1 GET /api/regimes"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/regimes",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "start and end are required",
+          "hint": "pass ?start=<iso>&end=<iso>"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /api/regimes": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 GET /api/regimes 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/bar/{ts} | no caller | anonymous": {
+        "route": "GET /api/bar/{ts}",
+        "items": [
+          "R1 GET /api/bar/{ts}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/bar/valid ts",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "invalid timestamp: 'valid ts'",
+          "hint": "use an ISO-8601 timestamp, e.g. 2024-01-02T10:00:00-05:00"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /api/bar/{ts}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 GET /api/bar/{ts} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/bar/{ts} | malformed token | call": {
+        "route": "GET /api/bar/{ts}",
+        "items": [
+          "R1 GET /api/bar/{ts}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/bar/valid ts",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "invalid timestamp: 'valid ts'",
+          "hint": "use an ISO-8601 timestamp, e.g. 2024-01-02T10:00:00-05:00"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /api/bar/{ts}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 GET /api/bar/{ts} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/patterns/{rung} | no caller | anonymous": {
+        "route": "GET /api/patterns/{rung}",
+        "items": [
+          "R1 GET /api/patterns/{rung}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/patterns/valid rung",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "unknown rung 'valid rung'",
+          "hint": "rung must be one of 15m, 1h, 4h, 1d"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /api/patterns/{rung}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 GET /api/patterns/{rung} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/patterns/{rung} | malformed token | call": {
+        "route": "GET /api/patterns/{rung}",
+        "items": [
+          "R1 GET /api/patterns/{rung}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/patterns/valid rung",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "unknown rung 'valid rung'",
+          "hint": "rung must be one of 15m, 1h, 4h, 1d"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /api/patterns/{rung}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 GET /api/patterns/{rung} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/patterns/{rung}/similar | no caller | anonymous": {
+        "route": "GET /api/patterns/{rung}/similar",
+        "items": [
+          "R1 GET /api/patterns/{rung}/similar"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/patterns/valid rung/similar",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "unknown rung 'valid rung'",
+          "hint": "rung must be one of 15m, 1h, 4h, 1d"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /api/patterns/{rung}/similar": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 GET /api/patterns/{rung}/similar 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/patterns/{rung}/similar | malformed token | call": {
+        "route": "GET /api/patterns/{rung}/similar",
+        "items": [
+          "R1 GET /api/patterns/{rung}/similar"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/patterns/valid rung/similar",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "unknown rung 'valid rung'",
+          "hint": "rung must be one of 15m, 1h, 4h, 1d"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /api/patterns/{rung}/similar": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 GET /api/patterns/{rung}/similar 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/structure/{rung} | no caller | anonymous": {
+        "route": "GET /api/structure/{rung}",
+        "items": [
+          "R1 GET /api/structure/{rung}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/structure/valid rung",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "unknown rung 'valid rung'",
+          "hint": "rung must be one of 15m, 1h, 4h, 1d"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /api/structure/{rung}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 GET /api/structure/{rung} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/structure/{rung} | malformed token | call": {
+        "route": "GET /api/structure/{rung}",
+        "items": [
+          "R1 GET /api/structure/{rung}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/structure/valid rung",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "unknown rung 'valid rung'",
+          "hint": "rung must be one of 15m, 1h, 4h, 1d"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /api/structure/{rung}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 GET /api/structure/{rung} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/formations/{rung} | no caller | anonymous": {
+        "route": "GET /api/formations/{rung}",
+        "items": [
+          "R1 GET /api/formations/{rung}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/formations/valid rung",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "unknown rung 'valid rung'",
+          "hint": "rung must be one of 15m, 1h, 4h, 1d"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /api/formations/{rung}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 GET /api/formations/{rung} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/formations/{rung} | malformed token | call": {
+        "route": "GET /api/formations/{rung}",
+        "items": [
+          "R1 GET /api/formations/{rung}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/formations/valid rung",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "unknown rung 'valid rung'",
+          "hint": "rung must be one of 15m, 1h, 4h, 1d"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /api/formations/{rung}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 GET /api/formations/{rung} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/bands/{rung} | no caller | anonymous": {
+        "route": "GET /api/bands/{rung}",
+        "items": [
+          "R1 GET /api/bands/{rung}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/bands/valid rung",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "unknown rung 'valid rung'",
+          "hint": "rung must be one of 15m, 1h, 4h, 1d"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /api/bands/{rung}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 GET /api/bands/{rung} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/bands/{rung} | malformed token | call": {
+        "route": "GET /api/bands/{rung}",
+        "items": [
+          "R1 GET /api/bands/{rung}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/bands/valid rung",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "unknown rung 'valid rung'",
+          "hint": "rung must be one of 15m, 1h, 4h, 1d"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /api/bands/{rung}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 GET /api/bands/{rung} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/memory/{ts} | no caller | anonymous": {
+        "route": "GET /api/memory/{ts}",
+        "items": [
+          "R1 GET /api/memory/{ts}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/memory/valid ts",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "invalid timestamp: 'valid ts'",
+          "hint": "use an ISO-8601 timestamp, e.g. 2024-01-02T10:00:00-05:00"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /api/memory/{ts}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 GET /api/memory/{ts} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/memory/{ts} | malformed token | call": {
+        "route": "GET /api/memory/{ts}",
+        "items": [
+          "R1 GET /api/memory/{ts}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/memory/valid ts",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "invalid timestamp: 'valid ts'",
+          "hint": "use an ISO-8601 timestamp, e.g. 2024-01-02T10:00:00-05:00"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /api/memory/{ts}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 GET /api/memory/{ts} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/profiles | no caller | anonymous": {
+        "route": "GET /api/profiles",
+        "items": [
+          "R1 GET /api/profiles"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/profiles",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "error": "not found",
+          "hint": "run `cyclops regimes`"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /api/profiles": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (404)"
+          },
+          "R3 GET /api/profiles 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/profiles | malformed token | call": {
+        "route": "GET /api/profiles",
+        "items": [
+          "R1 GET /api/profiles"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/profiles",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "error": "not found",
+          "hint": "run `cyclops regimes`"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /api/profiles": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (404)"
+          },
+          "R3 GET /api/profiles 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/validation/{split} | no caller | anonymous": {
+        "route": "GET /api/validation/{split}",
+        "items": [
+          "R1 GET /api/validation/{split}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/validation/valid split",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "error": "unknown split 'valid split'",
+          "hint": "use one of: test, validation"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /api/validation/{split}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (404)"
+          },
+          "R3 GET /api/validation/{split} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/validation/{split} | malformed token | call": {
+        "route": "GET /api/validation/{split}",
+        "items": [
+          "R1 GET /api/validation/{split}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/validation/valid split",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "error": "unknown split 'valid split'",
+          "hint": "use one of: test, validation"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /api/validation/{split}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (404)"
+          },
+          "R3 GET /api/validation/{split} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/dq | no caller | anonymous": {
+        "route": "GET /api/dq",
+        "items": [
+          "R1 GET /api/dq"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/dq",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "error": "not found",
+          "hint": "run `cyclops build`"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /api/dq": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (404)"
+          },
+          "R3 GET /api/dq 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/dq | malformed token | call": {
+        "route": "GET /api/dq",
+        "items": [
+          "R1 GET /api/dq"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/dq",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "error": "not found",
+          "hint": "run `cyclops build`"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /api/dq": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (404)"
+          },
+          "R3 GET /api/dq 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/eod | no caller | anonymous": {
+        "route": "GET /api/eod",
+        "items": [
+          "R1 GET /api/eod"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/eod",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "error": "not found",
+          "hint": "run `cyclops eod`"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /api/eod": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (404)"
+          },
+          "R3 GET /api/eod 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/eod | malformed token | call": {
+        "route": "GET /api/eod",
+        "items": [
+          "R1 GET /api/eod"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/eod",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "error": "not found",
+          "hint": "run `cyclops eod`"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /api/eod": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (404)"
+          },
+          "R3 GET /api/eod 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/eod/{d} | no caller | anonymous": {
+        "route": "GET /api/eod/{d}",
+        "items": [
+          "R1 GET /api/eod/{d}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/eod/valid d",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "invalid session date: 'valid d'",
+          "hint": "use YYYY-MM-DD, e.g. 2024-03-04"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /api/eod/{d}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 GET /api/eod/{d} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/eod/{d} | malformed token | call": {
+        "route": "GET /api/eod/{d}",
+        "items": [
+          "R1 GET /api/eod/{d}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/eod/valid d",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "invalid session date: 'valid d'",
+          "hint": "use YYYY-MM-DD, e.g. 2024-03-04"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /api/eod/{d}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 GET /api/eod/{d} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/journal/{d} | no caller | anonymous": {
+        "route": "GET /api/journal/{d}",
+        "items": [
+          "R1 GET /api/journal/{d}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/journal/valid d",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "invalid session date: 'valid d'",
+          "hint": "use YYYY-MM-DD, e.g. 2024-03-04"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /api/journal/{d}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 GET /api/journal/{d} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/journal/{d} | malformed token | call": {
+        "route": "GET /api/journal/{d}",
+        "items": [
+          "R1 GET /api/journal/{d}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/journal/valid d",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "invalid session date: 'valid d'",
+          "hint": "use YYYY-MM-DD, e.g. 2024-03-04"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /api/journal/{d}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 GET /api/journal/{d} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/rolling | no caller | anonymous": {
+        "route": "GET /api/rolling",
+        "items": [
+          "R1 GET /api/rolling"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/rolling",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "error": "not found",
+          "hint": "run `cyclops eod`"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /api/rolling": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (404)"
+          },
+          "R3 GET /api/rolling 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/rolling | malformed token | call": {
+        "route": "GET /api/rolling",
+        "items": [
+          "R1 GET /api/rolling"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/rolling",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "error": "not found",
+          "hint": "run `cyclops eod`"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /api/rolling": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (404)"
+          },
+          "R3 GET /api/rolling 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/registry | no caller | anonymous": {
+        "route": "GET /api/registry",
+        "items": [
+          "R1 GET /api/registry"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/registry",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "error": "not found",
+          "hint": "run `cyclops configs list`"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /api/registry": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (404)"
+          },
+          "R3 GET /api/registry 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/registry | malformed token | call": {
+        "route": "GET /api/registry",
+        "items": [
+          "R1 GET /api/registry"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/registry",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "error": "not found",
+          "hint": "run `cyclops configs list`"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /api/registry": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (404)"
+          },
+          "R3 GET /api/registry 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/parity | no caller | anonymous": {
+        "route": "GET /api/parity",
+        "items": [
+          "R1 GET /api/parity"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/parity",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "error": "not found",
+          "hint": "run `cyclops live-parity`"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /api/parity": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (404)"
+          },
+          "R3 GET /api/parity 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/parity | malformed token | call": {
+        "route": "GET /api/parity",
+        "items": [
+          "R1 GET /api/parity"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/parity",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "error": "not found",
+          "hint": "run `cyclops live-parity`"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /api/parity": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (404)"
+          },
+          "R3 GET /api/parity 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/live | no caller | anonymous": {
+        "route": "GET /api/live",
+        "items": [
+          "R1 GET /api/live"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/live",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "error": "not found",
+          "hint": "run `cyclops scheduler` (or `docker compose up -d scheduler`)"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /api/live": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (404)"
+          },
+          "R3 GET /api/live 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/live | malformed token | call": {
+        "route": "GET /api/live",
+        "items": [
+          "R1 GET /api/live"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/live",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 404,
+        "body": {
+          "error": "not found",
+          "hint": "run `cyclops scheduler` (or `docker compose up -d scheduler`)"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /api/live": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (404)"
+          },
+          "R3 GET /api/live 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/user/drawings/{rung} | no caller | anonymous": {
+        "route": "GET /api/user/drawings/{rung}",
+        "items": [
+          "R1 GET /api/user/drawings/{rung}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/user/drawings/valid rung",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "unknown rung 'valid rung'",
+          "hint": "rung must be one of 15m, 1h, 4h, 1d"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /api/user/drawings/{rung}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 GET /api/user/drawings/{rung} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/user/drawings/{rung} | malformed token | call": {
+        "route": "GET /api/user/drawings/{rung}",
+        "items": [
+          "R1 GET /api/user/drawings/{rung}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/user/drawings/valid rung",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "unknown rung 'valid rung'",
+          "hint": "rung must be one of 15m, 1h, 4h, 1d"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /api/user/drawings/{rung}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 GET /api/user/drawings/{rung} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "PUT /api/user/drawings/{rung} | no caller | anonymous": {
+        "route": "PUT /api/user/drawings/{rung}",
+        "items": [
+          "R1 PUT /api/user/drawings/{rung}"
+        ],
+        "request": {
+          "method": "PUT",
+          "path": "/api/user/drawings/valid rung",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "the body is not valid JSON",
+          "hint": "send {\"schema_version\": 1, \"drawings\": [...]}"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 PUT /api/user/drawings/{rung}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 PUT /api/user/drawings/{rung} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "PUT /api/user/drawings/{rung} | malformed token | call": {
+        "route": "PUT /api/user/drawings/{rung}",
+        "items": [
+          "R1 PUT /api/user/drawings/{rung}"
+        ],
+        "request": {
+          "method": "PUT",
+          "path": "/api/user/drawings/valid rung",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "the body is not valid JSON",
+          "hint": "send {\"schema_version\": 1, \"drawings\": [...]}"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 PUT /api/user/drawings/{rung}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 PUT /api/user/drawings/{rung} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/user/setups | no caller | anonymous": {
+        "route": "GET /api/user/setups",
+        "items": [
+          "R1 GET /api/user/setups"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/user/setups",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "exists": true,
+          "setups": [],
+          "default": null
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /api/user/setups": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 GET /api/user/setups 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/user/setups | malformed token | call": {
+        "route": "GET /api/user/setups",
+        "items": [
+          "R1 GET /api/user/setups"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/user/setups",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 200,
+        "body": {
+          "exists": true,
+          "setups": [],
+          "default": null
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /api/user/setups": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (200)"
+          },
+          "R3 GET /api/user/setups 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/user/setups/{slug} | no caller | anonymous": {
+        "route": "GET /api/user/setups/{slug}",
+        "items": [
+          "R1 GET /api/user/setups/{slug}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/user/setups/valid slug",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "invalid slug 'valid slug'",
+          "hint": "a slug matches ^[a-z0-9](?:[a-z0-9-]{0,47})$"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 GET /api/user/setups/{slug}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 GET /api/user/setups/{slug} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/user/setups/{slug} | malformed token | call": {
+        "route": "GET /api/user/setups/{slug}",
+        "items": [
+          "R1 GET /api/user/setups/{slug}"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/user/setups/valid slug",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "invalid slug 'valid slug'",
+          "hint": "a slug matches ^[a-z0-9](?:[a-z0-9-]{0,47})$"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 GET /api/user/setups/{slug}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 GET /api/user/setups/{slug} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "PUT /api/user/setups/{slug} | no caller | anonymous": {
+        "route": "PUT /api/user/setups/{slug}",
+        "items": [
+          "R1 PUT /api/user/setups/{slug}"
+        ],
+        "request": {
+          "method": "PUT",
+          "path": "/api/user/setups/valid slug",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "the body is not valid JSON",
+          "hint": "send {\"schema_version\": 1, \"drawings\": [...]}"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 PUT /api/user/setups/{slug}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 PUT /api/user/setups/{slug} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "PUT /api/user/setups/{slug} | malformed token | call": {
+        "route": "PUT /api/user/setups/{slug}",
+        "items": [
+          "R1 PUT /api/user/setups/{slug}"
+        ],
+        "request": {
+          "method": "PUT",
+          "path": "/api/user/setups/valid slug",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "the body is not valid JSON",
+          "hint": "send {\"schema_version\": 1, \"drawings\": [...]}"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 PUT /api/user/setups/{slug}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 PUT /api/user/setups/{slug} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "DELETE /api/user/setups/{slug} | no caller | anonymous": {
+        "route": "DELETE /api/user/setups/{slug}",
+        "items": [
+          "R1 DELETE /api/user/setups/{slug}"
+        ],
+        "request": {
+          "method": "DELETE",
+          "path": "/api/user/setups/valid slug",
+          "user": null,
+          "token": null,
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "invalid slug 'valid slug'",
+          "hint": "a slug matches ^[a-z0-9](?:[a-z0-9-]{0,47})$"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R1 DELETE /api/user/setups/{slug}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 DELETE /api/user/setups/{slug} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "DELETE /api/user/setups/{slug} | malformed token | call": {
+        "route": "DELETE /api/user/setups/{slug}",
+        "items": [
+          "R1 DELETE /api/user/setups/{slug}"
+        ],
+        "request": {
+          "method": "DELETE",
+          "path": "/api/user/setups/valid slug",
+          "user": null,
+          "token": "<given>",
+          "params": null,
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "invalid slug 'valid slug'",
+          "hint": "a slug matches ^[a-z0-9](?:[a-z0-9-]{0,47})$"
+        },
+        "db_diff": {},
+        "credential": true,
+        "bearing": {
+          "R1 DELETE /api/user/setups/{slug}": {
+            "decisive": true,
+            "says": "admitted",
+            "why": "admitted (422)"
+          },
+          "R3 DELETE /api/user/setups/{slug} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/bars/{rung} | no caller | every optional query parameter": {
+        "route": "GET /api/bars/{rung}",
+        "items": [
+          "R3 GET /api/bars/{rung} 5xx"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/bars/valid rung",
+          "user": null,
+          "token": null,
+          "params": {
+            "start": "valid start",
+            "end": "valid end",
+            "max_points": 1,
+            "root": "valid root"
+          },
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "unknown root 'valid root'",
+          "hint": "one of CL, GC, NQ, SI"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 GET /api/bars/{rung} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/bars/{rung}/windows | no caller | every optional query parameter": {
+        "route": "GET /api/bars/{rung}/windows",
+        "items": [
+          "R3 GET /api/bars/{rung}/windows 5xx"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/bars/valid rung/windows",
+          "user": null,
+          "token": null,
+          "params": {
+            "stamps": "valid stamps",
+            "before": 1,
+            "after": 1
+          },
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "unknown rung 'valid rung'",
+          "hint": "rung must be one of 15m, 1h, 4h, 1d"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 GET /api/bars/{rung}/windows 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/features/{rung} | no caller | every optional query parameter": {
+        "route": "GET /api/features/{rung}",
+        "items": [
+          "R3 GET /api/features/{rung} 5xx"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/features/valid rung",
+          "user": null,
+          "token": null,
+          "params": {
+            "cols": "valid cols",
+            "start": "valid start",
+            "end": "valid end",
+            "max_points": 1,
+            "root": "valid root"
+          },
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "unknown rung 'valid rung'",
+          "hint": "rung must be one of 15m, 1h, 4h, 1d"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 GET /api/features/{rung} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/regimes | no caller | every optional query parameter": {
+        "route": "GET /api/regimes",
+        "items": [
+          "R3 GET /api/regimes 5xx"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/regimes",
+          "user": null,
+          "token": null,
+          "params": {
+            "start": "valid start",
+            "end": "valid end",
+            "rung": "valid rung",
+            "root": "valid root"
+          },
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "unknown root 'valid root'",
+          "hint": "one of CL, GC, NQ, SI"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 GET /api/regimes 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/bar/{ts} | no caller | every optional query parameter": {
+        "route": "GET /api/bar/{ts}",
+        "items": [
+          "R3 GET /api/bar/{ts} 5xx"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/bar/valid ts",
+          "user": null,
+          "token": null,
+          "params": {
+            "rung": "valid rung"
+          },
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "invalid timestamp: 'valid ts'",
+          "hint": "use an ISO-8601 timestamp, e.g. 2024-01-02T10:00:00-05:00"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 GET /api/bar/{ts} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/patterns/{rung} | no caller | every optional query parameter": {
+        "route": "GET /api/patterns/{rung}",
+        "items": [
+          "R3 GET /api/patterns/{rung} 5xx"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/patterns/valid rung",
+          "user": null,
+          "token": null,
+          "params": {
+            "start": "valid start",
+            "end": "valid end",
+            "root": "valid root"
+          },
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "unknown rung 'valid rung'",
+          "hint": "rung must be one of 15m, 1h, 4h, 1d"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 GET /api/patterns/{rung} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/patterns/{rung}/similar | no caller | every optional query parameter": {
+        "route": "GET /api/patterns/{rung}/similar",
+        "items": [
+          "R3 GET /api/patterns/{rung}/similar 5xx"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/patterns/valid rung/similar",
+          "user": null,
+          "token": null,
+          "params": {
+            "ts": "valid ts",
+            "pattern": "valid pattern",
+            "k": 1,
+            "layer": "valid layer",
+            "metric": "valid metric"
+          },
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "unknown rung 'valid rung'",
+          "hint": "rung must be one of 15m, 1h, 4h, 1d"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 GET /api/patterns/{rung}/similar 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/structure/{rung} | no caller | every optional query parameter": {
+        "route": "GET /api/structure/{rung}",
+        "items": [
+          "R3 GET /api/structure/{rung} 5xx"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/structure/valid rung",
+          "user": null,
+          "token": null,
+          "params": {
+            "start": "valid start",
+            "end": "valid end",
+            "root": "valid root"
+          },
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "unknown rung 'valid rung'",
+          "hint": "rung must be one of 15m, 1h, 4h, 1d"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 GET /api/structure/{rung} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/formations/{rung} | no caller | every optional query parameter": {
+        "route": "GET /api/formations/{rung}",
+        "items": [
+          "R3 GET /api/formations/{rung} 5xx"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/formations/valid rung",
+          "user": null,
+          "token": null,
+          "params": {
+            "start": "valid start",
+            "end": "valid end",
+            "root": "valid root"
+          },
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "unknown rung 'valid rung'",
+          "hint": "rung must be one of 15m, 1h, 4h, 1d"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 GET /api/formations/{rung} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/bands/{rung} | no caller | every optional query parameter": {
+        "route": "GET /api/bands/{rung}",
+        "items": [
+          "R3 GET /api/bands/{rung} 5xx"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/bands/valid rung",
+          "user": null,
+          "token": null,
+          "params": {
+            "root": "valid root",
+            "start": "valid start",
+            "end": "valid end"
+          },
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "unknown rung 'valid rung'",
+          "hint": "rung must be one of 15m, 1h, 4h, 1d"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 GET /api/bands/{rung} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/memory/{ts} | no caller | every optional query parameter": {
+        "route": "GET /api/memory/{ts}",
+        "items": [
+          "R3 GET /api/memory/{ts} 5xx"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/memory/valid ts",
+          "user": null,
+          "token": null,
+          "params": {
+            "k": 1
+          },
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "error": "invalid timestamp: 'valid ts'",
+          "hint": "use an ISO-8601 timestamp, e.g. 2024-01-02T10:00:00-05:00"
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 GET /api/memory/{ts} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/bars/{rung} | no caller | invalid body": {
+        "route": "GET /api/bars/{rung}",
+        "items": [
+          "R3 GET /api/bars/{rung} 422"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/bars/valid rung",
+          "user": null,
+          "token": null,
+          "params": {
+            "max_points": 0
+          },
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "detail": [
+            {
+              "type": "greater_than_equal",
+              "loc": [
+                "query",
+                "max_points"
+              ],
+              "msg": "Input should be greater than or equal to 1",
+              "input": "0",
+              "ctx": {
+                "ge": 1
+              }
+            }
+          ]
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 GET /api/bars/{rung} 422": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered 422 [{'type': 'greater_than_equal', 'loc': ['query', 'max_points'], 'msg': 'Input should be greater than or equal to 1', 'input': '0', 'ctx': {'ge': 1}}]; stated 422 None"
+          },
+          "R3 GET /api/bars/{rung} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/bars/{rung}/windows | no caller | invalid body": {
+        "route": "GET /api/bars/{rung}/windows",
+        "items": [
+          "R3 GET /api/bars/{rung}/windows 422"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/bars/valid rung/windows",
+          "user": null,
+          "token": null,
+          "params": {
+            "before": -1
+          },
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "detail": [
+            {
+              "type": "greater_than_equal",
+              "loc": [
+                "query",
+                "before"
+              ],
+              "msg": "Input should be greater than or equal to 0",
+              "input": "-1",
+              "ctx": {
+                "ge": 0
+              }
+            }
+          ]
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 GET /api/bars/{rung}/windows 422": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered 422 [{'type': 'greater_than_equal', 'loc': ['query', 'before'], 'msg': 'Input should be greater than or equal to 0', 'input': '-1', 'ctx': {'ge': 0}}]; stated 422 None"
+          },
+          "R3 GET /api/bars/{rung}/windows 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/features/{rung} | no caller | invalid body": {
+        "route": "GET /api/features/{rung}",
+        "items": [
+          "R3 GET /api/features/{rung} 422"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/features/valid rung",
+          "user": null,
+          "token": null,
+          "params": {
+            "max_points": 0
+          },
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "detail": [
+            {
+              "type": "greater_than_equal",
+              "loc": [
+                "query",
+                "max_points"
+              ],
+              "msg": "Input should be greater than or equal to 1",
+              "input": "0",
+              "ctx": {
+                "ge": 1
+              }
+            }
+          ]
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 GET /api/features/{rung} 422": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered 422 [{'type': 'greater_than_equal', 'loc': ['query', 'max_points'], 'msg': 'Input should be greater than or equal to 1', 'input': '0', 'ctx': {'ge': 1}}]; stated 422 None"
+          },
+          "R3 GET /api/features/{rung} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/patterns/{rung}/similar | no caller | invalid body": {
+        "route": "GET /api/patterns/{rung}/similar",
+        "items": [
+          "R3 GET /api/patterns/{rung}/similar 422"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/patterns/valid rung/similar",
+          "user": null,
+          "token": null,
+          "params": {
+            "k": 0
+          },
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "detail": [
+            {
+              "type": "greater_than_equal",
+              "loc": [
+                "query",
+                "k"
+              ],
+              "msg": "Input should be greater than or equal to 1",
+              "input": "0",
+              "ctx": {
+                "ge": 1
+              }
+            }
+          ]
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 GET /api/patterns/{rung}/similar 422": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered 422 [{'type': 'greater_than_equal', 'loc': ['query', 'k'], 'msg': 'Input should be greater than or equal to 1', 'input': '0', 'ctx': {'ge': 1}}]; stated 422 None"
+          },
+          "R3 GET /api/patterns/{rung}/similar 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      },
+      "GET /api/memory/{ts} | no caller | invalid body": {
+        "route": "GET /api/memory/{ts}",
+        "items": [
+          "R3 GET /api/memory/{ts} 422"
+        ],
+        "request": {
+          "method": "GET",
+          "path": "/api/memory/valid ts",
+          "user": null,
+          "token": null,
+          "params": {
+            "k": 0
+          },
+          "json": null,
+          "form": null
+        },
+        "status": 422,
+        "body": {
+          "detail": [
+            {
+              "type": "greater_than_equal",
+              "loc": [
+                "query",
+                "k"
+              ],
+              "msg": "Input should be greater than or equal to 1",
+              "input": "0",
+              "ctx": {
+                "ge": 1
+              }
+            }
+          ]
+        },
+        "db_diff": {},
+        "bearing": {
+          "R3 GET /api/memory/{ts} 422": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered 422 [{'type': 'greater_than_equal', 'loc': ['query', 'k'], 'msg': 'Input should be greater than or equal to 1', 'input': '0', 'ctx': {'ge': 1}}]; stated 422 None"
+          },
+          "R3 GET /api/memory/{ts} 5xx": {
+            "decisive": true,
+            "says": "confirms",
+            "why": "answered past the auth check without a 5xx"
+          }
+        }
+      }
+    },
+    "notes": [],
+    "framework": "fastapi",
+    "excluded_routes": [
+      {
+        "method": "GET",
+        "path": "/{path:path}",
+        "kind": "unsupported",
+        "reason": "unsupported: catch-all path converter ({path:path} matches across '/'; a spec path hole is one segment)"
+      }
+    ],
+    "baseline": [],
+    "corrections": [],
+    "mining": {
+      "proposed": 0,
+      "refuted": 0,
+      "uncompiled": 0,
+      "snapshots": 1,
+      "runs": 76,
+      "app_rows": 0
+    },
+    "mining_templates": [
+      "sign",
+      "not_null",
+      "one_per_fk",
+      "sum",
+      "machine"
+    ],
+    "unreachable": [],
+    "timing": {
+      "extract": 0.155,
+      "probe": 1.88,
+      "correct": 0.0,
+      "mine": 0.022,
+      "variant2": 0.612,
+      "total": 2.708
+    },
+    "variant2": {
+      "variant": "variant2",
+      "summary": {
+        "items": {
+          "verified": 35,
+          "refuted": 0,
+          "unexercised": 30,
+          "unclear": 0
+        },
+        "tables": {
+          "verified": 0,
+          "total": 0
+        },
+        "routes": {
+          "verified": 0,
+          "total": 30
+        }
+      },
+      "findings": [],
+      "clean": true
+    },
+    "outside_api": {},
+    "seed": {
+      "variants": {
+        "seed": {
+          "seed": 31,
+          "rows_per_table": 8,
+          "key_shift": 0
+        },
+        "variant2": {
+          "seed": 97,
+          "rows_per_table": 11,
+          "key_shift": 100
+        }
+      }
+    }
+  }
+}
