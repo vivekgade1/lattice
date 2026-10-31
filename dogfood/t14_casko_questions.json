@@ -1,0 +1,707 @@
+{
+ "schema": "t14-casko-questions/1",
+ "prereg": "docs/results/2026-10-30-t14-casko-corrected-citation-prereg.md",
+ "target": {
+  "repo": "~/Documents/streak",
+  "rev": "a0679e9",
+  "files": "git archive of the whole tree at rev (Go app + spec.py + spec.trace.json + REQUIREMENTS.md + CONTEXT.md)"
+ },
+ "note": "Questions in registered run order. `key` is the gold answer key, written from REQUIREMENTS.md, spec.trace.json and the Go source at a0679e9 before any model call. `gold_reply` is what the scripted dry-run model answers (the ask() JSON reply shape); its citations are the checkable claims' evidence. Scoring (A-CORRECT, reported, not gated): kind in key.kinds AND every group of key.must has one regex matching the haystack (answer + explanation + accepted citation targets and quotes, case-insensitive) AND key.routes_required is a subset of the route keys in answer + explanation AND no key.must_not regex matches answer + explanation. `abstain_ok`: a not_specified answer is scored correct because the digest the model sees does not settle the question (must_not still applies).",
+ "questions": [
+  {
+   "id": "Q01",
+   "category": "routes",
+   "question": "Which API routes does the app have for check-ins?",
+   "key": {
+    "kinds": [
+     "value",
+     "yes"
+    ],
+    "routes_required": [
+     "POST /v1/habits/{}/completions",
+     "GET /v1/habits/{}/completions",
+     "DELETE /v1/habits/{}/completions/{}",
+     "POST /v1/completions/batch"
+    ],
+    "must": [],
+    "must_not": [],
+    "implementation": "implemented_unverified",
+    "claims": [
+     "the four check-in routes exist in the spec (R72, R81, R82, R83) and in the code (internal/completions/routes.go:25-28)"
+    ],
+    "abstain_ok": false
+   },
+   "gold_reply": {
+    "kind": "value",
+    "answer": "Four: POST /v1/habits/{habit_id}/completions creates a check-in, GET /v1/habits/{habit_id}/completions lists them, DELETE /v1/habits/{habit_id}/completions/{id} deletes one, and POST /v1/completions/batch creates up to 100 in one request.",
+    "explanation": "The spec requires them in R72, R81, R82 and R83, and the code registers all four in internal/completions/routes.go.",
+    "citations": [
+     {
+      "target": "impl:route:POST /v1/habits/{}/completions",
+      "step": null,
+      "quote": "registered code:internal/completions/routes.go:25"
+     },
+     {
+      "target": "impl:route:GET /v1/habits/{}/completions",
+      "step": null,
+      "quote": "registered code:internal/completions/routes.go:26"
+     },
+     {
+      "target": "impl:route:DELETE /v1/habits/{}/completions/{}",
+      "step": null,
+      "quote": "registered code:internal/completions/routes.go:27"
+     },
+     {
+      "target": "impl:route:POST /v1/completions/batch",
+      "step": null,
+      "quote": "registered code:internal/completions/routes.go:28"
+     },
+     {
+      "target": "rule:R72",
+      "step": null,
+      "quote": "answers 201"
+     },
+     {
+      "target": "rule:R81",
+      "step": null,
+      "quote": "ordered by date ascending"
+     },
+     {
+      "target": "rule:R82",
+      "step": null,
+      "quote": "answers 204"
+     },
+     {
+      "target": "rule:R83",
+      "step": null,
+      "quote": "with 1 to 100 items"
+     }
+    ],
+    "implementation": "implemented_unverified",
+    "implementation_basis": "static"
+   }
+  },
+  {
+   "id": "Q02",
+   "category": "trap (false premise)",
+   "question": "Which admin role is allowed to delete another user's habits?",
+   "key": {
+    "kinds": [
+     "no",
+     "value"
+    ],
+    "routes_required": [],
+    "must": [
+     [
+      "no (roles?|admins?)|not? (any )?admin|there (is|are) no (admin|role)|no such (admin|role)|premise"
+     ]
+    ],
+    "must_not": [
+     "\\b(the|an?) (admin|administrator|superuser|moderator)( role)? (can|may|is allowed)"
+    ],
+    "implementation": null,
+    "claims": [
+     "there are no roles or admins (R27)",
+     "another user's habit answers 404 not_found (R28)"
+    ],
+    "abstain_ok": false
+   },
+   "gold_reply": {
+    "kind": "no",
+    "answer": "None: the premise is false. There are no roles or admins, so nobody can delete another user's habits.",
+    "explanation": "A user changes only their own habits (R27); DELETE /v1/habits/{id} on another user's habit answers 404 not_found, exactly like an unknown id (R28).",
+    "citations": [
+     {
+      "target": "rule:R27",
+      "step": null,
+      "quote": "There are no roles or admins"
+     },
+     {
+      "target": "rule:R28",
+      "step": null,
+      "quote": "answers 404 with code not_found on every route"
+     },
+     {
+      "target": "cell:ben|DELETE /v1/habits/{}",
+      "step": null,
+      "quote": "404"
+     }
+    ],
+    "implementation": "implemented_unverified",
+    "implementation_basis": "static"
+   }
+  },
+  {
+   "id": "Q03",
+   "category": "rule requirement",
+   "question": "What does the spec require when a check-in date is more than 60 days before the user's today?",
+   "key": {
+    "kinds": [
+     "value",
+     "yes"
+    ],
+    "routes_required": [],
+    "must": [
+     [
+      "\\b422\\b"
+     ],
+     [
+      "date_too_old"
+     ]
+    ],
+    "must_not": [],
+    "implementation": "implemented_unverified",
+    "claims": [
+     "422 date_too_old (R75)",
+     "t - 60 itself is accepted (R75)",
+     "date_in_future and date_out_of_range take precedence (R76)"
+    ],
+    "abstain_ok": false
+   },
+   "gold_reply": {
+    "kind": "value",
+    "answer": "The check-in answers 422 with code date_too_old and writes nothing; a date exactly 60 days back (t - 60) is still accepted.",
+    "explanation": "R75 applies to POST /v1/habits/{habit_id}/completions and to each batch item; when the date is also in the future or out of the habit's range, date_in_future and then date_out_of_range are answered first (R76).",
+    "citations": [
+     {
+      "target": "rule:R75",
+      "step": null,
+      "quote": "answers 422 with code date_too_old"
+     },
+     {
+      "target": "rule:R76",
+      "step": null,
+      "quote": "date_in_future first, then date_out_of_range, then date_too_old"
+     },
+     {
+      "target": "impl:route:POST /v1/habits/{}/completions",
+      "step": null,
+      "quote": "422 date_too_old"
+     }
+    ],
+    "implementation": "implemented_unverified",
+    "implementation_basis": "static"
+   }
+  },
+  {
+   "id": "Q04",
+   "category": "not implemented",
+   "question": "Is there an endpoint to reset a forgotten password, and does the code implement one?",
+   "key": {
+    "kinds": [
+     "not_specified",
+     "no"
+    ],
+    "routes_required": [],
+    "must": [
+     [
+      "not specified|no (such )?(endpoint|route)|does not (have|exist|specify|implement|register|define)|neither|there is no|no password[- ]reset|not implement"
+     ]
+    ],
+    "must_not": [
+     "\\b(POST|GET|PUT|PATCH) /\\S*(reset|forgot|password)"
+    ],
+    "implementation": "not_specified_not_implemented",
+    "claims": [
+     "no password-reset route in the spec",
+     "no password-reset route in the code (the inventory's 26 routes)"
+    ],
+    "abstain_ok": false
+   },
+   "gold_reply": {
+    "kind": "not_specified",
+    "answer": "Not specified: neither the spec nor the code has a password-reset endpoint.",
+    "explanation": "The only auth routes, in the spec and in the code, are POST /v1/auth/register, POST /v1/auth/login, POST /v1/auth/refresh and POST /v1/auth/logout; none of them resets a password.",
+    "citations": [
+     {
+      "target": "impl:route:POST /v1/auth/register",
+      "step": null,
+      "quote": "registered code:internal/auth/routes.go:25"
+     },
+     {
+      "target": "impl:route:POST /v1/auth/login",
+      "step": null,
+      "quote": "registered code:internal/auth/routes.go:26"
+     },
+     {
+      "target": "impl:route:POST /v1/auth/refresh",
+      "step": null,
+      "quote": "registered code:internal/auth/routes.go:27"
+     },
+     {
+      "target": "impl:route:POST /v1/auth/logout",
+      "step": null,
+      "quote": "registered code:internal/auth/routes.go:28"
+     }
+    ],
+    "implementation": "not_specified_not_implemented",
+    "implementation_basis": "inferred"
+   }
+  },
+  {
+   "id": "Q05",
+   "category": "where in the code",
+   "question": "Where in the Go code is the limit of 120 requests per minute per signed-in user enforced?",
+   "key": {
+    "kinds": [
+     "value",
+     "not_specified"
+    ],
+    "routes_required": [],
+    "must": [
+     [
+      "ratelimit\\.go"
+     ]
+    ],
+    "must_not": [
+     "internal/(?!httpapi/)\\S+\\.go"
+    ],
+    "implementation": "implemented_unverified",
+    "claims": [
+     "internal/httpapi/ratelimit.go:13 const RateLimit = 120",
+     "internal/httpapi/ratelimit.go:55 RateLimited middleware",
+     "internal/httpapi/router.go:54 attaches it to the Member group",
+     "R29 requires 120 per clock minute then 429 rate_limited",
+     "the digest the model sees has no ratelimit.go location (only routes' registration and handler lines), so an honest not_specified is scored correct (abstain_ok)"
+    ],
+    "abstain_ok": true
+   },
+   "gold_reply": {
+    "kind": "value",
+    "answer": "In internal/httpapi/ratelimit.go: the constant RateLimit = 120 (line 13) and the middleware RateLimited (line 55), which internal/httpapi/router.go:54 attaches to every signed-in (Member) /v1 route.",
+    "explanation": "R29 requires 120 requests per clock minute for a signed-in user, then 429 rate_limited with Retry-After.",
+    "citations": [
+     {
+      "target": "code:internal/httpapi/ratelimit.go:13",
+      "step": null,
+      "quote": "const RateLimit = 120"
+     },
+     {
+      "target": "code:internal/httpapi/ratelimit.go:55",
+      "step": null,
+      "quote": "func RateLimited(d Deps, l *Limiter)"
+     },
+     {
+      "target": "code:internal/httpapi/router.go:54",
+      "step": null,
+      "quote": "RateLimited(d, NewLimiter())"
+     },
+     {
+      "target": "rule:R29",
+      "step": null,
+      "quote": "120 requests per clock minute"
+     }
+    ],
+    "implementation": "implemented_unverified",
+    "implementation_basis": "static"
+   }
+  },
+  {
+   "id": "Q06",
+   "category": "who can call",
+   "question": "Who can delete a check-in, and what does another signed-in user get if they try?",
+   "key": {
+    "kinds": [
+     "value",
+     "yes",
+     "no"
+    ],
+    "routes_required": [],
+    "must": [
+     [
+      "\\b404\\b"
+     ],
+     [
+      "not_found|not found"
+     ],
+     [
+      "owner|their own|its own|own (habit|check)|only the (signed-in )?user"
+     ]
+    ],
+    "must_not": [
+     "\\b(admins?|administrators?) (can|may)"
+    ],
+    "implementation": "implemented_unverified",
+    "claims": [
+     "only the habit's owner (R27)",
+     "another user gets 404 not_found (R28, cell ben 404)",
+     "no token gets 401 (R21, cell no token 401)"
+    ],
+    "abstain_ok": false
+   },
+   "gold_reply": {
+    "kind": "value",
+    "answer": "Only the signed-in owner of the habit; there are no roles or admins. Another signed-in user gets 404 not_found, and a request without a token gets 401.",
+    "explanation": "DELETE /v1/habits/{habit_id}/completions/{id} answers 204 for the owner (R82); another user's check-in answers 404 not_found exactly like an unknown id (R28, R27); without a token the route answers 401 (R21).",
+    "citations": [
+     {
+      "target": "cell:ben|DELETE /v1/habits/{}/completions/{}",
+      "step": null,
+      "quote": "404"
+     },
+     {
+      "target": "cell:no token|DELETE /v1/habits/{}/completions/{}",
+      "step": null,
+      "quote": "401"
+     },
+     {
+      "target": "rule:R28",
+      "step": null,
+      "quote": "answers 404 with code not_found on every route"
+     },
+     {
+      "target": "rule:R27",
+      "step": null,
+      "quote": "There are no roles or admins"
+     },
+     {
+      "target": "rule:R21",
+      "step": null,
+      "quote": "without one it answers 401"
+     },
+     {
+      "target": "rule:R82",
+      "step": null,
+      "quote": "answers 204"
+     },
+     {
+      "target": "impl:route:DELETE /v1/habits/{}/completions/{}",
+      "step": null,
+      "quote": "auth Customer"
+     }
+    ],
+    "implementation": "implemented_unverified",
+    "implementation_basis": "static"
+   }
+  },
+  {
+   "id": "Q07",
+   "category": "not specified",
+   "question": "What is the maximum number of devices one user may register?",
+   "key": {
+    "kinds": [
+     "not_specified",
+     "value",
+     "no"
+    ],
+    "routes_required": [],
+    "must": [
+     [
+      "not specified|no (limit|maximum|cap)|does not (say|state|specify|set|limit|define)|sets no|unlimited|not limited|no stated"
+     ]
+    ],
+    "must_not": [
+     "(at most|maximum of|up to|limit of) \\d+ devices"
+    ],
+    "implementation": null,
+    "claims": [
+     "the spec sets no per-user device limit",
+     "only one row per push_token (R32)"
+    ],
+    "abstain_ok": false
+   },
+   "gold_reply": {
+    "kind": "not_specified",
+    "answer": "Not specified: the spec sets no limit on the number of devices per user.",
+    "explanation": "It only says that POST /v1/devices is idempotent per push_token, with never more than one row per push_token (R32).",
+    "citations": [
+     {
+      "target": "rule:R32",
+      "step": null,
+      "quote": "there is never more than one row per push_token"
+     },
+     {
+      "target": "impl:route:POST /v1/devices",
+      "step": null,
+      "quote": "registered code:internal/account/routes.go:23"
+     }
+    ],
+    "implementation": null,
+    "implementation_basis": null
+   }
+  },
+  {
+   "id": "Q08",
+   "category": "trap (false premise)",
+   "question": "What does DELETE /v1/nudges/{id} answer when the nudge was already dismissed?",
+   "key": {
+    "kinds": [
+     "value",
+     "no",
+     "not_specified"
+    ],
+    "routes_required": [],
+    "must": [
+     [
+      "no (such )?(DELETE|route|endpoint)|(is|exists) no|does not (exist|have|register|define|specify)|not (a|an) (route|endpoint)|there is no|premise|not specified"
+     ],
+     [
+      "POST /v1/nudges/\\{(id)?\\}/dismiss|nudge_dismissed"
+     ]
+    ],
+    "must_not": [
+     "DELETE /v1/nudges/\\S+ (answers|returns|responds with) (409|200|204)"
+    ],
+    "implementation": null,
+    "claims": [
+     "no DELETE /v1/nudges/{id} route in spec or code",
+     "dismissal is POST /v1/nudges/{id}/dismiss; already dismissed answers 409 nudge_dismissed (R138)"
+    ],
+    "abstain_ok": false
+   },
+   "gold_reply": {
+    "kind": "value",
+    "answer": "There is no DELETE /v1/nudges/{id} route in the spec or the code: a nudge is dismissed with POST /v1/nudges/{id}/dismiss, which answers 409 nudge_dismissed when the nudge was already dismissed.",
+    "explanation": "R138 defines the dismiss route and its 409; the access matrix and the code list no DELETE route for nudges.",
+    "citations": [
+     {
+      "target": "rule:R138",
+      "step": null,
+      "quote": "a nudge already dismissed answers 409 with code nudge_dismissed"
+     },
+     {
+      "target": "impl:route:POST /v1/nudges/{}/dismiss",
+      "step": null,
+      "quote": "409 nudge_dismissed"
+     },
+     {
+      "target": "cell:ann|POST /v1/nudges/{}/dismiss",
+      "step": null,
+      "quote": "200/404/409"
+     }
+    ],
+    "implementation": "implemented_unverified",
+    "implementation_basis": "static"
+   }
+  },
+  {
+   "id": "Q09",
+   "category": "rule requirement",
+   "question": "What happens when a client presents a refresh token that was already rotated?",
+   "key": {
+    "kinds": [
+     "value",
+     "yes"
+    ],
+    "routes_required": [],
+    "must": [
+     [
+      "\\b401\\b"
+     ],
+     [
+      "refresh_token_reused"
+     ],
+     [
+      "revok"
+     ]
+    ],
+    "must_not": [],
+    "implementation": "implemented_unverified",
+    "claims": [
+     "401 refresh_token_reused (R20)",
+     "revokes every refresh token of that user and installation (R20, R7)"
+    ],
+    "abstain_ok": false
+   },
+   "gold_reply": {
+    "kind": "value",
+    "answer": "POST /v1/auth/refresh answers 401 with code refresh_token_reused and revokes every refresh token of that user and installation, so that session must log in again.",
+    "explanation": "R20 states the reuse rule; R7 names it as the one refused request that writes.",
+    "citations": [
+     {
+      "target": "rule:R20",
+      "step": null,
+      "quote": "answers 401 with code refresh_token_reused"
+     },
+     {
+      "target": "rule:R7",
+      "step": null,
+      "quote": "with one exception"
+     },
+     {
+      "target": "impl:route:POST /v1/auth/refresh",
+      "step": null,
+      "quote": "401 refresh_token_reused"
+     }
+    ],
+    "implementation": "implemented_unverified",
+    "implementation_basis": "static"
+   }
+  },
+  {
+   "id": "Q10",
+   "category": "where in the code",
+   "question": "In which file and line is the route that dismisses a nudge registered, and where is its handler?",
+   "key": {
+    "kinds": [
+     "value"
+    ],
+    "routes_required": [],
+    "must": [
+     [
+      "internal/nudges/routes\\.go"
+     ],
+     [
+      "routes\\.go:17|line 17|\\b17\\b"
+     ],
+     [
+      "routes\\.go:57|line 57|\\b57\\b"
+     ]
+    ],
+    "must_not": [],
+    "implementation": "implemented_unverified",
+    "claims": [
+     "registered at internal/nudges/routes.go:17",
+     "handler dismiss at internal/nudges/routes.go:57"
+    ],
+    "abstain_ok": false
+   },
+   "gold_reply": {
+    "kind": "value",
+    "answer": "POST /v1/nudges/{id}/dismiss is registered at internal/nudges/routes.go:17 and handled by the dismiss method at internal/nudges/routes.go:57.",
+    "explanation": "The inventory records both locations for the route; R138 is the rule it implements.",
+    "citations": [
+     {
+      "target": "impl:route:POST /v1/nudges/{}/dismiss",
+      "step": null,
+      "quote": "registered code:internal/nudges/routes.go:17"
+     },
+     {
+      "target": "code:internal/nudges/routes.go:17",
+      "step": null,
+      "quote": "r.Member.POST(\"/nudges/:id/dismiss\""
+     },
+     {
+      "target": "code:internal/nudges/routes.go:57",
+      "step": null,
+      "quote": "func (h handler) dismiss(c *gin.Context) error"
+     },
+     {
+      "target": "rule:R138",
+      "step": null,
+      "quote": "sets dismissed_at to now and answers 200 with the nudge"
+     }
+    ],
+    "implementation": "implemented_unverified",
+    "implementation_basis": "static"
+   }
+  },
+  {
+   "id": "Q11",
+   "category": "who can call",
+   "question": "Can a client without an access token read GET /v1/sync?",
+   "key": {
+    "kinds": [
+     "no"
+    ],
+    "routes_required": [],
+    "must": [
+     [
+      "\\b401\\b"
+     ]
+    ],
+    "must_not": [],
+    "implementation": "implemented_unverified",
+    "claims": [
+     "no: 401 (cell no token GET /v1/sync)",
+     "not_authenticated (R21)"
+    ],
+    "abstain_ok": false
+   },
+   "gold_reply": {
+    "kind": "no",
+    "answer": "No: GET /v1/sync without a token answers 401 not_authenticated.",
+    "explanation": "Every /v1 route except register, login and refresh needs a bearer token (R21); the access matrix has 401 for a caller with no token.",
+    "citations": [
+     {
+      "target": "cell:no token|GET /v1/sync",
+      "step": null,
+      "quote": "401"
+     },
+     {
+      "target": "rule:R21",
+      "step": null,
+      "quote": "without one it answers 401 with code not_authenticated"
+     },
+     {
+      "target": "impl:route:GET /v1/sync",
+      "step": null,
+      "quote": "auth Customer"
+     }
+    ],
+    "implementation": "implemented_unverified",
+    "implementation_basis": "static"
+   }
+  },
+  {
+   "id": "Q12",
+   "category": "routes",
+   "question": "Which routes can a client call without an access token?",
+   "key": {
+    "kinds": [
+     "value"
+    ],
+    "routes_required": [
+     "GET /health",
+     "POST /v1/auth/register",
+     "POST /v1/auth/login",
+     "POST /v1/auth/refresh"
+    ],
+    "must": [],
+    "must_not": [],
+    "implementation": "implemented_unverified",
+    "claims": [
+     "GET /health (R3)",
+     "register, login, refresh (R21)",
+     "every other /v1 route answers 401 not_authenticated without one (R21)",
+     "PUT /test/clock is public but test-mode only (code, excluded test_only)"
+    ],
+    "abstain_ok": false
+   },
+   "gold_reply": {
+    "kind": "value",
+    "answer": "GET /health, POST /v1/auth/register, POST /v1/auth/login and POST /v1/auth/refresh. Every other /v1 route needs a bearer token and otherwise answers 401 not_authenticated.",
+    "explanation": "R3 and R21 state it. The code also registers PUT /test/clock without a token, but only in test mode, and the inventory excludes it as test-only.",
+    "citations": [
+     {
+      "target": "cell:no token|GET /health",
+      "step": null,
+      "quote": "200"
+     },
+     {
+      "target": "cell:no token|POST /v1/auth/register",
+      "step": null,
+      "quote": "201/409/422"
+     },
+     {
+      "target": "cell:no token|POST /v1/auth/login",
+      "step": null,
+      "quote": "200/401"
+     },
+     {
+      "target": "cell:no token|POST /v1/auth/refresh",
+      "step": null,
+      "quote": "200/401"
+     },
+     {
+      "target": "rule:R21",
+      "step": null,
+      "quote": "Every other /v1 route except register, login and refresh needs"
+     },
+     {
+      "target": "rule:R3",
+      "step": null,
+      "quote": "which answers 200 without a token"
+     },
+     {
+      "target": "impl:route:PUT /test/clock",
+      "step": null,
+      "quote": "excluded (test_only)"
+     }
+    ],
+    "implementation": "implemented_unverified",
+    "implementation_basis": "static"
+   }
+  }
+ ]
+}
