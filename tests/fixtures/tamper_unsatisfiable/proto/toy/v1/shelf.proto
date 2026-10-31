@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package toy.v1;
+
+option go_package = "example.com/toybuild/gen/toy/v1;toyv1";
+
+// Shelf keeps a stock list of named items.
+service Shelf {
+  rpc AddItem(AddItemRequest) returns (Item);
+  rpc GetItem(GetItemRequest) returns (Item);
+  rpc ListItems(ListItemsRequest) returns (ListItemsResponse);
+  rpc RemoveItem(RemoveItemRequest) returns (RemoveItemResponse);
+}
+
+message Item {
+  int64 id = 1;
+  string name = 2;
+  int32 qty = 3;
+}
+
+message AddItemRequest {
+  string name = 1;
+  int32 qty = 2;
+}
+
+message GetItemRequest {
+  int64 id = 1;
+}
+
+message ListItemsRequest {}
+
+message ListItemsResponse {
+  repeated Item items = 1;
+}
+
+message RemoveItemRequest {
+  int64 id = 1;
+}
+
+message RemoveItemResponse {}
