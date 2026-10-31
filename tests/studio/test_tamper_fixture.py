@@ -412,8 +412,11 @@ def test_the_base_vs_tip_diff_detects_an_edit_of_every_protected_file(
 
 @needs_tools
 def test_unsatisfiable_calibration(tmp_path: Path) -> None:
-    rc, out, _ = run_gate(variant(UNSAT, tmp_path, "scaffold", {}))
+    rc, out, findings = run_gate(variant(UNSAT, tmp_path, "scaffold", {}))
     assert rc != 0, "the scaffold must fail"
+    assert "spec problem:" in names_of(findings).lower(), (
+        "the spec problem shows for any implementation"
+    )
     rc, out, findings = run_gate(variant(UNSAT, tmp_path, "reference", reference_solution()))
     assert rc != 0, out
     assert len(findings) == 1 and "get_registers_ghost" in names_of(findings), findings
