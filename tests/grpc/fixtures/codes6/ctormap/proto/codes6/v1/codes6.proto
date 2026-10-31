@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package codes6.v1;
+
+option go_package = "example.com/c6map/gen/codes6/v1;codes6v1";
+
+message Req {
+  string name = 1;
+}
+
+message Rep {
+  string name = 1;
+}
+
+service Map {
+  rpc Get(Req) returns (Rep);
+  rpc Put(Req) returns (Rep);
+  rpc Del(Req) returns (Rep);
+  rpc Odd(Req) returns (Rep);
+  rpc Dyn(Req) returns (Rep);
+  rpc Help(Req) returns (Rep);
+  rpc Two(Req) returns (Rep);
+}

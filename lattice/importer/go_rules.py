@@ -19,6 +19,22 @@
   gets the foreign key: the profile generator then reports two users foreign keys). A table
   with no evidence keeps today's answer. The extract itself (the sidecar, the inventory,
   ``workflows.json``) is never touched: the inference is in memory only.
+* G9 ``owner_via``: a table whose rows belong to a user only through a parent row (a Book on
+  a Shelf) has no users foreign key, and GORM declares no key to the parent either, so the
+  profile generator's ``owner_via`` (a foreign key to an owned parent the routes check the
+  caller through) had nothing to follow. After D2, a column ``c`` of a table ``T`` gets an
+  **inferred** foreign key to the parent ``P``'s primary key when all hold:
+
+  1. ``T`` is not the users table, has no users foreign key and no declared key to an owned
+     table; ``P`` (not ``T``) has exactly one users foreign key and a one-column primary key;
+  2. ``c`` is an ``Int`` column with no foreign key, of ``P``'s key type, named after ``P``
+     the GORM way (Go field ``<P>ID`` or column ``<p>_id``);
+  3. a route touching ``T`` compares or sets ``P``'s owner column from the caller;
+  4. no other ``(c, P)`` pair of ``T`` meets 1 to 3 (two parent paths: nothing is inferred).
+
+  Recorded in ``inferences[]`` as ``{"table", "via", "parent", "evidence", "rule":
+  "owner_via"}`` (no ``column``: that key names a users owner). One level only, as in the
+  profile generator: a parent owned through its own parent is not an owned parent.
 * :class:`InferringFrontEnd`: the Go front end with D2 applied to the model it extracts, so
   ``lift_repo`` (which extracts again) sees the inferred keys without an edit to it.
 
@@ -73,6 +89,7 @@ __all__ = [
 ]
 
 RULE = "owner_uses"
+VIA_RULE = "owner_via"
 OWNER_HOWS = ("compare", "assign")
 
 
@@ -160,9 +177,65 @@ def infer_owners(
             dataclasses.replace(c, foreign_key=fk) if c.name in names else c for c in t.columns
         )
         tables.append(dataclasses.replace(t, columns=cols))
+    tables, via = _parent_keys(extract, tables, users, users_sql)
+    inferences += via
     if not inferences:
         return model, []
     return dataclasses.replace(model, tables=tuple(tables)), inferences
+
+
+def _snake(name: str) -> str:
+    return re.sub(r"(?<=[a-z0-9])(?=[A-Z])", "_", name).lower()
+
+
+def _parent_keys(
+    extract: Mapping[str, Any], tables: list[TableModel], users: str, users_sql: str
+) -> tuple[list[TableModel], list[dict[str, Any]]]:
+    """G9 ``owner_via``: ``tables`` with an inferred foreign key from a child to its owned
+    parent, and the inferences (see the module docstring). The profile generator then
+    decides ``owner_via`` from that key, as it does for a declared one."""
+
+    def users_fks(t: TableModel) -> list[FieldSpec]:
+        return [c for c in t.columns if (c.foreign_key or "").split(".")[0] == users_sql]
+
+    owned: dict[str, tuple[TableModel, FieldSpec, FieldSpec]] = {}  # parent -> (it, owner, pk)
+    for t in tables:
+        fks, pks = users_fks(t), [c for c in t.columns if c.primary_key]
+        if t.name != users and len(fks) == 1 and len(pks) == 1:
+            owned[t.name] = (t, fks[0], pks[0])
+    owned_sql = {p.table_name for p, _, _ in owned.values()}
+    fields = {(t["struct"], c["name"]): c.get("field") for t in extract.get("tables", ())
+              for c in t["columns"]}  # fmt: skip
+    checks: dict[tuple[str, str, str], set[tuple[str, int]]] = {}  # (child, parent, column)
+    for route in extract.get("routes", ()):
+        for o in route.get("owner_uses", ()):
+            if o.get("how") in OWNER_HOWS:
+                for child in route.get("tables", ()):
+                    key = (child, o["model"], o["column"])
+                    checks.setdefault(key, set()).add((o["file"], o["line"]))
+    inferences: list[dict[str, Any]] = []
+    out: list[TableModel] = []
+    for t in tables:
+        declared = any((c.foreign_key or "").split(".")[0] in owned_sql for c in t.columns)
+        found = [] if t.name == users or users_fks(t) or declared else [
+            (c, p, pk, sorted(checks[(t.name, p.name, owner.name)]))
+            for c in t.columns
+            if c.type == "Int" and not c.primary_key and not c.foreign_key
+            for p, owner, pk in owned.values()
+            if p.name != t.name and pk.type == c.type
+            and (fields.get((t.name, c.name)) == f"{p.name}ID" or c.name == f"{_snake(p.name)}_id")
+            and (t.name, p.name, owner.name) in checks
+        ]  # fmt: skip
+        if len(found) != 1:  # none, or several parent paths: the profile's answer stands
+            out.append(t)
+            continue
+        c, p, pk, uses = found[0]
+        inferences.append({"table": t.name, "via": c.name, "parent": p.name, "rule": VIA_RULE,
+                           "evidence": [f"code:{f}:{n}" for f, n in uses]})  # fmt: skip
+        fk = f"{p.table_name}.{pk.name}"
+        cols = tuple(dataclasses.replace(x, foreign_key=fk) if x is c else x for x in t.columns)
+        out.append(dataclasses.replace(t, columns=cols))
+    return out, inferences
 
 
 def infer_path_parse(

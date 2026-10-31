@@ -1,0 +1,3 @@
+{"node": "C1", "question": "C1-canary", "label": "stream shape (full rebuild flags)", "cap_usd": 0.03, "cost_usd": 0.00260931, "session_id": "8d9c8b41-d8de-4213-826e-ab46b3afe3c0", "subtype": "success", "num_turns": 3, "exit_code": 0, "wall_s": 5.4}
+{"node": "C1", "question": "C1-canary", "label": "--max-turns 1", "cap_usd": 0.03, "cost_usd": 0.0022307, "session_id": "d81d5487-88fd-46a6-98ce-fd74a46515f3", "subtype": "error_max_turns", "num_turns": 2, "exit_code": 1, "wall_s": 2.5}
+{"node": "C1", "question": "C1-canary", "label": "budget 0.0001", "cap_usd": 0.0001, "cost_usd": 0.00091909, "session_id": "3deaef1b-fe4e-4008-9d9e-3a1eff645ab5", "subtype": "error_max_budget_usd", "num_turns": 1, "exit_code": 1, "wall_s": 2.5}

@@ -1,0 +1,128 @@
+{
+ "id": "b1",
+ "project": "t13-cyclops",
+ "changes": [
+  "t13"
+ ],
+ "status": "passed",
+ "model": "sonnet",
+ "agent": "claude",
+ "max_rounds": 1,
+ "started": "2026-10-31T12:04:16Z",
+ "finished": "2026-10-31T12:05:15Z",
+ "rounds": [
+  {
+   "n": 1,
+   "started": "2026-10-31T12:04:16Z",
+   "finished": "2026-10-31T12:05:15Z",
+   "agent_summary": "I implemented `create_app` in `cyclops/ui/server.py`, and `./check.sh` now exits 0 with no findings. The check reported \"routes verified 0/30\" because it found no logged-in callers, and I didn't try to change that. The app serves all 30 routes from the spec's contracts. The `/api/user/*` routes go through `UserStore`, and the rest go through `Store`. I chose these error mappings: - **422:** a refusal from the store (an `exists: false` payload with an `error`), a bad timestamp or value, and out-of-range query parameters (`max_points`, `k`, `before`, `after`). - **`UserStoreError`:** returned w\u2026",
+   "files_changed": [
+    "cyclops/ui/server.py"
+   ],
+   "check": {
+    "verdict": "pass",
+    "counts": {
+     "A": 0,
+     "B": 0,
+     "C": 0,
+     "D": 0,
+     "R": 0
+    },
+    "findings": []
+   },
+   "agent": {
+    "cost_usd": 0.28008900000000003,
+    "cost_usd_list_estimate": 0.28008900000000003,
+    "duration_ms": 55631,
+    "input_tokens": 24,
+    "output_tokens": 7362,
+    "cache_read_input_tokens": 339530,
+    "cache_creation_input_tokens": 43117,
+    "num_turns": 13,
+    "session_id": "25e55146-d7ad-4b00-9b04-b33f1b7f87c0",
+    "cost_basis": "cli_list_estimate",
+    "denials": [
+     {
+      "tool": "Bash",
+      "target": "sed -n 165,180p cyclops/ui/user_store.py; sed -n 640,700p cyclops/ui/user_store.py; sed -n 805,850p cyclops/ui/user_store.py; for l in 1274 1344 1390 1497 1549 1712 2033 2217 2373 958 1835; do sed -n \"${l},$((l+4))p\" cyclops/ui/store.py; echo ---; done; sed -n 2465,2470p cyclops/ui/store.py; cat cyclops/ui/decimate.py | head -30; grep -n \"max_points\\|decimate\" cyclops/ui/store.py | head"
+     },
+     {
+      "tool": "Bash",
+      "target": "cat > cyclops/ui/server.py <<'EOF'\n\"\"\"FastAPI binding over `Store` and `UserStore`: the viewer's HTTP surface.\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import Any, Callable\n\nfrom fastapi import Body, FastAPI, Query\nfrom fastapi.responses import JSONResponse\n\nfrom cyclops import config\nfrom cyclops.ui.store import DEFAULT_MAX_POINTS, Store\nfrom cyclops.ui.user_store import UserStore, UserStoreError\n\n\ndef _json(payload: Any, status: int = 200) -> JSONResponse:\n    return JSONResponse(content=payload, status_code=status)\n\n\ndef _answer(call: Callable[[], Any]) -> JSONResponse:\n    \"\"\"Run one store read: a refusal ({exists: false, error}) is a 422, a bad value too.\"\"\"\n    try:\n        payload = call()\n    except (ValueError, TypeError, OverflowError) as exc:\n        return _json({\"exists\": False, \"error\": str(exc), \"hint\": \"check the query parameters\"}, 422)\n    if isinstance(payload, dict) and payload.get(\"exists\") is False and \"error\" in payload:\n        return _json(payload, 422)\n    return _json(payload)\n\n\ndef create_app(store: Store | None = None, users: UserStore | None = None) -> FastAPI:\n    \"\"\"Build the FastAPI app bound to one `Store` (one artifact root) and its `UserStore`.\"\"\"\n    if store is None:\n        store = Store()\n    if users is None:\n        users = UserStore(store.root)\n    app = FastAPI(title=\"cyclops\")\n\n    @app.exception_handler(UserStoreError)\n    async def _user_error(_request, exc: UserStoreError) -> JSONResponse:\n        return _json({\"exists\": False, \"error\": exc.error, \"hint\": exc.hint}, exc.status)\n\n    def _get(path: str, fn: Callable[..., Any]) -> None:\n        app.add_api_route(path, fn, methods=[\"GET\"])\n\n    @app.get(\"/api/roots\")\n    def roots():\n        return _answer(store.roots)\n\n    @app.get(\"/api/quotes\")\n    def quotes():\n        return _answer(store.quotes)\n\n    @app.get(\"/api/meta\")\n    def meta():\n        return _answer(store.meta)\n\n    @app.get(\"/api/bars/{rung}\")\n    def bars(rung: str, start: str | None = None, end: str | None = None,\n             max_points: int = Query(DEFAULT_MAX_POINTS, ge=1, le=20000),\n             root: str = config.ASSET):\n        return _answer(lambda: store.bars(rung, start, end, max_points, root))\n\n    @app.get(\"/api/bars/{rung}/windows\")\n    def windows(rung: str, stamps: str | None = None,\n                before: int = Query(40, ge=0), after: int = Query(20, ge=0)):\n        parts = [s.strip() for s in (stamps or \"\").split(\",\") if s.strip()]\n        return _answer(lambda: store.bar_windows(rung, parts, before, after))\n\n    @app.get(\"/api/features/{rung}\")\n    def features(rung: str, cols: str | None = None, start: str | None = None,\n                 end: str | None = None,\n                 max_points: int = Query(DEFAULT_MAX_POINTS, ge=1, le=20000),\n                 root: str = config.ASSET):\n        names = [c.strip() for c in cols.split(\",\") if c.strip()] if cols else None\n        return _answer(lambda: store.features(rung, names, start, end, max_points, root))\n\n    @app.get(\"/api/regimes\")\n    def regimes(start: str | None = None, end: str | None = None, rung: str = \"1h\",\n                root: str = config.ASSET):\n        return _answer(lambda: store.regimes(start, end, rung, root))\n\n    @app.get(\"/api/bar/{ts}\")\n    def bar(ts: str, rung: str = \"1h\"):\n        return _answer(lambda: store.bar_detail(ts, rung))\n\n    @app.get(\"/api/patterns/{rung}/similar\")\n    def similar(rung: str, ts: str | None = None, pattern: str | None = None,\n                k: int = Query(config.PATTERN_SIM_K, ge=1), layer: str = \"cell\",\n                metric: str = \"euclid\"):\n        return _answer(lambda: store.patterns_similar(rung, ts, k, layer, metric, pattern))\n\n    @app.get(\"/api/patterns/{rung}\")\n    def patterns(rung: str, start: str | None = None, end: str | None = None,\n                 root: str = config.ASSET):\n        return _answer(lambda: store.patterns(rung, start, end, root))\n\n    @app.get(\"/api/structure/{rung}\")\n    def structure(rung: str, start: str | None = None, end: str | None = None,\n                  root: str = config.ASSET):\n        return _answer(lambda: store.structure(rung, start, end, root))\n\n    @app.get(\"/api/formations/{rung}\")\n    def formations(rung: str, start: str | None = None, end: str | None = None,\n                   root: str = config.ASSET):\n        return _answer(lambda: store.formations(rung, start, end, root))\n\n    @app.get(\"/api/bands/{rung}\")\n    def bands(rung: str, root: str = \"NQ\", start: str | None = None, end: str | None = None):\n        return _answer(lambda: store.bands(rung, root, start, end))\n\n    @app.get(\"/api/memory/{ts}\")\n    def memory(ts: str, k: int = Query(config.MEMORY_K, ge=1, le=500)):\n        return _answer(lambda: store.memory(ts, k))\n\n    @app.get(\"/api/profiles\")\n    def profiles():\n        return _answer(store.profiles)\n\n    @app.get(\"/api/validation/{split}\")\n    def validation(split: str):\n        return _answer(lambda: store.validation(split))\n\n    @app.get(\"/api/dq\")\n    def dq():\n        return _answer(store.dq)\n\n    @app.get(\"/api/eod\")\n    def eod_index():\n        return _answer(store.eod_index)\n\n    @app.get(\"/api/eod/{d}\")\n    def eod(d: str):\n        return _answer(lambda: store.eod(d))\n\n    @app.get(\"/api/journal/{d}\")\n    def journal(d: str):\n        return _answer(lambda: store.journal(d))\n\n    @app.get(\"/api/rolling\")\n    def rolling():\n        return _answer(store.rolling)\n\n    @app.get(\"/api/registry\")\n    def registry():\n        return _answer(store.registry)\n\n    @app.get(\"/api/parity\")\n    def parity():\n        return _answer(store.parity)\n\n    @app.get(\"/api/live\")\n    def live():\n        return _answer(store.live)\n\n    @app.get(\"/api/user/drawings/{rung}\")\n    def get_drawings(rung: str):\n        return _json(users.get_drawings(rung))\n\n    @app.put(\"/api/user/drawings/{rung}\")\n    def put_drawings(rung: str, doc: Any = Body(None)):\n        return _json(users.put_drawings(rung, doc))\n\n    @app.get(\"/api/user/setups\")\n    def list_setups():\n        return _json(users.list_setups())\n\n    @app.get(\"/api/user/setups/{slug}\")\n    def get_setup(slug: str):\n        out = users.get_setup(slug)\n        return _json(out, 404 if out.get(\"exists\") is False else 200)\n\n    @app.put(\"/api/user/setups/{slug}\")\n    def put_setup(slug: str, doc: Any = Body(None)):\n        return _json(users.put_setup(slug, doc))\n\n    @app.delete(\"/api/user/setups/{slug}\")\n    def delete_setup(slug: str):\n        out = users.delete_setup(slug)\n        return _json(out, 404 if out.get(\"exists\") is False else 200)\n\n    return app\nEOF\nsed -i '/def _get(path/,+2d' cyclops/ui/server.py\n./check.sh 2>&1 | tail -40"
+     },
+     {
+      "tool": "Bash",
+      "target": "./check.sh >/dev/null 2>&1; echo exit=$?"
+     }
+    ],
+    "denial_count": 3
+   },
+   "gates": [
+    {
+     "command": "./check.sh",
+     "exit_code": 0,
+     "seconds": 2.25,
+     "output_tail": "PASS: 0 findings (A 0, B 0, C 0, D 0, R 0); 0 cases run\n\nrule items (35 verified, 0 refuted, 30 unexercised, 0 unclear); tables verified 0/0, routes verified 0/30:\n  unexercised R1 GET /api/roots: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 GET /api/quotes: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 GET /api/meta: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 GET /api/bars/{rung}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 GET /api/bars/{rung}/windows: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 GET /api/features/{rung}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 GET /api/regimes: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 GET /api/bar/{ts}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 GET /api/patterns/{rung}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 GET /api/patterns/{rung}/similar: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 GET /api/structure/{rung}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 GET /api/formations/{rung}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 GET /api/bands/{rung}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 GET /api/memory/{ts}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 GET /api/profiles: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 GET /api/validation/{split}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 GET /api/dq: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 GET /api/eod: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 GET /api/eod/{d}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 GET /api/journal/{d}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 GET /api/rolling: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 GET /api/registry: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 GET /api/parity: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 GET /api/live: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 GET /api/user/drawings/{rung}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 PUT /api/user/drawings/{rung}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 GET /api/user/setups: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 GET /api/user/setups/{slug}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 PUT /api/user/setups/{slug}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n  unexercised R1 DELETE /api/user/setups/{slug}: no callers: no user of any role was logged in, so no probe shows who is admitted (2 non-role callers as predicted)\n\nnotes:\n  - layer C: the spec has no invariants\n  - layer B: the spec has no programs; nothing to compare\n  - layer D: the spec has no scenarios\n\ntimings: total 1.71s (A 0.16s, B 0.00s, C 0.00s, D 0.00s, R 1.55s)\n"
+    }
+   ],
+   "spec_edited": [],
+   "error": null,
+   "wall_s": 59.31
+  }
+ ],
+ "targets": [],
+ "gates": [
+  "./check.sh"
+ ],
+ "base": "57172bc5adec5a0e45f4391f04785ab49add1608",
+ "branch": "rebuild/t13",
+ "worktree": "<scratch>/build-repo/.lattice/rebuilds/t13-cyclops-b1-19c0ae",
+ "merge_hint": "Studio never merges. To take the rebuilt code, run `git merge rebuild/t13` in <scratch>/build-repo; the worktree <scratch>/build-repo/.lattice/rebuilds/t13-cyclops-b1-19c0ae stays for review.",
+ "usage": {
+  "cost_usd": 0.280089,
+  "cost_usd_list_estimate": 0.280089,
+  "duration_ms": 55631,
+  "input_tokens": 24,
+  "output_tokens": 7362,
+  "cache_read_input_tokens": 339530,
+  "cache_creation_input_tokens": 43117,
+  "wall_s": 59.43
+ },
+ "warnings": [],
+ "error": null,
+ "pids": [],
+ "attempts": 1,
+ "timeline": [
+  {
+   "at": "2026-10-31T12:04:16Z",
+   "event": "started"
+  },
+  {
+   "at": "2026-10-31T12:05:15Z",
+   "event": "passed"
+  }
+ ],
+ "interrupted": false,
+ "interrupted_at": null,
+ "interrupted_reason": null,
+ "session_id": "25e55146-d7ad-4b00-9b04-b33f1b7f87c0",
+ "session_totals": {
+  "25e55146-d7ad-4b00-9b04-b33f1b7f87c0": {
+   "cost_usd": 0.280089,
+   "input_tokens": 24,
+   "output_tokens": 7362,
+   "cache_read_input_tokens": 339530,
+   "cache_creation_input_tokens": 43117
+  }
+ },
+ "commit": {
+  "sha": "e1080ccf4fdccd6bc3cdb1867c90631c8c52745b",
+  "message": "build: Build the app's HTTP API from the spec: implement cyclops/ui/server.py (the factory create_app(store, users)) so that it serves every contract of spec.py's CONTRACTS with the behaviour the code base around it implies. Read CONTEXT.md first. Change only cyclops/ui/server.py.\n\nRebuilt by Lattice Studio from the accepted change(s) t13; the gates passed in round 1 of 1.\n\nLattice-Rebuild: b1 (t13-cyclops)\nLattice-Rebuild: t13\n",
+  "files_changed": [
+   "cyclops/ui/server.py"
+  ],
+  "name_status": [
+   "M cyclops/ui/server.py"
+  ]
+ }
+}

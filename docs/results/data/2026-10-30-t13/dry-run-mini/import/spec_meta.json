@@ -1,0 +1,129 @@
+{
+  "schema": "lattice-spec-meta/1",
+  "package": "minisvc",
+  "spec": "1a4ef7af408e9f099a0b123ff7ca7e86e91c3c93e6f6fb956ed15b0bdf993d30",
+  "proposals": {},
+  "counts": {
+    "items": {
+      "inferred": 8,
+      "verified": 5
+    },
+    "proposals": {}
+  },
+  "rules_summary": {
+    "items": {
+      "verified": 5,
+      "refuted": 0,
+      "unexercised": 8,
+      "unclear": 0
+    },
+    "tables": {
+      "verified": 0,
+      "total": 0
+    },
+    "routes": {
+      "verified": 0,
+      "total": 5
+    }
+  },
+  "sources": {
+    "report.json": "fc6a1d6820522b0ba0496d3c3fa034b931eb83f155f2ccb7d7854921e175b46e",
+    "candidate_spec.py": "e9800c321a6a2d15441cc9e1552fe487865fad567508d057a975d0b4c981c442",
+    "proposals.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "review.jsonl": null
+  },
+  "import_dir": "/Users/vivekgade/Documents/lattice-nc-t13/docs/results/data/2026-10-30-t13/dry-run-mini/import",
+  "items": {
+    "R1 GET /health": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /health 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 GET /notes": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /notes 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 POST /notes": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 POST /notes 422 text must not be blank": {
+      "kind": "R3",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 POST /notes 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 GET /notes/{note_id}": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /notes/{note_id} 404 no such note": {
+      "kind": "R3",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 GET /notes/{note_id} 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    },
+    "R1 DELETE /notes/{note_id}": {
+      "kind": "R1",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 DELETE /notes/{note_id} 404 no such note": {
+      "kind": "R3",
+      "verdict": "unexercised",
+      "decision": null,
+      "status": "inferred",
+      "applied": true
+    },
+    "R3 DELETE /notes/{note_id} 5xx": {
+      "kind": "R3",
+      "verdict": "verified",
+      "decision": null,
+      "status": "verified",
+      "applied": true
+    }
+  }
+}

@@ -104,6 +104,7 @@ type gx struct {
 	routerSteps int
 	useIdx      *[]useCall
 	accTypes    map[*TypeInfo]map[string]accMethod
+	binders     map[*Func]map[int]string // binder helpers: parameter index -> source (goextract_body.go)
 	wrapMemo    map[*Func]int
 	pendingFK   []pendingFK
 

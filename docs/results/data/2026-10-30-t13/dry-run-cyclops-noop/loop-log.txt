@@ -1,0 +1,2 @@
+rebuild b1: started on rebuild/t13 at b26805e16d (<scratch>/build-repo/.lattice/rebuilds/t13-cyclops-b1-c4687d)
+rebuild b1: round 1 fail (5 finding(s), 0 file(s) changed)

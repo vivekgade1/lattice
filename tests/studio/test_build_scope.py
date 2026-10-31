@@ -20,7 +20,7 @@ import pytest
 from lattice.spec.rules import Question, Trace, extract_rules
 from lattice.studio import areas as areas_mod
 from lattice.studio.hub import discover
-from lattice.studio.rebuild import SCOPE_RULES, Rebuilder, RebuildError
+from lattice.studio.rebuild import SCOPE_RULES, Rebuilder, RebuildError, agent_rules
 from lattice.studio.server import StubGenerator, make_hub_server
 from tests.spec.incremental_toy import NOTES_BASE_TRACE
 from tests.studio.test_rebuild import FAKE, SID
@@ -372,7 +372,9 @@ def test_a_scoped_build_passes_in_round_2_on_the_integration_branch(repo: Path, 
     assert "- scenario:create_a_note: FAIL w.txt is missing" in brief
     assert "2 other check(s) fail now outside the scope" in brief
     assert "`CONTEXT.md`" in brief and "`./gate.sh`" in brief
-    assert argv1[argv1.index("--append-system-prompt") + 1] == SCOPE_RULES
+    # the scope rules, plus the data-not-instructions rule while fencing is on (WP1)
+    assert argv1[argv1.index("--append-system-prompt") + 1] == agent_rules(SCOPE_RULES)
+    assert argv1[argv1.index("--append-system-prompt") + 1].startswith(SCOPE_RULES)
     assert argv2[argv2.index("--resume") + 1] == SID
     assert "Still failing in scope:" in argv2[-1] and "w.txt is missing" in argv2[-1]
     # usage: tokens incl. cache, the list-price estimate under both names, wall time

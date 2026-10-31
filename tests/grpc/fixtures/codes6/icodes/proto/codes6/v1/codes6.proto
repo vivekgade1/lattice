@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package codes6.v1;
+
+option go_package = "example.com/c6icodes/gen/codes6/v1;codes6v1";
+
+message Req {
+  string name = 1;
+}
+
+message Rep {
+  string name = 1;
+}
+
+service Open {
+  rpc Hello(Req) returns (Rep);
+}
+
+service Shop {
+  rpc Buy(Req) returns (Rep);
+  rpc Look(Req) returns (Rep);
+}
+
+service Till {
+  rpc Pay(Req) returns (Rep);
+}

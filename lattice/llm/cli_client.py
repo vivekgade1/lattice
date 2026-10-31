@@ -12,9 +12,11 @@ this machine (Claude Code 2.1.283): without ``--strict-mcp-config``/``--mcp-conf
 user's own MCP tool definitions leak into the prompt (~19.7k tokens on this account); a
 cwd inside the repo would let a CLAUDE.md be auto-discovered and injected into the system
 prompt. ``--disable-slash-commands`` additionally turns off skills, which would otherwise
-be free to fire on a matching prompt. None of ``--system-prompt-file`` or ``--max-turns``
-exist on this CLI version (checked via ``claude --help``); the system prompt goes in as
-literal text via ``--system-prompt``.
+be free to fire on a matching prompt. ``--system-prompt-file`` does not exist on this CLI
+version (checked via ``claude --help``), so the system prompt goes in as literal text via
+``--system-prompt``. ``--max-turns`` is absent from ``claude --help`` too but is accepted
+(CLI 2.1.309: ``docs/results/2026-10-30-preflights.md`` P1, ``error_max_turns``); this client
+does not pass it.
 
 **Multi-turn repair conversations.** The harness/importer's ``Generator.generate(system,
 messages)`` takes a full message history (the original request, and for a repair round,

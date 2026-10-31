@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package codes6.v1;
+
+option go_package = "example.com/c6desc/gen/codes6/v1;codes6v1";
+
+message Req {
+  string name = 1;
+}
+
+message Rep {
+  string name = 1;
+}
+
+service Bill {
+  rpc Charge(Req) returns (Rep);
+  rpc Refund(Req) returns (Rep);
+}
+
+service Tab {
+  rpc Open(Req) returns (Rep);
+}
+
+service Never {
+  rpc Call(Req) returns (Rep);
+}

@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "lattice": {
+      "command": "lattice",
+      "args": ["mcp", "serve", "--project", "${workspaceFolder}"]
+    }
+  }
+}

@@ -50,7 +50,7 @@ func (g *gx) interceptorFuncs(w *grpcWalk) []xInterceptor {
 					}
 					seen[ic] = true
 					x := g.classifyInterceptor(ic)
-					x.Chained = oname == "ChainUnaryInterceptor"
+					x.Chained, x.fn = oname == "ChainUnaryInterceptor", ic
 					out = append(out, x)
 				}
 			}
@@ -111,6 +111,8 @@ func (g *gx) resolveInterceptor(e *Env, x ast.Expr) *Func {
 // and which methods does it let through (a literal set, a map or a switch).
 func (g *gx) classifyInterceptor(fn *Func) xInterceptor {
 	x := xInterceptor{Func: qual(fn), File: fn.File.Rel, Line: g.line(fn.Pos), Kind: "other"}
+	readV5 = true
+	defer func() { readV5 = false }()
 	run := &grpcRun{memo: map[*Func]*errSrc{}, busy: map[*Func]bool{}}
 	es := g.errOfFunc(fn, 0, run)
 	if !es.has("UNAUTHENTICATED") {
@@ -605,6 +607,8 @@ func (g *gx) seedCallerFuncs(ics []xInterceptor) {
 
 // rpcAuth decides Public | Member | unclear for every implemented or unimplemented rpc.
 func (g *gx) rpcAuth(gr *xGrpc, ics []xInterceptor, run *grpcRun) {
+	readV5 = true
+	defer func() { readV5 = false }()
 	var auth []xInterceptor
 	for _, ic := range ics {
 		if ic.Kind != "other" {

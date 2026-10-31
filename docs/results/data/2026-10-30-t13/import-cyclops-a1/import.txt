@@ -1,0 +1,1 @@
+<scratch>/imp: fastapi, 65 rule items (35 verified, 0 refuted, 30 unexercised, 0 unclear); tables verified 0/0, routes verified 0/30; 0 corrections, 0 baseline; 3.3s

@@ -56,7 +56,7 @@ class CandidateGenerator:
         from lattice.spec.draft import system_prompt
 
         self.calls.append(system[:40])
-        if system == server_mod.EDIT_SYSTEM:
+        if system.startswith(server_mod.EDIT_SYSTEM):  # + the fencing rules when fencing is on
             text = f"{BEGIN}\n{self.md}{END}\n"
         elif system == system_prompt():
             text = f"```python\n{self.module}```\n\n```json\n{self.trace}\n```\n"
